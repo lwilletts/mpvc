@@ -11,7 +11,6 @@ readonly PROGPATH=${PROGPATH:-$PROGDIR/$PROGNAME}
 ARGS="$@"
 
 SOCKET=${SOCKET:-/tmp/mpvsocket}
-STATUSFLAG=true
 
 usage() {
     cat << EOF
@@ -49,7 +48,7 @@ EOF
 
 getMediaTitle() {
     mediaTitle=$(printf '%s\n' "{ \"command\": [\"get_property\", \
-        \"media-title\" ] }" | socat - $SOCKET 2> /dev/null)
+        \"media-title\" ] }" | $SOCKETCOMMAND 2> /dev/null)
     mediaTitle=$(printf '%s\n' "$mediaTitle" | cut -d: -f 2 | \
         cut -d, -f 1 | sed s/\"//g)
 
@@ -58,7 +57,7 @@ getMediaTitle() {
 
 getPlaybackTime() {
     time=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
-        \"playback-time\"] }" | socat - $SOCKET)
+        \"playback-time\"] }" | $SOCKETCOMMAND 2> /dev/null)
     time=$(printf '%s\n' $time | cut -d\" -f 4 | cut -d. -f 1)
 
     printf "$time"
@@ -66,7 +65,7 @@ getPlaybackTime() {
 
 getDuration() {
     duration=$(printf '%s\n' "{ \"command\": [\"get_property\", \
-        \"duration\"] }" | socat - $SOCKET)
+        \"duration\"] }" | $SOCKETCOMMAND 2> /dev/null)
 
     duration=$(printf '%s\n' $duration | cut -d: -f 2 | cut -d. -f 1)
 
@@ -75,7 +74,7 @@ getDuration() {
 
 getPercentage() {
     percentage=$(printf '%s\n' "{ \"command\": [\"get_property\", \
-        \"percent-pos\" ] }" | socat - $SOCKET 2> /dev/null)
+        \"percent-pos\" ] }" | $SOCKETCOMMAND 2> /dev/null)
     percentage=$(printf '%s\n' "$percentage" | cut -d: -f 2 |
         cut -d, -f 1 | cut -d. -f 1)
 
@@ -84,7 +83,7 @@ getPercentage() {
 
 getVolume() {
     volume=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
-        \"volume\"] }" | socat - $SOCKET)
+        \"volume\"] }" | $SOCKETCOMMAND 2> /dev/null)
     volume=$(printf '%s\n' $volume | cut -d\" -f 4 | cut -d. -f 1)
 
     printf "$volume"
@@ -92,7 +91,7 @@ getVolume() {
 
 getCurrentTrack() {
     currentTrack=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
-        \"playlist-pos\"] }" | socat - $SOCKET)
+        \"playlist-pos\"] }" | $SOCKETCOMMAND 2> /dev/null)
     currentTrack=$(printf '%s\n' $currentTrack | cut -d\" -f 4 | cut -d. -f 1)
 
     printf "$currentTrack"
@@ -100,7 +99,7 @@ getCurrentTrack() {
 
 getTrackCount() {
     trackCount=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
-            \"playlist-count\"] }" | socat - $SOCKET)
+            \"playlist-count\"] }" | $SOCKETCOMMAND 2> /dev/null)
     trackCount=$(printf '%s\n' $trackCount | cut -d\" -f 4 | cut -d. -f 1)
 
     printf "$trackCount"
@@ -108,15 +107,16 @@ getTrackCount() {
 
 getSpeed() {
     speed=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
-            \"speed\"] }" | socat - $SOCKET)
-    speed=$(printf '%s\n' $speed | cut -d\" -f 4 | cut -d. -f 1)
+            \"speed\"] }" | $SOCKETCOMMAND 2> /dev/null)
+    speed=$(printf '%s\n' $speed | cut -d\" -f 4)
+    speed=$(printf '%0.2f\n' "$speed")
 
     printf "$speed"
 }
 
 getMuteStatus() {
     muted=$(printf '%s\n' "{ \"command\": [\"get_property\", \
-        \"mute\" ] }" | socat - $SOCKET 2> /dev/null)
+        \"mute\" ] }" | $SOCKETCOMMAND 2> /dev/null)
     muted=$(printf '%s\n' "$muted" | cut -d: -f 2 | cut -d, -f 1)
 
     printf "$muted"
@@ -124,7 +124,7 @@ getMuteStatus() {
 
 getPauseStatus() {
     status=$(printf '%s\n' "{ \"command\": [\"get_property\", \"pause\" ] }" | \
-        socat - $SOCKET 2> /dev/null)
+        $SOCKETCOMMAND 2> /dev/null)
     status=$(printf '%s\n' "$status" | cut -d: -f 2 | cut -d, -f 1)
 
     test $status = "true" && status="paused" || status="playing"
@@ -134,7 +134,7 @@ getPauseStatus() {
 
 getLoopFileStatus() {
     loopFile=$(printf '%s\n' "{ \"command\": [\"get_property\", \
-        \"loop-file\" ] }" | socat - $SOCKET 2> /dev/null)
+        \"loop-file\" ] }" | $SOCKETCOMMAND 2> /dev/null)
     loopFile=$(printf '%s\n' "$loopFile" | cut -d: -f 2 | cut -d, -f 1 | sed s/\"//g)
 
     printf "$loopFile"
@@ -142,7 +142,7 @@ getLoopFileStatus() {
 
 getLoopPlaylistStatus() {
     loopPlaylist=$(printf '%s\n' "{ \"command\": [\"get_property\", \
-        \"loop\" ] }" | socat - $SOCKET 2> /dev/null)
+        \"loop\" ] }" | $SOCKETCOMMAND 2> /dev/null)
     loopPlaylist=$(printf '%s\n' "$loopPlaylist" | cut -d: -f 2 | cut -d, -f 1 | sed s/\"//g)
 
     printf "$loopPlaylist"
@@ -159,7 +159,7 @@ setTimeRelative() {
     time=$((time + $1))
 
     printf '%s\n' "{ \"command\": [\"set_property\", \
-        \"playback-time\", $time ] }" | socat - $SOCKET > /dev/null
+        \"playback-time\", $time ] }" | $SOCKETCOMMAND > /dev/null
 }
 
 setTimeAbsolute() {
@@ -169,7 +169,7 @@ setTimeAbsolute() {
     time=$1
 
     printf '%s\n' "{ \"command\": [\"set_property\", \
-        \"playback-time\", $time ] }" | socat - $SOCKET > /dev/null
+        \"playback-time\", $time ] }" | $SOCKETCOMMAND > /dev/null
 }
 
 setVolumeRelative() {
@@ -185,7 +185,7 @@ setVolumeRelative() {
         { printf '%s\n' "Volume cannot be set great than 130%" >&2; exit 1; }
 
     printf '%s\n' "{ \"command\": [\"set_property\", \
-        \"volume\", $volume ] }" | socat - $SOCKET > /dev/null
+        \"volume\", $volume ] }" | $SOCKETCOMMAND > /dev/null
 }
 
 setVolumeAbsolute() {
@@ -200,7 +200,7 @@ setVolumeAbsolute() {
         { printf '%s\n' "Volume cannot be set great than 130%" >&2; exit 1; }
 
     printf '%s\n' "{ \"command\": [\"set_property\", \
-        \"volume\", $volume ] }" | socat - $SOCKET > /dev/null
+        \"volume\", $volume ] }" | $SOCKETCOMMAND > /dev/null
 }
 
 setTrackRelative() {
@@ -217,7 +217,7 @@ setTrackRelative() {
         $PROGPATH -k -S $SOCKET
 
     printf '%s\n' "{ \"command\": [\"set_property\", \
-        \"playlist-pos\", $currentTrack ] }" | socat - $SOCKET > /dev/null
+        \"playlist-pos\", $currentTrack ] }" | $SOCKETCOMMAND > /dev/null
 
 }
 
@@ -236,26 +236,31 @@ setTrackAbsolute() {
         }
 
     printf '%s\n' "{ \"command\": [\"set_property\", \
-        \"playlist-pos\", $currentTrack ] }" | socat - $SOCKET > /dev/null
+        \"playlist-pos\", $currentTrack ] }" | $SOCKETCOMMAND > /dev/null
 }
 
 setSpeedRelative() {
     speed=$(getSpeed)
-    echo $speed
 
-    speed=$(printf "$speed+$1\n" | bc)
-    echo $speed
+    testDecimal=$(echo "$1" | bc)    
+    test $testDecimal -eq 0 2> /dev/null && \
+        { printf '%s\n' "$1 is not a number."; exit 1; }
+
+    speed=$(echo "$speed+$1\n" | bc)
 
     printf '%s\n' "{ \"command\": [\"set_property_string\", \"speed\", \
-        \"$speed\" ] }" | socat - $SOCKET > /dev/null
+        \"$speed\" ] }" | $SOCKETCOMMAND > /dev/null
 }
 
 setSpeedAbsolute() {
     speed=$1
-    echo $speed
+
+    testDecimal=$(echo "$1\n" | bc)    
+    test $testDecimal -eq 0 2> /dev/null && \
+        { printf '%s\n' "$1 is not a number."; exit 1; }
 
     printf '%s\n' "{ \"command\": [\"set_property_string\", \"speed\", \
-        \"$speed\" ] }" | socat - $SOCKET > /dev/null
+        \"$speed\" ] }" | $SOCKETCOMMAND > /dev/null
 }
 
 togglePause() {
@@ -263,7 +268,7 @@ togglePause() {
     test $status = "playing" && status="true" || status="false"
 
     printf '%s\n' "{ \"command\": [\"set_property\", \"pause\", $status ] }" | \
-        socat - $SOCKET > /dev/null
+        $SOCKETCOMMAND > /dev/null
 }
 
 toggleMute() {
@@ -272,7 +277,7 @@ toggleMute() {
     test $muted = "false" && muted="true" || muted="false"
 
     printf '%s\n' "{ \"command\": [\"set_property\", \"mute\", $muted ] }" | \
-        socat - $SOCKET > /dev/null
+        $SOCKETCOMMAND > /dev/null
 }
 
 toggleLoopFile() {
@@ -281,7 +286,7 @@ toggleLoopFile() {
     test $loopFile = "no" && loopFile="inf" || loopFile="no"
 
     printf '%s\n' "{ \"command\": [\"set_property_string\", \
-        \"loop-file\", \"$loopFile\" ] }" | socat - $SOCKET > /dev/null
+        \"loop-file\", \"$loopFile\" ] }" | $SOCKETCOMMAND > /dev/null
 }
 
 toggleLoopPlaylist() {
@@ -290,7 +295,7 @@ toggleLoopPlaylist() {
     test $loopPlaylist = "no" && loopPlaylist="inf" || loopPlaylist="no"
 
     printf '%s\n' "{ \"command\": [\"set_property_string\", \
-        \"loop\", \"$loopPlaylist\" ] }" | socat - $SOCKET > /dev/null
+        \"loop\", \"$loopPlaylist\" ] }" | $SOCKETCOMMAND > /dev/null
 }
 
     # Time Functions
@@ -325,9 +330,11 @@ formatTime() {
 ###############################################################################
 
 validateSocat() {
-    type socat 2> /dev/null > /dev/null
-    test $? -gt 0 && \
-        { printf '%s\n' "Socat is not installed on your \$PATH."; exit 4; }
+    type socat 2>&1 > /dev/null && \
+        { SOCKETCOMMAND="socat - $SOCKET"; return; }
+
+    printf '%s\n' "socat is not installed on your \$PATH."
+    exit 4
 }
 
 validateSocket() {
@@ -336,9 +343,8 @@ validateSocket() {
         { printf '%s\n' "$SOCKET does not exist." >&2; exit 2; }
 
     # test if the socket is open and currently being used.
-    printf '%s\n' "{ \"command\": [\"get_property\", \"pause\" ] }" | \
-        socat - $SOCKET 2> /dev/null > /dev/null
-    test $? -ne 0 && \
+    printf '%s\n' "{ \"command\": [\"get_property\", \
+        \"pause\" ] }" | $SOCKETCOMMAND 2>&1 > /dev/null || \
         { printf '%s\n' "$SOCKET is not currently open." >&2; exit 3; }
 }
 
@@ -377,7 +383,7 @@ main() {
 
     # get the user defined socket before anything else
     for arg in "$@"; do
-        test $SOCKETFLAG && { SOCKET=$arg; SOCKETFLAG=false; }
+        test "$SOCKETFLAG" = "true" && { SOCKET=$arg; SOCKETFLAG=false; }
 
         case $arg in
             -S) SOCKETFLAG=true ;;
@@ -400,14 +406,14 @@ main() {
             m)  toggleMute                          ;;
             l)  toggleLoopFile                      ;;
             L)  toggleLoopPlaylist                  ;;
-            T)  elaspedTime; STATUSFLAG=false       ;;
-            k)  killProcess; STATUSFLAG=false       ;;
+            T)  elaspedTime; exit 0                 ;;
+            k)  killProcess; exit 0                 ;;
             h)  usage 0                             ;;
             \?) usage 1                             ;;
         esac
     done
 
-    test $STATUSFLAG = "true" && printStatus
+    printStatus
 }
 
 main $ARGS
