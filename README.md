@@ -21,7 +21,7 @@ Copy mpvc to somewhere on your $PATH.
 Usage
 -----
 
-`
+```
 Usage: mpvc ARGUMENTS
     -S : Set socket location [default: /tmp/mpvsocket].
     -s : Increase/decrease time in seconds.
@@ -46,7 +46,7 @@ Exit codes:
      2 : Socket does not exist.
      3 : Socket is not currently open.
      4 : Socat is not installed.
-`
+```
 
 mpv must also be started with the following argument:
 
