@@ -56,8 +56,8 @@ I personally alias that in my shell's configuration file like so:
 
 `alias mpv --input-unix-socket=/tmp/mpvsocket`
 
-While /tmp/mpvsocket is the default location, but any mpv socket can be specified
-with the use of the -S flag when running mpvc.
+While /tmp/mpvsocket is the default location, any mpv socket can be specified
+with the use of the -S flag when calling mpvc.
 
 TODO
 ----
