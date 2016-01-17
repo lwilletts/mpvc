@@ -55,6 +55,15 @@ getMediaTitle() {
     printf "$mediaTitle"
 }
 
+getMediaArtist() {
+    mediaTitle=$(printf '%s\n' "{ \"command\": [\"get_property\", \
+        \"metadata/by-key/artist\" ] }" | $SOCKETCOMMAND)
+    mediaTitle=$(printf '%s\n' "$mediaTitle" | cut -d: -f 2 | \
+        cut -d, -f 1 | sed s/\"//g)
+
+    printf "$mediaTitle"
+}
+
 getPlaybackTime() {
     time=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
         \"playback-time\"] }" | $SOCKETCOMMAND 2> /dev/null)
@@ -207,18 +216,21 @@ setTrackRelative() {
     test $1 -ne 0 2> /dev/null
     test $? -ne 2 || { printf '%s\n' "$1 is not an integer." >&2; exit 1; }
 
+    seconds=$(getPlaybackTime)
     currentTrack=$(getCurrentTrack)
-    currentTrack=$((currentTrack + $1))
+    desiredTrack=$((currentTrack + $1))
     trackCount=$(getTrackCount)
 
-    test $currentTrack -lt 0 && \
-        currentTrack=0
-    test $currentTrack -ge $trackCount && \
-        $PROGPATH -k -S $SOCKET
+    test $desiredTrack -lt 0 && \
+        desiredTrack=0
+    test $desiredTrack -ge $trackCount && \
+        killProcess
 
-    printf '%s\n' "{ \"command\": [\"set_property\", \
-        \"playlist-pos\", $currentTrack ] }" | $SOCKETCOMMAND > /dev/null
-
+    test "$desiredTrack" -lt "$currentTrack" && \
+        test "$seconds" -ge 10 && \
+        setTimeAbsolute 0 || \
+        printf '%s\n' "{ \"command\": [\"set_property\", \
+        \"playlist-pos\", $desiredTrack ] }" | $SOCKETCOMMAND > /dev/null
 }
 
 setTrackAbsolute() {
@@ -261,6 +273,11 @@ setSpeedAbsolute() {
 
     printf '%s\n' "{ \"command\": [\"set_property_string\", \"speed\", \
         \"$speed\" ] }" | $SOCKETCOMMAND > /dev/null
+}
+
+alwaysPlay() {
+    printf '%s\n' "{ \"command\": [\"set_property\", \"pause\", false ] }" | \
+        $SOCKETCOMMAND > /dev/null
 }
 
 togglePause() {
@@ -344,20 +361,20 @@ validateSocket() {
 
     # test if the socket is open and currently being used.
     printf '%s\n' "{ \"command\": [\"get_property\", \
-        \"pause\" ] }" | $SOCKETCOMMAND 2>&1 > /dev/null || \
+        \"pause\" ] }" | $SOCKETCOMMAND 2> /dev/null > /dev/null || \
         { printf '%s\n' "$SOCKET is not currently open." >&2; exit 3; }
 }
 
 # kill process by socket
 killProcess() {
-    printf '%s\n' "Killing mpv process using socket $SOCKET."
-    kill -9 $(ps a | grep -v "grep" | grep "mpv" | \
-        grep "$SOCKET" | awk '{ printf "%s\n", $1 }' )
+    printf '%s\n' "Killing mpv process on socket $SOCKET."
+    pkill -f "$SOCKET"
 }
 
 # print status of mpv instance
 printStatus() {
     mediaTitle=$(getMediaTitle)
+    mediaArtist=$(getMediaArtist)
     status=$(getPauseStatus)
     currentTrack=$(($(getCurrentTrack) + 1))
     trackCount=$(getTrackCount)
@@ -366,13 +383,15 @@ printStatus() {
     percentage=$(getPercentage)
     volume=$(getVolume)
     muted=$(getMuteStatus)
-    test $muted = "true" && muted="yes" || muted="no"
     speed=$(getSpeed)
     loop=$(getLoopPlaylistStatus)
     loopFile=$(getLoopFileStatus)
 
+    test $muted = "true" && muted="yes" || muted="no"
+    test -z "$mediaArtist" && printf '%s\n' "$mediaTitle" || \
+        printf '%s\n' "$mediaArtist - $mediaTitle"
+    
     cat << EOF
-$mediaTitle
 [$status] #$currentTrack/$trackCount $timestamp/$duration ($percentage%)
 speed: ${speed}x volume: $volume% muted: $muted repeat: $loop single: $loopFile
 EOF
@@ -392,16 +411,17 @@ main() {
 
     validateSocket
 
-    while getopts "S:s:t:v:V:f:F:z:Z:pmlLiTkh" opt; do
+    while getopts "S:s:t:v:V:f:F:z:Z:PpmlLiTkh" opt; do
         case $opt in
             s)  setTimeRelative $OPTARG             ;;
             t)  setTimeAbsolute $OPTARG             ;;
             v)  setVolumeRelative $OPTARG           ;;
             V)  setVolumeAbsolute $OPTARG           ;;
-            f)  setTrackRelative $OPTARG; sleep 0.5 ;;
-            F)  setTrackAbsolute $OPTARG; sleep 0.5 ;;
+            f)  setTrackRelative $OPTARG; sleep 0.1 ;;
+            F)  setTrackAbsolute $OPTARG; sleep 0.1 ;;
             z)  setSpeedRelative $OPTARG            ;;
             Z)  setSpeedAbsolute $OPTARG            ;;
+            P)  alwaysPlay                          ;;
             p)  togglePause                         ;;
             m)  toggleMute                          ;;
             l)  toggleLoopFile                      ;;
