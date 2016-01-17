@@ -9,7 +9,6 @@ Dependencies
 ------------
 
 - bc
-- awk (sadly)
 - socat
 - A sane unix environment
 
