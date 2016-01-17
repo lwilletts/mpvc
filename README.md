@@ -70,7 +70,7 @@ mpvt * &!
 ```
 
 I recommend looking at something like [sxhkd](https://github.com/baskerville/sxhkd)
-bind mpvc calls to hotkeys.
+to bind mpvc calls to hotkeys.
 
 TODO
 ----
