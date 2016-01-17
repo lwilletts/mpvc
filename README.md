@@ -10,7 +10,7 @@ Dependencies
 
 - bc
 - awk (sadly)
-- socat 
+- socat
 - A sane unix environment
 
 Install
@@ -48,24 +48,37 @@ Exit codes:
      4 : Socat is not installed.
 ```
 
+While /tmp/mpvsocket is the default socket location, any mpv socket can be
+specified with the use of the -S flag when calling mpvc.
+
 mpv must also be started with the following argument:
 
-`mpv --input-unix-socket=/tmp/mpvsocket`
+```bash
+mpv --input-unix-socket=/tmp/mpvsocket`
+```
 
 I personally alias that in my shell's configuration file like so:
 
-`alias mpv --input-unix-socket=/tmp/mpvsocket`
+```bash
+alias mpvt --input-unix-socket=/tmp/mpvsocket --really-quiet
+```
 
-While /tmp/mpvsocket is the default location, any mpv socket can be specified
-with the use of the -S flag when calling mpvc.
+When I want to play media in a directory I then just use:
+
+```bash
+mpvt * &!
+```
+
+I recommend looking at something like [sxhkd](https://github.com/baskerville/sxhkd)
+bind mpvc calls to hotkeys.
 
 TODO
 ----
 
-- Implement format options similarly to mpc.
-- Implement long options in the style of mpc.
-- Implement using GNU netcat as an alternative to socat.
-- Perhaps offer a Makefile to install the script to the user's $PATH.
+- [ ] Implement format options similarly to mpc.
+- [ ] Implement long options in the style of mpc.
+- [ ] Implement using GNU netcat as an alternative to socat.
+- [ ] Offer a Makefile to install the script to the user's $PATH.
 
 Shameless Plug
 --------------
