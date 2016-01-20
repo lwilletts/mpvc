@@ -5,16 +5,13 @@
 # depends on: socat bc and a sane unix environment
 # https://mpv.io/manual/master/#json-ipc
 
-readonly PROGNAME=$(basename $0)
-readonly PROGDIR=$(readlink -m $(dirname $0))
-readonly PROGPATH=${PROGPATH:-$PROGDIR/$PROGNAME}
 ARGS="$@"
 
 SOCKET=${SOCKET:-/tmp/mpvsocket}
 
 usage() {
     cat << EOF
-Usage: $PROGNAME ARGUMENTS
+Usage: $(basename $0) ARGUMENTS
     -S : Set socket location [default: $SOCKET].
     -s : Increase/decrease time in seconds.
     -t : Set absolute time in seconds.
@@ -254,7 +251,7 @@ setTrackAbsolute() {
 setSpeedRelative() {
     speed=$(getSpeed)
 
-    testDecimal=$(echo "$1" | bc)    
+    testDecimal=$(echo "$1" | bc)
     test $testDecimal -eq 0 2> /dev/null && \
         { printf '%s\n' "$1 is not a number."; exit 1; }
 
@@ -267,7 +264,7 @@ setSpeedRelative() {
 setSpeedAbsolute() {
     speed=$1
 
-    testDecimal=$(echo "$1\n" | bc)    
+    testDecimal=$(echo "$1\n" | bc)
     test $testDecimal -eq 0 2> /dev/null && \
         { printf '%s\n' "$1 is not a number."; exit 1; }
 
@@ -390,7 +387,7 @@ printStatus() {
     test $muted = "true" && muted="yes" || muted="no"
     test -z "$mediaArtist" && printf '%s\n' "$mediaTitle" || \
         printf '%s\n' "$mediaArtist - $mediaTitle"
-    
+
     cat << EOF
 [$status] #$currentTrack/$trackCount $timestamp/$duration ($percentage%)
 speed: ${speed}x volume: $volume% muted: $muted repeat: $loop single: $loopFile
@@ -405,13 +402,14 @@ main() {
         test "$SOCKETFLAG" = "true" && { SOCKET=$arg; SOCKETFLAG=false; }
 
         case $arg in
+            -q) QUIETFLAG=true  ;;
             -S) SOCKETFLAG=true ;;
         esac
     done
 
     validateSocket
 
-    while getopts "S:s:t:v:V:f:F:z:Z:PpmlLiTkh" opt; do
+    while getopts "qS:s:t:v:V:f:F:z:Z:PpmlLiTkh" opt; do
         case $opt in
             s)  setTimeRelative $OPTARG             ;;
             t)  setTimeAbsolute $OPTARG             ;;
@@ -426,14 +424,14 @@ main() {
             m)  toggleMute                          ;;
             l)  toggleLoopFile                      ;;
             L)  toggleLoopPlaylist                  ;;
-            T)  elaspedTime; exit 0                 ;;
-            k)  killProcess; exit 0                 ;;
+            T)  elaspedTime; QUIETFLAG=true         ;;
+            k)  killProcess; QUIETFLAG=true         ;;
             h)  usage 0                             ;;
             \?) usage 1                             ;;
         esac
     done
 
-    printStatus
+    test "$QUIETFLAG" = "true" || printStatus
 }
 
 main $ARGS
