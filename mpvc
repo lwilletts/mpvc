@@ -43,22 +43,33 @@ EOF
     # Retrieval Functions
 ###############################################################################
 
+getMediaFilename() {
+    mediaFilename=$(printf '%s\n' "{ \"command\": [\"get_property\", \
+        \"media-title\" ] }" | $SOCKETCOMMAND 2> /dev/null)
+    mediaFilename=$(printf '%s\n' "$mediaFilename" | cut -d: -f 2 | \
+        cut -d, -f 1 | sed s/\"//g)
+
+    printf "$mediaFilename"
+}
+
 getMediaTitle() {
     mediaTitle=$(printf '%s\n' "{ \"command\": [\"get_property\", \
-        \"media-title\" ] }" | $SOCKETCOMMAND 2> /dev/null)
+        \"metadata/by-key/title\" ] }" | $SOCKETCOMMAND 2> /dev/null)
+    errorCheck=$(printf '%s\n' "$mediaTitle" | cut -d\" -f 2)
     mediaTitle=$(printf '%s\n' "$mediaTitle" | cut -d: -f 2 | \
         cut -d, -f 1 | sed s/\"//g)
 
-    printf "$mediaTitle"
+    test "$errorCheck" = "error" && printf "N/A" || printf "$mediaTitle"
 }
 
 getMediaArtist() {
-    mediaTitle=$(printf '%s\n' "{ \"command\": [\"get_property\", \
+    mediaArtist=$(printf '%s\n' "{ \"command\": [\"get_property\", \
         \"metadata/by-key/artist\" ] }" | $SOCKETCOMMAND)
-    mediaTitle=$(printf '%s\n' "$mediaTitle" | cut -d: -f 2 | \
+    errorCheck=$(printf '%s\n' "$mediaArtist" | cut -d\" -f 2)
+    mediaArtist=$(printf '%s\n' "$mediaArtist" | cut -d: -f 2 | \
         cut -d, -f 1 | sed s/\"//g)
 
-    printf "$mediaTitle"
+    test "$errorCheck" = "error" && printf "N/A" || printf "$mediaArtist"
 }
 
 getPlaybackTime() {
@@ -92,7 +103,7 @@ getVolume() {
         \"volume\"] }" | $SOCKETCOMMAND 2> /dev/null)
     volume=$(printf '%s\n' $volume | cut -d\" -f 4 | cut -d. -f 1)
 
-    printf "$volume"
+    test "$volume" = "error" && printf "N/A" || printf "$volume"
 }
 
 getCurrentTrack() {
@@ -159,7 +170,10 @@ getLoopPlaylistStatus() {
 
 setTimeRelative() {
     test $1 -ne 0 2> /dev/null
-    test $? -ne 2 || { printf '%s\n' "$1 is not an integer." >&2; exit 1; }
+    test $? -ne 2 || { 
+         printf '%s\n' "$1 is not an integer." >&2
+         exit 1
+    }
 
     time=$(getPlaybackTime)
     time=$((time + $1))
@@ -170,7 +184,10 @@ setTimeRelative() {
 
 setTimeAbsolute() {
     test $1 -ne 0 2> /dev/null
-    test $? -ne 2 || { printf '%s\n' "$1 is not an integer." >&2; exit 1; }
+    test $? -ne 2 || { 
+         printf '%s\n' "$1 is not an integer." >&2
+         exit 1
+    }
 
     time=$1
 
@@ -180,15 +197,28 @@ setTimeAbsolute() {
 
 setVolumeRelative() {
     test $1 -ne 0 2> /dev/null
-    test $? -ne 2 || { printf '%s\n' "$1 is not an integer." >&2; exit 1; }
+    test $? -ne 2 || { 
+         printf '%s\n' "$1 is not an integer." >&2
+         exit 1
+    }
 
     volume=$(getVolume)
+
+    test "$volume" = "error" && {
+        printf '%s\n' "Currently playing media does not have sound." >&2
+        exit 1
+    }
+
     volume=$((volume + $1))
 
-    test $volume -lt 0 && \
-        { printf '%s\n' "Volume cannot be set lower than 0%" >&2; exit 1; }
-    test $volume -gt 130 && \
-        { printf '%s\n' "Volume cannot be set great than 130%" >&2; exit 1; }
+    test $volume -lt 0 && { 
+         printf '%s\n' "Volume cannot be set lower than 0%" >&2
+         exit 1
+    }
+    test $volume -gt 130 && { 
+        printf '%s\n' "Volume cannot be set great than 130%" >&2
+        exit 1
+    }
 
     printf '%s\n' "{ \"command\": [\"set_property\", \
         \"volume\", $volume ] }" | $SOCKETCOMMAND > /dev/null
@@ -196,14 +226,29 @@ setVolumeRelative() {
 
 setVolumeAbsolute() {
     test $1 -ne 0 2> /dev/null
-    test $? -ne 2 || { printf '%s\n' "$1 is not an integer." >&2; exit 1; }
+    test $? -ne 2 || { 
+         printf '%s\n' "$1 is not an integer." >&2
+         exit 1
+    }
+
+    # test if media has sound
+    volume=$(getVolume)
+
+    test "$volume" = "error" && {
+        printf '%s\n' "Currently playing media does not have sound." >&2
+        exit 1
+    }
 
     volume=$1
 
-    test $volume -lt 0 && \
-        { printf '%s\n' "Volume cannot be set lower than 0%" >&2; exit 1; }
-    test $volume -gt 130 && \
-        { printf '%s\n' "Volume cannot be set great than 130%" >&2; exit 1; }
+    test $volume -lt 0 && { 
+         printf '%s\n' "Volume cannot be set lower than 0%" >&2
+         exit 1
+    }
+    test $volume -gt 130 && { 
+        printf '%s\n' "Volume cannot be set great than 130%" >&2
+        exit 1
+    }
 
     printf '%s\n' "{ \"command\": [\"set_property\", \
         \"volume\", $volume ] }" | $SOCKETCOMMAND > /dev/null
@@ -211,7 +256,10 @@ setVolumeAbsolute() {
 
 setTrackRelative() {
     test $1 -ne 0 2> /dev/null
-    test $? -ne 2 || { printf '%s\n' "$1 is not an integer." >&2; exit 1; }
+    test $? -ne 2 || { 
+         printf '%s\n' "$1 is not an integer." >&2
+         exit 1
+    }
 
     seconds=$(getPlaybackTime)
     currentTrack=$(getCurrentTrack)
@@ -232,7 +280,10 @@ setTrackRelative() {
 
 setTrackAbsolute() {
     test $1 -ne 0 2> /dev/null
-    test $? -ne 2 || { printf '%s\n' "$1 is not an integer."; exit 1; }
+    test $? -ne 2 || { 
+         printf '%s\n' "$1 is not an integer." >&2
+         exit 1
+    }
 
     currentTrack=$1
     currentTrack=$((currentTrack - 1))
@@ -252,8 +303,10 @@ setSpeedRelative() {
     speed=$(getSpeed)
 
     testDecimal=$(echo "$1" | bc)
-    test $testDecimal -eq 0 2> /dev/null && \
-        { printf '%s\n' "$1 is not a number."; exit 1; }
+    test $testDecimal -eq 0 2> /dev/null && { 
+        printf '%s\n' "$1 is not a number."
+        exit 1
+    }
 
     speed=$(echo "$speed+$1\n" | bc)
 
@@ -265,8 +318,10 @@ setSpeedAbsolute() {
     speed=$1
 
     testDecimal=$(echo "$1\n" | bc)
-    test $testDecimal -eq 0 2> /dev/null && \
-        { printf '%s\n' "$1 is not a number."; exit 1; }
+    test $testDecimal -eq 0 2> /dev/null && { 
+        printf '%s\n' "$1 is not a number."
+        exit 1
+    }
 
     printf '%s\n' "{ \"command\": [\"set_property_string\", \"speed\", \
         \"$speed\" ] }" | $SOCKETCOMMAND > /dev/null
@@ -344,8 +399,10 @@ formatTime() {
 ###############################################################################
 
 validateSocat() {
-    type socat 2>&1 > /dev/null && \
-        { SOCKETCOMMAND="socat - $SOCKET"; return; }
+    type socat 2>&1 > /dev/null && { 
+        SOCKETCOMMAND="socat - $SOCKET"
+        return
+    }
 
     printf '%s\n' "socat is not installed on your \$PATH."
     exit 4
@@ -353,13 +410,17 @@ validateSocat() {
 
 validateSocket() {
     # test if socket exists
-    test -S $SOCKET || \
-        { printf '%s\n' "$SOCKET does not exist." >&2; exit 2; }
+    test -S $SOCKET || { 
+        printf '%s\n' "$SOCKET does not exist." >&2
+        exit 2
+    }
 
     # test if the socket is open and currently being used.
     printf '%s\n' "{ \"command\": [\"get_property\", \
-        \"pause\" ] }" | $SOCKETCOMMAND 2> /dev/null > /dev/null || \
-        { printf '%s\n' "$SOCKET is not currently open." >&2; exit 3; }
+    \"pause\" ] }" | $SOCKETCOMMAND 2> /dev/null > /dev/null || { 
+        printf '%s\n' "$SOCKET is not currently open." >&2
+        exit 3
+    }
 }
 
 # kill process by socket
@@ -370,8 +431,9 @@ killProcess() {
 
 # print status of mpv instance
 printStatus() {
-    mediaTitle=$(getMediaTitle)
+    mediaFilename=$(getMediaFilename)
     mediaArtist=$(getMediaArtist)
+    mediaTitle=$(getMediaTitle)
     status=$(getPauseStatus)
     currentTrack=$(($(getCurrentTrack) + 1))
     trackCount=$(getTrackCount)
@@ -384,13 +446,22 @@ printStatus() {
     loop=$(getLoopPlaylistStatus)
     loopFile=$(getLoopFileStatus)
 
-    test $muted = "true" && muted="yes" || muted="no"
-    test -z "$mediaArtist" && printf '%s\n' "$mediaTitle" || \
+    test "$volume" = "N/A" && {
+        muted="N/A"
+    } || {
+        volume="$volume%"
+        test "$muted" = "true" && muted="yes" || muted="no"
+    }
+
+    test "$mediaTitle" = "N/A" && { 
+        printf '%s\n' "$mediaFilename" 
+    } || {
         printf '%s\n' "$mediaArtist - $mediaTitle"
+    }
 
     cat << EOF
 [$status] #$currentTrack/$trackCount $timestamp/$duration ($percentage%)
-speed: ${speed}x volume: $volume% muted: $muted repeat: $loop single: $loopFile
+speed: ${speed}x volume: $volume muted: $muted repeat: $loop single: $loopFile
 EOF
 }
 
