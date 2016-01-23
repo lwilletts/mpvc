@@ -21,30 +21,51 @@ Usage
 -----
 
 ```
-Usage: mpvc ARGUMENTS
+Usage: mpvc [-S socket] [-k] [-f "format string"] [-qstvVrRzZpmlLh]
     -S : Set socket location [default: /tmp/mpvsocket].
+    -q : Produce no output.
+    -f : Enter a format string (see Formatting).
     -s : Increase/decrease time in seconds.
     -t : Set absolute time in seconds.
-    -v : Set absolute volume.
+    -v : Increase/decrease volume relatively to the current volume.
     -V : Set absolute volume.
-    -f : Go forwards/backwards through the playlist queue.
-    -F : Jump to playlist item number.
-    -z : Increase/decrease speed.
+    -r : Go forwards/backwards through the playlist queue.
+    -R : Jump to playlist item number.
+    -z : Increase/decrease speed relatively to the current speed.
     -Z : Set absolute speed.
     -p : Toggle play/paused.
     -m : Toggle mute/unmuted.
     -l : Loop currently playing file.
     -L : Loop currently playing playlist.
-    -T : Print Elasped Time in HH:MM:SS format to stdout.
     -k : Kill the current mpv process controlling the named socket.
     -h : Print this help.
+
+Formatting:
+    mpvc will interpret the following delimiters if they are found:
+        %filename%
+        %year%
+        %genre%
+        %title%
+        %album%
+        %artist%
+        %albumartist%
+        %time%
+        %length%
+        %percentage%
+        %status%
+        %position%
+        %playlist%
+        %speed%
+        %volume%
+        %muted%
+        %repeat%
+        %single%
 
 Exit codes:
      0 : Program ran succesfully.
      1 : Input Argument error.
      2 : Socket does not exist.
      3 : Socket is not currently open.
-     4 : Socat is not installed.
 ```
 
 While /tmp/mpvsocket is the default socket location, any mpv socket can be
@@ -74,10 +95,12 @@ to bind mpvc calls to hotkeys.
 TODO
 ----
 
-- [ ] Implement format options similarly to mpc.
-- [ ] Implement long options in the style of mpc.
-- [ ] Implement using GNU netcat as an alternative to socat.
+- [x] Implement format options similarly to mpc.
+- [ ] Offer option to show all tracks in current queue.
+- [ ] Offer option to add tracks to the end of the current queue.
 - [ ] Offer a Makefile to install the script to the user's $PATH.
+- [ ] Implement using GNU netcat as an alternative to socat.
+- [ ] Implement long options in the style of mpc.
 
 Shameless Plug
 --------------
