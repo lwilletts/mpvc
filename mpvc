@@ -11,30 +11,51 @@ SOCKET=${SOCKET:-/tmp/mpvsocket}
 
 usage() {
     cat << EOF
-Usage: $(basename $0) ARGUMENTS
+Usage: $(basename $0) [-S socket] [-k] [-f "format string"] [-qstvVrRzZpmlLh]
     -S : Set socket location [default: $SOCKET].
+    -q : Produce no output.
+    -f : Enter a format string (see Formatting).
     -s : Increase/decrease time in seconds.
     -t : Set absolute time in seconds.
-    -v : Set absolute volume.
+    -v : Increase/decrease volume relatively to the current volume.
     -V : Set absolute volume.
-    -f : Go forwards/backwards through the playlist queue.
-    -F : Jump to playlist item number.
-    -z : Increase/decrease speed.
+    -r : Go forwards/backwards through the playlist queue.
+    -R : Jump to playlist item number.
+    -z : Increase/decrease speed relatively to the current speed.
     -Z : Set absolute speed.
     -p : Toggle play/paused.
     -m : Toggle mute/unmuted.
     -l : Loop currently playing file.
     -L : Loop currently playing playlist.
-    -T : Print Elasped Time in HH:MM:SS format to stdout.
     -k : Kill the current mpv process controlling the named socket.
     -h : Print this help.
+
+Formatting:
+    $(basename $0) will interpret the following delimiters if they are found:
+        %filename%
+        %year%
+        %genre%
+        %title%
+        %album%
+        %artist%
+        %albumartist%
+        %time%
+        %length%
+        %percentage%
+        %status%
+        %position%
+        %playlist%
+        %speed%
+        %volume%
+        %muted%
+        %repeat%
+        %single%
 
 Exit codes:
      0 : Program ran succesfully.
      1 : Input Argument error.
      2 : Socket does not exist.
      3 : Socket is not currently open.
-     4 : Socat is not installed.
 EOF
 
     test -z $1 && exit 0 || exit $1
@@ -52,24 +73,17 @@ getMediaFilename() {
     printf "$mediaFilename"
 }
 
-getMediaTitle() {
-    mediaTitle=$(printf '%s\n' "{ \"command\": [\"get_property\", \
-        \"metadata/by-key/title\" ] }" | $SOCKETCOMMAND 2> /dev/null)
-    errorCheck=$(printf '%s\n' "$mediaTitle" | cut -d\" -f 2)
-    mediaTitle=$(printf '%s\n' "$mediaTitle" | cut -d: -f 2 | \
+getMetadata() {
+    test -z $1 && return
+    property=$1
+
+    metadata=$(printf '%s\n' "{ \"command\": [\"get_property\", \
+        \"metadata/by-key/${property}\" ] }" | $SOCKETCOMMAND 2> /dev/null)
+    errorCheck=$(printf '%s\n' "$metadata" | cut -d\" -f 2)
+    metadata=$(printf '%s\n' "$metadata" | cut -d: -f 2 | \
         cut -d, -f 1 | sed s/\"//g)
 
-    test "$errorCheck" = "error" && printf "N/A" || printf "$mediaTitle"
-}
-
-getMediaArtist() {
-    mediaArtist=$(printf '%s\n' "{ \"command\": [\"get_property\", \
-        \"metadata/by-key/artist\" ] }" | $SOCKETCOMMAND)
-    errorCheck=$(printf '%s\n' "$mediaArtist" | cut -d\" -f 2)
-    mediaArtist=$(printf '%s\n' "$mediaArtist" | cut -d: -f 2 | \
-        cut -d, -f 1 | sed s/\"//g)
-
-    test "$errorCheck" = "error" && printf "N/A" || printf "$mediaArtist"
+    test "$errorCheck" = "error" && echo "N/A" || echo "$metadata"
 }
 
 getPlaybackTime() {
@@ -136,6 +150,7 @@ getMuteStatus() {
         \"mute\" ] }" | $SOCKETCOMMAND 2> /dev/null)
     muted=$(printf '%s\n' "$muted" | cut -d: -f 2 | cut -d, -f 1)
 
+    test "$muted" = "true" && muted="yes" || muted="no"
     printf "$muted"
 }
 
@@ -170,7 +185,7 @@ getLoopPlaylistStatus() {
 
 setTimeRelative() {
     test $1 -ne 0 2> /dev/null
-    test $? -ne 2 || { 
+    test $? -ne 2 || {
          printf '%s\n' "$1 is not an integer." >&2
          exit 1
     }
@@ -184,7 +199,7 @@ setTimeRelative() {
 
 setTimeAbsolute() {
     test $1 -ne 0 2> /dev/null
-    test $? -ne 2 || { 
+    test $? -ne 2 || {
          printf '%s\n' "$1 is not an integer." >&2
          exit 1
     }
@@ -197,7 +212,7 @@ setTimeAbsolute() {
 
 setVolumeRelative() {
     test $1 -ne 0 2> /dev/null
-    test $? -ne 2 || { 
+    test $? -ne 2 || {
          printf '%s\n' "$1 is not an integer." >&2
          exit 1
     }
@@ -211,11 +226,11 @@ setVolumeRelative() {
 
     volume=$((volume + $1))
 
-    test $volume -lt 0 && { 
+    test $volume -lt 0 && {
          printf '%s\n' "Volume cannot be set lower than 0%" >&2
          exit 1
     }
-    test $volume -gt 130 && { 
+    test $volume -gt 130 && {
         printf '%s\n' "Volume cannot be set great than 130%" >&2
         exit 1
     }
@@ -226,7 +241,7 @@ setVolumeRelative() {
 
 setVolumeAbsolute() {
     test $1 -ne 0 2> /dev/null
-    test $? -ne 2 || { 
+    test $? -ne 2 || {
          printf '%s\n' "$1 is not an integer." >&2
          exit 1
     }
@@ -241,11 +256,11 @@ setVolumeAbsolute() {
 
     volume=$1
 
-    test $volume -lt 0 && { 
+    test $volume -lt 0 && {
          printf '%s\n' "Volume cannot be set lower than 0%" >&2
          exit 1
     }
-    test $volume -gt 130 && { 
+    test $volume -gt 130 && {
         printf '%s\n' "Volume cannot be set great than 130%" >&2
         exit 1
     }
@@ -256,7 +271,7 @@ setVolumeAbsolute() {
 
 setTrackRelative() {
     test $1 -ne 0 2> /dev/null
-    test $? -ne 2 || { 
+    test $? -ne 2 || {
          printf '%s\n' "$1 is not an integer." >&2
          exit 1
     }
@@ -280,7 +295,7 @@ setTrackRelative() {
 
 setTrackAbsolute() {
     test $1 -ne 0 2> /dev/null
-    test $? -ne 2 || { 
+    test $? -ne 2 || {
          printf '%s\n' "$1 is not an integer." >&2
          exit 1
     }
@@ -303,7 +318,7 @@ setSpeedRelative() {
     speed=$(getSpeed)
 
     testDecimal=$(echo "$1" | bc)
-    test $testDecimal -eq 0 2> /dev/null && { 
+    test $testDecimal -eq 0 2> /dev/null && {
         printf '%s\n' "$1 is not a number."
         exit 1
     }
@@ -318,7 +333,7 @@ setSpeedAbsolute() {
     speed=$1
 
     testDecimal=$(echo "$1\n" | bc)
-    test $testDecimal -eq 0 2> /dev/null && { 
+    test $testDecimal -eq 0 2> /dev/null && {
         printf '%s\n' "$1 is not a number."
         exit 1
     }
@@ -399,7 +414,7 @@ formatTime() {
 ###############################################################################
 
 validateSocat() {
-    type socat 2>&1 > /dev/null && { 
+    type socat 2>&1 > /dev/null && {
         SOCKETCOMMAND="socat - $SOCKET"
         return
     }
@@ -410,14 +425,14 @@ validateSocat() {
 
 validateSocket() {
     # test if socket exists
-    test -S $SOCKET || { 
+    test -S $SOCKET || {
         printf '%s\n' "$SOCKET does not exist." >&2
         exit 2
     }
 
     # test if the socket is open and currently being used.
     printf '%s\n' "{ \"command\": [\"get_property\", \
-    \"pause\" ] }" | $SOCKETCOMMAND 2> /dev/null > /dev/null || { 
+    \"pause\" ] }" | $SOCKETCOMMAND 2> /dev/null > /dev/null || {
         printf '%s\n' "$SOCKET is not currently open." >&2
         exit 3
     }
@@ -429,40 +444,42 @@ killProcess() {
     pkill -f "$SOCKET"
 }
 
-# print status of mpv instance
+# formats and echos according to $FORMATSTRING
+formatPrint() {
+
+    # this is super hacky but works!
+    FORMATSTRING=$(echo $FORMATSTRING | sed "
+    s/%year%/$(getMetadata date)/;
+    s/%genre%/$(getMetadata genre)/;
+    s/%title%/$(getMetadata title)/;
+    s/%album%/$(getMetadata album)/;
+    s/%artist%/$(getMetadata artist)/;
+    s/%albumartist%/$(getMetadata album_artist)/;
+
+    s/%speed%/$(getSpeed)/;
+    s/%time%/$(elaspedTime)/;
+    s/%volume%/$(getVolume)/;
+    s/%length%/$(trackLength)/;
+    s/%muted%/$(getMuteStatus)/;
+    s/%status%/$(getPauseStatus)/;
+    s/%playlist%/$(getTrackCount)/;
+    s/%percentage%/$(getPercentage)/;
+    s/%single%/$(getLoopFileStatus)/;
+    s/%filename%/$(getMediaFilename)/;
+    s/%repeat%/$(getLoopPlaylistStatus)/;
+    s/%position%/$(($(getCurrentTrack) + 1))/;
+    ")
+
+    echo "${FORMATSTRING}"
+}
+
+# print default status of mpv instance
 printStatus() {
-    mediaFilename=$(getMediaFilename)
-    mediaArtist=$(getMediaArtist)
-    mediaTitle=$(getMediaTitle)
-    status=$(getPauseStatus)
-    currentTrack=$(($(getCurrentTrack) + 1))
-    trackCount=$(getTrackCount)
-    duration=$(trackLength)
-    timestamp=$(elaspedTime)
-    percentage=$(getPercentage)
-    volume=$(getVolume)
-    muted=$(getMuteStatus)
-    speed=$(getSpeed)
-    loop=$(getLoopPlaylistStatus)
-    loopFile=$(getLoopFileStatus)
-
-    test "$volume" = "N/A" && {
-        muted="N/A"
-    } || {
-        volume="$volume%"
-        test "$muted" = "true" && muted="yes" || muted="no"
-    }
-
-    test "$mediaTitle" = "N/A" && { 
-        printf '%s\n' "$mediaFilename" 
-    } || {
-        printf '%s\n' "$mediaArtist - $mediaTitle"
-    }
-
-    cat << EOF
-[$status] #$currentTrack/$trackCount $timestamp/$duration ($percentage%)
-speed: ${speed}x volume: $volume muted: $muted repeat: $loop single: $loopFile
-EOF
+    FORMATSTRING="
+%artist% - %title%
+\n[%status%] #%position%/%playlist% %time%/%length% (%percentage%%)
+\nspeed: %speed%x volume: %volume%% muted: %muted% repeat: %repeat% single: %single%"
+    formatPrint
 }
 
 main() {
@@ -470,24 +487,43 @@ main() {
 
     # get the user defined socket before anything else
     for arg in "$@"; do
-        test "$SOCKETFLAG" = "true" && { SOCKET=$arg; SOCKETFLAG=false; }
 
-        case $arg in
-            -q) QUIETFLAG=true  ;;
-            -S) SOCKETFLAG=true ;;
+        test "$SOCKETFLAG" = "true" && {
+            SOCKET=$arg
+            SOCKETFLAG=false
+        }
+
+        case "$arg" in
+            -q)
+                QUIETFLAG=true
+                test "$FORMATFLAG" = "true" && FORMATFLAG=false
+                ;;
+            -S)
+                SOCKETFLAG=true
+                test "$FORMATFLAG" = "true" && FORMATFLAG=false
+                ;;
+        esac
+
+        test "$FORMATFLAG" = "true" && {
+            FORMATSTRING="$FORMATSTRING $arg"
+        }
+
+        case "$arg" in
+            -f) FORMATFLAG=true ;;
+            -h) usage 0         ;;
         esac
     done
 
     validateSocket
 
-    while getopts "qS:s:t:v:V:f:F:z:Z:PpmlLiTkh" opt; do
-        case $opt in
+    while getopts "hqf:S:s:t:v:V:r:R:z:Z:PpmlLiTk" opt; do
+        case "$opt" in
             s)  setTimeRelative $OPTARG             ;;
             t)  setTimeAbsolute $OPTARG             ;;
             v)  setVolumeRelative $OPTARG           ;;
             V)  setVolumeAbsolute $OPTARG           ;;
-            f)  setTrackRelative $OPTARG; sleep 0.1 ;;
-            F)  setTrackAbsolute $OPTARG; sleep 0.1 ;;
+            r)  setTrackRelative $OPTARG; sleep 0.1 ;;
+            R)  setTrackAbsolute $OPTARG; sleep 0.1 ;;
             z)  setSpeedRelative $OPTARG            ;;
             Z)  setSpeedAbsolute $OPTARG            ;;
             P)  alwaysPlay                          ;;
@@ -495,9 +531,9 @@ main() {
             m)  toggleMute                          ;;
             l)  toggleLoopFile                      ;;
             L)  toggleLoopPlaylist                  ;;
+            f)  formatPrint; QUIETFLAG=true         ;;
             T)  elaspedTime; QUIETFLAG=true         ;;
             k)  killProcess; QUIETFLAG=true         ;;
-            h)  usage 0                             ;;
             \?) usage 1                             ;;
         esac
     done
