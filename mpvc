@@ -516,7 +516,7 @@ main() {
 
     validateSocket
 
-    while getopts "hqf:S:s:t:v:V:r:R:z:Z:PpmlLiTk" opt; do
+    while getopts "hqf:S:s:t:v:V:r:R:z:Z:PpmlLik" opt; do
         case "$opt" in
             s)  setTimeRelative $OPTARG             ;;
             t)  setTimeAbsolute $OPTARG             ;;
@@ -532,7 +532,6 @@ main() {
             l)  toggleLoopFile                      ;;
             L)  toggleLoopPlaylist                  ;;
             f)  formatPrint; QUIETFLAG=true         ;;
-            T)  elaspedTime; QUIETFLAG=true         ;;
             k)  killProcess; QUIETFLAG=true         ;;
             \?) usage 1                             ;;
         esac
