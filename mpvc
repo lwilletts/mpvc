@@ -358,7 +358,7 @@ togglePause() {
 toggleMute() {
     muted=$(getMuteStatus)
 
-    test $muted = "false" && muted="true" || muted="false"
+    test "$muted" = "no" && muted="true" || muted="false"
 
     printf '%s\n' "{ \"command\": [\"set_property\", \"mute\", $muted ] }" | \
         $SOCKETCOMMAND > /dev/null
@@ -449,25 +449,25 @@ formatPrint() {
 
     # this is super hacky but works!
     FORMATSTRING=$(echo $FORMATSTRING | sed "
-    s/%year%/$(getMetadata date)/;
-    s/%genre%/$(getMetadata genre)/;
-    s/%title%/$(getMetadata title)/;
-    s/%album%/$(getMetadata album)/;
-    s/%artist%/$(getMetadata artist)/;
-    s/%albumartist%/$(getMetadata album_artist)/;
+    s#%year%#$(getMetadata date)#;
+    s#%genre%#$(getMetadata genre)#;
+    s#%title%#$(getMetadata title)#;
+    s#%album%#$(getMetadata album)#;
+    s#%artist%#$(getMetadata artist)#;
+    s#%albumartist%#$(getMetadata album_artist)#;
 
-    s/%speed%/$(getSpeed)/;
-    s/%time%/$(elaspedTime)/;
-    s/%volume%/$(getVolume)/;
-    s/%length%/$(trackLength)/;
-    s/%muted%/$(getMuteStatus)/;
-    s/%status%/$(getPauseStatus)/;
-    s/%playlist%/$(getTrackCount)/;
-    s/%percentage%/$(getPercentage)/;
-    s/%single%/$(getLoopFileStatus)/;
-    s/%filename%/$(getMediaFilename)/;
-    s/%repeat%/$(getLoopPlaylistStatus)/;
-    s/%position%/$(($(getCurrentTrack) + 1))/;
+    s#%speed%#$(getSpeed)#;
+    s#%time%#$(elaspedTime)#;
+    s#%volume%#$(getVolume)#;
+    s#%length%#$(trackLength)#;
+    s#%muted%#$(getMuteStatus)#;
+    s#%status%#$(getPauseStatus)#;
+    s#%playlist%#$(getTrackCount)#;
+    s#%percentage%#$(getPercentage)#;
+    s#%single%#$(getLoopFileStatus)#;
+    s#%filename%#$(getMediaFilename)#;
+    s#%repeat%#$(getLoopPlaylistStatus)#;
+    s#%position%#$(($(getCurrentTrack) + 1))#;
     ")
 
     echo "${FORMATSTRING}"
@@ -493,15 +493,25 @@ main() {
             SOCKETFLAG=false
         }
 
+        # needed to test every option if we still want to pass '-' to the $FORMATSTRING
         case "$arg" in
-            -q)
-                QUIETFLAG=true
-                test "$FORMATFLAG" = "true" && FORMATFLAG=false
-                ;;
-            -S)
-                SOCKETFLAG=true
-                test "$FORMATFLAG" = "true" && FORMATFLAG=false
-                ;;
+            -q) QUIETFLAG=true; test "$FORMATFLAG" = "true" && FORMATFLAG=false ;;
+            -S) SOCKETFLAG=true; test "$FORMATFLAG" = "true" && FORMATFLAG=false ;;
+            -s) test "$FORMATFLAG" = "true" && FORMATFLAG=false ;;
+            -t) test "$FORMATFLAG" = "true" && FORMATFLAG=false ;;
+            -v) test "$FORMATFLAG" = "true" && FORMATFLAG=false ;;
+            -V) test "$FORMATFLAG" = "true" && FORMATFLAG=false ;;
+            -r) test "$FORMATFLAG" = "true" && FORMATFLAG=false ;;
+            -R) test "$FORMATFLAG" = "true" && FORMATFLAG=false ;;
+            -z) test "$FORMATFLAG" = "true" && FORMATFLAG=false ;;
+            -Z) test "$FORMATFLAG" = "true" && FORMATFLAG=false ;;
+            -P) test "$FORMATFLAG" = "true" && FORMATFLAG=false ;;
+            -p) test "$FORMATFLAG" = "true" && FORMATFLAG=false ;;
+            -m) test "$FORMATFLAG" = "true" && FORMATFLAG=false ;;
+            -l) test "$FORMATFLAG" = "true" && FORMATFLAG=false ;;
+            -L) test "$FORMATFLAG" = "true" && FORMATFLAG=false ;;
+            -k) test "$FORMATFLAG" = "true" && FORMATFLAG=false ;;
+            -h) usage 0 ;;
         esac
 
         test "$FORMATFLAG" = "true" && {
@@ -510,7 +520,6 @@ main() {
 
         case "$arg" in
             -f) FORMATFLAG=true ;;
-            -h) usage 0         ;;
         esac
     done
 
@@ -531,9 +540,14 @@ main() {
             m)  toggleMute                          ;;
             l)  toggleLoopFile                      ;;
             L)  toggleLoopPlaylist                  ;;
-            f)  formatPrint; QUIETFLAG=true         ;;
             k)  killProcess; QUIETFLAG=true         ;;
             \?) usage 1                             ;;
+        esac
+    done
+           
+    for arg in "$@"; do
+        case "$arg" in 
+            -f)  formatPrint; QUIETFLAG=true        ;;
         esac
     done
 
