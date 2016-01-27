@@ -13,7 +13,7 @@ usage() {
     cat << EOF
 Usage: $(basename $0) [-S socket] [-k] [-f "format string"] [-qstvVrRzZpmlLh]
     -S : Set socket location [default: $SOCKET].
-    -q : Produce no output.
+    -q : Produce no textual output.
     -f : Enter a format string (see Formatting).
     -s : Increase/decrease time in seconds.
     -t : Set absolute time in seconds.
@@ -438,10 +438,10 @@ validateSocket() {
     }
 }
 
-# kill process by socket
+# kill all instances of mpv
 killProcess() {
-    printf '%s\n' "Killing mpv process on socket $SOCKET."
-    pkill -f "$SOCKET"
+    printf '%s\n' "Killing mpv..."
+    pkill "mpv"
 }
 
 # formats and echos according to $FORMATSTRING
