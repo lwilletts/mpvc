@@ -23,7 +23,7 @@ Usage
 ```
 Usage: mpvc [-S socket] [-k] [-f "format string"] [-qstvVrRzZpmlLh]
     -S : Set socket location [default: /tmp/mpvsocket].
-    -q : Produce no output.
+    -q : Produce no textual output.
     -f : Enter a format string (see Formatting).
     -s : Increase/decrease time in seconds.
     -t : Set absolute time in seconds.
@@ -77,17 +77,19 @@ mpv must also be started with the following argument:
 mpv --input-unix-socket=/tmp/mpvsocket`
 ```
 
-I personally alias that in my shell's configuration file like so:
+You can alias with something like this in your shell's configuration file like so:
 
 ```bash
 alias mpvt --input-unix-socket=/tmp/mpvsocket --really-quiet
 ```
 
-When I want to play media in a directory I then just use:
+Alternatively, you can add the following to your ~/.config/mpv/mpv.conf file.
+However, the socket would loaded for any mpv instance:
 
 ```bash
-mpvt * &!
+input-unix-socket=/tmp/mpvsocket
 ```
+
 
 I recommend looking at something like [sxhkd](https://github.com/baskerville/sxhkd)
 to bind mpvc calls to hotkeys.
