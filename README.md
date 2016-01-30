@@ -21,10 +21,13 @@ Usage
 -----
 
 ```
-Usage: mpvc [-S socket] [-k] [-f "format string"] [-qstvVrRzZpmlLh]
-    -S : Set socket location [default: /tmp/mpvsocket].
+Usage: $(basename $0) [-S socket] [-k] [-qistvVrRzZpmlLh] [-a "filenames"] [-f "format string"]
+    -S : Set socket location [default: $SOCKET].
     -q : Produce no textual output.
     -f : Enter a format string (see Formatting).
+    -a : Add filenames to current, or new, playlist.
+    -i : Print all filenames of tracks in current playlist.
+    -a : Play, or if there is already a playlist, append filename to play.
     -s : Increase/decrease time in seconds.
     -t : Set absolute time in seconds.
     -v : Increase/decrease volume relatively to the current volume.
@@ -41,7 +44,7 @@ Usage: mpvc [-S socket] [-k] [-f "format string"] [-qstvVrRzZpmlLh]
     -h : Print this help.
 
 Formatting:
-    mpvc will interpret the following delimiters if they are found:
+    $(basename $0) will interpret the following delimiters if they are found:
         %filename%
         %year%
         %genre%
