@@ -224,7 +224,7 @@ appendTrack() {
 
     pgrep "mpv" -x 2>&1 > /dev/null && {
         printf '%s\n' "{ \"command\": [\"loadfile\", \"$filename\", \
-            \"append-play\" ] }" | $SOCKETCOMMAND > /dev/null
+            \"append\" ] }" | $SOCKETCOMMAND > /dev/null
     } || {
         exec mpv --really-quiet --no-audio-display \
             --input-unix-socket=${SOCKET} "$filename" &
