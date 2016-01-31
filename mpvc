@@ -11,13 +11,12 @@ SOCKET=${SOCKET:-/tmp/mpvsocket}
 
 usage() {
     cat << EOF
-Usage: $(basename $0) [-S socket] [-k] [-qistvVrRzZpmlLh] [-a "filenames"] [-f "format string"]
+Usage: $(basename $0) [-S socket] [-k] [-qistvVrRzZpmlLh] [-a "filenames]" "[-f "format string"]
     -S : Set socket location [default: $SOCKET].
     -q : Produce no textual output.
     -f : Enter a format string (see Formatting).
     -a : Add filenames to current, or new, playlist.
     -i : Print all filenames of tracks in current playlist.
-    -a : Play, or if there is already a playlist, append filename to play.
     -s : Increase/decrease time in seconds.
     -t : Set absolute time in seconds.
     -v : Increase/decrease volume relatively to the current volume.
