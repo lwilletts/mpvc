@@ -3,7 +3,7 @@ mpvc
 
 An mpc-like control interface for mpv.
 
-![ExampleOutput](https://u.teknik.io/OevIgU.png)
+![ExampleOutput](https://github.com/Wildefyr/mpvc/blob/master/output.png)
 
 Dependencies
 ------------
