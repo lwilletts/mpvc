@@ -76,7 +76,7 @@ specified with the use of the -S flag when calling mpvc.
 mpv must also be started with the following argument:
 
 ```bash
-mpv --input-unix-socket=/tmp/mpvsocket`
+mpv --input-unix-socket=/tmp/mpvsocket
 ```
 
 You can alias with something like this in your shell's configuration file like so:
