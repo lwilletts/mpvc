@@ -232,11 +232,7 @@ appendTrack() {
 }
 
 setTimeRelative() {
-    test $1 -ne 0 2> /dev/null
-    test $? -ne 2 || {
-         printf '%s\n' "$1 is not an integer." >&2
-         exit 1
-    }
+    intCheck $1
 
     time=$(getValue playback-time)
     time=$((time + $1))
@@ -246,12 +242,7 @@ setTimeRelative() {
 }
 
 setTimeAbsolute() {
-    test $1 -ne 0 2> /dev/null
-    test $? -ne 2 || {
-         printf '%s\n' "$1 is not an integer." >&2
-         exit 1
-    }
-
+    intCheck $1
     time=$1
 
     printf '%s\n' "{ \"command\": [\"set_property\", \
@@ -259,11 +250,7 @@ setTimeAbsolute() {
 }
 
 setVolumeRelative() {
-    test $1 -ne 0 2> /dev/null
-    test $? -ne 2 || {
-         printf '%s\n' "$1 is not an integer." >&2
-         exit 1
-    }
+    intCheck $1
 
     volume=$(getValue volume)
 
@@ -288,11 +275,8 @@ setVolumeRelative() {
 }
 
 setVolumeAbsolute() {
-    test $1 -ne 0 2> /dev/null
-    test $? -ne 2 || {
-         printf '%s\n' "$1 is not an integer." >&2
-         exit 1
-    }
+    intCheck $1
+    volume=$1
 
     # test if media has sound
     volume=$(getValue volume)
@@ -301,8 +285,6 @@ setVolumeAbsolute() {
         printf '%s\n' "Currently playing media does not have sound." >&2
         exit 1
     }
-
-    volume=$1
 
     test $volume -lt 0 && {
          printf '%s\n' "Volume cannot be set lower than 0%" >&2
@@ -318,11 +300,7 @@ setVolumeAbsolute() {
 }
 
 setTrackRelative() {
-    test $1 -ne 0 2> /dev/null
-    test $? -ne 2 || {
-         printf '%s\n' "$1 is not an integer." >&2
-         exit 1
-    }
+    intCheck $1
 
     seconds=$(getValue playback-time)
     currentTrack=$(getValue playlist-pos)
@@ -342,11 +320,7 @@ setTrackRelative() {
 }
 
 setTrackAbsolute() {
-    test $1 -ne 0 2> /dev/null
-    test $? -ne 2 || {
-         printf '%s\n' "$1 is not an integer." >&2
-         exit 1
-    }
+    intCheck $1
 
     currentTrack=$1
     currentTrack=$((currentTrack - 1))
@@ -365,12 +339,7 @@ setTrackAbsolute() {
 setSpeedRelative() {
     speed=$(getSpeed)
 
-    testDecimal=$(echo "$1" | bc)
-    test $testDecimal -eq 0 2> /dev/null && {
-        printf '%s\n' "$1 is not a number."
-        exit 1
-    }
-
+    fltCheck $1
     speed=$(echo "$speed+$1\n" | bc)
 
     printf '%s\n' "{ \"command\": [\"set_property_string\", \"speed\", \
@@ -378,13 +347,8 @@ setSpeedRelative() {
 }
 
 setSpeedAbsolute() {
+    fltCheck $1
     speed=$1
-
-    testDecimal=$(echo "$1\n" | bc)
-    test $testDecimal -eq 0 2> /dev/null && {
-        printf '%s\n' "$1 is not a number."
-        exit 1
-    }
 
     printf '%s\n' "{ \"command\": [\"set_property_string\", \"speed\", \
         \"$speed\" ] }" | $SOCKETCOMMAND > /dev/null
@@ -471,6 +435,22 @@ color() {
     cat << COLOR
 $f0$B$I$b2█$I$b7 $@ $I$b7$R
 COLOR
+}
+
+intCheck() {
+    test $1 -ne 0 2> /dev/null
+    test $? -ne 2 || {
+         printf '%s\n' "$1 is not an integer." >&2
+         exit 1
+    }
+}
+
+fltCheck() {
+    testDecimal=$(echo "$1\n" | bc)
+    test $testDecimal -eq 0 2> /dev/null && {
+        printf '%s\n' "$1 is not a number." >&2
+        exit 1
+    }
 }
 
 validateDeps() {
