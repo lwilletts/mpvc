@@ -21,7 +21,7 @@ Usage
 -----
 
 ```
-Usage: $(basename $0) [-S socket] [-k] [-qistvVrRzZpmlLh] [-a "filenames]" "[-f "format string"]
+Usage: mpvc [-S socket] [-k] [-qistvVrRzZpmlLh] [-a "filenames]" "[-f "format string"]
     -S : Set socket location [default: $SOCKET].
     -q : Produce no textual output.
     -f : Enter a format string (see Formatting).
@@ -43,7 +43,7 @@ Usage: $(basename $0) [-S socket] [-k] [-qistvVrRzZpmlLh] [-a "filenames]" "[-f 
     -h : Print this help.
 
 Formatting:
-    $(basename $0) will interpret the following delimiters if they are found:
+    mpvc will interpret the following delimiters if they are found:
         %filename%
         %year%
         %genre%
@@ -62,6 +62,7 @@ Formatting:
         %muted%
         %repeat%
         %single%
+        %frame%
 
 Exit codes:
      0 : Program ran succesfully.
