@@ -52,6 +52,7 @@ Formatting:
         %muted%
         %repeat%
         %single%
+        %frame%
 
 Exit codes:
      0 : Program ran succesfully.
@@ -84,12 +85,19 @@ getMetadata() {
     errorCheck=$(printf '%s\n' "$metadata" | cut -d\" -f 2)
 
     test "$errorCheck" = "error" && {
-        echo "N/A"
+        result="N/A"
     } || {
         metadata=$(printf '%s\n' "$metadata" | cut -d: -f 2 | \
         cut -d, -f 1 | sed s/\"//g)
-        echo "$metadata"
+        result="$metadata"
     }
+
+    # test if title has no property
+    test "$property" = "title" && test "$result" = "N/A" && {
+        result=$(getMediaFilename)
+    }
+
+    printf "$result"
 }
 
 getDuration() {
@@ -110,9 +118,9 @@ getPercentage() {
 }
 
 getValue() {
-    cmd=$1
+    property=$1
     value=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
-        \"$cmd\"] }" | $SOCKETCOMMAND 2> /dev/null)
+        \"$property\"] }" | $SOCKETCOMMAND 2> /dev/null)
     value=$(printf '%s\n' $value | cut -d\" -f 4 | cut -d. -f 1)
 
     test "$value" = "error" && printf "N/A" || printf "$value"
@@ -174,12 +182,25 @@ getPauseStatus() {
 }
 
 getLoopStatus() {
-    cmd=$1
+    property=$1
     loop=$(printf '%s\n' "{ \"command\": [\"get_property\", \
-        \"$cmd\" ] }" | $SOCKETCOMMAND 2> /dev/null)
+        \"$property\" ] }" | $SOCKETCOMMAND 2> /dev/null)
     loop=$(printf '%s\n' "$loop" | cut -d: -f 2 | cut -d, -f 1 | sed s/\"//g)
 
     printf "$loop"
+}
+
+getFrameNumber() {
+    frame=$(printf '%s\n' "{ \"command\": [\"get_property\", \
+        \"estimated-frame-number\" ] }" | $SOCKETCOMMAND 2> /dev/null)
+    errorCheck=$(printf '%s\n' "$frame" | cut -d\" -f 2)
+    frame=$(printf '%s\n' "$frame" | cut -d: -f 2 | cut -d, -f 1 | sed s/\"//g)
+
+    test "$errorCheck" = "error" && {
+        printf "N/A"
+    } || {
+        printf "$frame"
+     }
 }
 
     # Control Functions
@@ -224,7 +245,7 @@ appendTrack() {
 
     pgrep "mpv" -x 2>&1 > /dev/null && {
         printf '%s\n' "{ \"command\": [\"loadfile\", \"$filename\", \
-            \"append\" ] }" | $SOCKETCOMMAND > /dev/null
+            \"append-play\" ] }" | $SOCKETCOMMAND > /dev/null
     } || {
         exec mpv --really-quiet --no-audio-display \
             --input-unix-socket=${SOCKET} "$filename" &
@@ -515,6 +536,7 @@ formatPrint() {
     s#%repeat%#$(getLoopStatus loop)#;
     s#%single%#$(getLoopStatus loop-file)#;
     s#%playlistlength%#$(getValue playlist-count)#;
+    s#%frame%#$(getFrameNumber)#;
     s#%position%#$(($(getValue playlist-pos) + 1))#;
     ")
 
@@ -522,7 +544,7 @@ formatPrint() {
 }
 
 # print default status of mpv instance
-printStatus() {
+printDefaultStatus() {
     FORMATSTRING="
 %artist% - %title%
 \n[%status%] #%position%/%playlistlength% %time%/%length% (%percentage%%)
@@ -568,7 +590,7 @@ main() {
             L)  toggleLoopPlaylist                  ;;
             i)  getPlaylistList; QUIETFLAG=true     ;;
             k)  killProcess; QUIETFLAG=true         ;;
-            \?) usage 1                             ;;
+            \?) echo; usage 1                       ;;
         esac
     done
 
@@ -580,14 +602,11 @@ main() {
             -f)
                 test "$APPENDFLAG" = "true" && APPENDFLAG=false
                 ;;
+            --) ;;
             # use ? wildcard to match all other options
             -?)
                 test "$FORMATFLAG" = "true" && FORMATFLAG=false
                 test "$APPENDFLAG" = "true" && APPENDFLAG=false
-                ;;
-            --)
-                test "$FORMATFLAG" = "true" && FORMATFLAG=true
-                test "$APPENDFLAG" = "true" && APPENDFLAG=true
                 ;;
         esac
 
@@ -611,7 +630,7 @@ main() {
         esac
     done
 
-    test "$QUIETFLAG" = "true" || printStatus
+    test "$QUIETFLAG" = "true" || printDefaultStatus
 }
 
 main $ARGS
