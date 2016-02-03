@@ -14,8 +14,8 @@ usage() {
 Usage: $(basename $0) [-S socket] [-k] [-qistvVrRzZpmlLh] [-a "filenames]" "[-f "format string"]
     -S : Set socket location [default: $SOCKET].
     -q : Produce no textual output.
-    -f : Enter a format string (see Formatting).
-    -a : Add filenames to current, or new, playlist.
+    -f : Enter a format string (see Formatting). This cannot be combined with another option.
+    -a : Add filenames to current, or new, playlist. This cannot be combined with another option.
     -i : Print all filenames of tracks in current playlist.
     -s : Increase/decrease time in seconds.
     -t : Set absolute time in seconds.
@@ -55,10 +55,10 @@ Formatting:
         %frame%
 
 Exit codes:
-     0 : Program ran succesfully.
-     1 : Input Argument error.
-     2 : Socket does not exist.
-     3 : Socket is not currently open.
+     0: Program ran succesfully.
+     1: Input Argument error.
+     2: Socket does not exist.
+     3: Socket is not currently open.
 EOF
 
     test -z $1 && exit 0 || exit $1
@@ -127,7 +127,7 @@ getValue() {
 }
 
 # print all filenames in current playlist
-getPlaylistList() {
+getPlaylist() {
     tracks=$(getValue playlist-count)
     for i in $(seq $tracks); do
         playlistCur=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
@@ -229,7 +229,7 @@ praseAppendTracks() {
         for i in $(seq $totalFiles); do
             appendTrack $(printf "${APPENDSTRING}" | sed "$i!d")
             # need slight pause to start mpv
-            test "$i" -eq 1 && sleep 0.1
+            sleep 0.1
         done
     else
         printf '%s\n' "No files have been passed to -a."
@@ -244,10 +244,10 @@ appendTrack() {
     }
 
     pgrep "mpv" -x 2>&1 > /dev/null && {
-        printf '%s\n' "{ \"command\": [\"loadfile\", \"$filename\", \
-            \"append-play\" ] }" | $SOCKETCOMMAND > /dev/null
+        printf '%s\n' "{ \"command\": [\"loadfile\", \"$filename\", \"append\" ] }" | \
+            $SOCKETCOMMAND > /dev/null
     } || {
-        exec mpv --really-quiet --no-audio-display \
+        exec mpv --idle --really-quiet --no-audio-display \
             --input-unix-socket=${SOCKET} "$filename" &
     }
 }
@@ -347,11 +347,10 @@ setTrackAbsolute() {
     currentTrack=$((currentTrack - 1))
     trackCount=$(getValue playlist-count)
 
-    test $currentTrack -lt 0 || test $currentTrack -ge $trackCount &&
-        {
-            printf '%s\n' "Item $currentTrack is out of range of playlist." >&2
-            exit 1
-        }
+    test $currentTrack -lt 0 || test $currentTrack -ge $trackCount && {
+        printf '%s\n' "Item $currentTrack is out of range of playlist." >&2
+        exit 1
+    }
 
     printf '%s\n' "{ \"command\": [\"set_property\", \
         \"playlist-pos\", $currentTrack ] }" | $SOCKETCOMMAND > /dev/null
@@ -493,24 +492,31 @@ validateDeps() {
 }
 
 validateSocket() {
-    # test if socket exists
-    test -S $SOCKET || {
-        printf '%s\n' "$SOCKET does not exist." >&2
-        exit 2
-    }
-
-    status="$(getPauseStatus)"
     test "$PLAYFLAG" != "true" && {
+        # test if socket exists
+        test -S $SOCKET || {
+            printf '%s\n' "$SOCKET does not exist." >&2
+            exit 2
+        }
+
+        # test if socket is open
+        status="$(getPauseStatus)"
         test "$status" = "N/A" && {
             printf '%s\n' "$SOCKET is not currently open." >&2
             exit 3
         }
+    } || {
+        return
     }
 }
 
-# kill all instances of mpv
+# kill all instances of mpv if given socket process is not found by pgrep.
 killProcess() {
-    pkill "mpv"
+    pgrep "$SOCKET" -f 2>&1 > /dev/null && {
+        pkill "$SOCKET" -f 2>&1 > /dev/null
+    } || {
+        pkill "mpv"
+    }
 }
 
 # formats and echos according to $FORMATSTRING
@@ -571,29 +577,7 @@ main() {
         esac
     done
 
-    test "$PLAYFLAG" = "true" || validateSocket
-
-    while getopts "hqf:S:s:t:v:V:r:R:z:Z:pPmlLika" opt; do
-        case "$opt" in
-            a)  break                               ;;
-            s)  setTimeRelative $OPTARG             ;;
-            t)  setTimeAbsolute $OPTARG             ;;
-            v)  setVolumeRelative $OPTARG           ;;
-            V)  setVolumeAbsolute $OPTARG           ;;
-            r)  setTrackRelative $OPTARG; sleep 0.5 ;;
-            R)  setTrackAbsolute $OPTARG; sleep 0.5 ;;
-            z)  setSpeedRelative $OPTARG            ;;
-            Z)  setSpeedAbsolute $OPTARG            ;;
-            p)  togglePause                         ;;
-            P)  alwaysPlay                          ;;
-            m)  toggleMute                          ;;
-            l)  toggleLoopFile                      ;;
-            L)  toggleLoopPlaylist                  ;;
-            i)  getPlaylistList; QUIETFLAG=true     ;;
-            k)  killProcess; QUIETFLAG=true         ;;
-            \?) echo; usage 1                       ;;
-        esac
-    done
+    validateSocket
 
     for arg in "$@"; do
         case "$arg" in
@@ -626,8 +610,30 @@ main() {
 
     for arg in "$@"; do
         case "$arg" in
-            -a) praseAppendTracks; QUIETFLAG=true ;;
-            -f) formatPrint; QUIETFLAG=true       ;;
+            -a) praseAppendTracks; exit ;;
+            -f) formatPrint; exit ;;
+        esac
+    done
+
+    while getopts "hqS:s:t:v:V:r:R:x:X:zpPmlLik" opt; do
+        case "$opt" in
+            s)  setTimeRelative $OPTARG             ;;
+            t)  setTimeAbsolute $OPTARG             ;;
+            v)  setVolumeRelative $OPTARG           ;;
+            V)  setVolumeAbsolute $OPTARG           ;;
+            r)  setTrackRelative $OPTARG; sleep 0.5 ;;
+            R)  setTrackAbsolute $OPTARG; sleep 0.5 ;;
+            x)  setSpeedRelative $OPTARG            ;;
+            X)  setSpeedAbsolute $OPTARG            ;;
+            p)  togglePause                         ;;
+            P)  alwaysPlay                          ;;
+            m)  toggleMute                          ;;
+            l)  toggleLoopFile                      ;;
+            L)  toggleLoopPlaylist                  ;;
+            z)  shufflePlaylist                     ;;
+            i)  getPlaylist; QUIETFLAG=true         ;;
+            k)  killProcess; QUIETFLAG=true         ;;
+            \?) echo; usage 1                       ;;
         esac
     done
 
