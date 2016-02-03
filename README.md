@@ -21,11 +21,11 @@ Usage
 -----
 
 ```
-Usage: mpvc [-S socket] [-k] [-qistvVrRzZpmlLh] [-a "filenames]" "[-f "format string"]
+Usage: mpvc [-S socket] [-k] [-a "filenames"] "[-f "format string"] [-qistvVrRxXpmlLh]
     -S : Set socket location [default: $SOCKET].
     -q : Produce no textual output.
-    -f : Enter a format string (see Formatting).
-    -a : Add filenames to current, or new, playlist.
+    -f : Enter a format string (see Formatting). This cannot be combined with another option.
+    -a : Add filenames to current, or new, playlist. This cannot be combined with another option.
     -i : Print all filenames of tracks in current playlist.
     -s : Increase/decrease time in seconds.
     -t : Set absolute time in seconds.
@@ -65,10 +65,10 @@ Formatting:
         %frame%
 
 Exit codes:
-     0 : Program ran succesfully.
-     1 : Input Argument error.
-     2 : Socket does not exist.
-     3 : Socket is not currently open.
+     0: Program ran succesfully.
+     1: Input Argument error.
+     2: Socket does not exist.
+     3: Socket is not currently open.
 ```
 
 While /tmp/mpvsocket is the default socket location, any mpv socket can be

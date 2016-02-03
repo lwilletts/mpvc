@@ -11,7 +11,7 @@ SOCKET=${SOCKET:-/tmp/mpvsocket}
 
 usage() {
     cat << EOF
-Usage: $(basename $0) [-S socket] [-k] [-qistvVrRzZpmlLh] [-a "filenames]" "[-f "format string"]
+Usage: $(basename $0) [-S socket] [-k] [-a "filenames"] "[-f "format string"] [-qistvVrRxXpmlLh]
     -S : Set socket location [default: $SOCKET].
     -q : Produce no textual output.
     -f : Enter a format string (see Formatting). This cannot be combined with another option.
