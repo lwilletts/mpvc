@@ -610,8 +610,18 @@ main() {
 
     for arg in "$@"; do
         case "$arg" in
-            -a) praseAppendTracks; exit ;;
-            -f) formatPrint; exit ;;
+            -a)
+                test "$QUIETFLAG" = "true" && {
+                    praseAppendTracks &
+                } || {
+                    praseAppendTracks
+                }
+                exit
+                ;;
+            -f)
+                formatPrint
+                exit
+                ;;
         esac
     done
 
