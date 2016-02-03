@@ -103,7 +103,7 @@ TODO
 - [x] Implement format options similarly to mpc.
 - [x] Offer option to show all tracks in current queue.
 - [x] Offer option to add tracks to the end of the current queue.
-- [ ] Offer a Makefile to install the script to the user's $PATH.
+- [x] Offer a Makefile to install the script to the user's $PATH.
 - [ ] Implement using GNU netcat as an alternative to socat.
 - [ ] Implement long options in the style of mpc.
 
