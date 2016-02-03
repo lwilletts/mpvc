@@ -571,10 +571,11 @@ main() {
         esac
     done
 
-    validateSocket
+    test "$PLAYFLAG" = "true" || validateSocket
 
     while getopts "hqf:S:s:t:v:V:r:R:z:Z:pPmlLika" opt; do
         case "$opt" in
+            a)  break                               ;;
             s)  setTimeRelative $OPTARG             ;;
             t)  setTimeAbsolute $OPTARG             ;;
             v)  setVolumeRelative $OPTARG           ;;
