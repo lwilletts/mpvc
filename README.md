@@ -107,11 +107,25 @@ To stop playback ala mpc style, try:
 mpvc -p -t 0
 ```
 
+To decrease the relative values of the playback-time, volume or track
+position, append a minus symbol to the value:
+
+```bash
+mpvc -v -10
+```
+
 The -r option can be used to skip however many tracks in a direction, so long
 as it's in the playlist's range:
 
 ```bash
-mpvc -r 10
+mpvc -r 5
+```
+
+The -r option can also be combined with -P to always start playing a file
+after it's changed.
+
+```bash
+mpvc -r 1 -P
 ```
 
 TODO
