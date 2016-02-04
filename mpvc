@@ -39,7 +39,7 @@ Formatting:
 
     %filename%, %title%, %artist%, %album%, %albumartist%, %genre%, %year%
     %status%, %time%, %precisetime%, %length%, %percentage%, %speed%
-    %playlist%, %position%, %repeat%, %single%
+    %playlistlength%, %position%, %repeat%, %single%
     %volume%, %muted%
     %frame%
 
@@ -230,9 +230,7 @@ phraseAppendTracks() {
     ")
 
     # deal with mps-youtube random appending
-    APPENDSTRING=$(echo $APPENDSTRING | sed "
-    s#--input-.*##g
-    ")
+    APPENDSTRING=$(echo $APPENDSTRING | sed "s#--input-.*##g ")
 
     # mpv will resolve files given in a directory,
     # but I have no way of separating directories with sed at the moment

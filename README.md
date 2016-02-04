@@ -59,7 +59,7 @@ Formatting:
 
     %filename%, %title%, %artist%, %album%, %albumartist%, %genre%, %year%
     %status%, %time%, %precisetime%, %length%, %percentage%, %speed%
-    %playlist%, %position%, %repeat%, %single%
+    %playlistlength%, %position%, %repeat%, %single%
     %volume%, %muted%
     %frame%
 
