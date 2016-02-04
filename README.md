@@ -8,14 +8,24 @@ An mpc-like control interface for mpv.
 Dependencies
 ------------
 
-- bc
+- mpv
 - socat
-- A sane unix environment
+
+Optional:
+- bc - To control playback speed.
 
 Install
 -------
 
-Copy mpvc to somewhere on your $PATH.
+Distribution Packages:
+    [Crux](https://github.com/6c37/crux-ports-git)
+
+If you have packaged mpvc for your distribution, let me know so I can add it here.
+
+Manual Install
+--------------
+
+Either use the makefile I have provided or copy mpvc somewhere to your $PATH.
 
 Usage
 -----
@@ -82,9 +92,27 @@ However, the socket would loaded for any mpv instance:
 input-unix-socket=/tmp/mpvsocket
 ```
 
-
 I recommend looking at something like [sxhkd](https://github.com/baskerville/sxhkd)
-to bind mpvc calls to hotkeys.
+to bind mpvc calls to key combinations.
+
+Useful Tricks
+-------------
+
+Most of the options can be used in combination with each other freely. The
+only exception is the -a command. 
+
+To stop playback ala mpc style, try:
+
+```bash
+mpvc -p -t 0
+```
+
+The -r option can be used to skip however many tracks in a direction, so long
+as it's in the playlist's range:
+
+```bash
+mpvc -r 10
+```
 
 TODO
 ----
@@ -94,7 +122,7 @@ TODO
 - [x] Offer option to add tracks to the end of the current queue.
 - [x] Offer a Makefile to install the script to the user's $PATH.
 - [ ] Implement using GNU netcat as an alternative to socat.
-- [ ] Implement long options in the style of mpc.
+- [ ] Implement long options in the style of mpc && replace getopts entirely.
 
 Shameless Plug
 --------------
