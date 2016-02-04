@@ -21,11 +21,11 @@ Usage
 -----
 
 ```
-Usage: mpvc [-S socket] [-k] [-a "filenames"] "[-f "format string"] [-qistvVrRxXpmlLh]
+Usage: mpvc [-S "socket"] [-a "filenames"] "[-f "format string"]
     -S : Set socket location [default: $SOCKET].
     -q : Produce no textual output.
-    -f : Enter a format string (see Formatting). This cannot be combined with another option.
-    -a : Add filenames to current, or new, playlist. This cannot be combined with another option.
+    -f : Enter a format string. This cannot be combined with another option.
+    -a : Add files to current playlist. This cannot be combined with another option.
     -i : Print all filenames of tracks in current playlist.
     -s : Increase/decrease time in seconds.
     -t : Set absolute time in seconds.
@@ -33,36 +33,25 @@ Usage: mpvc [-S socket] [-k] [-a "filenames"] "[-f "format string"] [-qistvVrRxX
     -V : Set absolute volume.
     -r : Go forwards/backwards through the playlist queue.
     -R : Jump to playlist item number.
-    -z : Increase/decrease speed relatively to the current speed.
-    -Z : Set absolute speed.
+    -x : Increase/decrease speed relatively to the current speed.
+    -X : Set absolute speed.
     -p : Toggle play/paused.
     -m : Toggle mute/unmuted.
     -l : Loop currently playing file.
     -L : Loop currently playing playlist.
-    -k : Kill the current mpv process controlling the named socket.
+    -z : Shuffle the current playlist.
+    -k : Kill the current mpv process controlling the given socket.
+    -K : Kill all mpv processes found.
     -h : Print this help.
 
 Formatting:
     mpvc will interpret the following delimiters if they are found:
-        %filename%
-        %year%
-        %genre%
-        %title%
-        %album%
-        %artist%
-        %albumartist%
-        %time%
-        %length%
-        %percentage%
-        %status%
-        %position%
-        %playlist%
-        %speed%
-        %volume%
-        %muted%
-        %repeat%
-        %single%
-        %frame%
+
+    %filename%, %title%, %artist%, %album%, %albumartist%, %genre%, %year%
+    %status%, %time%, %precisetime%, %length%, %percentage%, %speed%
+    %playlist%, %position%, %repeat%, %single%
+    %volume%, %muted%
+    %frame%
 
 Exit codes:
      0: Program ran succesfully.
