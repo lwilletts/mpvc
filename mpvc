@@ -577,7 +577,6 @@ formatPrint() {
     s#%volume%#$(getValue volume)#g
     s#%length%#$(trackLength)#g
     s#%muted%#$(getMuteStatus)#g
-    s#%status%#$(getPauseStatus)#g
     s#%percentage%#$(getPercentage)#g
     s#%filename%#$(getMediaFilename)#g
     s#%repeat%#$(getLoopStatus loop)#g
@@ -587,6 +586,12 @@ formatPrint() {
 
     s#%precisetime%#$(preciseElaspedTime)#g
     s#%frame%#$(getFrameNumber)#g
+
+    s#%status%#$(
+status=$(getPauseStatus)
+test $status = "playing" && status="paused" || status="playing"
+printf "$status"
+    )#g
 
     s#%%##g
     ")
