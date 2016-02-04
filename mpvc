@@ -299,14 +299,11 @@ setVolumeRelative() {
         exit 1
     }
 
-    printf '%s\n' "{ \"command\": [\"set_property\",
-        \"volume\", $volume ] }" | $SOCKETCOMMAND > /dev/null
+    printf '%s\n' "{ \"command\": [\"set_property\", \
+\"volume\", $volume ] }" | $SOCKETCOMMAND > /dev/null
 }
 
 setVolumeAbsolute() {
-    intCheck $1
-    volume=$1
-
     # test if media has sound
     volume=$(getValue volume)
 
@@ -314,6 +311,9 @@ setVolumeAbsolute() {
         printf '%s\n' "Currently playing media does not have sound." >&2
         exit 1
     }
+
+    intCheck $1
+    volume=$1
 
     test $volume -lt 0 && {
         printf '%s\n' "Volume cannot be set lower than 0%" >&2
@@ -324,14 +324,13 @@ setVolumeAbsolute() {
         exit 1
     }
 
-    printf '%s\n' "{ \"command\": [\"set_property\",
-        \"volume\", $volume ] }" | $SOCKETCOMMAND > /dev/null
+    printf '%s\n' "{ \"command\": [\"set_property\", \
+\"volume\", $volume ] }" | $SOCKETCOMMAND > /dev/null
 }
 
 setTrackRelative() {
     intCheck $1
 
-    seconds=$(getValue playback-time)
     currentTrack=$(getValue playlist-pos)
     desiredTrack=$((currentTrack + $1))
     trackCount=$(getValue playlist-count)
@@ -342,15 +341,19 @@ setTrackRelative() {
     test $desiredTrack -ge $trackCount && {
         killSocket
     }
-
     test "$desiredTrack" -lt "$currentTrack" && {
+        seconds=$(getValue playback-time)
         test "$seconds" -ge 10 && {
             setTimeAbsolute 0
-        } || {
-            printf '%s\n' "{ \"command\": [\"set_property\", \
-\"playlist-pos\", $desiredTrack ] }" | $SOCKETCOMMAND
+            return
         }
     }
+
+    printf '%s\n' "{ \"command\": [\"set_property\", \"playlist-pos\", \
+$desiredTrack ] }" | $SOCKETCOMMAND > /dev/null
+
+    # tiny delay so printDefaultStatus can catch up
+    sleep 0.5
 }
 
 setTrackAbsolute() {
@@ -365,8 +368,11 @@ setTrackAbsolute() {
         exit 1
     }
 
-    printf '%s\n' "{ \"command\": [\"set_property\",
-        \"playlist-pos\", $currentTrack ] }" | $SOCKETCOMMAND > /dev/null
+    printf '%s\n' "{ \"command\": [\"set_property\", \
+\"playlist-pos\", $currentTrack ] }" | $SOCKETCOMMAND > /dev/null
+
+    # tiny delay so printDefaultStatus can catch up
+    sleep 0.5
 }
 
 setSpeedRelative() {
