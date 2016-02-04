@@ -148,7 +148,7 @@ getPlaylist() {
     } || {
         printf '%s\n' "mpv on ${SOCKET} is currently idle."
     }
-    exit
+    exit 0
 }
 
 getSpeed() {
@@ -176,9 +176,9 @@ getPauseStatus() {
 
     test ! -z "$status" && {
         test "$status" = "true" && {
-            status="paused"
-        } || {
             status="playing"
+        } || {
+            status="paused"
         }
     } || {
         status="N/A"
@@ -254,7 +254,7 @@ appendTrack() {
     }
 
     test "$result" = "error" && {
-        printf '%s\n' "Possible error adding: ${filename}"
+        printf '%s\n' "Idle adding: ${filename}"
     } || {
         printf '%s\n' "Adding: ${filename}"
     }
@@ -400,7 +400,7 @@ alwaysPlay() {
 
 togglePause() {
     status=$(getPauseStatus)
-    test $status = "playing" && status="true" || status="false"
+    test $status = "playing" && status="false" || status="true"
 
     printf '%s\n' "{ \"command\": [\"set_property\", \"pause\", $status ] }" | \
         $SOCKETCOMMAND > /dev/null
@@ -551,13 +551,13 @@ validateSocket() {
 # quit mpv process on given socket
 killSocket() {
     printf '%s\n' "{ \"command\": [\"quit\"] }" | $SOCKETCOMMAND > /dev/null
-    exit
+    exit 0
 }
 
 # kill all instances of mpv running under your user
 killAllMpv() {
     pkill "mpv" 2>&1 > /dev/null
-    exit
+    exit 0
 }
 
 # formats and echos according to $FORMATSTRING
