@@ -229,6 +229,11 @@ phraseAppendTracks() {
     s#.jpeg #.jpeg\n#g
     ")
 
+    # deal with mps-youtube random appending
+    APPENDSTRING=$(echo $APPENDSTRING | sed "
+    s#--input-.*##g
+    ")
+
     # mpv will resolve files given in a directory,
     # but I have no way of separating directories with sed at the moment
 
