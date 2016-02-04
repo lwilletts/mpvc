@@ -406,7 +406,7 @@ toggleLoopFile() {
 
     test $loopFile = "no" && loopFile="inf" || loopFile="no"
 
-    printf '%s\n' "{ \"command\": [\"set_property_string\", \
+    printf '%s\n' "{ \"command\": [\"set_property_string\",
         \"loop-file\", \"$loopFile\" ] }" | $SOCKETCOMMAND > /dev/null
 }
 
@@ -415,8 +415,14 @@ toggleLoopPlaylist() {
 
     test $loopPlaylist = "no" && loopPlaylist="inf" || loopPlaylist="no"
 
-    printf '%s\n' "{ \"command\": [\"set_property_string\", \
+    printf '%s\n' "{ \"command\": [\"set_property_string\",
         \"loop\", \"$loopPlaylist\" ] }" | $SOCKETCOMMAND > /dev/null
+}
+
+shufflePlaylist() {
+    printf '%s\n' "{ \"command\": [\"playlist-shuffle\" ] }" | \
+        $SOCKETCOMMAND > /dev/null
+    printf '%s\n' "Playlist shuffled."
 }
 
     # Time Functions
@@ -646,7 +652,7 @@ main() {
             m)  toggleMute                          ;;
             l)  toggleLoopFile                      ;;
             L)  toggleLoopPlaylist                  ;;
-            z)  shufflePlaylist                     ;;
+            z)  shufflePlaylist; QUIETFLAG=true     ;;
             i)  getPlaylist; QUIETFLAG=true         ;;
             k)  killSocket; QUIETFLAG=true          ;;
             K)  killAllMpv; QUIETFLAG=true          ;;
