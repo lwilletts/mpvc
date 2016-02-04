@@ -206,7 +206,7 @@ getFrameNumber() {
     # Control Functions
 ###############################################################################
 
-praseAppendTracks() {
+phraseAppendTracks() {
     # find media extensions and append a newline to them
     APPENDSTRING=$(echo $APPENDSTRING | sed "
     s#.mp3 #.mp3\n#g
@@ -258,7 +258,7 @@ setTimeRelative() {
     time=$(getValue playback-time)
     time=$((time + $1))
 
-    printf '%s\n' "{ \"command\": [\"set_property\", \
+    printf '%s\n' "{ \"command\": [\"set_property\",
         \"playback-time\", $time ] }" | $SOCKETCOMMAND > /dev/null
 }
 
@@ -266,7 +266,7 @@ setTimeAbsolute() {
     intCheck $1
     time=$1
 
-    printf '%s\n' "{ \"command\": [\"set_property\", \
+    printf '%s\n' "{ \"command\": [\"set_property\",
         \"playback-time\", $time ] }" | $SOCKETCOMMAND > /dev/null
 }
 
@@ -291,7 +291,7 @@ setVolumeRelative() {
         exit 1
     }
 
-    printf '%s\n' "{ \"command\": [\"set_property\", \
+    printf '%s\n' "{ \"command\": [\"set_property\",
         \"volume\", $volume ] }" | $SOCKETCOMMAND > /dev/null
 }
 
@@ -316,7 +316,7 @@ setVolumeAbsolute() {
         exit 1
     }
 
-    printf '%s\n' "{ \"command\": [\"set_property\", \
+    printf '%s\n' "{ \"command\": [\"set_property\",
         \"volume\", $volume ] }" | $SOCKETCOMMAND > /dev/null
 }
 
@@ -328,16 +328,21 @@ setTrackRelative() {
     desiredTrack=$((currentTrack + $1))
     trackCount=$(getValue playlist-count)
 
-    test $desiredTrack -lt 0 && \
+    test $desiredTrack -lt 0 && {
         desiredTrack=0
-    test $desiredTrack -ge $trackCount && \
+    }
+    test $desiredTrack -ge $trackCount && {
         killProcess
+    }
 
-    test "$desiredTrack" -lt "$currentTrack" && \
-        test "$seconds" -ge 10 && \
-        setTimeAbsolute 0 || \
-        printf '%s\n' "{ \"command\": [\"set_property\", \
-        \"playlist-pos\", $desiredTrack ] }" | $SOCKETCOMMAND > /dev/null
+    test "$desiredTrack" -lt "$currentTrack" && {
+        test "$seconds" -ge 10 && {
+            setTimeAbsolute 0
+        } || {
+            printf '%s\n' "{ \"command\": [\"set_property\",
+            \"playlist-pos\", $desiredTrack ] }" | $SOCKETCOMMAND > /dev/null
+        }
+    }
 }
 
 setTrackAbsolute() {
@@ -352,7 +357,7 @@ setTrackAbsolute() {
         exit 1
     }
 
-    printf '%s\n' "{ \"command\": [\"set_property\", \
+    printf '%s\n' "{ \"command\": [\"set_property\",
         \"playlist-pos\", $currentTrack ] }" | $SOCKETCOMMAND > /dev/null
 }
 
@@ -362,7 +367,7 @@ setSpeedRelative() {
     fltCheck $1
     speed=$(echo "$speed+$1\n" | bc)
 
-    printf '%s\n' "{ \"command\": [\"set_property_string\", \"speed\", \
+    printf '%s\n' "{ \"command\": [\"set_property_string\", \"speed\",
         \"$speed\" ] }" | $SOCKETCOMMAND > /dev/null
 }
 
@@ -370,7 +375,7 @@ setSpeedAbsolute() {
     fltCheck $1
     speed=$1
 
-    printf '%s\n' "{ \"command\": [\"set_property_string\", \"speed\", \
+    printf '%s\n' "{ \"command\": [\"set_property_string\", \"speed\",
         \"$speed\" ] }" | $SOCKETCOMMAND > /dev/null
 }
 
@@ -510,13 +515,14 @@ validateSocket() {
     }
 }
 
-# kill all instances of mpv if given socket process is not found by pgrep.
-killProcess() {
-    pgrep "$SOCKET" -f 2>&1 > /dev/null && {
-        pkill "$SOCKET" -f 2>&1 > /dev/null
-    } || {
-        pkill "mpv"
-    }
+# quit mpv process on given socket
+killSocket() {
+    printf '%s\n' "{ \"command\": [\"quit\"] }" | $SOCKETCOMMAND > /dev/null
+}
+
+# kill all instances of mpv
+killAllMpv() {
+    pkill "mpv" 2>&1 > /dev/null
 }
 
 # formats and echos according to $FORMATSTRING
@@ -612,9 +618,9 @@ main() {
         case "$arg" in
             -a)
                 test "$QUIETFLAG" = "true" && {
-                    praseAppendTracks &
+                    phraseAppendTracks &
                 } || {
-                    praseAppendTracks
+                    phraseAppendTracks
                 }
                 exit
                 ;;
@@ -625,7 +631,7 @@ main() {
         esac
     done
 
-    while getopts "hqS:s:t:v:V:r:R:x:X:zpPmlLik" opt; do
+    while getopts "hqS:s:t:v:V:r:R:x:X:zpPmlLikK" opt; do
         case "$opt" in
             s)  setTimeRelative $OPTARG             ;;
             t)  setTimeAbsolute $OPTARG             ;;
@@ -642,7 +648,8 @@ main() {
             L)  toggleLoopPlaylist                  ;;
             z)  shufflePlaylist                     ;;
             i)  getPlaylist; QUIETFLAG=true         ;;
-            k)  killProcess; QUIETFLAG=true         ;;
+            k)  killSocket; QUIETFLAG=true          ;;
+            K)  killAllMpv; QUIETFLAG=true          ;;
             \?) echo; usage 1                       ;;
         esac
     done
