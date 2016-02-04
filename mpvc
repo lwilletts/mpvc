@@ -15,7 +15,7 @@ usage() {
 Usage: $(basename $0) [-S "socket"] [-a "filenames"] "[-f "format string"]
     -S : Set socket location [default: $SOCKET].
     -q : Produce no textual output.
-    -f : Enter a format string. This cannot be combined with another option.
+    -f : Enter a format string.
     -a : Add files to current playlist. This cannot be combined with another option.
     -i : Print all filenames of tracks in current playlist.
     -s : Increase/decrease time in seconds.
@@ -254,9 +254,9 @@ appendTrack() {
     }
 
     test "$result" = "error" && {
-        printf '%s\n' "An error occured when trying to add ${filename}." >&2
+        printf '%s\n' "Possible error adding: ${filename}"
     } || {
-        printf '%s\n' "Adding: $filename"
+        printf '%s\n' "Adding: ${filename}"
     }
 }
 
@@ -316,8 +316,8 @@ setVolumeAbsolute() {
     }
 
     test $volume -lt 0 && {
-         printf '%s\n' "Volume cannot be set lower than 0%" >&2
-         exit 1
+        printf '%s\n' "Volume cannot be set lower than 0%" >&2
+        exit 1
     }
     test $volume -gt 130 && {
         printf '%s\n' "Volume cannot be set great than 130%" >&2
@@ -348,12 +348,9 @@ setTrackRelative() {
             setTimeAbsolute 0
         } || {
             printf '%s\n' "{ \"command\": [\"set_property\", \
-\"playlist-pos\", $desiredTrack ] }" | $SOCKETCOMMAND > /dev/null
+\"playlist-pos\", $desiredTrack ] }" | $SOCKETCOMMAND
         }
     }
-
-    # slight delay for printDefaultStatus
-    sleep 0.5
 }
 
 setTrackAbsolute() {
@@ -370,9 +367,6 @@ setTrackAbsolute() {
 
     printf '%s\n' "{ \"command\": [\"set_property\",
         \"playlist-pos\", $currentTrack ] }" | $SOCKETCOMMAND > /dev/null
-
-    # slight delay for printDefaultStatus
-    sleep 0.5
 }
 
 setSpeedRelative() {
@@ -664,6 +658,7 @@ main() {
                 ;;
             -f)
                 formatPrint
+                QUIETFLAG=true
                 ;;
         esac
     done
@@ -691,7 +686,7 @@ main() {
         esac
     done
 
-    printDefaultStatus
+    test "$QUIETFLAG" != "true" && printDefaultStatus
 }
 
 for arg in $ARGS; do

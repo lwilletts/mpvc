@@ -24,7 +24,7 @@ Usage
 Usage: mpvc [-S "socket"] [-a "filenames"] "[-f "format string"]
     -S : Set socket location [default: $SOCKET].
     -q : Produce no textual output.
-    -f : Enter a format string. This cannot be combined with another option.
+    -f : Enter a format string.
     -a : Add files to current playlist. This cannot be combined with another option.
     -i : Print all filenames of tracks in current playlist.
     -s : Increase/decrease time in seconds.
