@@ -2,7 +2,6 @@
 #
 # wildefyr - 2016 (c) MIT
 # control mpv remotely using JSON ipc
-# depends on: socat bc and a sane unix environment
 # https://mpv.io/manual/master/#json-ipc
 
 ARGS="$@"
