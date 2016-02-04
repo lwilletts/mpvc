@@ -699,6 +699,7 @@ main() {
 
 for arg in $ARGS; do
     test "$arg" = "-q" && QUIETFLAG=true
+    test "$arg" = "--version" && printf '%s\n' "mpvc release 1" && exit
 done
 
 test "$QUIETFLAG" = "true" && {
