@@ -592,8 +592,6 @@ status=$(getPauseStatus)
 test $status = "playing" && status="paused" || status="playing"
 printf "$status"
     )#g
-
-    s#%%##g
     ")
 
     echo "${FORMATSTRING}"
