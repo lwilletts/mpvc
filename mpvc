@@ -227,10 +227,8 @@ phraseAppendTracks() {
     s#.png #.png\n#g
     s#.jpg #.jpg\n#g
     s#.jpeg #.jpeg\n#g
+    s#--input-.*##g
     ")
-
-    # deal with mps-youtube random appending
-    APPENDSTRING=$(echo $APPENDSTRING | sed "s#--input-.*##g ")
 
     # mpv will resolve files given in a directory,
     # but I have no way of separating directories with sed at the moment
@@ -703,6 +701,7 @@ main() {
 for arg in $ARGS; do
     test "$arg" = "-q" && QUIETFLAG=true
     test "$arg" = "--version" && printf '%s\n' "mpvc release 1" && exit
+    test "$arg" = "--list-options" && printf '%s\n' "" && exit
 done
 
 test "$QUIETFLAG" = "true" && {
