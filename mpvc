@@ -129,7 +129,6 @@ getPlaylist() {
         playlistCur=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
 \"playlist/$((i - 1))/filename\"] }" | $SOCKETCOMMAND 2> /dev/null)
         playlistCur=$(printf '%s ' $playlistCur | cut -d\" -f 4)
-
         currentTrack=$(getValue playlist-pos)
         test "$currentTrack" != "N/A" && {
             test "$currentTrack" -eq $((i - 1)) && {
@@ -138,7 +137,7 @@ getPlaylist() {
                 allTracks="${allTracks}$(printf "${i}: ${playlistCur}")\n"
             }
         } || {
-            allTracks="${allTracks}$(printf "${playlistCur}")\n"
+            allTracks="${allTracks}$(printf "${i}: ${playlistCur}")\n"
         }
     done
 
@@ -254,7 +253,7 @@ appendTrack() {
     }
 
     test "$result" = "error" && {
-        printf '%s\n' "Idly Adding: ${filename}"
+        printf '%s\n' "Idly adding: ${filename}"
     } || {
         printf '%s\n' "Adding: ${filename}"
     }
@@ -705,7 +704,7 @@ for arg in $ARGS; do
 done
 
 test "$QUIETFLAG" = "true" && {
-    main $ARGS 2>&1 > /dev/null
+    main $ARGS > /dev/null
 } || {
     main $ARGS
 }
