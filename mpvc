@@ -133,9 +133,9 @@ getPlaylist() {
         currentTrack=$(getValue playlist-pos)
         test "$currentTrack" != "N/A" && {
             test "$currentTrack" -eq $((i - 1)) && {
-                allTracks="${allTracks}$(color "${playlistCur}")\n"
+                allTracks="${allTracks}$(color "${i}: ${playlistCur}")\n"
             } || {
-                allTracks="${allTracks}$(printf "${playlistCur}")\n"
+                allTracks="${allTracks}$(printf "${i}: ${playlistCur}")\n"
             }
         } || {
             allTracks="${allTracks}$(printf "${playlistCur}")\n"
@@ -254,7 +254,7 @@ appendTrack() {
     }
 
     test "$result" = "error" && {
-        printf '%s\n' "Idle adding: ${filename}"
+        printf '%s\n' "Idly Adding: ${filename}"
     } || {
         printf '%s\n' "Adding: ${filename}"
     }
