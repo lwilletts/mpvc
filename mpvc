@@ -130,14 +130,29 @@ getPlaylist() {
 \"playlist/$((i - 1))/filename\"] }" | $SOCKETCOMMAND 2> /dev/null)
         playlistCur=$(printf '%s ' $playlistCur | cut -d\" -f 4)
         currentTrack=$(getValue playlist-pos)
-        test "$currentTrack" != "N/A" && {
-            test "$currentTrack" -eq $((i - 1)) && {
-                allTracks="${allTracks}$(color "${i}: ${playlistCur}")\n"
-            } || {
-                allTracks="${allTracks}$(printf "${i}: ${playlistCur}")\n"
+
+        trackNum=$i
+        test "$tracks" -gt 100 && {
+            test "$trackNum" -lt "10" && {
+                trackNum="00$trackNum"
+            }
+            test "$trackNum" -lt "100" && {
+                trackNum="0$trackNum"
             }
         } || {
-            allTracks="${allTracks}$(printf "${i}: ${playlistCur}")\n"
+            test "$trackNum" -lt "10" && {
+                trackNum="0$trackNum"
+            }
+        }
+
+        test "$currentTrack" != "N/A" && {
+            test "$currentTrack" -eq $((i - 1)) && {
+                allTracks="${allTracks}$(color "${trackNum}: ${playlistCur}")\n"
+            } || {
+                allTracks="${allTracks}$(printf "${trackNum}: ${playlistCur}")\n"
+            }
+        } || {
+            allTracks="${allTracks}$(printf "${trackNum}: ${playlistCur}")\n"
         }
     done
 
@@ -146,6 +161,7 @@ getPlaylist() {
     } || {
         printf '%s\n' "mpv on ${SOCKET} is currently idle."
     }
+
     exit 0
 }
 
@@ -483,14 +499,10 @@ formatTime() {
 ###############################################################################
 
 color() {
-    f0='[30m'; f1='[31m'; f2='[32m'; f3='[33m'
-    f4='[34m'; f5='[35m'; f6='[36m'; f7='[37m'
-    b0='[40m'; b1='[41m'; b2='[42m'; b4='[44m'
-    b4='[44m'; b5='[45m'; b6='[46m'; b7='[47m'
-    B='[1m'; R='[0m'; I='[7m'
+    b0='[40m'; B='[1m'; R='[0m'; I='[7m'
 
     cat << COLOR
-$f0$B$I$b2█$I$b7 $@ $I$b7$R
+$I$b0$@$R
 COLOR
 }
 
