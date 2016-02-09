@@ -5,5 +5,4 @@ install:
 	install -Dm755 mpvc $(DESTDIR)$(PREFIX)/bin/mpvc
 
 uninstall:
-	rm -f $(DESTDIR)$(PREFIX)$(BINDIR)/bin/mpvc
-
+	rm -f $(DESTDIR)$(PREFIX)/bin/mpvc
