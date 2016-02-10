@@ -66,7 +66,6 @@ getMediaFilename() {
 }
 
 getMetadata() {
-    test -z $1 && return
     property=$1
 
     metadata=$(printf '%s\n' "{ \"command\": [\"get_property\", \
@@ -120,49 +119,6 @@ getValue() {
     }
 
     test "$value" = "error" && printf "N/A" || printf "$value"
-}
-
-# print all filenames in current playlist
-getPlaylist() {
-    tracks=$(getValue playlist-count)
-    for i in $(seq $tracks); do
-        playlistCur=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
-\"playlist/$((i - 1))/filename\"] }" | $SOCKETCOMMAND 2> /dev/null)
-        playlistCur=$(printf '%s ' $playlistCur | cut -d\" -f 4)
-        currentTrack=$(getValue playlist-pos)
-
-        trackNum=$i
-        test "$tracks" -gt 100 && {
-            test "$trackNum" -lt "10" && {
-                trackNum="00$trackNum"
-            }
-            test "$trackNum" -lt "100" && {
-                trackNum="0$trackNum"
-            }
-        } || {
-            test "$trackNum" -lt "10" && {
-                trackNum="0$trackNum"
-            }
-        }
-
-        test "$currentTrack" != "N/A" && {
-            test "$currentTrack" -eq $((i - 1)) && {
-                allTracks="${allTracks}$(color "${trackNum}: ${playlistCur}")\n"
-            } || {
-                allTracks="${allTracks}$(printf "${trackNum}: ${playlistCur}")\n"
-            }
-        } || {
-            allTracks="${allTracks}$(printf "${trackNum}: ${playlistCur}")\n"
-        }
-    done
-
-    test ! -z "$allTracks" && {
-        printf "$allTracks"
-    } || {
-        printf '%s\n' "mpv on ${SOCKET} is currently idle."
-    }
-
-    exit 0
 }
 
 getSpeed() {
@@ -221,6 +177,49 @@ getFrameNumber() {
     } || {
         printf "$frame"
     }
+}
+
+# print all filenames in current playlist
+getPlaylist() {
+    tracks=$(getValue playlist-count)
+    for i in $(seq $tracks); do
+        playlistCur=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
+\"playlist/$((i - 1))/filename\"] }" | $SOCKETCOMMAND 2> /dev/null)
+        playlistCur=$(printf '%s ' $playlistCur | cut -d\" -f 4)
+        currentTrack=$(getValue playlist-pos)
+
+        trackNum=$i
+        test "$tracks" -gt 100 && {
+            test "$trackNum" -lt "10" && {
+                trackNum="00$trackNum"
+            }
+            test "$trackNum" -lt "100" && {
+                trackNum="0$trackNum"
+            }
+        } || {
+            test "$trackNum" -lt "10" && {
+                trackNum="0$trackNum"
+            }
+        }
+
+        test "$currentTrack" != "N/A" && {
+            test "$currentTrack" -eq $((i - 1)) && {
+                allTracks="${allTracks}$(color "${trackNum}: ${playlistCur}")\n"
+            } || {
+                allTracks="${allTracks}$(printf "${trackNum}: ${playlistCur}")\n"
+            }
+        } || {
+            allTracks="${allTracks}$(printf "${trackNum}: ${playlistCur}")\n"
+        }
+    done
+
+    test ! -z "$allTracks" && {
+        printf "$allTracks"
+    } || {
+        printf '%s\n' "mpv on ${SOCKET} is currently idle."
+    }
+
+    exit 0
 }
 
     # Control Functions
@@ -409,16 +408,29 @@ setSpeedAbsolute() {
 }
 
 alwaysPlay() {
+    currentTrack=$(getValue playlist-pos)
+    test "$currentTrack" = "N/A" && {
+        setTrackAbsolute 1
+        return
+    }
+
     printf '%s\n' "{ \"command\": [\"set_property\", \"pause\", false ] }" | \
         $SOCKETCOMMAND > /dev/null
 }
 
 togglePause() {
+    currentTrack=$(getValue playlist-pos)
+    test "$currentTrack" = "N/A" && {
+        setTrackAbsolute 1
+        return
+    }
+
     status=$(getPauseStatus)
-    test $status = "playing" && status="false" || status="true"
+    test "$status" = "playing" && status="false" || status="true"
 
     printf '%s\n' "{ \"command\": [\"set_property\", \"pause\", $status ] }" | \
         $SOCKETCOMMAND > /dev/null
+
 }
 
 toggleMute() {
@@ -683,7 +695,7 @@ main() {
         esac
     done
 
-    while getopts "hqS:s:t:v:V:r:R:x:X:zpPmlLiafFkK" opt; do
+    while getopts "hqS:s:t:v:V:r:R:x:X:PpzmlLiafFkK" opt; do
         case "$opt" in
             s)  setTimeRelative $OPTARG   ;;
             t)  setTimeAbsolute $OPTARG   ;;
