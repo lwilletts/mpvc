@@ -217,7 +217,7 @@ getPlaylist() {
     test ! -z "$allTracks" && {
         printf "$allTracks"
     } || {
-        printf '%s\n' "mpv on ${SOCKET} is currently idle."
+        printf '%s\n' "mpv on ${SOCKET} is currently idle." >&2
     }
 
     exit 0
@@ -779,12 +779,6 @@ main() {
                 alwaysPause
                 setTimeAbsolute 0
                 exit ;;
-            del)
-                test ! -z $2 && {
-                    removeTrack $2
-                } || {
-                    usage 1
-                } ; exit ;;
             volume)
                 test ! -z $2 && {
                     firstChar=$(echo $2 | cut -c 1)
@@ -801,6 +795,7 @@ main() {
                 } || {
                     usage 1
                 } ; exit ;;
+            del) test ! -z $2 && removeTrack $2 || usage 1 ; exit ;;
             pause)    alwaysPause         ; exit ;;
             toggle)   togglePause         ; exit ;;
             next)     setTrackRelative 1  ; exit ;;
@@ -864,7 +859,14 @@ main() {
         esac
     done
 
-    test "$QUIETFLAG" != "true" && printDefaultStatus
+    test "$QUIETFLAG" != "true" && {
+        playlistResult=$(getPlaylist 2>&1)
+        test "$playlistResult" != "mpv on ${SOCKET} is currently idle." && {
+            printDefaultStatus
+        } || {
+            printf '%s\n' "$playlistResult"
+        }
+    }
 }
 
 for arg in $ARGS; do
