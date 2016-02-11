@@ -48,6 +48,7 @@ Exit codes:
      1: Input Argument error.
      2: Socket does not exist.
      3: Socket is not currently open.
+
 EOF
 
     test -z $1 && exit 0 || exit $1
@@ -263,8 +264,13 @@ appendTrack() {
 \"append-play\" ] }" | $SOCKETCOMMAND 2> /dev/null)
         result=$(printf '%s\n' $result | cut -d\" -f 4)
     } || {
-        exec mpv --really-quiet --no-audio-display \
-            --input-unix-socket=${SOCKET} "$filename" &
+        test "$VIDEOFLAG" = "false" && {
+            exec mpv --really-quiet --no-audio-display --idle=yes --vid=no \
+                --input-unix-socket=${SOCKET} "$filename" &
+        } || {
+            exec mpv --really-quiet --no-audio-display --idle=yes \
+                --input-unix-socket=${SOCKET} "$filename" &
+        }
     }
 
     test "$result" = "error" && {
@@ -342,53 +348,6 @@ setVolumeAbsolute() {
 \"volume\", $volume ] }" | $SOCKETCOMMAND > /dev/null
 }
 
-setTrackRelative() {
-    intCheck $1
-
-    currentTrack=$(getValue playlist-pos)
-    desiredTrack=$((currentTrack + $1))
-    trackCount=$(getValue playlist-count)
-
-    test $desiredTrack -lt 0 && {
-        desiredTrack=0
-    }
-    test $desiredTrack -ge $trackCount && {
-        killSocket
-    }
-    test "$desiredTrack" -lt "$currentTrack" && {
-        seconds=$(getValue playback-time)
-        test "$seconds" -ge 10 && {
-            setTimeAbsolute 0
-            return
-        }
-    }
-
-    printf '%s\n' "{ \"command\": [\"set_property\", \"playlist-pos\", \
-$desiredTrack ] }" | $SOCKETCOMMAND > /dev/null
-
-    # tiny delay so printDefaultStatus can catch up
-    sleep 0.5
-}
-
-setTrackAbsolute() {
-    intCheck $1
-
-    currentTrack=$1
-    currentTrack=$((currentTrack - 1))
-    trackCount=$(getValue playlist-count)
-
-    test $currentTrack -lt 0 || test $currentTrack -ge $trackCount && {
-        printf '%s\n' "Item $currentTrack is out of range of playlist." >&2
-        exit 1
-    }
-
-    printf '%s\n' "{ \"command\": [\"set_property\", \
-\"playlist-pos\", $currentTrack ] }" | $SOCKETCOMMAND > /dev/null
-
-    # tiny delay so printDefaultStatus can catch up
-    sleep 0.5
-}
-
 setSpeedRelative() {
     speed=$(getSpeed)
 
@@ -407,7 +366,87 @@ setSpeedAbsolute() {
 \"$speed\" ] }" | $SOCKETCOMMAND > /dev/null
 }
 
-alwaysPlay() {
+setTrackRelative() {
+    intCheck $1
+
+    currentTrack=$(getValue playlist-pos)
+    desiredTrack=$((currentTrack + $1))
+    trackCount=$(getValue playlist-count)
+
+    # if time is greater than 10 seconds, set time to 0
+    test "$desiredTrack" -lt "$currentTrack" && {
+        seconds=$(getValue playback-time)
+        test "$seconds" -ge 10 && {
+            setTimeAbsolute 0
+            return
+        }
+    }
+    test "$desiredTrack" -ge "$trackCount" && {
+        repeat=$(getLoopStatus loop)
+        test "$repeat" = "inf" && {
+            desiredTrack=0
+        } || {
+            killSocket
+        }
+    }
+    test "$desiredTrack" -lt 0 && {
+        repeat=$(getLoopStatus loop)
+        test "$repeat" = "inf" && {
+            setTrackAbsolute $trackCount
+            return
+        } || {
+            desiredTrack=0
+        }
+    }
+
+    printf '%s\n' "{ \"command\": [\"set_property\", \"playlist-pos\", \
+$desiredTrack ] }" | $SOCKETCOMMAND > /dev/null
+
+    # tiny delay so printDefaultStatus can catch up
+    sleep 0.5
+}
+
+setTrackAbsolute() {
+    intCheck $1
+
+    currentTrack=$1
+    currentTrack=$((currentTrack - 1))
+    trackCount=$(getValue playlist-count)
+
+    test "$currentTrack" -lt 0 || test "$currentTrack" -ge "$trackCount" && {
+        printf '%s\n' "Item $currentTrack is out of range of playlist." >&2
+        exit 1
+    }
+
+    printf '%s\n' "{ \"command\": [\"set_property\", \
+\"playlist-pos\", $currentTrack ] }" | $SOCKETCOMMAND > /dev/null
+
+    # tiny delay so printDefaultStatus can catch up
+    sleep 0.5
+}
+
+removeTrack() {
+    intCheck $1
+
+    trackToRemove=$1
+    trackToRemove=$((trackToRemove - 1))
+    trackCount=$(getValue playlist-count)
+
+    test "$trackToRemove" -lt 0 || test "$trackToRemove" -ge "$trackCount" && {
+        printf '%s\n' "Item $trackToRemove is out of range of playlist." >&2
+        exit 1
+    }
+
+    printf '%s\n' "{ \"command\": [\"playlist-remove\", \"$trackToRemove\" ] }" | \
+        $SOCKETCOMMAND > /dev/null
+
+    test "$QUIETFLAG" != "true" && {
+        getPlaylist
+        QUIETFLAG=true
+    }
+}
+
+alwaysPlay()  {
     currentTrack=$(getValue playlist-pos)
     test "$currentTrack" = "N/A" && {
         setTrackAbsolute 1
@@ -415,6 +454,12 @@ alwaysPlay() {
     }
 
     printf '%s\n' "{ \"command\": [\"set_property\", \"pause\", false ] }" | \
+        $SOCKETCOMMAND > /dev/null
+}
+
+alwaysPause() {
+    status="true"
+    printf '%s\n' "{ \"command\": [\"set_property\", \"pause\", $status ] }" | \
         $SOCKETCOMMAND > /dev/null
 }
 
@@ -434,9 +479,12 @@ togglePause() {
 }
 
 toggleMute() {
-    muted=$(getMuteStatus)
-
-    test "$muted" = "no" && muted="true" || muted="false"
+    test -z $1 && {
+        muted=$(getMuteStatus)
+        test "$muted" = "no" && muted="true" || muted="false"
+    } || {
+        muted=$1
+    }
 
     printf '%s\n' "{ \"command\": [\"set_property\", \"mute\", $muted ] }" | \
         $SOCKETCOMMAND > /dev/null
@@ -463,7 +511,37 @@ toggleLoopPlaylist() {
 shufflePlaylist() {
     printf '%s\n' "{ \"command\": [\"playlist-shuffle\" ] }" | \
         $SOCKETCOMMAND > /dev/null
-    printf '%s\n' "Playlist shuffled."
+    test "$QUIETFLAG" != "true" && {
+        printf '%s\n' "Playlist shuffled."
+        QUIETFLAG=true
+    }
+}
+
+cropPlaylist() {
+    printf '%s\n' "{ \"command\": [\"playlist-clear\" ] }" | \
+        $SOCKETCOMMAND > /dev/null
+    test "$QUIETFLAG" != "true" && {
+        printf '%s\n' "Playlist cropped."
+        QUIETFLAG=true
+    }
+}
+
+clearPlaylist() {
+    QUIETFLAG=true
+    cropPlaylist
+    removeTrack 1
+    printf '%s\n' "Playlist cleared."
+}
+
+# quit mpv process on given socket
+killSocket() {
+    printf '%s\n' "{ \"command\": [\"quit\"] }" | $SOCKETCOMMAND > /dev/null
+    exit 0
+}
+
+# kill all instances of mpv running under your user
+killAllMpv() {
+    pkill "mpv" 2>&1 > /dev/null
     exit 0
 }
 
@@ -507,81 +585,8 @@ formatTime() {
     }
 }
 
-    # Misc. Functions
+    # Formatting and Printing Functions
 ###############################################################################
-
-color() {
-    b0='[40m'; B='[1m'; R='[0m'; I='[7m'
-
-    cat << COLOR
-$I$b0$@$R
-COLOR
-}
-
-intCheck() {
-    test $1 -ne 0 2> /dev/null
-    test $? -ne 2 || {
-         printf '%s\n' "$1 is not an integer." >&2
-         exit 1
-    }
-}
-
-fltCheck() {
-    testDecimal=$(echo "$1\n" | bc)
-    test $testDecimal -eq 0 2> /dev/null && {
-        printf '%s\n' "$1 is not a number." >&2
-        exit 1
-    }
-}
-
-validateDeps() {
-    type mpv 2>&1 > /dev/null || {
-        printf '%s\n' "mpv is not installed on your \$PATH." >&2
-        exit 4
-    }
-    type bc 2>&1 > /dev/null || {
-        printf '%s\n' "WARNING: bc is not installed on your \$PATH." >&2
-        printf '%s\n' "WARNING: speed control will not work." >&2
-    }
-    type socat 2>&1 > /dev/null && {
-        SOCKETCOMMAND="socat - $SOCKET"
-        return
-    }
-
-    printf '%s\n' "socat is not installed on your \$PATH." >&2
-    exit 4
-}
-
-validateSocket() {
-    test "$PLAYFLAG" != "true" && {
-        # test if socket exists
-        test -S $SOCKET || {
-            printf '%s\n' "$SOCKET does not exist." >&2
-            exit 2
-        }
-
-        # test if socket is open
-        status="$(getPauseStatus)"
-        test "$status" = "N/A" && {
-            printf '%s\n' "$SOCKET is not currently open." >&2
-            exit 3
-        }
-    } || {
-        return
-    }
-}
-
-# quit mpv process on given socket
-killSocket() {
-    printf '%s\n' "{ \"command\": [\"quit\"] }" | $SOCKETCOMMAND > /dev/null
-    exit 0
-}
-
-# kill all instances of mpv running under your user
-killAllMpv() {
-    pkill "mpv" 2>&1 > /dev/null
-    exit 0
-}
 
 # formats and echos according to $FORMATSTRING
 formatPrint() {
@@ -629,92 +634,222 @@ printDefaultStatus() {
     formatPrint
 }
 
+    # Misc. Functions
+###############################################################################
+
+color() {
+    b0='[40m'; B='[1m'; R='[0m'; I='[7m'
+
+    cat << COLOR
+$I$b0$@$R
+COLOR
+}
+
+intCheck() {
+    test $1 -ne 0 2> /dev/null
+    test $? -ne 2 || {
+         printf '%s\n' "'$1' is not an integer." >&2
+         exit 1
+    }
+}
+
+fltCheck() {
+    testDecimal=$(echo "$1\n" | bc)
+    test $testDecimal -eq 0 2> /dev/null && {
+        printf '%s\n' "'$1' is not a number." >&2
+        exit 1
+    }
+}
+
+validateDeps() {
+    type mpv 2>&1 > /dev/null || {
+        printf '%s\n' "mpv is not installed on your \$PATH." >&2
+        exit 4
+    }
+    type bc 2>&1 > /dev/null || {
+        printf '%s\n' "WARNING: bc is not installed on your \$PATH." >&2
+        printf '%s\n' "WARNING: speed control will not work." >&2
+    }
+    type socat 2>&1 > /dev/null && {
+        SOCKETCOMMAND="socat - $SOCKET"
+        return
+    }
+
+    printf '%s\n' "socat is not installed on your \$PATH." >&2
+    exit 4
+}
+
+validateSocket() {
+    test "$PLAYFLAG" != "true" && {
+        # test if socket exists
+        test -S $SOCKET || {
+            printf '%s\n' "$SOCKET does not exist." >&2
+            exit 2
+        }
+
+        # test if socket is open
+        status="$(getPauseStatus)"
+        test "$status" = "N/A" && {
+            printf '%s\n' "$SOCKET is not currently open." >&2
+            exit 3
+        }
+    } || {
+        return
+    }
+}
+
+getVersion() {
+    printf '%s\n' "MPVC Release 1.1 (c) Wildefyr"
+    exit
+}
+
 main() {
     validateDeps
 
     # get the user defined socket before anything else
     for arg in "$@"; do
 
-        test "$SOCKETFLAG" = "true" && {
-            SOCKET=$arg
-            SOCKETFLAG=false
-        }
+        test "$SOCKETFLAG" = "true" && { SOCKET=$arg; SOCKETFLAG=false; }
 
         case "$arg" in
-            -a) PLAYFLAG=true   ;;
-            -S) SOCKETFLAG=true ;;
-            -h) usage 0         ;;
+            add|-a|--append) PLAYFLAG=true   ;;
+            -S|--socket) SOCKETFLAG=true ;;
         esac
     done
 
     validateSocket
 
+    # main arg sort out
     for arg in "$@"; do
         case "$arg" in
-            -a)
+            add|-a|--append) test "$FORMATFLAG" = "true" && FORMATFLAG=false ;;
+            -f|--format)     test "$APPENDFLAG" = "true" && APPENDFLAG=false ;;
+            -?|--*)
                 test "$FORMATFLAG" = "true" && FORMATFLAG=false
-                ;;
-            -f)
                 test "$APPENDFLAG" = "true" && APPENDFLAG=false
                 ;;
             --) ;;
-            # use ? wildcard to match all other options
-            -?)
-                test "$FORMATFLAG" = "true" && FORMATFLAG=false
-                test "$APPENDFLAG" = "true" && APPENDFLAG=false
-                ;;
         esac
 
-        test "$FORMATFLAG" = "true" && {
-            FORMATSTRING="$FORMATSTRING $arg"
-        }
-        test "$APPENDFLAG" = "true" && {
-            APPENDSTRING="$APPENDSTRING $arg"
-        }
+        test "$FORMATFLAG" = "true" && FORMATSTRING="$FORMATSTRING $arg"
+        test "$APPENDFLAG" = "true" && APPENDSTRING="$APPENDSTRING $arg"
 
         case "$arg" in
-            -f) FORMATFLAG=true ;;
-            -a) APPENDFLAG=true ;;
+            -f|--format)     FORMATFLAG=true ;;
+            add|-a|--append) APPENDFLAG=true ;;
         esac
     done
 
+    # pass long args to relevant functions
     for arg in "$@"; do
         case "$arg" in
-            -a)
-                test "$QUIETFLAG" = "true" && {
-                    phraseAppendTracks &
-                } || {
-                    phraseAppendTracks
-                }
-                exit
+            add|-a|--append)
+                phraseAppendTracks
+                QUIETFLAG=true
                 ;;
-            -f)
+            -f|--format)
                 formatPrint
                 QUIETFLAG=true
                 ;;
         esac
     done
 
-    while getopts "hqS:s:t:v:V:r:R:x:X:PpzmlLiafFkK" opt; do
-        case "$opt" in
-            s)  setTimeRelative $OPTARG   ;;
-            t)  setTimeAbsolute $OPTARG   ;;
-            v)  setVolumeRelative $OPTARG ;;
-            V)  setVolumeAbsolute $OPTARG ;;
-            r)  setTrackRelative $OPTARG  ;;
-            R)  setTrackAbsolute $OPTARG  ;;
-            x)  setSpeedRelative $OPTARG  ;;
-            X)  setSpeedAbsolute $OPTARG  ;;
-            p)  togglePause               ;;
-            P)  alwaysPlay                ;;
-            m)  toggleMute                ;;
-            l)  toggleLoopFile            ;;
-            L)  toggleLoopPlaylist        ;;
-            z)  shufflePlaylist           ;;
-            i)  getPlaylist               ;;
-            k)  killSocket                ;;
-            K)  killAllMpv                ;;
-            \?) usage 1                   ;;
+    # mpc compatiblity layer - append -S -q -Q etc after the first argument
+    test ! -z $1 && {
+        case $1 in
+            play)
+                test ! -z $2 && {
+                    setTrackAbsolute $2
+                    alwaysPlay
+                } || {
+                    alwaysPlay
+                } ; exit ;;
+            stop)
+                alwaysPause
+                setTimeAbsolute 0
+                exit ;;
+            del)
+                test ! -z $2 && {
+                    removeTrack $2
+                } || {
+                    usage 1
+                } ; exit ;;
+            volume)
+                test ! -z $2 && {
+                    firstChar=$(echo $2 | cut -c 1)
+                    test "$firstChar" = "+" && {
+                        volume=$(echo $2 | cut -d+ -f2)
+                        setVolumeRelative $volume
+                    } || { test "$firstChar" = "-" && {
+                        volume=$(echo $2 | cut -d- -f2)
+                        setVolumeRelative "-${volume}"
+                        }
+                    } || {
+                        setVolumeAbsolute $2
+                    }
+                } || {
+                    usage 1
+                } ; exit ;;
+            pause)    alwaysPause         ; exit ;;
+            toggle)   togglePause         ; exit ;;
+            next)     setTrackRelative 1  ; exit ;;
+            prev)     setTrackRelative -1 ; exit ;;
+            repeat)   toggleLoopPlaylist  ; exit ;; # add on|off toggle
+            single)   toggleLoopFile      ; exit ;; # add on|off toggle
+            mute)     toggleMute true     ; exit ;;
+            unmute)   toggleMute false    ; exit ;;
+            playlist) getPlaylist         ; exit ;;
+            shuffle)  shufflePlaylist     ; exit ;;
+            clear)    clearPlaylist       ; exit ;;
+            crop)     cropPlaylist        ; exit ;;
+            # seek) to implement with full MPC options # with percentage!
+            # move) to implement
+            # consume) to implement # add on|off toggle
+            # random) MPV doesn't have this control option!
+            # create an issue or implement puesdo-random tracks
+            current)  continue            ; exit ;;
+            version)  getVersion          ; exit ;;
+        esac
+    }
+
+    # GNU-style options
+    for arg in "$@"; do
+        test "$SEEKFLAG" = "true" && setTimeRelative "$arg"; SEEKFLAG=false
+        test "$TIMEFLAG" = "true" && setTimeAbsolute "$arg"; TIMEFLAG=false
+        test "$VOLFLAG" = "true" && setVolumeRelative "$arg"; VOLFLAG=false
+        test "$VOLUMEFLAG" = "true" && setVolumeAbsolute "$arg"; VOLUMEFLAG=false
+        test "$SPEEDFLAG" = "true" && setSpeedRelative "$arg"; SPEEDFLAG=false
+        test "$SPEEDVALFLAG" = "true" && setSpeedAbsolute "$arg"; SPEEDVALFLAG=false
+        test "$TRACKFLAG" = "true" && setTrackRelative "$arg"; TRACKFLAG=false
+        test "$TRACKVALFLAG" = "true" && setTrackAbsolute "$arg"; TRACKVALFLAG=false
+        test "$DELETEFLAG" = "true" && removeTrack "$arg"; DELETEFLAG=false
+
+        case "$arg" in
+            -t|--seek)      SEEKFLAG=true      ;;
+            -T|--time)      TIMEFLAG=true      ;;
+            -v|--vol)       VOLFLAG=true       ;;
+            -V|--volume)    VOLUMEFLAG=true    ;;
+            -x|--speed)     SPEEDFLAG=true     ;;
+            -X|--speedval)  SPEEDVALFLAG=true  ;;
+            -r|--track)     TRACKFLAG=true     ;;
+            -R|--tracknum)  TRACKNUMFLAG=true  ;;
+            -d|--delete)    DELETEFLAG=true    ;;
+            -s|--stop)      alwaysPause        ;;
+            -P|--play)      alwaysPlay         ;;
+            -p|--toggle)    togglePause        ;;
+            -m|--mute)      toggleMute         ;;
+            -i|--playlist)  getPlaylist        ;;
+            -L|--loop)      toggleLoopPlaylist ;;
+            -l|--loop-file) toggleLoopFile     ;;
+            -z|--shuffle)   shufflePlaylist    ;;
+            -c|--crop)      cropPlaylist       ;;
+            -C|--clear)     clearPlaylist      ;;
+            -k|--kill)      killSocket         ;;
+            -K|--killall)   killAllMpv         ;;
+            -f|--format)    continue           ;;
+            -a|--append)    continue           ;;
+            -[1-999999])    continue           ;;
+            -?|--*)         usage 1            ;;
         esac
     done
 
@@ -722,9 +857,13 @@ main() {
 }
 
 for arg in $ARGS; do
-    test "$arg" = "-q" && QUIETFLAG=true
-    test "$arg" = "--version" && printf '%s\n' "mpvc release 1" && exit
-    test "$arg" = "--list-options" && printf '%s\n' "" && exit
+    case $arg in
+        --version)        getVersion               ;;
+        --list-options)   printf '%s\n' "" && exit ;;
+        -q|--quiet)       QUIETFLAG=true           ;;
+        -Q|--vid=no)      VIDEOFLAG=false          ;;
+        -h|--help|h|help) usage 0                  ;;
+    esac
 done
 
 test "$QUIETFLAG" = "true" && {
