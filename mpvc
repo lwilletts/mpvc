@@ -491,18 +491,24 @@ toggleMute() {
 }
 
 toggleLoopFile() {
-    loopFile=$(getLoopStatus loop-file)
-
-    test $loopFile = "no" && loopFile="inf" || loopFile="no"
+    test -z $1 && {
+        loopFile=$(getLoopStatus loop-file)
+        test $loopFile = "no" && loopFile="inf" || loopFile="no"
+    } || {
+        loopFile=$1
+    }
 
     printf '%s\n' "{ \"command\": [\"set_property_string\", \"loop-file\", \
 \"$loopFile\" ] }" | $SOCKETCOMMAND > /dev/null
 }
 
 toggleLoopPlaylist() {
-    loopPlaylist=$(getLoopStatus loop)
-
-    test $loopPlaylist = "no" && loopPlaylist="inf" || loopPlaylist="no"
+    test -z $1 && {
+        loopPlaylist=$(getLoopStatus loop)
+        test $loopPlaylist = "no" && loopPlaylist="inf" || loopPlaylist="no"
+    } || {
+        loopPlaylist=$1
+    }
 
     printf '%s\n' "{ \"command\": [\"set_property_string\", \"loop\", \
 \"$loopPlaylist\" ] }" | $SOCKETCOMMAND > /dev/null
@@ -511,9 +517,14 @@ toggleLoopPlaylist() {
 shufflePlaylist() {
     printf '%s\n' "{ \"command\": [\"playlist-shuffle\" ] }" | \
         $SOCKETCOMMAND > /dev/null
+
     test "$QUIETFLAG" != "true" && {
         printf '%s\n' "Playlist shuffled."
         QUIETFLAG=true
+    }
+
+    test "$(getLoopStatus loop)" != "inf" && {
+        toggleLoopPlaylist inf
     }
 }
 
@@ -832,7 +843,7 @@ main() {
             -x|--speed)     SPEEDFLAG=true     ;;
             -X|--speedval)  SPEEDVALFLAG=true  ;;
             -r|--track)     TRACKFLAG=true     ;;
-            -R|--tracknum)  TRACKNUMFLAG=true  ;;
+            -R|--tracknum)  TRACKVALFLAG=true  ;;
             -d|--delete)    DELETEFLAG=true    ;;
             -s|--stop)      alwaysPause        ;;
             -P|--play)      alwaysPlay         ;;
