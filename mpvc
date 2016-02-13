@@ -402,7 +402,7 @@ setTrackRelative() {
     printf '%s\n' "{ \"command\": [\"set_property\", \"playlist-pos\", \
 $desiredTrack ] }" | $SOCKETCOMMAND > /dev/null
 
-    # tiny delay so printDefaultStatus can catch up
+    # tiny delay so printFinalOutput can catch up
     sleep 0.5
 }
 
@@ -421,7 +421,7 @@ setTrackAbsolute() {
     printf '%s\n' "{ \"command\": [\"set_property\", \
 \"playlist-pos\", $currentTrack ] }" | $SOCKETCOMMAND > /dev/null
 
-    # tiny delay so printDefaultStatus can catch up
+    # tiny delay so printFinalOutput can catch up
     sleep 0.5
 }
 
@@ -645,6 +645,20 @@ printDefaultStatus() {
     formatPrint
 }
 
+# catches if mpv is idle or not
+printFinalOutput() {
+    test "$QUIETFLAG" != "true" && {
+        playlistResult=$(getPlaylist 2>&1)
+        test "$playlistResult" != "mpv on ${SOCKET} is currently idle." && {
+            printDefaultStatus
+        } || {
+            printf '%s\n' "$playlistResult"
+        }
+    }
+
+    exit 0
+}
+
     # Misc. Functions
 ###############################################################################
 
@@ -711,7 +725,7 @@ validateSocket() {
 
 getVersion() {
     printf '%s\n' "MPVC Release 1.1 (c) Wildefyr"
-    exit
+    exit 0
 }
 
 main() {
@@ -724,7 +738,7 @@ main() {
 
         case "$arg" in
             add|-a|--append) PLAYFLAG=true   ;;
-            -S|--socket) SOCKETFLAG=true ;;
+            -S|--socket)     SOCKETFLAG=true ;;
         esac
     done
 
@@ -746,8 +760,8 @@ main() {
         test "$APPENDFLAG" = "true" && APPENDSTRING="$APPENDSTRING $arg"
 
         case "$arg" in
-            -f|--format)     FORMATFLAG=true ;;
             add|-a|--append) APPENDFLAG=true ;;
+            -f|--format)     FORMATFLAG=true ;;
         esac
     done
 
@@ -768,16 +782,20 @@ main() {
     # mpc compatiblity layer - append -S -q -Q etc after the first argument
     test ! -z $1 && {
         case $1 in
-            play)
+            play|start)
                 test ! -z $2 && {
+                    intCheck $2
                     setTrackAbsolute $2
                     alwaysPlay
                 } || {
-                    alwaysPlay
-                } ; exit ;;
+                    echo $(getPauseStatus)
+                    togglePause
+                    echo $(getPauseStatus)
+                } ; printFinalOutput ;;
             stop)
                 alwaysPause
                 setTimeAbsolute 0
+                printFinalOutput
                 exit ;;
             volume)
                 test ! -z $2 && {
@@ -794,16 +812,36 @@ main() {
                     }
                 } || {
                     usage 1
-                } ; exit ;;
-            del) test ! -z $2 && removeTrack $2 || usage 1 ; exit ;;
-            pause)    alwaysPause         ; exit ;;
-            toggle)   togglePause         ; exit ;;
-            next)     setTrackRelative 1  ; exit ;;
-            prev)     setTrackRelative -1 ; exit ;;
-            repeat)   toggleLoopPlaylist  ; exit ;; # add on|off toggle
-            single)   toggleLoopFile      ; exit ;; # add on|off toggle
-            mute)     toggleMute true     ; exit ;;
-            unmute)   toggleMute false    ; exit ;;
+                } ; printFinalOutput ;;
+            del) test ! -z $2 && removeTrack $2 || usage 1; getPlaylist; exit ;;
+            repeat)
+                test ! -z $2 && {
+                    test "$2" = "on" && {
+                        toggleLoopPlaylist inf
+                    } || { test "$2" = "off" && {
+                        toggleLoopPlaylist no
+                        }
+                    }
+                } || {
+                    toggleLoopPlaylist
+                } ; printFinalOutput ;;
+            single)
+                test ! -z $2 && {
+                    test "$2" = "on" && {
+                        toggleLoopFile yes
+                    } || { test "$2" = "off" && {
+                        toggleLoopFile no
+                        }
+                    }
+                } || {
+                    toggleLoopFile
+                } ; printFinalOutput ;;
+            pause)    alwaysPause         ; printFinalOutput ;;
+            toggle)   togglePause         ; printFinalOutput ;;
+            next)     setTrackRelative 1  ; printFinalOutput ;;
+            prev)     setTrackRelative -1 ; printFinalOutput ;;
+            mute)     toggleMute true     ; printFinalOutput ;;
+            unmute)   toggleMute false    ; printFinalOutput ;;
             playlist) getPlaylist         ; exit ;;
             shuffle)  shufflePlaylist     ; exit ;;
             clear)    clearPlaylist       ; exit ;;
@@ -813,8 +851,8 @@ main() {
             # consume) to implement # add on|off toggle
             # random) MPV doesn't have this control option!
             # create an issue or implement puesdo-random tracks
-            current)  continue            ; exit ;;
-            version)  getVersion          ; exit ;;
+            version)  getVersion          ;;
+            current)  printFinalOutput    ;;
         esac
     }
 
@@ -855,18 +893,12 @@ main() {
             -f|--format)    continue           ;;
             -a|--append)    continue           ;;
             -[1-999999])    continue           ;;
+            --|---|----)    continue           ;;
             -?|--*)         usage 1            ;;
         esac
     done
 
-    test "$QUIETFLAG" != "true" && {
-        playlistResult=$(getPlaylist 2>&1)
-        test "$playlistResult" != "mpv on ${SOCKET} is currently idle." && {
-            printDefaultStatus
-        } || {
-            printf '%s\n' "$playlistResult"
-        }
-    }
+    printFinalOutput
 }
 
 for arg in $ARGS; do
@@ -880,7 +912,7 @@ for arg in $ARGS; do
 done
 
 test "$QUIETFLAG" = "true" && {
-    main $ARGS > /dev/null
+    main $ARGS 2>&1 > /dev/null
 } || {
     main $ARGS
 }
