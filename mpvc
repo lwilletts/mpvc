@@ -446,7 +446,7 @@ removeTrack() {
     }
 }
 
-alwaysPlay()  {
+alwaysPlay() {
     currentTrack=$(getValue playlist-pos)
     test "$currentTrack" = "N/A" && {
         setTrackAbsolute 1
@@ -765,15 +765,11 @@ main() {
         esac
     done
 
-    # pass long args to relevant functions
+    # append tracks first
     for arg in "$@"; do
         case "$arg" in
             add|-a|--append)
                 phraseAppendTracks
-                QUIETFLAG=true
-                ;;
-            -f|--format)
-                formatPrint
                 QUIETFLAG=true
                 ;;
         esac
@@ -895,6 +891,16 @@ main() {
             -[1-999999])    continue           ;;
             --|---|----)    continue           ;;
             -?|--*)         usage 1            ;;
+        esac
+    done
+
+    # produce format string last
+    for arg in "$@"; do
+        case "$arg" in
+            -f|--format)
+                formatPrint
+                QUIETFLAG=true
+                ;;
         esac
     done
 
