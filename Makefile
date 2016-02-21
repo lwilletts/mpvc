@@ -8,7 +8,7 @@ all: install
 
 install:
 	@echo 'Installing mpvc...'
-	install -Dm755 mpvc $(DESTDIR)/bin/mpvc
+	install -Dm755 mpvc $(DESTDIR)$(PREFIX)/bin/mpvc
 
 uninstall:
-	rm -f $(DESTDIR)/bin/mpvc
+	rm -f $(DESTDIR)$(PREFIX)/bin/mpvc
