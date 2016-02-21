@@ -1,8 +1,14 @@
-PREFIX = /usr/local
-MANDIR = /usr/share/man
+PREFIX   = /usr/local
+MANDIR   = ${PREFIX}/share/man
+MANPAGES = mpvc
+
+.PHONY: all install uninstall
+
+all: install
 
 install:
-	install -Dm755 mpvc $(DESTDIR)$(PREFIX)/bin/mpvc
+	@echo 'Installing mpvc...'
+	install -Dm755 mpvc $(DESTDIR)/bin/mpvc
 
 uninstall:
-	rm -f $(DESTDIR)$(PREFIX)/bin/mpvc
+	rm -f $(DESTDIR)/bin/mpvc
