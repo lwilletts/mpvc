@@ -284,33 +284,36 @@ setTimeRelative() {
     time=$(getValue playback-time)
     lastChar=$(printf '%s\n' "$1" | rev | cut -c 1)
 
-    test "$lastChar" = "s" || test "$lastChar" = "m" || test "$lastChar" = "h" || {
-        intCheck $1
-        time=$((time + $1))
-    } && {
-        firstChar=$(printf '%s' "$1" | cut -c 1)
-        test "$firstChar" = "-" && {
-            timeInt=$(printf '%s' "$1" | cut -c 2-)
-            timeInt=$(printf '%s' "$timeInt" | rev | cut -c 2- | rev)
-            minusFlag=true
-        } || {
-            timeInt=$(printf '%s' "$1" | rev | cut -c 2- | rev)
-        }
+    case "$lastChar" in
+        s|S|m|M|h|H)
+            firstChar=$(printf '%s' "$1" | cut -c 1)
+            test "$firstChar" = "-" && {
+                timeInt=$(printf '%s' "$1" | cut -c 2-)
+                timeInt=$(printf '%s' "$timeInt" | rev | cut -c 2- | rev)
+                minusFlag=true
+            } || {
+                timeInt=$(printf '%s' "$1" | rev | cut -c 2- | rev)
+            }
 
-        intCheck $timeInt
+            intCheck "$timeInt"
 
-        test "$lastChar" = "h" && {
-            timeInt=$((timeInt * 60 * 60))
-        }
-        test "$lastChar" = "m" && {
-            timeInt=$((timeInt * 60))
-        }
-        test "$minusFlag" = "true" && {
-            time=$((time + ${firstChar}${timeInt}))
-        } || {
-            time=$((time + $timeInt))
-        }
-    }
+            case "$lastChar" in
+                h|H) timeInt=$((timeInt * 60 * 60)) ;;
+                m|M) timeInt=$((timeInt * 60))      ;;
+            esac
+
+            test "$minusFlag" = "true" && {
+                time=$((time + ${firstChar}${timeInt}))
+            } || {
+                time=$((time + $timeInt))
+            }
+            ;;
+        *)
+            intCheck $1
+            time=$((time + $1))
+            ;;
+    esac
+
 
     printf '%s\n' "{ \"command\": [\"set_property\", \"playback-time\", \
 $time ] }" | $SOCKETCOMMAND > /dev/null
@@ -319,22 +322,23 @@ $time ] }" | $SOCKETCOMMAND > /dev/null
 setTimeAbsolute() {
     lastChar=$(printf '%s\n' "$1" | rev | cut -c 1)
 
-    test "$lastChar" = "s" || test "$lastChar" = "m" || test "$lastChar" = "h" || {
-        intCheck $1
-        time=$((time + $1))
-    } && {
-        timeInt=$(printf '%s' "$1" | rev | cut -c 2- | rev)
-        intCheck $timeInt
+    case "$lastChar" in
+        s|S|m|M|h|H)
+            timeInt=$(printf '%s' "$1" | rev | cut -c 2- | rev)
+            intCheck $timeInt
 
-        test "$lastChar" = "h" && {
-            timeInt=$((timeInt * 60 * 60))
-        }
-        test "$lastChar" = "m" && {
-            timeInt=$((timeInt * 60))
-        }
+            case "$lastChar" in
+                h|H) timeInt=$((timeInt * 60 * 60)) ;;
+                m|M) timeInt=$((timeInt * 60))      ;;
+            esac
 
-        time=$timeInt
-    }
+            time=$timeInt
+            ;;
+        *)
+            intCheck $1
+            time=$((time + $1))
+            ;;
+    esac
 
     printf '%s\n' "{ \"command\": [\"set_property\", \"playback-time\", \
 $time ] }" | $SOCKETCOMMAND > /dev/null
