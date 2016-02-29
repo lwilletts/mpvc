@@ -934,8 +934,7 @@ main() {
             -f|--format)    continue           ;;
             -a|--append)    continue           ;;
             -[1-999999])    continue           ;;
-            --|---|----)    continue           ;;
-            -?|--*)         usage 1            ;;
+            -?)             usage 1            ;;
         esac
     done
 
