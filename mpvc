@@ -931,7 +931,6 @@ main() {
             -c|--crop)      cropPlaylist       ;;
             -C|--clear)     clearPlaylist      ;;
             -k|--kill)      killSocket         ;;
-            -K|--killall)   killAllMpv         ;;
             -f|--format)    continue           ;;
             -a|--append)    continue           ;;
             -[1-999999])    continue           ;;
@@ -959,6 +958,7 @@ for arg in $ARGS; do
         --list-options)   printf '%s\n' "" && exit ;;
         -q|--quiet)       QUIETFLAG=true           ;;
         -Q|--vid=no)      VIDEOFLAG=false          ;;
+        -K|--killall)     killAllMpv               ;;
         -h|--help|h|help) usage 0                  ;;
     esac
 done
