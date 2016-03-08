@@ -187,6 +187,11 @@ getPlaylist() {
         playlistCur=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
 \"playlist/$((i - 1))/filename\"] }" | $SOCKETCOMMAND 2> /dev/null)
         playlistCur=$(printf '%s ' $playlistCur | cut -d\" -f 4)
+
+        case "$playlistCur" in
+            *.googlevideo.com/*) playlistCur="mps-yt stream " ;;
+        esac
+
         currentTrack=$(getValue playlist-pos)
 
         trackNum=$i
@@ -205,17 +210,17 @@ getPlaylist() {
 
         test "$currentTrack" != "N/A" && {
             test "$currentTrack" -eq $((i - 1)) && {
-                allTracks="${allTracks}$(color "${trackNum}: ${playlistCur}")\n"
+                allTracks="${allTracks}$(color "${trackNum}: ${playlistCur}")"
             } || {
-                allTracks="${allTracks}$(printf "${trackNum}: ${playlistCur}")\n"
+                allTracks="${allTracks}$(printf '%s\n' "${trackNum}: ${playlistCur}")"
             }
         } || {
-            allTracks="${allTracks}$(printf "${trackNum}: ${playlistCur}")\n"
+            allTracks="${allTracks}$(printf '%s\n' "${trackNum}: ${playlistCur}")"
         }
     done
 
     test ! -z "$allTracks" && {
-        printf "$allTracks"
+        printf '%s\n' "$allTracks"
     } || {
         printf '%s\n' "mpv on ${SOCKET} is currently idle." >&2
     }
@@ -228,10 +233,11 @@ getPlaylist() {
 
 phraseAppendTracks() {
     # find media extensions and append a newline to them
-    APPENDSTRING=$(echo $APPENDSTRING | sed "
+    APPENDSTRING=$(printf '%s\n' "$APPENDSTRING" | sed "
     s#.mp3 #.mp3\n#g
     s#.m4a #.m4a\n#g
     s#.aac #.acc\n#g
+    s#.ogg #.ogg\n#g
     s#.flac #.flac\n#g
     s#.mp4 #.mp4\n#g
     s#.mkv #.mkv\n#g
@@ -248,9 +254,9 @@ phraseAppendTracks() {
     # mpv will resolve files given in a directory,
     # but I have no way of separating directories with sed at the moment
 
-    totalFiles=$(printf "${APPENDSTRING}\n" | wc -l)
+    totalFiles=$(printf '%s\n' "${APPENDSTRING}" | wc -l)
     for i in $(seq $totalFiles); do
-        appendTrack $(printf "${APPENDSTRING}" | sed "$i!d")
+        appendTrack $(printf '%s\n' "${APPENDSTRING}" | sed "$i!d")
         # need slight pause to start mpv
         test "$i" -eq 1 && sleep 0.1
     done
@@ -272,6 +278,10 @@ appendTrack() {
                 --input-unix-socket=${SOCKET} "$filename" &
         }
     }
+
+    case "$filename" in
+        *.googlevideo.com/*) filename="mps-yt stream " ;;
+    esac
 
     test "$result" = "error" && {
         printf '%s\n' "Idly adding: ${filename}"
@@ -612,8 +622,8 @@ elaspedTime() {
 
 preciseElaspedTime() {
     time=$(getValue precisetime)
-    bigTime=$(echo $time | cut -d. -f 1)
-    tinyTime=$(echo $time | cut -d. -f 2)
+    bigTime=$(printf '%s\n' "$time" | cut -d. -f 1)
+    tinyTime=$(printf '%s\n' "$time" | cut -d. -f 2)
     formatTime $bigTime $tinyTime
 }
 
@@ -645,11 +655,11 @@ formatTime() {
     # Formatting and Printing Functions
 ###############################################################################
 
-# formats and echos according to $FORMATSTRING
+# formats and prints according to $FORMATSTRING
 formatPrint() {
 
     # this is super hacky but works!
-    FORMATSTRING=$(echo $FORMATSTRING | sed "
+    FORMATSTRING=$(printf '%s\n' "$FORMATSTRING" | sed "
     s#%year%#$(getMetadata date)#g
     s#%genre%#$(getMetadata genre)#g
     s#%title%#$(getMetadata title)#g
@@ -679,15 +689,15 @@ printf "$status"
     )#g
     ")
 
-    echo "${FORMATSTRING}"
+    printf '%s\n' "${FORMATSTRING}"
 }
 
 # print default status of mpv instance
 printDefaultStatus() {
-    FORMATSTRING="
+    FORMATSTRING="\
 %artist% - %title%
-\n[%status%] #%position%/%playlistlength% %time%/%length% (%percentage%%)
-\nspeed: %speed%x volume: %volume%% muted: %muted% repeat: %repeat% single: %single%"
+[%status%] #%position%/%playlistlength% %time%/%length% (%percentage%%)
+speed: %speed%x volume: %volume%% muted: %muted% repeat: %repeat% single: %single%"
     formatPrint
 }
 
@@ -799,11 +809,10 @@ main() {
                 test "$FORMATFLAG" = "true" && FORMATFLAG=false
                 test "$APPENDFLAG" = "true" && APPENDFLAG=false
                 ;;
-            --) ;;
         esac
 
-        test "$FORMATFLAG" = "true" && FORMATSTRING="$FORMATSTRING $arg"
-        test "$APPENDFLAG" = "true" && APPENDSTRING="$APPENDSTRING $arg"
+        test "$FORMATFLAG" = "true" && FORMATSTRING="${FORMATSTRING}${arg} "
+        test "$APPENDFLAG" = "true" && APPENDSTRING="${APPENDSTRING}${arg} "
 
         case "$arg" in
             add|-a|--append) APPENDFLAG=true ;;
@@ -821,94 +830,91 @@ main() {
         esac
     done
 
-    # mpc compatiblity layer - append -S -q -Q etc after the first argument
-    test ! -z $1 && {
-        case $1 in
-            play|start)
-                test ! -z $2 && {
-                    intCheck $2
-                    setTrackAbsolute $2
-                    alwaysPlay
-                } || {
-                    echo $(getPauseStatus)
-                    togglePause
-                    echo $(getPauseStatus)
-                } ; printFinalOutput ;;
-            stop)
-                alwaysPause
-                setTimeAbsolute 0
-                printFinalOutput
-                exit ;;
-            volume)
-                test ! -z $2 && {
-                    firstChar=$(echo $2 | cut -c 1)
-                    test "$firstChar" = "+" && {
-                        volume=$(echo $2 | cut -d+ -f2)
-                        setVolumeRelative $volume
-                    } || { test "$firstChar" = "-" && {
-                        volume=$(echo $2 | cut -d- -f2)
-                        setVolumeRelative "-${volume}"
-                        }
-                    } || {
-                        setVolumeAbsolute $2
+    case $1 in
+        play|start)
+            test ! -z $2 && {
+                intCheck $2
+                setTrackAbsolute $2
+                alwaysPlay
+            } || {
+                printf '%s\n' "$(getPauseStatus)"
+                togglePause
+                printf '%s\n' "$(getPauseStatus)"
+            } ; printFinalOutput ;;
+        stop)
+            alwaysPause
+            setTimeAbsolute 0
+            printFinalOutput
+            exit ;;
+        volume)
+            test ! -z $2 && {
+                firstChar=$(printf '%s\n' "$2" | cut -c 1)
+                test "$firstChar" = "+" && {
+                    volume=$(printf '%s\n' "$2" | cut -d+ -f2)
+                    setVolumeRelative $volume
+                } || { test "$firstChar" = "-" && {
+                    volume=$(printf '%s\n' "$2" | cut -d- -f2)
+                    setVolumeRelative "-${volume}"
                     }
                 } || {
-                    usage 1
-                } ; printFinalOutput ;;
-            del) test ! -z $2 && removeTrack $2 || usage 1; getPlaylist; exit ;;
-            repeat)
-                test ! -z $2 && {
-                    test "$2" = "on" && {
-                        toggleLoopPlaylist inf
-                    } || { test "$2" = "off" && {
-                        toggleLoopPlaylist no
-                        }
+                    setVolumeAbsolute $2
+                }
+            } || {
+                usage 1
+            } ; printFinalOutput ;;
+        del) test ! -z $2 && removeTrack $2 || usage 1; getPlaylist; exit ;;
+        repeat)
+            test ! -z $2 && {
+                test "$2" = "on" && {
+                    toggleLoopPlaylist inf
+                } || { test "$2" = "off" && {
+                    toggleLoopPlaylist no
                     }
-                } || {
-                    toggleLoopPlaylist
-                } ; printFinalOutput ;;
-            single)
-                test ! -z $2 && {
-                    test "$2" = "on" && {
-                        toggleLoopFile yes
-                    } || { test "$2" = "off" && {
-                        toggleLoopFile no
-                        }
+                }
+            } || {
+                toggleLoopPlaylist
+            } ; printFinalOutput ;;
+        single)
+            test ! -z $2 && {
+                test "$2" = "on" && {
+                    toggleLoopFile yes
+                } || { test "$2" = "off" && {
+                    toggleLoopFile no
                     }
-                } || {
-                    toggleLoopFile
-                } ; printFinalOutput ;;
-            pause)    alwaysPause         ; printFinalOutput ;;
-            toggle)   togglePause         ; printFinalOutput ;;
-            next)     setTrackRelative 1  ; printFinalOutput ;;
-            prev)     setTrackRelative -1 ; printFinalOutput ;;
-            mute)     toggleMute true     ; printFinalOutput ;;
-            unmute)   toggleMute false    ; printFinalOutput ;;
-            playlist) getPlaylist         ; exit ;;
-            shuffle)  shufflePlaylist     ; exit ;;
-            clear)    clearPlaylist       ; exit ;;
-            crop)     cropPlaylist        ; exit ;;
-            # seek) to implement with full MPC options # with percentage!
-            # move) to implement
-            # consume) to implement # add on|off toggle
-            # random) MPV doesn't have this control option!
-            # create an issue or implement puesdo-random tracks
-            version)  getVersion          ;;
-            current)  printFinalOutput    ;;
-        esac
-    }
+                }
+            } || {
+                toggleLoopFile
+            } ; printFinalOutput ;;
+        pause)    alwaysPause         ; printFinalOutput ;;
+        toggle)   togglePause         ; printFinalOutput ;;
+        next)     setTrackRelative 1  ; printFinalOutput ;;
+        prev)     setTrackRelative -1 ; printFinalOutput ;;
+        mute)     toggleMute true     ; printFinalOutput ;;
+        unmute)   toggleMute false    ; printFinalOutput ;;
+        playlist) getPlaylist         ; exit ;;
+        shuffle)  shufflePlaylist     ; exit ;;
+        clear)    clearPlaylist       ; exit ;;
+        crop)     cropPlaylist        ; exit ;;
+        # seek) to implement with full MPC options # with percentage!
+        # move) to implement
+        # consume) to implement # add on|off toggle
+        # random) MPV doesn't have this control option!
+        # create an issue or implement puesdo-random tracks
+        version)  getVersion          ;;
+        current)  printFinalOutput    ;;
+    esac
 
     # GNU-style options
     for arg in "$@"; do
-        test "$SEEKFLAG" = "true" && setTimeRelative "$arg"; SEEKFLAG=false
-        test "$TIMEFLAG" = "true" && setTimeAbsolute "$arg"; TIMEFLAG=false
-        test "$VOLFLAG" = "true" && setVolumeRelative "$arg"; VOLFLAG=false
-        test "$VOLUMEFLAG" = "true" && setVolumeAbsolute "$arg"; VOLUMEFLAG=false
-        test "$SPEEDFLAG" = "true" && setSpeedRelative "$arg"; SPEEDFLAG=false
-        test "$SPEEDVALFLAG" = "true" && setSpeedAbsolute "$arg"; SPEEDVALFLAG=false
-        test "$TRACKFLAG" = "true" && setTrackRelative "$arg"; TRACKFLAG=false
-        test "$TRACKVALFLAG" = "true" && setTrackAbsolute "$arg"; TRACKVALFLAG=false
-        test "$DELETEFLAG" = "true" && removeTrack "$arg"; DELETEFLAG=false
+        test "$SEEKFLAG"     = "true" && setTimeRelative "$arg";   SEEKFLAG=false
+        test "$TIMEFLAG"     = "true" && setTimeAbsolute "$arg";   TIMEFLAG=false
+        test "$VOLFLAG"      = "true" && setVolumeRelative "$arg"; VOLFLAG=false
+        test "$VOLUMEFLAG"   = "true" && setVolumeAbsolute "$arg"; VOLUMEFLAG=false
+        test "$SPEEDFLAG"    = "true" && setSpeedRelative "$arg";  SPEEDFLAG=false
+        test "$SPEEDVALFLAG" = "true" && setSpeedAbsolute "$arg";  SPEEDVALFLAG=false
+        test "$TRACKFLAG"    = "true" && setTrackRelative "$arg";  TRACKFLAG=false
+        test "$TRACKVALFLAG" = "true" && setTrackAbsolute "$arg";  TRACKVALFLAG=false
+        test "$DELETEFLAG"   = "true" && removeTrack "$arg";       DELETEFLAG=false
 
         case "$arg" in
             -t|--seek)      SEEKFLAG=true      ;;
@@ -934,6 +940,7 @@ main() {
             -f|--format)    continue           ;;
             -a|--append)    continue           ;;
             -[1-999999])    continue           ;;
+            --|---|----)    continue           ;;
             -?)             usage 1            ;;
         esac
     done
@@ -953,12 +960,12 @@ main() {
 
 for arg in $ARGS; do
     case $arg in
-        --version)        getVersion               ;;
-        --list-options)   printf '%s\n' "" && exit ;;
-        -q|--quiet)       QUIETFLAG=true           ;;
-        -Q|--vid=no)      VIDEOFLAG=false          ;;
-        -K|--killall)     killAllMpv               ;;
-        -h|--help|h|help) usage 0                  ;;
+        --version)        getVersion          ;;
+        --list-options)   printf '\n' && exit ;;
+        -q|--quiet)       QUIETFLAG=true      ;;
+        -Q|--vid=no)      VIDEOFLAG=false     ;;
+        -K|--killall)     killAllMpv          ;;
+        -h|--help|h|help) usage 0             ;;
     esac
 done
 
