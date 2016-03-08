@@ -210,17 +210,17 @@ getPlaylist() {
 
         test "$currentTrack" != "N/A" && {
             test "$currentTrack" -eq $((i - 1)) && {
-                allTracks="${allTracks}$(color "${trackNum}: ${playlistCur}")"
+                allTracks="${allTracks}$(color "${trackNum}: ${playlistCur}")\n"
             } || {
-                allTracks="${allTracks}$(printf '%s\n' "${trackNum}: ${playlistCur}")"
+                allTracks="${allTracks}$(printf "${trackNum}: ${playlistCur}")\n"
             }
         } || {
-            allTracks="${allTracks}$(printf '%s\n' "${trackNum}: ${playlistCur}")"
+            allTracks="${allTracks}$(printf "${trackNum}: ${playlistCur}")\n"
         }
     done
 
     test ! -z "$allTracks" && {
-        printf '%s\n' "$allTracks"
+        printf "$allTracks"
     } || {
         printf '%s\n' "mpv on ${SOCKET} is currently idle." >&2
     }
