@@ -63,6 +63,12 @@ getMediaFilename() {
     mediaFilename=$(printf '%s\n' "$mediaFilename" | cut -d: -f 2 | \
         cut -d, -f 1 | sed s/\"//g)
 
+
+mediaFilename=$(echo "${mediaFilename}" | sed "\
+s/mp4&.*/mps-yt stream/
+s/webm&.*/mps-yt stream/
+")
+
     printf "$mediaFilename"
 }
 
@@ -689,7 +695,7 @@ printf "$status"
     )#g
     ")
 
-    printf '%s\n' "${FORMATSTRING}"
+    echo "${FORMATSTRING}"
 }
 
 # print default status of mpv instance
