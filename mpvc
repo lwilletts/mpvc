@@ -67,6 +67,7 @@ getMediaFilename() {
 mediaFilename=$(echo "${mediaFilename}" | sed "\
 s/mp4&.*/mps-yt stream/
 s/webm&.*/mps-yt stream/
+s/3gpp&.*/mps-yt stream/
 ")
 
     printf "$mediaFilename"
