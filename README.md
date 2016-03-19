@@ -18,7 +18,9 @@ Install
 -------
 
 Distribution Packages:
-    [Crux](https://github.com/6c37/crux-ports-git)
+
+* [Crux](https://github.com/6c37/crux-ports-git)
+* [Arch](https://aur.archlinux.org/packages/mpvc-git/)
 
 If you have packaged mpvc for your distribution, let me know so I can add it here.
 
