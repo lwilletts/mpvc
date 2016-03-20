@@ -10,29 +10,31 @@ SOCKET=${SOCKET:-/tmp/mpvsocket}
 
 usage() {
     cat << EOF
-
 Usage: $(basename $0) [-S "socket"] [-a "filenames"] "[-f "format string"]
-    -S : Set socket location [default: $SOCKET].
-    -q : Produce no textual output.
-    -f : Enter a format string.
-    -a : Add files to current playlist. This cannot be combined with another option.
-    -i : Print all filenames of tracks in current playlist.
-    -s : Increase/decrease time in seconds.
-    -t : Set absolute time in seconds.
-    -v : Increase/decrease volume relatively to the current volume.
-    -V : Set absolute volume.
-    -r : Go forwards/backwards through the playlist queue.
-    -R : Jump to playlist item number.
-    -x : Increase/decrease speed relatively to the current speed.
-    -X : Set absolute speed.
-    -p : Toggle play/paused.
-    -m : Toggle mute/unmuted.
-    -l : Loop currently playing file.
-    -L : Loop currently playing playlist.
-    -z : Shuffle the current playlist.
-    -k : Kill the current mpv process controlling the given socket.
-    -K : Kill all mpv processes found.
-    -h : Print this help.
+    -p | --toggle   : Toggle playback.
+    -s | --stop     : Always stop playback.
+    -P | --play     : Always start playback.
+    -f | --format   : Enter a formatting string.
+    -a | --add      : Add files to playlist.
+    -i | --playlist : Print all filenames of tracks in current playlist.
+    -t | --seek     : Increase/decrease time relative to the current time.
+    -T | --time     : Set absolute time.
+    -v | --vol      : Increase/decrease volume relative to the current volume.
+    -V | --volume   : Set absolute volume.
+    -r | --track    : Go forwards/backwards through the playlist queue.
+    -R | --tracknum : Jump to playlist item number.
+    -x | --speed    : Increase/decrease speed relative to the current speed.
+    -X | --speedval : Set absolute speed.
+    -m | --mute     : Toggle sound.
+    -l | --loop     : Loop currently playing file.
+    -L | --loopfile : Loop currently playing playlist.
+    -z | --shuffle  : Shuffle the current playlist.
+    -k | --kill     : Kill the mpv process controlling the given socket.
+    -K | --killall  : Kill all mpv processes indiscriminately.
+    -S | --socket   : Set socket location [default: $SOCKET].
+    -q | --quiet    : Surpress all text output.
+    -Q | --vid=no   : Start mpv with video output disabled.
+    -h | --help     : Print this help.
 
 Formatting:
     $(basename $0) will interpret the following delimiters if they are found:
@@ -40,15 +42,13 @@ Formatting:
     %filename%, %title%, %artist%, %album%, %albumartist%, %genre%, %year%
     %status%, %time%, %precisetime%, %length%, %percentage%, %speed%
     %playlistlength%, %position%, %repeat%, %single%
-    %volume%, %muted%
-    %frame%
+    %volume%, %muted%, %frame%
 
 Exit codes:
      0: Program ran succesfully.
      1: Input Argument error.
      2: Socket does not exist.
      3: Socket is not currently open.
-
 EOF
 
     test -z $1 && exit 0 || exit $1
@@ -64,7 +64,7 @@ getMediaFilename() {
         cut -d, -f 1 | sed s/\"//g)
 
 
-mediaFilename=$(echo "${mediaFilename}" | sed "\
+mediaFilename=$(printf '%s\n' "${mediaFilename}" | sed "\
 s/mp4&.*/mps-yt stream/
 s/webm&.*/mps-yt stream/
 s/3gpp&.*/mps-yt stream/
@@ -217,12 +217,12 @@ getPlaylist() {
 
         test "$currentTrack" != "N/A" && {
             test "$currentTrack" -eq $((i - 1)) && {
-                allTracks="${allTracks}$(color "${trackNum}: ${playlistCur}")\n"
+                allTracks="${allTracks}$(color "${playlistCur}")\n"
             } || {
-                allTracks="${allTracks}$(printf "${trackNum}: ${playlistCur}")\n"
+                allTracks="${allTracks}$(printf "${playlistCur}")\n"
             }
         } || {
-            allTracks="${allTracks}$(printf "${trackNum}: ${playlistCur}")\n"
+            allTracks="${allTracks}$(printf "${playlistCur}")\n"
         }
     done
 
@@ -665,17 +665,21 @@ formatTime() {
 # formats and prints according to $FORMATSTRING
 formatPrint() {
 
-    # this is super hacky but works!
+    # modified format string
     FORMATSTRING=$(printf '%s\n' "$FORMATSTRING" | sed "
+    s#%status%#$(status=$(getPauseStatus)
+    test $status = "playing" && status="paused" || status="playing"
+    printf "$status")#g
+
     s#%year%#$(getMetadata date)#g
     s#%genre%#$(getMetadata genre)#g
     s#%title%#$(getMetadata title)#g
     s#%album%#$(getMetadata album)#g
     s#%artist%#$(getMetadata artist)#g
     s#%albumartist%#$(getMetadata album_artist)#g
-
     s#%speed%#$(getSpeed)#g
     s#%time%#$(elaspedTime)#g
+    s#%precisetime%#$(preciseElaspedTime)#g
     s#%volume%#$(getValue volume)#g
     s#%length%#$(trackLength)#g
     s#%muted%#$(getMuteStatus)#g
@@ -685,18 +689,10 @@ formatPrint() {
     s#%single%#$(getLoopStatus loop-file)#g
     s#%playlistlength%#$(getValue playlist-count)#g
     s#%position%#$(($(getValue playlist-pos) + 1))#g
-
-    s#%precisetime%#$(preciseElaspedTime)#g
     s#%frame%#$(getFrameNumber)#g
-
-    s#%status%#$(
-status=$(getPauseStatus)
-test $status = "playing" && status="paused" || status="playing"
-printf "$status"
-    )#g
     ")
 
-    echo "${FORMATSTRING}"
+    printf '%s\n' "${FORMATSTRING}"
 }
 
 # print default status of mpv instance
@@ -787,7 +783,7 @@ validateSocket() {
 }
 
 getVersion() {
-    printf '%s\n' "MPVC Release 1.1 (c) Wildefyr"
+    printf '%s\n' "MPVC Release 1.2 (c) Wildefyr MIT"
     exit 0
 }
 
@@ -796,16 +792,12 @@ main() {
 
     # get the user defined socket before anything else
     for arg in "$@"; do
-
-        test "$SOCKETFLAG" = "true" && { SOCKET=$arg; SOCKETFLAG=false; }
+        test "$SOCKETFLAG" = "true" && SOCKET=$arg && SOCKETFLAG=false
 
         case "$arg" in
-            add|-a|--append) PLAYFLAG=true   ;;
             -S|--socket)     SOCKETFLAG=true ;;
         esac
     done
-
-    validateSocket
 
     # main arg sort out
     for arg in "$@"; do
@@ -827,15 +819,20 @@ main() {
         esac
     done
 
+    # grab piped input if there are no args or appendstring is empty
+    test -z "$APPENDSTRING" && test -p /dev/stdin && {
+        while read -r line; do
+            APPENDSTRING="${APPENDSTRING}${line} "
+        done
+    }
+
     # append tracks first
-    for arg in "$@"; do
-        case "$arg" in
-            add|-a|--append)
-                phraseAppendTracks
-                QUIETFLAG=true
-                ;;
-        esac
-    done
+    test ! -z "$APPENDSTRING" && {
+        phraseAppendTracks
+        QUIETFLAG=true
+    }
+
+    validateSocket
 
     case $1 in
         play|start)
@@ -939,7 +936,7 @@ main() {
             -m|--mute)      toggleMute         ;;
             -i|--playlist)  getPlaylist        ;;
             -L|--loop)      toggleLoopPlaylist ;;
-            -l|--loop-file) toggleLoopFile     ;;
+            -l|--loopfile)  toggleLoopFile     ;;
             -z|--shuffle)   shufflePlaylist    ;;
             -c|--crop)      cropPlaylist       ;;
             -C|--clear)     clearPlaylist      ;;
@@ -967,12 +964,12 @@ main() {
 
 for arg in $ARGS; do
     case $arg in
-        --version)        getVersion          ;;
-        --list-options)   printf '\n' && exit ;;
-        -q|--quiet)       QUIETFLAG=true      ;;
-        -Q|--vid=no)      VIDEOFLAG=false     ;;
-        -K|--killall)     killAllMpv          ;;
-        -h|--help|h|help) usage 0             ;;
+        --version)        getVersion      ;;
+        -q|--quiet)       QUIETFLAG=true  ;;
+        -Q|--vid=no)      VIDEOFLAG=false ;;
+        -K|--killall)     killAllMpv      ;;
+        --list-options)   usage 0         ;;
+        -h|--help|h|help) usage 0         ;;
     esac
 done
 
