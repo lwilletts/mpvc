@@ -18,115 +18,56 @@ Install
 -------
 
 Distribution Packages:
-    [Crux](https://github.com/6c37/crux-ports-git)
+    - [Arch](https://aur.archlinux.org/packages/mpvc-git) - pacaur -y mpvc
+    - [Crux](https://github.com/6c37/crux-ports-git) - prt-get depinst mpvc
 
 If you have packaged mpvc for your distribution, let me know so I can add it here.
 
 Manual Install
 --------------
 
-Either use the makefile I have provided or copy mpvc somewhere to your $PATH.
+Either use the Makefile I have provided or copy mpvc somewhere to your $PATH.
 
 Usage
 -----
 
-```
-Usage: mpvc [-S "socket"] [-a "filenames"] "[-f "format string"]
-    -S : Set socket location [default: $SOCKET].
-    -q : Produce no textual output.
-    -f : Enter a format string.
-    -a : Add files to current playlist. This cannot be combined with another option.
-    -i : Print all filenames of tracks in current playlist.
-    -s : Increase/decrease time in seconds.
-    -t : Set absolute time in seconds.
-    -v : Increase/decrease volume relatively to the current volume.
-    -V : Set absolute volume.
-    -r : Go forwards/backwards through the playlist queue.
-    -R : Jump to playlist item number.
-    -x : Increase/decrease speed relatively to the current speed.
-    -X : Set absolute speed.
-    -p : Toggle play/paused.
-    -m : Toggle mute/unmuted.
-    -l : Loop currently playing file.
-    -L : Loop currently playing playlist.
-    -z : Shuffle the current playlist.
-    -k : Kill the current mpv process controlling the given socket.
-    -K : Kill all mpv processes found.
-    -h : Print this help.
-
-Formatting:
-    mpvc will interpret the following delimiters if they are found:
-
-    %filename%, %title%, %artist%, %album%, %albumartist%, %genre%, %year%
-    %status%, %time%, %precisetime%, %length%, %percentage%, %speed%
-    %playlistlength%, %position%, %repeat%, %single%
-    %volume%, %muted%
-    %frame%
-
-Exit codes:
-     0: Program ran succesfully.
-     1: Input Argument error.
-     2: Socket does not exist.
-     3: Socket is not currently open.
-```
-
-While /tmp/mpvsocket is the default socket location, any mpv socket can be
-specified with the use of the -S flag when calling mpvc.
-
-mpv must also be started with the following argument:
+For mpvc to work, mpv must be started with the following argument:
 
 ```bash
 mpv --input-unix-socket=/tmp/mpvsocket
 ```
 
-You can alias with something like this in your shell's configuration file like so:
-
-```bash
-alias mpvt --input-unix-socket=/tmp/mpvsocket --really-quiet
-```
-
-Alternatively, you can add the following to your ~/.config/mpv/mpv.conf file.
-However, the socket would loaded for any mpv instance:
+You *could* add the following to your mpv.conf file, but then socket would be
+loaded with every instance of mpv by default, but might cause issues as you
+will corrupt the socket if two mpv instances are loaded at the same time with
+it:
 
 ```bash
 input-unix-socket=/tmp/mpvsocket
 ```
 
-I recommend looking at something like [sxhkd](https://github.com/baskerville/sxhkd)
-to bind mpvc calls to key combinations.
+Alternatively, mpvc can be used with the -a or --add option to add files into
+the playlist. This functionality can be augmented with `find` with something
+like `mpvc -a $(find -type f)`, or you can directly pipe into mpvc like so:
+`find -type f | mpvc`
 
 Useful Tricks
 -------------
 
-Most of the options can be used in combination with each other freely. The
-only exception is the -a command. 
-
-To stop playback ala mpc style, try:
-
-```bash
-mpvc -p -t 0
-```
-
-To decrease the relative values of the playback-time, volume or track
-position, append a minus symbol to the value:
-
-```bash
-mpvc -v -10
-```
-
-The -r option can be used to skip however many tracks in a direction, so long
-as it's in the playlist's range:
-
-```bash
-mpvc -r 5
-```
-
-The -r option can also be combined with -P to always start playing a file
-after it's changed.
-
-```bash
-mpvc -r 1 -P
-```
+- Using the `find` command like so: `mpvc -a $(find -type f)` might give you
+  better results as it'll list all files in the tree from your current
+  position (This is incredibly hard to implement with a non-newline input with
+  shell).
+- Any URL that is newline separated and resolvable by mpv and/or youtube-dl
+  can be added to the playlist, i.e. using
+  [mps-youtube](https://github.com/mps-youtube/mps-youtube) with `player` set
+  to mpvc and `playerargs` set to add.
+- Options can be combined together to give improved result i.e. `mpvc -P -r 1`
+  to start playing the next track always.
+- There is an *rough* mpc compatibility layer implemeted in addition to the
+  usage options, see the mpc man page for details.
+- I recommend looking at something like [sxhkd](https://github.com/baskerville/sxhkd)
+  to bind mpvc commands to key combinations.
 
 TODO
 ----
@@ -137,6 +78,6 @@ Shameless Plug
 --------------
 
 If you want to contact me about anything, my website can be found
-[here](http://wildefyr.net) and I can also be found on the Freenode IRC under
+[here](https://wildefyr.net) and I can also be found on the Freenode IRC under
 the nick 'Wildefyr' where I am often found in #crux and #6c37. If you're
 feeling particularly kind of heart, star this repository and/or follow me.
