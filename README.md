@@ -18,7 +18,7 @@ Install
 -------
 
 Distribution Packages:
-- [Arch](https://aur.archlinux.org/packages/mpvc-git) - `pacaur -y mpvc`
+- [Arch](https://aur.archlinux.org/packages/mpvc-git) - `pacaur -y mpvc-git`
 - [Crux](https://github.com/6c37/crux-ports-git) - `prt-get depinst mpvc`
 
 If you have packaged mpvc for your distribution, let me know so I can add it here.
