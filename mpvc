@@ -866,7 +866,13 @@ main() {
             } || {
                 usage 1
             } ; printFinalOutput ;;
-        del) test ! -z $2 && removeTrack $2 || usage 1; getPlaylist; exit ;;
+        del)
+            test ! -z $2 && {
+                removeTrack $2
+                getPlaylist
+            } || {
+                usage 1
+            } ; exit ;;
         repeat)
             test ! -z $2 && {
                 test "$2" = "on" && {
