@@ -190,7 +190,7 @@ getFrameNumber() {
 # print all filenames in current playlist
 getPlaylist() {
     tracks=$(getValue playlist-count)
-    for i in $(seq $tracks); do
+    for i in $(${SEQCOMMAND} $tracks); do
         playlistCur=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
 \"playlist/$((i - 1))/filename\"] }" | $SOCKETCOMMAND 2> /dev/null)
         playlistCur=$(printf '%s ' $playlistCur | cut -d\" -f 4)
@@ -262,7 +262,7 @@ phraseAppendTracks() {
     # but I have no way of separating directories with sed at the moment
 
     totalFiles=$(printf '%s\n' "${APPENDSTRING}" | wc -l)
-    for i in $(seq $totalFiles); do
+    for i in $(${SEQCOMMAND} $totalFiles); do
         appendTrack $(printf '%s\n' "${APPENDSTRING}" | sed "$i!d")
         # need slight pause to start mpv
         test "$i" -eq 1 && sleep 0.1
@@ -756,11 +756,27 @@ validateDeps() {
     }
     type socat 2>&1 > /dev/null && {
         SOCKETCOMMAND="socat - $SOCKET"
+    }
+    type nc 2>&1 > /dev/null && {
+        SOCKETCOMMAND="nc -U $SOCKET"
+    }
+    type seq 2>&1 > /dev/null && {
+        SEQCOMMAND="seq"
+        return
+    }
+    type jot 2>&1 > /dev/null && {
+        SEQCOMMAND="jot"
         return
     }
 
-    printf '%s\n' "socat is not installed on your \$PATH." >&2
-    exit 4
+    test "${SOCKETCOMMAND}" || {
+        printf '%s\n' "can not find socat or nc in your \$PATH." >&2
+        exit 4
+    }
+    test "${SEQCOMMAND}" || {
+        printf '%s\n' "can not find seq or jot in your \$PATH." >&2
+        exit 4
+    }
 }
 
 validateSocket() {
