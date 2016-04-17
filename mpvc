@@ -272,7 +272,7 @@ phraseAppendTracks() {
 appendTrack() {
     filename=$(printf '%s ' "${@}" | sed "s/.$//")
 
-    printf '%s\n' $(pgrep -a "mpv") | grep -q "$SOCKET" && {
+    pgrep -lf "mpv .*${SOCKET}" > /dev/null && {
         result=$(printf '%s\n' "{ \"command\": [\"loadfile\", \"$filename\", \
 \"append-play\" ] }" | $SOCKETCOMMAND 2> /dev/null)
         result=$(printf '%s\n' $result | cut -d\" -f 4)
