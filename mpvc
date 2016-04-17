@@ -240,21 +240,23 @@ getPlaylist() {
 
 phraseAppendTracks() {
     # find media extensions and append a newline to them
+    NL='\
+'
     APPENDSTRING=$(printf '%s\n' "$APPENDSTRING" | sed "
-    s#.mp3 #.mp3\n#g
-    s#.m4a #.m4a\n#g
-    s#.aac #.acc\n#g
-    s#.ogg #.ogg\n#g
-    s#.flac #.flac\n#g
-    s#.mp4 #.mp4\n#g
-    s#.mkv #.mkv\n#g
-    s#.flv #.flv\n#g
-    s#.ogv #.ogv\n#g
-    s#.webm #.webm\n#g
-    s#.gif #.gif\n#g
-    s#.png #.png\n#g
-    s#.jpg #.jpg\n#g
-    s#.jpeg #.jpeg\n#g
+    s#.mp3 #.mp3${NL}#g
+    s#.m4a #.m4a${NL}#g
+    s#.aac #.acc${NL}#g
+    s#.ogg #.ogg${NL}#g
+    s#.flac #.flac${NL}#g
+    s#.mp4 #.mp4${NL}#g
+    s#.mkv #.mkv${NL}#g
+    s#.flv #.flv${NL}#g
+    s#.ogv #.ogv${NL}#g
+    s#.webm #.webm${NL}#g
+    s#.gif #.gif${NL}#g
+    s#.png #.png${NL}#g
+    s#.jpg #.jpg${NL}#g
+    s#.jpeg #.jpeg${NL}#g
     s#--input-.*##g
     ")
 
