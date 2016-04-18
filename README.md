@@ -2,6 +2,7 @@ mpvc
 ====
 
 An mpc-like control interface for mpv.
+
 mpvc also has a *nearly* complete compatibility layer for mpc commands. See the
 mpc manpage for details.
 
