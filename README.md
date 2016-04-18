@@ -56,9 +56,8 @@ Useful Tricks
 -------------
 
 - Using the `find` command like so: `mpvc -a $(find -type f)` might give you
-  better results as it'll list all files in the tree from your current
-  position (This is incredibly hard to implement with a non-newline input with
-  shell).
+  better results than my inbuilt phrasing.
+- mpvc accepts input from stdin: `find $MUSICDIR -type f | sort -R | mpvc`
 - Any URL that is newline separated and resolvable by mpv and/or youtube-dl
   can be added to the playlist, i.e. using
   [mps-youtube](https://github.com/mps-youtube/mps-youtube) with `player` set
