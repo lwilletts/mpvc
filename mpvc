@@ -852,10 +852,12 @@ main() {
                 }
 
                 alwaysPlay
+                printFinalOutput
                 ;;
             stop)
                 alwaysPause
                 setTimeAbsolute 0
+                printFinalOutput
                 ;;
             del|delete)
                 test ! -z $2 && {
@@ -887,6 +889,8 @@ main() {
                         }
                         ;;
                 esac
+
+                printFinalOutput
                 ;;
             repeat)
                 case "$2" in
@@ -894,6 +898,8 @@ main() {
                     "off") toggleLoopPlaylist no  ;;
                     *)     toggleLoopPlaylist     ;;
                 esac
+
+                printFinalOutput
                 ;;
             single)
                 case "$2" in
@@ -901,13 +907,15 @@ main() {
                     "off") toggleLoopFile no  ;;
                     *)     toggleLoopFile     ;;
                 esac
+
+                printFinalOutput
                 ;;
-            pause)    alwaysPause         ;;
-            toggle)   togglePause         ;;
-            next)     setTrackRelative 1  ;;
-            prev)     setTrackRelative -1 ;;
-            mute)     toggleMute true     ;;
-            unmute)   toggleMute false    ;;
+            pause)    alwaysPause         ; printFinalOutput ;;
+            toggle)   togglePause         ; printFinalOutput ;;
+            next)     setTrackRelative 1  ; printFinalOutput ;;
+            prev)     setTrackRelative -1 ; printFinalOutput ;;
+            mute)     toggleMute true     ; printFinalOutput ;;
+            unmute)   toggleMute false    ; printFinalOutput ;;
             playlist) getPlaylist         ; exit ;;
             shuffle)  shufflePlaylist     ; exit ;;
             clear)    clearPlaylist       ; exit ;;
@@ -919,8 +927,6 @@ main() {
             # create an issue or implement puesdo-random tracks
             version)  getVersion          ;;
         esac
-
-        printFinalOutput
     }
 
     validateSocket
