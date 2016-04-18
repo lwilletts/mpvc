@@ -192,11 +192,30 @@ getFrameNumber() {
 # print all filenames in current playlist
 getPlaylist() {
     tracks=$(getValue playlist-count)
+    currentTrack=$(getValue playlist-pos)
 
-    test $tracks -eq 0 && {
+    test $tracks -eq 0 || test "$currentTrack" = "N/A" && {
         printf '%s\n' "mpv on ${SOCKET} is currently idle." >&2
+        exit 1
     } || {
-        for i in $(seq $tracks); do
+        columns=$(($(tput cols) - 5))
+        test $tracks -gt $columns && {
+            halfcols=$((columns / 2))
+            test $currentTrack -lt $halfcols && {
+                FIRST=1
+            } || {
+                FIRST=$((currentTrack - halfcols))
+            }
+            test $currentTrack -gt $halfcols && {
+                LAST=$tracks
+            } || {
+                LAST=$((currentTrack + halfcols))
+            }
+        } || {
+            LAST=$tracks
+        }
+
+        for i in $(seq $FIRST $LAST); do
             filename=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
     \"playlist/$((i - 1))/filename\"] }" | $SOCKETCOMMAND 2> /dev/null)
             filename=$(printf '%s ' $filename | cut -d\" -f 4)
@@ -206,39 +225,17 @@ getPlaylist() {
                     filename="mps-yt stream"
                     ;;
                 *)
-                    # this will probably look funky if there's a '/' in the actual filename
+                    # this will probably look funky if there's a '/' in the filename
                     filename=$(printf '%s\n' "$filename" | rev | cut -d'/' -f 1 | rev)
                     ;;
             esac
 
-            currentTrack=$(getValue playlist-pos)
-
-            trackNum=$i
-            test "$tracks" -gt 100 && {
-                test "$trackNum" -lt "10" && {
-                    trackNum="00$trackNum"
-                }
-                test "$trackNum" -lt "100" && {
-                    trackNum="0$trackNum"
-                }
+            test "$currentTrack" -eq $((i - 1)) && {
+                printf '%s\n' "[7m[40m${filename}[0m"
             } || {
-                test "$trackNum" -lt "10" && {
-                    trackNum="0$trackNum"
-                }
-            }
-
-            test "$currentTrack" != "N/A" && {
-                test "$currentTrack" -eq $((i - 1)) && {
-                    allTracks="${allTracks}$(color "${filename}")\n"
-                } || {
-                    allTracks="${allTracks}$(printf "${filename}")\n"
-                }
-            } || {
-                allTracks="${allTracks}$(printf "${filename}")\n"
+                printf '%s\n' "${filename}"
             }
         done
-
-        printf "$allTracks"
     }
 
     exit
@@ -286,7 +283,7 @@ phraseAppendTracks() {
 appendTrack() {
     filename="$@"
 
-    printf '%s\n' "$(pgrep -a mpv)" | grep -q "$SOCKET" && {
+    ps a | grep -v grep | grep -wq "mpv\|.*$SOCKET" && {
         printf '%s\n' "{ \"command\": [\"loadfile\", \"$filename\", \
 \"append-play\" ] }" | $SOCKETCOMMAND 2>&1 > /dev/null
     } || {
@@ -299,7 +296,7 @@ appendTrack() {
             filename="mps-yt stream"
             ;;
         *)
-            # this will probably look funky if there's a '/' in the actual filename
+            # this will probably look funky if there's a '/' in the filename
             filename=$(printf '%s\n' "$filename" | rev | cut -d'/' -f 1 | rev)
             ;;
     esac
@@ -737,12 +734,6 @@ printFinalOutput() {
 
     # Misc. Functions
 ###############################################################################
-
-color() {
-    b0='[40m'; R='[0m'
-
-    printf '%s\n' "$I$b0$@$R"
-}
 
 intCheck() {
     test $1 -ne 0 2> /dev/null
