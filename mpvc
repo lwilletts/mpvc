@@ -706,7 +706,7 @@ formatPrint() {
     s#%frame%#$(getFrameNumber)#g
     ")
 
-    printf "${FORMATSTRING}\n"
+    printf '%s\n' "${FORMATSTRING}"
     exit
 }
 
