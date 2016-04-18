@@ -212,10 +212,13 @@ getPlaylist() {
                 LAST=$((currentTrack + halfcols))
             }
         } || {
+            FIRST=1
             LAST=$tracks
         }
 
-        for i in $(seq $FIRST $LAST); do
+        test "${SEQCOMMAND}" = "jot" && REPS=$((${LAST}-${FIRST}+1)) || REPS=''
+
+        for i in $($SEQCOMMAND $REPS $FIRST $LAST); do
             filename=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
     \"playlist/$((i - 1))/filename\"] }" | $SOCKETCOMMAND 2> /dev/null)
             filename=$(printf '%s ' $filename | cut -d\" -f 4)
@@ -283,7 +286,7 @@ phraseAppendTracks() {
 appendTrack() {
     filename="$@"
 
-    ps a | grep -v grep | grep -wq "mpv\|.*$SOCKET" && {
+    ps a -ww | grep -v grep | grep -wq "mpv.*$SOCKET" && {
         printf '%s\n' "{ \"command\": [\"loadfile\", \"$filename\", \
 \"append-play\" ] }" | $SOCKETCOMMAND 2>&1 > /dev/null
     } || {
@@ -762,11 +765,27 @@ validateDeps() {
     }
     type socat 2>&1 > /dev/null && {
         SOCKETCOMMAND="socat - $SOCKET"
+    }
+    type nc 2>&1 > /dev/null && {
+        SOCKETCOMMAND="nc -U -N $SOCKET"
+    }
+    type seq 2>&1 > /dev/null && {
+        SEQCOMMAND="seq"
+        return
+    }
+    type jot 2>&1 > /dev/null && {
+        SEQCOMMAND="jot"
         return
     }
 
-    printf '%s\n' "socat is not installed on your \$PATH." >&2
-    exit 4
+    test "${SOCKETCOMMAND}" || {
+        printf '%s\n' "can not find socat or nc in your \$PATH." >&2
+        exit 4
+    }
+    test "${SEQCOMMAND}" || {
+        printf '%s\n' "can not find seq or jot in your \$PATH." >&2
+        exit 4
+    }
 }
 
 validateSocket() {
