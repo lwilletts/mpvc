@@ -9,7 +9,8 @@ Dependencies
 ------------
 
 - mpv
-- socat
+- socat or nc (netcat)
+- jot or seq
 
 Optional:
 - bc - To control playback speed.
