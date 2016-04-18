@@ -238,37 +238,6 @@ getPlaylist() {
     # Control Functions
 ###############################################################################
 
-phraseAppendTracks() {
-    # find media extensions and append a newline to them
-    APPENDSTRING=$(printf '%s\n' "$APPENDSTRING" | sed "
-    s#.mp3 #.mp3\n#g
-    s#.m4a #.m4a\n#g
-    s#.aac #.acc\n#g
-    s#.ogg #.ogg\n#g
-    s#.flac #.flac\n#g
-    s#.mp4 #.mp4\n#g
-    s#.mkv #.mkv\n#g
-    s#.flv #.flv\n#g
-    s#.ogv #.ogv\n#g
-    s#.webm #.webm\n#g
-    s#.gif #.gif\n#g
-    s#.png #.png\n#g
-    s#.jpg #.jpg\n#g
-    s#.jpeg #.jpeg\n#g
-    s#--input-.*##g
-    ")
-
-    # mpv will resolve files given in a directory,
-    # but I have no way of separating directories with sed at the moment
-
-    totalFiles=$(printf '%s\n' "${APPENDSTRING}" | wc -l)
-    for i in $(seq $totalFiles); do
-        appendTrack $(printf '%s\n' "${APPENDSTRING}" | sed "$i!d")
-        # need slight pause to start mpv
-        test "$i" -eq 1 && sleep 0.1
-    done
-}
-
 appendTrack() {
     filename=$(printf '%s ' "${@}" | sed "s/.$//")
 
@@ -793,43 +762,40 @@ main() {
     # get the user defined socket before anything else
     for arg in "$@"; do
         test "$SOCKETFLAG" = "true" && SOCKET=$arg && SOCKETFLAG=false
+        test "$FORMATFLAG" = "true" && FORMATSTRING=${arg} && FORMATFLAG=false
 
         case "$arg" in
             -S|--socket)     SOCKETFLAG=true ;;
+            -f|--format)     FORMATFLAG=true ;;
         esac
     done
 
     # main arg sort out
     for arg in "$@"; do
         case "$arg" in
-            add|-a|--append) test "$FORMATFLAG" = "true" && FORMATFLAG=false ;;
-            -f|--format)     test "$APPENDFLAG" = "true" && APPENDFLAG=false ;;
             -?|--*)
-                test "$FORMATFLAG" = "true" && FORMATFLAG=false
                 test "$APPENDFLAG" = "true" && APPENDFLAG=false
                 ;;
         esac
 
-        test "$FORMATFLAG" = "true" && FORMATSTRING="${FORMATSTRING}${arg} "
-        test "$APPENDFLAG" = "true" && APPENDSTRING="${APPENDSTRING}${arg} "
+        test "$APPENDFLAG" = "true" && {
+            appendTrack "$arg"
+            test -z "$APPENDED" && sleep 0.1
+            APPENDED=true
+            QUIETFLAG=true
+        }
 
         case "$arg" in
             add|-a|--append) APPENDFLAG=true ;;
-            -f|--format)     FORMATFLAG=true ;;
         esac
     done
 
-    # grab piped input if there are no args or appendstring is empty
-    test -z "$APPENDSTRING" && test -p /dev/stdin && {
+    # grab piped input if there are no args or no files were passed to append
+    test "$APPENDFLAG" = "true" && test -z "$APPENDED" && {
         while read -r line; do
-            APPENDSTRING="${APPENDSTRING}${line} "
+            appendTrack "${line}"
+            QUIETFLAG=true
         done
-    }
-
-    # append tracks first
-    test ! -z "$APPENDSTRING" && {
-        phraseAppendTracks
-        QUIETFLAG=true
     }
 
     validateSocket
@@ -980,7 +946,7 @@ for arg in $ARGS; do
 done
 
 test "$QUIETFLAG" = "true" && {
-    main $ARGS 2>&1 > /dev/null
+    main "$@" 2>&1 > /dev/null
 } || {
-    main $ARGS
+    main "$@"
 }
