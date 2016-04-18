@@ -4,8 +4,6 @@
 # control mpv remotely using JSON ipc
 # https://mpv.io/manual/master/#json-ipc
 
-ARGS="$@"
-
 SOCKET=${SOCKET:-/tmp/mpvsocket}
 
 usage() {
@@ -766,36 +764,23 @@ getVersion() {
 main() {
     validateDeps
 
-    # Look for a format string first
-    for arg in "$@"; do
-        test "$FORMATFLAG" = "true" && FORMATSTRING=${arg} && FORMATFLAG=false
-
-        case "$arg" in
-            -f|--format)     FORMATFLAG=true ;;
-        esac
-    done
-
-    # main arg sort out
+    # grab input files first
     for arg in "$@"; do
         case "$arg" in
-            -?|--*)
-                test "$APPENDFLAG" = "true" && APPENDFLAG=false
-                ;;
+            -?|--*) APPENDFLAG=false ;;
         esac
 
         test "$APPENDFLAG" = "true" && {
-            appendTrack "$arg"
-            test -z "$APPENDED" && {
-                # wait up to 5 seconds for a reply
-                # from mpv to make sure it's running
-                for i in $($SEQCOMMAND 50); do
-                    idlestatus=$(getValue idle)
-                    test "$idlestatus" && break
-                    sleep 0.1
-                done
-            }
             APPENDED=true
             QUIETFLAG=true
+            appendTrack "$arg"
+
+            # wait up to 5 seconds for mpv to start on $SOCKET
+            for i in $($SEQCOMMAND 50); do
+                idlestatus=$(getValue idle)
+                test "$idlestatus" && break
+                sleep 0.1
+            done
         }
 
         case "$arg" in
@@ -804,110 +789,109 @@ main() {
     done
 
     # grab piped input if there were no files were passed to append
-    test "$APPENDFLAG" = "true" && test -z "$APPENDED" && {
+    test -z "$APPENDED" && test -p /dev/stdin && {
+        QUIETFLAG=true
         while read -r line; do
             appendTrack "${line}"
-            QUIETFLAG=true
-            APPENDED=true
+
+            # wait up to 5 seconds for mpv to start on $SOCKET
+            for i in $($SEQCOMMAND 50); do
+                idlestatus=$(getValue idle)
+                test "$idlestatus" && break
+                sleep 0.1
+            done
         done
     }
 
-    # append tracks first
-    test "$APPENDED" = "true" && {
-        QUIETFLAG=true
-    } || {
-        validateSocket
-
-        # mpc compatibility layer
-        case $1 in
-            play|start)
-                test "$(getPauseStatus)" = "playing" && {
-                    test -z $2 && {
-                        setTrackAbsolute
-                    } || {
-                        setTrackAbsolute $2
-                    }
-                }
-
-                alwaysPlay
-                printFinalOutput
-                ;;
-            stop)
-                alwaysPause
-                setTimeAbsolute 0
-                printFinalOutput
-                ;;
-            del|delete)
-                test ! -z $2 && {
-                    removeTrack $2
-                    getPlaylist
-                } || {
-                    printf '%s\n' "Specify track number to remove from playlist."
-                }
-
-                return
-                ;;
-            volume)
-                firstChar=$(printf '%s\n' "$2" | cut -c 1)
-                case "$firstChar" in
-                    "+")
-                        volume=$(printf '%s\n' "$2" | cut -d+ -f2)
-                        setVolumeRelative $volume
-                        ;;
-                    "-")
-                        volume=$(printf '%s\n' "$2" | cut -d- -f2)
-                        setVolumeRelative "-${volume}"
-                        ;;
-                    *)
-                        test ! -z "$2" && {
-                            setVolumeAbsolute $2
-                        } || {
-                            printf '%s\n' "Specify volume in/decrease amount or absolute amount."
-                            return 1
-                        }
-                        ;;
-                esac
-
-                printFinalOutput
-                ;;
-            repeat)
-                case "$2" in
-                    "on")  toggleLoopPlaylist inf ;;
-                    "off") toggleLoopPlaylist no  ;;
-                    *)     toggleLoopPlaylist     ;;
-                esac
-
-                printFinalOutput
-                ;;
-            single)
-                case "$2" in
-                    "on")  toggleLoopFile yes ;;
-                    "off") toggleLoopFile no  ;;
-                    *)     toggleLoopFile     ;;
-                esac
-
-                printFinalOutput
-                ;;
-            pause)    alwaysPause         ; printFinalOutput ;;
-            toggle)   togglePause         ; printFinalOutput ;;
-            next)     setTrackRelative 1  ; printFinalOutput ;;
-            prev)     setTrackRelative -1 ; printFinalOutput ;;
-            mute)     toggleMute true     ; printFinalOutput ;;
-            unmute)   toggleMute false    ; printFinalOutput ;;
-            playlist) getPlaylist         ; exit ;;
-            shuffle)  shufflePlaylist     ; exit ;;
-            clear)    clearPlaylist       ; exit ;;
-            crop)     cropPlaylist        ; exit ;;
-            # seek) to implement with full MPC options # with percentage!
-            # move) to implement
-            # consume) to implement # add on|off toggle
-            # random) MPV doesn't have this control option!
-            # create an issue or implement puesdo-random tracks
-            version)  getVersion          ;;
-        esac
-    }
-
     validateSocket
+
+    # mpc compatibility layer
+    case $1 in
+        play|start)
+            test "$(getPauseStatus)" = "playing" && {
+                test -z $2 && {
+                    setTrackAbsolute
+                } || {
+                    setTrackAbsolute $2
+                }
+            }
+
+            alwaysPlay
+            printFinalOutput
+            ;;
+        stop)
+            alwaysPause
+            setTimeAbsolute 0
+            printFinalOutput
+            ;;
+        del|delete)
+            test ! -z $2 && {
+                removeTrack $2
+                getPlaylist
+            } || {
+                printf '%s\n' "Specify track number to remove from playlist."
+            }
+
+            return
+            ;;
+        volume)
+            firstChar=$(printf '%s\n' "$2" | cut -c 1)
+            case "$firstChar" in
+                "+")
+                    volume=$(printf '%s\n' "$2" | cut -d+ -f2)
+                    setVolumeRelative $volume
+                    ;;
+                "-")
+                    volume=$(printf '%s\n' "$2" | cut -d- -f2)
+                    setVolumeRelative "-${volume}"
+                    ;;
+                *)
+                    test ! -z "$2" && {
+                        setVolumeAbsolute $2
+                    } || {
+                        printf '%s\n' "Specify volume in/decrease amount or absolute amount."
+                        return 1
+                    }
+                    ;;
+            esac
+
+            printFinalOutput
+            ;;
+        repeat)
+            case "$2" in
+                "on")  toggleLoopPlaylist inf ;;
+                "off") toggleLoopPlaylist no  ;;
+                *)     toggleLoopPlaylist     ;;
+            esac
+
+            printFinalOutput
+            ;;
+        single)
+            case "$2" in
+                "on")  toggleLoopFile yes ;;
+                "off") toggleLoopFile no  ;;
+                *)     toggleLoopFile     ;;
+            esac
+
+            printFinalOutput
+            ;;
+        pause)    alwaysPause         ; printFinalOutput ;;
+        toggle)   togglePause         ; printFinalOutput ;;
+        next)     setTrackRelative 1  ; printFinalOutput ;;
+        prev)     setTrackRelative -1 ; printFinalOutput ;;
+        mute)     toggleMute true     ; printFinalOutput ;;
+        unmute)   toggleMute false    ; printFinalOutput ;;
+        playlist) getPlaylist         ; exit ;;
+        shuffle)  shufflePlaylist     ; exit ;;
+        clear)    clearPlaylist       ; exit ;;
+        crop)     cropPlaylist        ; exit ;;
+        # seek) to implement with full MPC options # with percentage!
+        # move) to implement
+        # consume) to implement # add on|off toggle
+        # random) MPV doesn't have this control option!
+        # create an issue or implement puesdo-random tracks
+        version)  getVersion          ;;
+    esac
 
     # GNU-style options
     for arg in "$@"; do
@@ -955,13 +939,16 @@ main() {
     printFinalOutput
 }
 
+# more global argument phrasing
 for arg in $ARGS; do
     test "$SOCKETFLAG" = "true" && SOCKET=$arg && SOCKETFLAG=false
+    test "$FORMATFLAG" = "true" && FORMATSTRING=$arg && FORMATFLAG=false
 
     case $arg in
         --version)        getVersion      ;;
         -q|--quiet)       QUIETFLAG=true  ;;
         -S|--socket)      SOCKETFLAG=true ;;
+        -f|--format)      FORMATFLAG=true ;;
         -Q|--vid=no)      VID="--vid=no"  ;;
         -K|--killall)     killAllMpv      ;;
         --list-options)   usage 0         ;;
