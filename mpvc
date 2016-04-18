@@ -285,7 +285,7 @@ phraseAppendTracks() {
 appendTrack() {
     filename="$@"
 
-    ps a | grep -v grep | grep -wq "mpv\|.*$SOCKET" && {
+    ps a -ww | grep -v grep | grep -wq "mpv.*$SOCKET" && {
         printf '%s\n' "{ \"command\": [\"loadfile\", \"$filename\", \
 \"append-play\" ] }" | $SOCKETCOMMAND 2>&1 > /dev/null
     } || {
