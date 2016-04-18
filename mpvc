@@ -117,13 +117,11 @@ getValue() {
     property=$1
     test "$property" != "precisetime" && {
         value=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
-\"$property\"] }" | $SOCKETCOMMAND 2> /dev/null)
-        value=$(printf '%s\n' $value | cut -d\" -f 4 | cut -d. -f 1)
+\"$property\"] }" | $SOCKETCOMMAND 2> /dev/null | cut -d\" -f 4 | cut -d. -f 1)
     } || {
         property="playback-time"
         value=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
-\"$property\"] }" | $SOCKETCOMMAND 2> /dev/null)
-        value=$(printf '%s\n' $value | cut -d\" -f 4)
+\"$property\"] }" | $SOCKETCOMMAND 2> /dev/null | cut -d\" -f 4)
     }
 
     test "$value" = "error" && printf "N/A" || printf "$value"
