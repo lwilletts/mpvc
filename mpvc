@@ -249,6 +249,13 @@ appendTrack() {
     } || {
         exec mpv --really-quiet --no-audio-display --idle=yes \
             --input-unix-socket=${SOCKET} $VID "$filename" &
+
+        # wait up to 5 seconds for mpv to start on $SOCKET
+        for i in $($SEQCOMMAND 50); do
+            idlestatus=$(getValue idle)
+            test "$idlestatus" && break
+            sleep 0.1
+        done
     }
 
     case "$filename" in
@@ -774,13 +781,6 @@ main() {
             APPENDED=true
             QUIETFLAG=true
             appendTrack "$arg"
-
-            # wait up to 5 seconds for mpv to start on $SOCKET
-            for i in $($SEQCOMMAND 50); do
-                idlestatus=$(getValue idle)
-                test "$idlestatus" && break
-                sleep 0.1
-            done
         }
 
         case "$arg" in
@@ -788,18 +788,12 @@ main() {
         esac
     done
 
-    # grab piped input if there were no files were passed to append
-    test -z "$APPENDED" && test -p /dev/stdin && {
+    # grab piped input if no files were passed and we're expecting data on stdin
+    test -z "$APPENDED" &&
+        { test "$APPENDFLAG" = "true" || test -p /dev/stdin ; } && {
         QUIETFLAG=true
         while read -r line; do
             appendTrack "${line}"
-
-            # wait up to 5 seconds for mpv to start on $SOCKET
-            for i in $($SEQCOMMAND 50); do
-                idlestatus=$(getValue idle)
-                test "$idlestatus" && break
-                sleep 0.1
-            done
         done
     }
 
