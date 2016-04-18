@@ -2,6 +2,8 @@ mpvc
 ====
 
 An mpc-like control interface for mpv.
+mpvc also has a *nearly* complete compatibility layer for mpc commands. See the
+mpc manpage for details.
 
 ![ExampleOutput](https://github.com/Wildefyr/mpvc/blob/master/output.png)
 
@@ -34,7 +36,7 @@ Usage
 For mpvc to work, mpv must be started with the following argument:
 
 ```bash
-mpv --input-unix-socket=/tmp/mpvsocket
+mpv --input-unix-socket=/tmp/mpvsocket $FILES
 ```
 
 You *could* add the following to your mpv.conf file, but then socket would be
@@ -46,10 +48,8 @@ it:
 input-unix-socket=/tmp/mpvsocket
 ```
 
-Alternatively, mpvc can be used with the -a or --add option to add files into
-the playlist. This functionality can be augmented with `find` with something
-like `mpvc -a $(find -type f)`, or you can directly pipe into mpvc like so:
-`find -type f | mpvc`
+Alternatively and probably preferably, mpvc can be used with the -a or --add
+option to add files into the playlist.
 
 Useful Tricks
 -------------
@@ -63,16 +63,14 @@ Useful Tricks
   [mps-youtube](https://github.com/mps-youtube/mps-youtube) with `player` set
   to mpvc and `playerargs` set to add.
 - Options can be combined together to give improved result i.e. `mpvc -P -r 1`
-  to start playing the next track always.
-- There is an *rough* mpc compatibility layer implemeted in addition to the
-  usage options, see the mpc man page for details.
+  to always start playback when switching to the next track.
 - I recommend looking at something like [sxhkd](https://github.com/baskerville/sxhkd)
   to bind mpvc commands to key combinations.
 
 TODO
 ----
 
-See the [Issue Tracker](https://github.com/Wildefyr/mpvc/issues)
+See the [Issue Tracker](https://github.com/wildefyr/mpvc/issues)
 
 Shameless Plug
 --------------
