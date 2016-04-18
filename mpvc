@@ -760,13 +760,11 @@ getVersion() {
 main() {
     validateDeps
 
-    # get the user defined socket before anything else
+    # Look for a format string first
     for arg in "$@"; do
-        test "$SOCKETFLAG" = "true" && SOCKET=$arg && SOCKETFLAG=false
         test "$FORMATFLAG" = "true" && FORMATSTRING=${arg} && FORMATFLAG=false
 
         case "$arg" in
-            -S|--socket)     SOCKETFLAG=true ;;
             -f|--format)     FORMATFLAG=true ;;
         esac
     done
@@ -804,27 +802,7 @@ main() {
         while read -r line; do
             appendTrack "${line}"
             QUIETFLAG=true
-        done
-    } || {
-        for arg in "$@"; do
-            case "$arg" in
-                add|-?|--*)
-                    FORMATFLAG=false
-                    APPENDFLAG=false
-                    ;;
-            esac
-
-            test "$FORMATFLAG" = "true" && FORMATSTRING="${FORMATSTRING}${arg} "
-            test "$APPENDFLAG" = "true" && APPENDSTRING="${APPENDSTRING}${arg} "
-
-            case "$arg" in
-                add|-a|--append)
-                    APPENDFLAG=true
-                    ;;
-                -f|--format)
-                    FORMATFLAG=true
-                    ;;
-            esac
+            APPENDED=true
         done
     }
 
