@@ -51,13 +51,20 @@ input-unix-socket=/tmp/mpvsocket
 ```
 
 Alternatively and probably preferably, mpvc can be used with the -a or --add
-option to add files into the playlist.
+option to add files into the playlist. This functionality can be augmented with
+`find` with something like `mpvc -a $(find -type f)`. Note that if you add files
+as command line arguments, the care must be taken when using filenames
+containing spaces since each file must be contained in a single argument as in
+`mpvc -a "first file.mp3" "second file.mp3"`. An alternative is to directly pipe
+into mpvc like so:
+`find -type f | mpvc -a`. 
 
 Useful Tricks
 -------------
 
-- Using the `find` command like so: `mpvc -a $(find -type f)` might give you
-  better results than my inbuilt phrasing.
+- Using the `find` command like so: `find . -type f -print0 | xargs -0 mpvc -a`
+  might give you better results than my inbuilt phrasing. It will automatically
+  take care of splitting filenames into separate arguments.
 - mpvc accepts input from stdin: `find $MUSICDIR -type f | sort -R | mpvc`
 - Any URL that is newline separated and resolvable by mpv and/or youtube-dl
   can be added to the playlist, i.e. using

@@ -242,42 +242,6 @@ getPlaylist() {
     # Control Functions
 ###############################################################################
 
-phraseAppendTracks() {
-    # find media extensions and append a newline to them
-    APPENDSTRING=$(printf '%s\n' "$APPENDSTRING" | sed "
-    s#.mp3 #.mp3\n#g
-    s#.m4a #.m4a\n#g
-    s#.aac #.acc\n#g
-    s#.ogg #.ogg\n#g
-    s#.flac #.flac\n#g
-    s#.mp4 #.mp4\n#g
-    s#.mkv #.mkv\n#g
-    s#.flv #.flv\n#g
-    s#.ogv #.ogv\n#g
-    s#.webm #.webm\n#g
-    s#.gif #.gif\n#g
-    s#.png #.png\n#g
-    s#.jpg #.jpg\n#g
-    s#.jpeg #.jpeg\n#g
-    s#--input-.*##g
-    ")
-
-    # mpv will resolve files given in a directory,
-    # but I have no way of separating directories with sed at the moment
-
-    printf '%s\n' "$APPENDSTRING" | while read -r file; do
-        appendTrack $file
-
-        # need slight pause for mpv to initialise $SOCKET
-        counter=$((counter + 1))
-        test $counter -eq 1 && {
-            sleep 0.1
-            # for when mpv on $SOCKET is idle and a new track is added
-            alwaysPlay
-        }
-    done
-}
-
 appendTrack() {
     filename="$@"
 
@@ -802,37 +766,54 @@ getVersion() {
 main() {
     validateDeps
 
-    # grab piped input if appendstring is empty and there is input from stdin
-    test -z "$APPENDSTRING" && test -p /dev/stdin && {
+    # Look for a format string first
+    for arg in "$@"; do
+        test "$FORMATFLAG" = "true" && FORMATSTRING=${arg} && FORMATFLAG=false
+
+        case "$arg" in
+            -f|--format)     FORMATFLAG=true ;;
+        esac
+    done
+
+    # main arg sort out
+    for arg in "$@"; do
+        case "$arg" in
+            -?|--*)
+                test "$APPENDFLAG" = "true" && APPENDFLAG=false
+                ;;
+        esac
+
+        test "$APPENDFLAG" = "true" && {
+            appendTrack "$arg"
+            test -z "$APPENDED" && {
+                # wait up to 5 seconds for a reply
+                # from mpv to make sure it's running
+                for i in $($SEQCOMMAND 50); do
+                    idlestatus=$(getValue idle)
+                    test "$idlestatus" && break
+                    sleep 0.1
+                done
+            }
+            APPENDED=true
+            QUIETFLAG=true
+        }
+
+        case "$arg" in
+            add|-a|--append) APPENDFLAG=true ;;
+        esac
+    done
+
+    # grab piped input if there were no files were passed to append
+    test "$APPENDFLAG" = "true" && test -z "$APPENDED" && {
         while read -r line; do
-            APPENDSTRING="${APPENDSTRING}${line} "
-        done
-    } || {
-        for arg in "$@"; do
-            case "$arg" in
-                add|-?|--*)
-                    FORMATFLAG=false
-                    APPENDFLAG=false
-                    ;;
-            esac
-
-            test "$FORMATFLAG" = "true" && FORMATSTRING="${FORMATSTRING}${arg} "
-            test "$APPENDFLAG" = "true" && APPENDSTRING="${APPENDSTRING}${arg} "
-
-            case "$arg" in
-                add|-a|--append)
-                    APPENDFLAG=true
-                    ;;
-                -f|--format)
-                    FORMATFLAG=true
-                    ;;
-            esac
+            appendTrack "${line}"
+            QUIETFLAG=true
+            APPENDED=true
         done
     }
 
     # append tracks first
-    test ! -z "$APPENDSTRING" && {
-        phraseAppendTracks
+    test "$APPENDED" = "true" && {
         QUIETFLAG=true
     } || {
         validateSocket
@@ -989,7 +970,7 @@ for arg in $ARGS; do
 done
 
 test "$QUIETFLAG" = "true" && {
-    main $ARGS 2>&1 > /dev/null
+    main "$@" 2>&1 > /dev/null
 } || {
-    main $ARGS
+    main "$@"
 }
