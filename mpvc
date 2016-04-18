@@ -212,6 +212,7 @@ getPlaylist() {
                 LAST=$((currentTrack + halfcols))
             }
         } || {
+            FIRST=1
             LAST=$tracks
         }
 
