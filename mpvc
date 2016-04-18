@@ -758,7 +758,7 @@ validateDeps() {
         SOCKETCOMMAND="socat - $SOCKET"
     }
     type nc 2>&1 > /dev/null && {
-        SOCKETCOMMAND="nc -U $SOCKET"
+        SOCKETCOMMAND="nc -U -N $SOCKET"
     }
     type seq 2>&1 > /dev/null && {
         SEQCOMMAND="seq"
