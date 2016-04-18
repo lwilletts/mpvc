@@ -781,7 +781,15 @@ main() {
 
         test "$APPENDFLAG" = "true" && {
             appendTrack "$arg"
-            test -z "$APPENDED" && sleep 0.1
+            test -z "$APPENDED" && {
+                # wait up to 5 seconds for a reply
+                # from mpv to make sure it's running
+                for i in $($SEQCOMMAND 50); do
+                    idlestatus=$(getValue idle)
+                    test "$idlestatus" && break
+                    sleep 0.1
+                done
+            }
             APPENDED=true
             QUIETFLAG=true
         }
