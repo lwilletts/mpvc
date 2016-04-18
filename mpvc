@@ -78,7 +78,8 @@ getMetadata() {
     property=$1
 
     metadata=$(printf '%s\n' "{ \"command\": [\"get_property\", \
-\"metadata/by-key/${property}\" ] }" | $SOCKETCOMMAND 2> /dev/null)
+\"metadata/by-key/${property}\" ] }" | $SOCKETCOMMAND 2> /dev/null | \
+        tr -d "{}")
     errorCheck=$(printf '%s\n' "$metadata" | cut -d\" -f 2)
 
     test "$errorCheck" = "error" && {
@@ -99,17 +100,16 @@ getMetadata() {
 
 getDuration() {
     duration=$(printf '%s\n' "{ \"command\": [\"get_property\", \
-\"duration\"] }" | $SOCKETCOMMAND 2> /dev/null)
-    duration=$(printf '%s\n' $duration | cut -d: -f 2 | cut -d. -f 1)
+\"duration\"] }" | $SOCKETCOMMAND 2> /dev/null | \
+    cut -d: -f 2 | cut -d. -f 1)
 
     printf "$duration"
 }
 
 getPercentage() {
     percentage=$(printf '%s\n' "{ \"command\": [\"get_property\", \
-\"percent-pos\" ] }" | $SOCKETCOMMAND 2> /dev/null)
-    percentage=$(printf '%s\n' "$percentage" | cut -d: -f 2 |
-        cut -d, -f 1 | cut -d. -f 1)
+\"percent-pos\" ] }" | $SOCKETCOMMAND 2> /dev/null | \
+    cut -d: -f 2 | cut -d, -f 1 | cut -d. -f 1)
 
     printf "$percentage"
 }
@@ -118,13 +118,11 @@ getValue() {
     property=$1
     test "$property" != "precisetime" && {
         value=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
-\"$property\"] }" | $SOCKETCOMMAND 2> /dev/null)
-        value=$(printf '%s\n' $value | cut -d\" -f 4 | cut -d. -f 1)
+\"$property\"] }" | $SOCKETCOMMAND 2> /dev/null | cut -d\" -f 4 | cut -d. -f 1)
     } || {
         property="playback-time"
         value=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
-\"$property\"] }" | $SOCKETCOMMAND 2> /dev/null)
-        value=$(printf '%s\n' $value | cut -d\" -f 4)
+\"$property\"] }" | $SOCKETCOMMAND 2> /dev/null | cut -d\" -f 4)
     }
 
     test "$value" = "error" && printf "N/A" || printf "$value"
@@ -132,8 +130,7 @@ getValue() {
 
 getSpeed() {
     speed=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
-\"speed\"] }" | $SOCKETCOMMAND 2> /dev/null)
-    speed=$(printf '%s\n' $speed | cut -d\" -f 4)
+\"speed\"] }" | $SOCKETCOMMAND 2> /dev/null | cut -d\" -f 4)
     speed=$(printf '%0.2f\n' "$speed")
 
     printf "$speed"
@@ -141,8 +138,7 @@ getSpeed() {
 
 getMuteStatus() {
     muted=$(printf '%s\n' "{ \"command\": [\"get_property\", \"mute\" ] }" | \
-        $SOCKETCOMMAND 2> /dev/null)
-    muted=$(printf '%s\n' "$muted" | cut -d: -f 2 | cut -d, -f 1)
+        $SOCKETCOMMAND 2> /dev/null | cut -d: -f 2 | cut -d, -f 1)
 
     case "$muted" in
         true)  muted="yes" ;;
@@ -155,8 +151,7 @@ getMuteStatus() {
 
 getPauseStatus() {
     status=$(printf '%s\n' "{ \"command\": [\"get_property\", \"pause\" ] }" | \
-        $SOCKETCOMMAND 2> /dev/null)
-    status=$(printf '%s\n' "$status" | cut -d: -f 2 | cut -d, -f 1)
+        $SOCKETCOMMAND 2> /dev/null | cut -d: -f 2 | cut -d, -f 1)
 
     case "$status" in
         true)  status="playing" ;;
@@ -170,15 +165,15 @@ getPauseStatus() {
 getLoopStatus() {
     property=$1
     loop=$(printf '%s\n' "{ \"command\": [\"get_property\", \
-\"$property\" ] }" | $SOCKETCOMMAND 2> /dev/null)
-    loop=$(printf '%s\n' "$loop" | cut -d: -f 2 | cut -d, -f 1 | sed s/\"//g)
+\"$property\" ] }" | $SOCKETCOMMAND 2> /dev/null | \
+        cut -d: -f 2 | cut -d, -f 1 | sed s/\"//g)
 
     printf "$loop"
 }
 
 getFrameNumber() {
     frame=$(printf '%s\n' "{ \"command\": [\"get_property\", \
-\"estimated-frame-number\" ] }" | $SOCKETCOMMAND 2> /dev/null)
+\"estimated-frame-number\" ] }" | $SOCKETCOMMAND 2> /dev/null | tr -d "{}")
     errorCheck=$(printf '%s\n' "$frame" | cut -d\" -f 2)
     frame=$(printf '%s\n' "$frame" | cut -d: -f 2 | cut -d, -f 1 | sed s/\"//g)
 
@@ -220,8 +215,8 @@ getPlaylist() {
 
         for i in $($SEQCOMMAND $REPS $FIRST $LAST); do
             filename=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
-    \"playlist/$((i - 1))/filename\"] }" | $SOCKETCOMMAND 2> /dev/null)
-            filename=$(printf '%s ' $filename | cut -d\" -f 4)
+    \"playlist/$((i - 1))/filename\"] }" | $SOCKETCOMMAND 2> /dev/null | \
+                cut -d\" -f 4)
 
             case "$filename" in
                 *.googlevideo.com/*)
