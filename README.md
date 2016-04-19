@@ -1,87 +1,84 @@
-mpvc
-====
+# mpvc
 
 An mpc-like control interface for mpv.
 
-mpvc also has a *nearly* complete compatibility layer for mpc commands. See the
-mpc manpage for details.
+mpvc also has a *nearly* complete compatibility layer for mpc commands in
+addition to GNU-style arguments. [Check the mpc manpage for
+details.](http://linux.die.net/man/1/mpc)
 
 ![ExampleOutput](https://github.com/Wildefyr/mpvc/blob/master/output.png)
 
-Dependencies
-------------
+## Dependencies
 
-- mpv
-- socat or nc (netcat)
-- jot or seq
+- `mpv`
+- `socat` / `nc` (netcat)
+- `seq` / `jot`
 
 Optional:
-- bc - To control playback speed.
+- `bc` - to control playback speed
 
-Install
--------
+## Install
 
 Distribution Packages:
 - [Arch](https://aur.archlinux.org/packages/mpvc-git) - `pacaur -y mpvc-git`
-- [Crux](https://github.com/6c37/crux-ports-git) - `prt-get depinst mpvc`
+- [Crux](https://github.com/wildefyr/wild-crux-ports) - `prt-get depinst mpvc`
 
 If you have packaged mpvc for your distribution, let me know so I can add it here.
 
-Manual Install
---------------
+#### Manual Install
 
-Either use the Makefile I have provided or copy mpvc somewhere to your $PATH.
+Use the Makefile provided or copy mpvc somewhere to your $PATH.
 
-Usage
------
+## Usage
 
 For mpvc to work, mpv must be started with the following argument:
 
-```bash
-mpv --input-unix-socket=/tmp/mpvsocket $FILES
-```
-
-You *could* add the following to your mpv.conf file, but then socket would be
-loaded with every instance of mpv by default, but might cause issues as you
-will corrupt the socket if two mpv instances are loaded at the same time with
-it:
-
-```bash
-input-unix-socket=/tmp/mpvsocket
-```
+`
+$ mpv --input-unix-socket=/tmp/mpvsocket song.flac
+`
 
 Alternatively and probably preferably, mpvc can be used with the -a or --add
-option to add files into the playlist. This functionality can be augmented with
-`find` with something like `mpvc -a $(find -type f)`. Note that if you add files
-as command line arguments, the care must be taken when using filenames
-containing spaces since each file must be contained in a single argument as in
-`mpvc -a "first file.mp3" "second file.mp3"`. An alternative is to directly pipe
-into mpvc like so:
-`find -type f | mpvc -a`. 
+option to add files to the current playlist:
 
-Useful Tricks
--------------
+`
+$ mpvc -a *
+`
 
-- Using the `find` command like so: `find . -type f -print0 | xargs -0 mpvc -a`
-  might give you better results than my inbuilt phrasing. It will automatically
-  take care of splitting filenames into separate arguments.
-- mpvc accepts input from stdin: `find $MUSICDIR -type f | sort -R | mpvc`
-- Any URL that is newline separated and resolvable by mpv and/or youtube-dl
-  can be added to the playlist, i.e. using
-  [mps-youtube](https://github.com/mps-youtube/mps-youtube) with `player` set
-  to mpvc and `playerargs` set to add.
-- Options can be combined together to give improved result i.e. `mpvc -P -r 1`
-  to always start playback when switching to the next track.
-- I recommend looking at something like [sxhkd](https://github.com/baskerville/sxhkd)
-  to bind mpvc commands to key combinations.
+However, mpv does not resolve individual files in a directory unless it is
+currently in or has been inside that directory, giving misleading results about
+the total number of files in the current playlist. A handy alternative is to use
+find in a subshell to give mpvc a list of all files from your current directory:
 
-TODO
-----
+`
+$ mpvc -a $(find -type f)
+`
 
-See the [Issue Tracker](https://github.com/wildefyr/mpvc/issues)
+Alternatively, you can pipe directly in to mpvc:
 
-Shameless Plug
---------------
+`
+$ find -type f | mpvc
+`
+
+## Useful Tricks
+
+- Hotkey daemons like [sxhkd](https://github.com/baskerville/sxhkd)
+  can be used to bind mpvc commands to key combinations.
+- Any URL that is resolvable by mpv and/or youtube-dl can be added to the
+  playlist, i.e. using [mps-youtube](https://github.com/mps-youtube/mps-youtube)
+  with `player` set to mpvc and `playerargs` set to add.
+- Multiple options can be combined together to give improved result:
+
+`
+$ mpvc -P -r 1
+`
+
+- This will make mpvc always start playing when switching to the next track.
+
+## TODO
+
+Check out the [Issue Tracker](https://github.com/wildefyr/mpvc/issues)
+
+## Shameless Plug
 
 If you want to contact me about anything, my website can be found
 [here](https://wildefyr.net) and I can also be found on the Freenode IRC under
