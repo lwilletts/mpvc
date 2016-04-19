@@ -671,7 +671,7 @@ formatPrint() {
     s#%frame%#$(getFrameNumber)#g
     ")
 
-    printf '%s\n' "${FORMATSTRING}"
+    printf '%s\n' "${FORMATSTRING}" | sed 's#%.*%#\&#'
     exit
 }
 
