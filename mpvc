@@ -934,7 +934,7 @@ main() {
 }
 
 # more global argument phrasing
-for arg in $ARGS; do
+for arg in "$@"; do
     test "$SOCKETFLAG" = "true" && SOCKET=$arg && SOCKETFLAG=false
     test "$FORMATFLAG" = "true" && FORMATSTRING=$arg && FORMATFLAG=false
 
