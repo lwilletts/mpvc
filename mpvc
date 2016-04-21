@@ -19,8 +19,8 @@ Usage: $(basename $0) [-S "socket"] [-a "filenames"] [-f "format string"]
     -T | --time     : Set absolute time.
     -v | --vol      : Increase/decrease volume relative to the current volume.
     -V | --volume   : Set absolute volume.
-    -r | --track    : Go forwards/backwards through the playlist queue.
-    -R | --tracknum : Jump to playlist item number.
+    -j | --track    : Go forwards/backwards through the playlist queue.
+    -J | --tracknum : Jump to playlist item number.
     -x | --speed    : Increase/decrease speed relative to the current speed.
     -X | --speedval : Set absolute speed.
     -m | --mute     : Toggle sound.
@@ -900,7 +900,7 @@ main() {
         test "$SPEEDVALFLAG" = "true" && setSpeedAbsolute "$arg";  SPEEDVALFLAG=false
         test "$TRACKFLAG"    = "true" && setTrackRelative "$arg";  TRACKFLAG=false
         test "$TRACKVALFLAG" = "true" && setTrackAbsolute "$arg";  TRACKVALFLAG=false
-        test "$DELETEFLAG"   = "true" && removeTrack "$arg";       DELETEFLAG=false
+        test "$REMOVEFLAG"   = "true" && removeTrack "$arg";       REMOVEFLAG=false
 
         case "$arg" in
             -t|--seek)      SEEKFLAG=true      ;;
@@ -909,9 +909,9 @@ main() {
             -V|--volume)    VOLUMEFLAG=true    ;;
             -x|--speed)     SPEEDFLAG=true     ;;
             -X|--speedval)  SPEEDVALFLAG=true  ;;
-            -r|--track)     TRACKFLAG=true     ;;
-            -R|--tracknum)  TRACKVALFLAG=true  ;;
-            -d|--delete)    DELETEFLAG=true    ;;
+            -j|--track)     TRACKFLAG=true     ;;
+            -J|--tracknum)  TRACKVALFLAG=true  ;;
+            -r|--remove)    REMOVEFLAG=true    ;;
             -s|--stop)      alwaysPause        ;;
             -P|--play)      alwaysPlay         ;;
             -p|--toggle)    togglePause        ;;
