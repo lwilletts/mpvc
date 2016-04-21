@@ -93,7 +93,10 @@ getMetadata() {
         result=$(getMediaFilename)
     }
 
-    printf "%s" "$result"
+    printf "%s" "$result" | awk -F '&' '{
+        for (x=1; x<NF; x++) printf "%s\\&", $x
+        printf "%s", $NF
+        exit }'
 }
 
 getDuration() {
