@@ -3,8 +3,9 @@
 An mpc-like control interface for mpv.
 
 mpvc also has a *nearly* complete compatibility layer for mpc commands in
-addition to GNU-style arguments. [Check the mpc manpage for
-details.](http://linux.die.net/man/1/mpc)
+addition to GNU-style arguments.
+
+[Check the mpc manpage for details.](http://linux.die.net/man/1/mpc)
 
 ![ExampleOutput](https://github.com/Wildefyr/mpvc/blob/master/output.png)
 
@@ -66,7 +67,7 @@ correctly. ( It's very hard to phrase this correctly :( )
 - Multiple options can be combined together to give improved result:
 
 `
-$ mpvc -P -r 1
+$ mpvc -P -j 1
 `
 
 - This will make mpvc always start playing when switching to the next track.
