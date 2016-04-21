@@ -50,13 +50,13 @@ the total number of files in the current playlist. A handy alternative is to use
 find in a subshell to give mpvc a list of all files from your current directory:
 
 `
-$ mpvc -a $(find -type f)
+$ mpvc -a $(find . -type f)
 `
 
 Alternatively, you can pipe directly in to mpvc:
 
 `
-$ find -type f | mpvc
+$ find . -type f | mpvc
 `
 
 ## Useful Tricks
