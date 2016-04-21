@@ -69,7 +69,7 @@ getMediaFilename() {
     s/3gpp&.*/mps-yt stream/
     ")
 
-    printf "$mediaFilename"
+    printf "%s" "$mediaFilename"
 }
 
 getMetadata() {
@@ -93,7 +93,7 @@ getMetadata() {
         result=$(getMediaFilename)
     }
 
-    printf "$result"
+    printf "%s" "$result"
 }
 
 getDuration() {
@@ -101,7 +101,7 @@ getDuration() {
 \"duration\"] }" | $SOCKETCOMMAND 2> /dev/null | \
     cut -d: -f 2 | cut -d. -f 1)
 
-    printf "$duration"
+    printf "%s" "$duration"
 }
 
 getPercentage() {
@@ -109,7 +109,7 @@ getPercentage() {
 \"percent-pos\" ] }" | $SOCKETCOMMAND 2> /dev/null | \
     cut -d: -f 2 | cut -d, -f 1 | cut -d. -f 1)
 
-    printf "$percentage"
+    printf "%s" "$percentage"
 }
 
 getValue() {
@@ -123,7 +123,7 @@ getValue() {
 \"$property\"] }" | $SOCKETCOMMAND 2> /dev/null | cut -d\" -f 4)
     }
 
-    test "$value" = "error" && printf "N/A" || printf "$value"
+    test "$value" = "error" && printf "%s" "N/A" || printf "%s" "$value"
 }
 
 getSpeed() {
@@ -131,7 +131,7 @@ getSpeed() {
 \"speed\"] }" | $SOCKETCOMMAND 2> /dev/null | cut -d\" -f 4)
     speed=$(printf '%0.2f\n' "$speed")
 
-    printf "$speed"
+    printf "%s" "$speed"
 }
 
 getMuteStatus() {
@@ -144,7 +144,7 @@ getMuteStatus() {
         *)     muted="N/A" ;;
     esac
 
-    printf "$muted"
+    printf "%s" "$muted"
 }
 
 getPauseStatus() {
@@ -157,7 +157,7 @@ getPauseStatus() {
         *)     status="N/A"     ;;
     esac
 
-    printf "$status"
+    printf "%s" "$status"
 }
 
 getLoopStatus() {
@@ -166,7 +166,7 @@ getLoopStatus() {
 \"$property\" ] }" | $SOCKETCOMMAND 2> /dev/null | \
         cut -d: -f 2 | cut -d, -f 1 | sed s/\"//g)
 
-    printf "$loop"
+    printf "%s" "$loop"
 }
 
 getFrameNumber() {
@@ -176,9 +176,9 @@ getFrameNumber() {
     frame=$(printf '%s\n' "$frame" | cut -d: -f 2 | cut -d, -f 1 | sed s/\"//g)
 
     test "$errorCheck" = "error" && {
-        printf "N/A"
+        printf "%s" "N/A"
     } || {
-        printf "$frame"
+        printf "%s" "$frame"
     }
 }
 
@@ -647,7 +647,7 @@ formatPrint() {
     s#%status%#$(
     status=$(getPauseStatus)
     test $status = "playing" && status="paused" || status="playing"
-    printf "$status"
+    printf "%s" "$status"
     )#g
 
     s#%year%#$(getMetadata date)#g
