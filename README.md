@@ -47,17 +47,14 @@ $ mpvc -a *
 However, mpv does not resolve individual files in a directory unless it is
 currently in or has been inside that directory, giving misleading results about
 the total number of files in the current playlist. A handy alternative is to use
-find in a subshell to give mpvc a list of all files from your current directory:
-
-`
-$ mpvc -a $(find . -type f)
-`
-
-Alternatively, you can pipe directly in to mpvc:
+`find` to pipe files directly into mpvc:
 
 `
 $ find . -type f | mpvc
 `
+
+You *could* use a subshell, but it won't phrase files with spaces in them
+correctly. ( It's very hard to phrase this correctly :( )
 
 ## Useful Tricks
 
