@@ -276,63 +276,28 @@ appendTrack() {
 
 setTimeRelative() {
     time=$(getValue playback-time)
-    lastChar=$(printf '%s\n' "$1" | rev | cut -c 1)
 
-    case "$lastChar" in
-        s|S|m|M|h|H)
-            firstChar=$(printf '%s' "$1" | cut -c 1)
-            test "$firstChar" = "-" && {
-                timeInt=$(printf '%s' "$1" | cut -c 2-)
-                timeInt=$(printf '%s' "$timeInt" | rev | cut -c 2- | rev)
-                minusFlag=true
-            } || {
-                timeInt=$(printf '%s' "$1" | rev | cut -c 2- | rev)
-            }
+    test $(printf '%s' "$1" | cut -c 1) = "-" && {
+        timeArg=$(printf '%s' "$1" | cut -c 2-)
+        minusFlag=true
+    } || {
+        timeArg=$1
+    }
 
-            intCheck "$timeInt"
+    timeSec=$(parseTimeString $timeArg) || exit $?
 
-            case "$lastChar" in
-                h|H) timeInt=$((timeInt * 60 * 60)) ;;
-                m|M) timeInt=$((timeInt * 60))      ;;
-            esac
-
-            test "$minusFlag" = "true" && {
-                time=$((time + ${firstChar}${timeInt}))
-            } || {
-                time=$((time + $timeInt))
-            }
-            ;;
-        *)
-            intCheck $1
-            time=$((time + $1))
-            ;;
-    esac
-
+    test "$minusFlag" = "true" && {
+        time=$(($time - $timeSec))
+    } || {
+        time=$(($time + $timeSec))
+    }
 
     printf '%s\n' "{ \"command\": [\"set_property\", \"playback-time\", \
 $time ] }" | $SOCKETCOMMAND > /dev/null
 }
 
 setTimeAbsolute() {
-    lastChar=$(printf '%s\n' "$1" | rev | cut -c 1)
-
-    case "$lastChar" in
-        s|S|m|M|h|H)
-            timeInt=$(printf '%s' "$1" | rev | cut -c 2- | rev)
-            intCheck $timeInt
-
-            case "$lastChar" in
-                h|H) timeInt=$((timeInt * 60 * 60)) ;;
-                m|M) timeInt=$((timeInt * 60))      ;;
-            esac
-
-            time=$timeInt
-            ;;
-        *)
-            intCheck $1
-            time=$((time + $1))
-            ;;
-    esac
+    time=$(parseTimeString $1) || exit $?
 
     printf '%s\n' "{ \"command\": [\"set_property\", \"playback-time\", \
 $time ] }" | $SOCKETCOMMAND > /dev/null
@@ -717,6 +682,30 @@ fltCheck() {
         printf '%s\n' "'$1' is not a number." >&2
         exit 1
     }
+}
+
+parseTimeString() {
+    lastChar=$(printf '%s\n' "$1" | rev | cut -c 1)
+
+    case "$lastChar" in
+        s|S|m|M|h|H)
+            timeInt=$(printf '%s' "$1" | rev | cut -c 2- | rev)
+
+            intCheck "$timeInt"
+
+            case "$lastChar" in
+                h|H) timeInt=$(($timeInt * 60 * 60)) ;;
+                m|M) timeInt=$(($timeInt * 60))      ;;
+            esac
+
+            ;;
+        *)
+            intCheck $1
+            timeInt=$1
+            ;;
+    esac
+
+    printf "%d" $timeInt
 }
 
 validateDeps() {
