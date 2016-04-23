@@ -700,8 +700,13 @@ parseTimeString() {
 
             ;;
         *)
-            intCheck $1
-            timeInt=$1
+            timeInt=$(printf "%s" $1 | awk -F ':' '{
+                time=0
+                for (x=1; x<=NF; x++) time=time*60+$x
+                    printf "%d\n", time
+                    exit
+            }')
+
             ;;
     esac
 
