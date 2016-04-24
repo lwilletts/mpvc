@@ -277,12 +277,19 @@ appendTrack() {
 setTimeRelative() {
     time=$(getValue playback-time)
 
-    test $(printf '%s' "$1" | cut -c 1) = "-" && {
-        timeArg=$(printf '%s' "$1" | cut -c 2-)
-        minusFlag=true
-    } || {
-        timeArg=$1
-    }
+    sign=$(printf '%s' "$1" | cut -c 1)
+    case "$sign" in
+        -)
+            minusFlag=true
+            timeArg=$(printf '%s' "$1" | cut -c 2-)
+            ;;
+        +)
+            timeArg=$(printf '%s' "$1" | cut -c 2-)
+            ;;
+        *)
+            timeArg=$1
+            ;;
+    esac
 
     timeSec=$(parseTimeString $timeArg) || exit $?
 
