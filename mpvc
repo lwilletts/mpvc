@@ -668,7 +668,7 @@ speed: %speed%x volume: %volume%% muted: %muted% repeat: %repeat% single: %singl
 # catches if mpv is idle or not
 printFinalOutput() {
     test "$QUIETFLAG" != "true" && {
-        test $(getValue playlist-count) -eq 0 && {
+        test $(getValue idle) = "yes" && {
             printf '%s\n' "mpv on ${SOCKET} is currently idle." >&2
         } || {
             printDefaultStatus
