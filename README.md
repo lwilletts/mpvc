@@ -15,9 +15,6 @@ addition to GNU-style arguments.
 - `socat` / `nc` (netcat)
 - `seq` / `jot`
 
-Optional:
-- `bc` - to control playback speed
-
 ## Install
 
 Distribution Packages:

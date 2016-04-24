@@ -714,11 +714,6 @@ parseTimeString() {
 }
 
 validateDeps() {
-    type bc 2>&1 > /dev/null || {
-        printf '%s\n' "WARNING: bc is not installed on your \$PATH." >&2
-        printf '%s\n' "WARNING: speed control will not work." >&2
-    }
-
     type mpv 2>&1 > /dev/null || {
         printf '%s\n' "mpv is not installed on your \$PATH." >&2
         exit 4
@@ -735,7 +730,7 @@ validateDeps() {
     type seq 2>&1 > /dev/null && SEQCOMMAND="seq"
     type jot 2>&1 > /dev/null && SEQCOMMAND="jot"
 
-    test "${SEQCOMMAND}" || {
+    test "$SEQCOMMAND" || {
         printf '%s\n' "Cannot find seq or jot on your \$PATH." >&2
         exit 4
     }
