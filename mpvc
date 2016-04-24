@@ -580,12 +580,12 @@ killAllMpv() {
     # Time Functions
 ###############################################################################
 
-elaspedTime() {
+elapsedTime() {
     time=$(getValue playback-time 0)
     formatTime $time
 }
 
-preciseElaspedTime() {
+preciseElapsedTime() {
     time=$(getValue precisetime 0.0)
     bigTime=$(printf '%s\n' "$time" | cut -d. -f 1)
     tinyTime=$(printf '%s\n' "$time" | cut -d. -f 2)
@@ -638,8 +638,8 @@ formatPrint() {
     s#%artist%#$(getMetadata artist)#g
     s#%albumartist%#$(getMetadata album_artist)#g
     s#%speed%#$(getSpeed)#g
-    s#%time%#$(elaspedTime)#g
-    s#%precisetime%#$(preciseElaspedTime)#g
+    s#%time%#$(elapsedTime)#g
+    s#%precisetime%#$(preciseElapsedTime)#g
     s#%volume%#$(getValue volume)#g
     s#%length%#$(trackLength)#g
     s#%muted%#$(getMuteStatus)#g
