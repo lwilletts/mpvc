@@ -685,6 +685,11 @@ fltCheck() {
 }
 
 parseTimeString() {
+    printf "%s" $1 | grep -q -G -e "^\([0-9.]*:\)\{0,2\}[0-9.]*$" -e "^[0-9]*[sSmMhH]$" || {
+        printf "%s\n" "Timestamp formats must match either H:M:S with hour and minute fields optional, or a single decimal number with the units appended (h, m, s)" 1>&2
+        exit 1
+    }
+
     lastChar=$(printf '%s\n' "$1" | rev | cut -c 1)
 
     case "$lastChar" in
