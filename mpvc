@@ -112,7 +112,7 @@ getPercentage() {
 \"percent-pos\" ] }" | $SOCKETCOMMAND 2> /dev/null | \
     cut -d: -f 2 | cut -d, -f 1 | cut -d. -f 1)
 
-    printf "%s" "$percentage"
+    printf "%d" "$percentage"
 }
 
 getValue() {
@@ -126,7 +126,13 @@ getValue() {
 \"$property\"] }" | $SOCKETCOMMAND 2> /dev/null | cut -d\" -f 4)
     }
 
-    test "$value" = "error" && printf "%s" "N/A" || printf "%s" "$value"
+    test "$value" = "error" && {
+        test $# -ge 2 && printf "%s" $2 || printf "%s" "N/A"
+        return 1
+    } || {
+        printf "%s" "$value"
+        return 0
+    }
 }
 
 getSpeed() {
@@ -575,12 +581,12 @@ killAllMpv() {
 ###############################################################################
 
 elaspedTime() {
-    time=$(getValue playback-time)
+    time=$(getValue playback-time 0)
     formatTime $time
 }
 
 preciseElaspedTime() {
-    time=$(getValue precisetime)
+    time=$(getValue precisetime 0.0)
     bigTime=$(printf '%s\n' "$time" | cut -d. -f 1)
     tinyTime=$(printf '%s\n' "$time" | cut -d. -f 2)
     formatTime $bigTime $tinyTime
