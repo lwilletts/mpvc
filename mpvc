@@ -925,7 +925,7 @@ main() {
     printFinalOutput
 }
 
-# more global argument phrasing
+# more global argument parsing
 for arg in "$@"; do
     test "$SOCKETFLAG" = "true" && SOCKET=$arg && SOCKETFLAG=false
     test "$FORMATFLAG" = "true" && FORMATSTRING=$arg && FORMATFLAG=false
