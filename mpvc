@@ -613,7 +613,7 @@ formatTime() {
         printf '%s\n' "$hours:$minutes:$seconds"
     } || {
         milleSeconds=$2
-        printf '%s\n' "$hours:$minutes:$seconds:$milleSeconds"
+        printf '%s\n' "$hours:$minutes:$seconds.$milleSeconds"
     }
 }
 
