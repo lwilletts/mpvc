@@ -236,9 +236,9 @@ getPlaylist() {
             esac
 
             test "$currentTrack" -eq $((i - 1)) && {
-                printf '%s\n' "[7m[40m${filename}[0m"
+                printf '[7m[40m%d	%s[0m\n' $i "${filename}"
             } || {
-                printf '%s\n' "${filename}"
+                printf '%d	%s\n' $i "${filename}"
             }
         done
     }
