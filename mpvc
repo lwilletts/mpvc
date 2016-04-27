@@ -201,25 +201,9 @@ getPlaylist() {
         exit 1
     }
 
-    rows=$(($(tput lines) - 2))
-    if test $tracks -gt $rows; then
-        halfrows=$((rows / 2))
-        if test $currentTrack -le $halfrows; then
-            FIRST=1
-            LAST=$((rows))
-        elif test $((currentTrack + halfrows)) -ge $tracks; then
-            FIRST=$((tracks - rows + 1))
-            LAST=$tracks
-        else
-            FIRST=$((currentTrack - halfrows + 1))
-            LAST=$((currentTrack + halfrows))
-        fi
-    else
-        FIRST=1
-        LAST=$tracks
-    fi
+    calculateTerminalHeight
 
-    test "${SEQCOMMAND}" = "jot" && REPS=$((${LAST}-${FIRST}+1))
+    test "${SEQCOMMAND}" = "jot" && REPS=$((LAST - FIRST + 1))
 
     for i in $($SEQCOMMAND $REPS $FIRST $LAST); do
         filename=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
@@ -695,6 +679,32 @@ fltCheck() {
         printf '%s\n' "'$1' is not a number." >&2
         exit 1
     }
+}
+
+calculateTerminalHeight() {
+    rows=$(($(tput lines) - 2))
+    halfrows=$((rows / 2))
+
+    test $tracks -gt $rows && {
+        test $currentTrack -le $halfrows && {
+            FIRST=1
+            LAST=$rows
+            return
+        }
+        test $((currentTrack + halfrows)) -ge $tracks && {
+            FIRST=$((tracks - rows + 1))
+            LAST=$tracks
+            return
+        }
+        test $((currentTrack + halfrows)) -lt $tracks && {
+            FIRST=$((currentTrack - halfrows + 1))
+            LAST=$((currentTrack + halfrows))
+            return
+        }
+    }
+
+    FIRST=1
+    LAST=$tracks
 }
 
 parseTimeString() {
