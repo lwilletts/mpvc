@@ -69,7 +69,7 @@ getMediaFilename() {
     s/3gpp&.*/mps-yt stream/
     ")
 
-    printf "%s" "$mediaFilename"
+    printf '%s' "$mediaFilename"
 }
 
 getMetadata() {
@@ -93,7 +93,7 @@ getMetadata() {
         result=$(getMediaFilename)
     }
 
-    printf "%s" "$result" | awk -F '&' '{
+    printf '%s' "$result" | awk -F '&' '{
         for (x=1; x<NF; x++) printf "%s\\&", $x
         printf "%s", $NF
         exit }'
@@ -104,7 +104,7 @@ getDuration() {
 \"duration\"] }" | $SOCKETCOMMAND 2> /dev/null | \
     cut -d: -f 2 | cut -d. -f 1)
 
-    printf "%s" "$duration"
+    printf '%s' "$duration"
 }
 
 getPercentage() {
@@ -127,10 +127,10 @@ getValue() {
     }
 
     test "$value" = "error" && {
-        test $# -ge 2 && printf "%s" $2 || printf "%s" "N/A"
+        test $# -ge 2 && printf '%s' $2 || printf '%s' "N/A"
         return 1
     } || {
-        printf "%s" "$value"
+        printf '%s' "$value"
         return 0
     }
 }
@@ -140,7 +140,7 @@ getSpeed() {
 \"speed\"] }" | $SOCKETCOMMAND 2> /dev/null | cut -d\" -f 4)
     speed=$(printf '%0.2f\n' "$speed")
 
-    printf "%s" "$speed"
+    printf '%s' "$speed"
 }
 
 getMuteStatus() {
@@ -153,7 +153,7 @@ getMuteStatus() {
         *)     muted="N/A" ;;
     esac
 
-    printf "%s" "$muted"
+    printf '%s' "$muted"
 }
 
 getPauseStatus() {
@@ -166,7 +166,7 @@ getPauseStatus() {
         *)     status="N/A"     ;;
     esac
 
-    printf "%s" "$status"
+    printf '%s' "$status"
 }
 
 getLoopStatus() {
@@ -175,7 +175,7 @@ getLoopStatus() {
 \"$property\" ] }" | $SOCKETCOMMAND 2> /dev/null | \
         cut -d: -f 2 | cut -d, -f 1 | sed s/\"//g)
 
-    printf "%s" "$loop"
+    printf '%s' "$loop"
 }
 
 getFrameNumber() {
@@ -185,9 +185,9 @@ getFrameNumber() {
     frame=$(printf '%s\n' "$frame" | cut -d: -f 2 | cut -d, -f 1 | sed s/\"//g)
 
     test "$errorCheck" = "error" && {
-        printf "%s" "N/A"
+        printf '%s' "N/A"
     } || {
-        printf "%s" "$frame"
+        printf '%s' "$frame"
     }
 }
 
@@ -295,6 +295,14 @@ $time ] }" | $SOCKETCOMMAND > /dev/null
 
 setTimeAbsolute() {
     time=$(parseTimeString $1) || exit $?
+
+    trackTime=$(getDuration)
+
+    test $time -ge $trackTime && {
+        printf '%s\n' "Given time is greater than track length! ($(trackLength))"
+        QUIETFLAG=true
+        return 1
+    }
 
     printf '%s\n' "{ \"command\": [\"set_property\", \"playback-time\", \
 $time ] }" | $SOCKETCOMMAND > /dev/null
@@ -565,7 +573,7 @@ killAllMpv() {
 ###############################################################################
 
 elapsedTime() {
-    time=$(getValue playback-time 0)
+    time=$(getValue playback-time)
     formatTime $time
 }
 
@@ -612,7 +620,7 @@ formatPrint() {
     s#%status%#$(
     status=$(getPauseStatus)
     test $status = "playing" && status="paused" || status="playing"
-    printf "%s" "$status"
+    printf '%s' "$status"
     )#g
 
     s#%year%#$(getMetadata date)#g
@@ -708,8 +716,11 @@ calculateTerminalHeight() {
 }
 
 parseTimeString() {
-    printf "%s" $1 | grep -q -G -e "^\([0-9.]*:\)\{0,2\}[0-9.]*$" -e "^[0-9]*[sSmMhH]$" || {
-        printf "%s\n" "Timestamp formats must match either H:M:S with hour and minute fields optional, or a single decimal number with the units appended (h, m, s)" 1>&2
+    printf '%s' $1 | grep -q -G -e "^\([0-9.]*:\)\{0,2\}[0-9.]*$" -e "^[0-9]*[sSmMhH]$" || {
+        cat >&2 << EOF
+Timestamp formats must match either H:M:S with hour and minute fields optional,
+or a single integer number with a unit of time appended: h, m, s.
+EOF
         exit 1
     }
 
@@ -728,7 +739,7 @@ parseTimeString() {
 
             ;;
         *)
-            timeInt=$(printf "%s" $1 | awk -F ':' '{
+            timeInt=$(printf '%s' $1 | awk -F ':' '{
                 time=0
                 for (x=1; x<=NF; x++) time=time*60+$x
                     printf "%d\n", time
