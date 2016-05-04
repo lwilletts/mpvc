@@ -808,7 +808,7 @@ main() {
     for ((pos=1; pos <= $#; pos++)); do
         test "${@:$pos:1}" = "--" && {
             MPVOPTIONS="$MPVOPTIONS ${@:$pos+1}"
-            set -- "${@:1:$pos-1}"
+            set -- "${@:0:$pos}"
         }
     done
 
