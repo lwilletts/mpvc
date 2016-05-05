@@ -805,16 +805,18 @@ main() {
     validateDeps
 
     # grab mpv options first if any
-    for ((pos=1; pos <= $#; pos++)); do
-        test "${@:$pos:1}" = "--" && {
-            MPVOPTIONS="$MPVOPTIONS ${@:$pos+1}"
-            set -- "${@:0:$pos}"
+    for arg in "$@"; do
+        test "$MPVFLAG" = "true" && {
+            MPVOPTIONS="$MPVOPTIONS $arg"
+        } || {
+            test "$arg" = "--" && MPVFLAG=true
         }
     done
 
     # grab input files next
     for arg in "$@"; do
         case "$arg" in
+            --) break ;;
             -?|--*) APPENDFLAG=false ;;
         esac
 
