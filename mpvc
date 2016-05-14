@@ -238,7 +238,8 @@ getPlaylist() {
 appendTrack() {
     filename="$@"
 
-    ps ax -ww | grep -v grep | grep -wq "mpv.*$SOCKET" && {
+    ps ax -ww | grep -v grep | \
+    grep -wq "\bmpv\b.*--input-\(unix\|ipc\).*$SOCKET" && {
         printf '%s\n' "{ \"command\": [\"loadfile\", \"$filename\", \
 \"append-play\" ] }" | $SOCKETCOMMAND 2>&1 > /dev/null
     } || {
