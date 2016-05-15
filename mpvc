@@ -239,7 +239,7 @@ appendTrack() {
     filename="$@"
 
     ps ax -ww | grep -v grep | \
-    grep -wq "\bmpv\b.*--input-\(unix\|ipc\).*$SOCKET" && {
+    grep -wq "mpv[[:space:]].*--input-\(unix\|ipc\).*$SOCKET" && {
         printf '%s\n' "{ \"command\": [\"loadfile\", \"$filename\", \
 \"append-play\" ] }" | $SOCKETCOMMAND 2>&1 > /dev/null
     } || {
