@@ -761,7 +761,7 @@ validateDeps() {
     }
 
     type socat >/dev/null 2>&1 && SOCKETCOMMAND="socat - $SOCKET"
-    type nc >/dev/null 2>&1 && SOCKETCOMMAND="nc -U -N $SOCKET"
+    type nc >/dev/null 2>&1 && SOCKETCOMMAND="nc -U $SOCKET"
 
     test "$SOCKETCOMMAND" || {
         printf '%s\n' "Cannot find socat or nc on your \$PATH." >&2
