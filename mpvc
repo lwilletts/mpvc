@@ -85,8 +85,8 @@ getMetadata() {
     test "$errorCheck" = "error" && {
         result="N/A"
     } || {
-        metadata=$(printf '%s\n' "$metadata" | cut -d: -f 2 | \
-        cut -d, -f 1 | sed s/\"//g)
+        metadata=$(printf '%s\n' "$metadata" | \
+        sed 's/^"data":"\(.*\)","error":"success"$/\1/')
         result="$metadata"
     }
 
