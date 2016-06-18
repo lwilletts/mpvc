@@ -95,10 +95,7 @@ getMetadata() {
         result=$(getMediaFilename)
     }
 
-    printf '%s' "$result" | awk -F '&' '{
-        for (x=1; x<NF; x++) printf "%s\\&", $x
-        printf "%s", $NF
-        exit }'
+    printf '%s' "$result" | escapeSedChar '&' | escapeSedChar '#'
 }
 
 getDuration() {
@@ -674,6 +671,13 @@ printFinalOutput() {
 
     # Misc. Functions
 ###############################################################################
+
+escapeSedChar() {
+    awk -F "$1" '{
+        for (x=1; x<NF; x++) printf "%s\\'"$1"'", $x
+        printf "%s", $NF
+        exit }'
+}
 
 intCheck() {
     test $1 -ne 0 2> /dev/null
