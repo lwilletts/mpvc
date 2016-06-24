@@ -49,7 +49,7 @@ Exit codes:
      1: Input Argument error.
      2: Socket does not exist.
      3: Socket is not currently open.
-     4: Dependacy error.
+     4: Dependency error.
 EOF
 
     test -z $1 && exit || exit $1
