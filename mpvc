@@ -170,9 +170,15 @@ getPauseStatus() {
 
 getLoopStatus() {
     property=$1
-    loop=$(printf '%s\n' "{ \"command\": [\"get_property\", \
+    status=$(printf '%s\n' "{ \"command\": [\"get_property\", \
 \"$property\" ] }" | $SOCKETCOMMAND 2> /dev/null | \
         cut -d: -f 2 | cut -d, -f 1 | sed s/\"//g)
+
+    case "$status" in
+        true | inf)  loop="yes" ;;
+        false)       loop="no"  ;;
+        *)           loop="N/A" ;;
+    esac
 
     printf '%s' "$loop"
 }
@@ -395,14 +401,14 @@ setTrackRelative() {
 
     test "$desiredTrack" -ge "$trackCount" && {
         repeat=$(getLoopStatus loop)
-        test "$repeat" = "inf" && {
+        test "$repeat" = "yes" && {
             desiredTrack=0
         }
     }
 
     test "$desiredTrack" -lt 0 && {
         repeat=$(getLoopStatus loop)
-        test "$repeat" = "inf" && {
+        test "$repeat" = "yes" && {
             setTrackAbsolute $trackCount
             return
         } || {
@@ -534,7 +540,7 @@ shufflePlaylist() {
         QUIETFLAG=true
     }
 
-    test "$(getLoopStatus loop)" != "inf" && {
+    test "$(getLoopStatus loop)" != "yes" && {
         toggleLoopPlaylist inf
     }
 }
