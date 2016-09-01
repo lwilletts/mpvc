@@ -25,8 +25,8 @@ Usage: $(basename $0) [-S "socket"] [-a "filenames"] [-f "format string"]
     -x | --speed    : Increase/decrease speed relative to the current speed.
     -X | --speedval : Set absolute speed.
     -m | --mute     : Toggle sound.
-    -l | --loop     : Loop currently playing file.
-    -L | --loopfile : Loop currently playing playlist.
+    -l | --loop     : Loop currently playing playlist.
+    -L | --loopfile : Loop currently playing file.
     -z | --shuffle  : Shuffle the current playlist.
     -k | --kill     : Kill the mpv process controlling the given socket.
     -K | --killall  : Kill all mpv processes indiscriminately.
