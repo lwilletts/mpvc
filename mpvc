@@ -242,7 +242,7 @@ appendTrack() {
     filename="$@"
 
     # require absolute paths
-    test "$(printf "%s" "$filename" | cut -c 1)" != '/' && {
+    test -e "$filename" -a "$(printf "%s" "$filename" | cut -c 1)" != '/' && {
         filename="$(pwd)/$filename"
     }
 
