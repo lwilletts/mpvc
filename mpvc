@@ -221,7 +221,7 @@ getPlaylist() {
                 ;;
             *)
                 # this will probably look funky if there's a '/' in the filename
-                filename=$(printf '%s\n' "$filename" | rev | cut -d'/' -f 1 | rev)
+                filename=$(basename "$filename")
                 ;;
         esac
 
@@ -267,7 +267,7 @@ appendTrack() {
             ;;
         *)
             # this will probably look funky if there's a '/' in the filename
-            filename=$(printf '%s\n' "$filename" | rev | cut -d'/' -f 1 | rev)
+            filename=$(basename "$filename")
             ;;
     esac
 
