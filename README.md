@@ -32,7 +32,7 @@ Use the Makefile provided or copy mpvc somewhere to your $PATH.
 For mpvc to work, mpv must be started with the following argument:
 
 `
-$ mpv --input-unix-socket=/tmp/mpvsocket song.flac
+$ mpv --input-ipc-server=/tmp/mpvsocket song.flac
 `
 
 Alternatively and probably preferably, mpvc can be used with the -a or --add
@@ -52,7 +52,7 @@ $ find . -type f | mpvc
 `
 
 You *could* use a subshell, but it won't phrase files with spaces in them
-correctly. ( It's very hard to phrase this correctly :( )
+correctly. This unfortunately is a limit of shell.
 
 ## Useful Tricks
 

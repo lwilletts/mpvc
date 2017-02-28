@@ -250,7 +250,7 @@ appendTrack() {
         printf '%s\n' "{ \"command\": [\"loadfile\", \"$filename\", \
 \"append-play\" ] }" | $SOCKETCOMMAND 2>&1 > /dev/null
     } || {
-        exec mpv --really-quiet --idle=once --input-unix-socket=${SOCKET} \
+        exec mpv --really-quiet --idle=once --input-ipc-server=${SOCKET} \
             $MPVOPTIONS "$filename" &
 
         # wait up to 5 seconds for mpv to start on $SOCKET
