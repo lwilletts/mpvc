@@ -646,7 +646,7 @@ formatPrint() {
     s#%length%#$(trackLength)#g
     s#%muted%#$(getMuteStatus)#g
     s#%percentage%#$(getPercentage)#g
-    s#%filename%#$(getMediaFilename)#g
+    s#%file%#$(getMediaFilename)#g
     s#%repeat%#$(getLoopStatus loop)#g
     s#%single%#$(getLoopStatus loop-file)#g
     s#%playlistlength%#$(getValue playlist-count)#g
