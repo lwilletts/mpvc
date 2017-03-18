@@ -116,14 +116,8 @@ getPercentage() {
 
 getValue() {
     property=$1
-    test "$property" != "precisetime" && {
-        value=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
+    value=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
 \"$property\"] }" | $SOCKETCOMMAND 2> /dev/null | cut -d\" -f 4 | cut -d. -f 1)
-    } || {
-        property="playback-time"
-        value=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
-\"$property\"] }" | $SOCKETCOMMAND 2> /dev/null | cut -d\" -f 4)
-    }
 
     test "$value" = "error" && {
         test $# -ge 2 && printf '%s' "$2" || printf '%s' "N/A"
@@ -589,7 +583,7 @@ elapsedTime() {
 }
 
 preciseElapsedTime() {
-    time=$(getValue precisetime 0.0)
+    time=$(getValue playback-time 0.0)
     bigTime=$(printf '%s\n' "$time" | cut -d. -f 1)
     tinyTime=$(printf '%s\n' "$time" | cut -d. -f 2)
     formatTime "$bigTime" "$tinyTime"
