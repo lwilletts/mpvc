@@ -159,13 +159,15 @@ getPauseStatus() {
     status=$(printf '%s\n' "{ \"command\": [\"get_property\", \"pause\" ] }" | \
         $SOCKETCOMMAND 2> /dev/null | cut -d: -f 2 | cut -d, -f 1)
 
-    case "$status" in
-        true)  status="playing" ;;
-        false) status="paused"  ;;
-        *)     status="N/A"     ;;
-    esac
+    printf '%s\n' "$status"
 
-    printf '%s' "$status"
+    # case "$status" in
+    #     true)  status="playing" ;;
+    #     false) status="paused"  ;;
+    #     *)     status="N/A"     ;;
+    # esac
+
+    # printf '%s' "$status"
 }
 
 getLoopStatus() {
@@ -497,7 +499,6 @@ togglePause() {
 
     printf '%s\n' "{ \"command\": [\"set_property\", \"pause\", $status ] }" | \
         $SOCKETCOMMAND > /dev/null
-
 }
 
 toggleMute() {
@@ -775,16 +776,16 @@ validateDeps() {
         exit 4
     }
 
-    hash socat 2> /dev/null && SOCKETCOMMAND="socat - $SOCKET"
     hash nc 2> /dev/null && SOCKETCOMMAND="nc -U -N $SOCKET"
+    hash socat 2> /dev/null && SOCKETCOMMAND="socat - $SOCKET"
 
     test "$SOCKETCOMMAND" || {
         printf '%s\n' "Cannot find socat or nc on your \$PATH." >&2
         exit 4
     }
 
-    hash seq 2> /dev/null && SEQCOMMAND="seq"
     hash jot 2> /dev/null && SEQCOMMAND="jot"
+    hash seq 2> /dev/null && SEQCOMMAND="seq"
 
     test "$SEQCOMMAND" || {
         printf '%s\n' "Cannot find seq or jot on your \$PATH." >&2
@@ -860,12 +861,8 @@ main() {
     # mpc compatibility layer
     case $1 in
         play|start)
-            test "$(getPauseStatus)" = "playing" && {
-                test -z $2 && {
-                    setTrackAbsolute
-                } || {
-                    setTrackAbsolute "$2"
-                }
+            test -n "$2" && {
+                setTrackAbsolute "$2"
             }
 
             alwaysPlay
