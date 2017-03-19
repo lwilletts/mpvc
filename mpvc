@@ -290,9 +290,9 @@ setTimeRelative() {
     timeSec=$(parseTimeString "$timeArg") || exit $?
 
     test "$minusFlag" = "true" && {
-        time=$(("$time" - "$timeSec"))
+        time=$(($time - $timeSec))
     } || {
-        time=$(("$time" + "$timeSec"))
+        time=$(($time + $timeSec))
     }
 
     printf '%s\n' "{ \"command\": [\"set_property\", \"playback-time\", \
