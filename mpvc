@@ -794,7 +794,7 @@ validateSocket() {
         # test if socket is open
         status="$(getPauseStatus)"
         test "$status" = "N/A" && {
-            printf '%s\n' "$SOCKET is not currently open or has been corrupted." >&2
+            printf '%s\n' "No MPV instance using $SOCKET."
             exit 3
         }
     } || {
