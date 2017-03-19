@@ -153,15 +153,13 @@ getPauseStatus() {
     status=$(printf '%s\n' "{ \"command\": [\"get_property\", \"pause\" ] }" | \
         $SOCKETCOMMAND 2> /dev/null | cut -d: -f 2 | cut -d, -f 1)
 
-    printf '%s\n' "$status"
+    case "$status" in
+        true)  status="paused"  ;;
+        false) status="playing" ;;
+        *)     status="N/A"     ;;
+    esac
 
-    # case "$status" in
-    #     true)  status="playing" ;;
-    #     false) status="paused"  ;;
-    #     *)     status="N/A"     ;;
-    # esac
-
-    # printf '%s' "$status"
+    printf '%s' "$status"
 }
 
 getLoopStatus() {
@@ -489,7 +487,7 @@ togglePause() {
     }
 
     status=$(getPauseStatus)
-    test "$status" = "playing" && status="false" || status="true"
+    test "$status" = "playing" && status="true" || status="false"
 
     printf '%s\n' "{ \"command\": [\"set_property\", \"pause\", $status ] }" | \
         $SOCKETCOMMAND > /dev/null
@@ -619,12 +617,10 @@ formatTime() {
 
 # formats and prints according to $FORMATSTRING
 formatPrint() {
-
     # modified format string
     FORMATSTRING=$(printf '%s\n' "$FORMATSTRING" | sed "
     s#%status%#$(
     status=$(getPauseStatus)
-    test "$status" = "playing" && status="paused" || status="playing"
     printf '%s' "$status"
     )#g
 
