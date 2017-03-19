@@ -196,7 +196,7 @@ getPlaylist() {
     currentTrack=$(getValue playlist-pos)
 
     test "$tracks" -eq 0 -o "$currentTrack" = "N/A" && {
-        printf '%s\n' "mpv on ${SOCKET} is currently idle." >&2
+        printf '%s\n' "MPV instance on ${SOCKET} is currently idle." >&2
         exit 1
     }
 
@@ -249,7 +249,7 @@ appendTrack() {
 
         # wait up to 5 seconds for mpv to start on $SOCKET
         for i in $($SEQCOMMAND 50); do
-            idlestatus=$(getValue idle)
+            idlestatus=$(getValue idle-active)
             test "$idlestatus" && break
             sleep 0.1
         done
@@ -661,8 +661,8 @@ speed: %speed%x volume: %volume%% muted: %muted% repeat: %repeat% single: %singl
 # catches if mpv is idle or not
 printFinalOutput() {
     test "$QUIETFLAG" != "true" && {
-        test "$(getValue idle)" = "yes" && {
-            printf '%s\n' "mpv on ${SOCKET} is currently idle." >&2
+        test "$(getValue idle-active)" = "yes" && {
+            printf '%s\n' "MPV instance on ${SOCKET} is currently idle." >&2
         } || {
             printDefaultStatus
         }
