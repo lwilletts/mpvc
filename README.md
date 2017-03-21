@@ -21,6 +21,7 @@ netcat across UNIXes.
 Distribution Packages:
 - [Arch](https://aur.archlinux.org/packages/mpvc-git) - `pacaur -y mpvc-git`
 - [Crux](https://github.com/wildefyr/wild-crux-ports) - `prt-get depinst mpvc`
+- [Gentoo](https://gitlab.com/xy2_/osman) - `emerge mpvc`
 
 If you have packaged mpvc for your distribution, let me know so I can add it here.
 
