@@ -39,7 +39,7 @@ Usage: $(basename $0) [-S "socket"] [-a "filenames"] [-f "format string"]
 Formatting:
     \`$(basename $0) --format\` will interpret the following delimiters if they are found:
 
-    %filename%, %title%, %artist%, %album%, %albumartist%, %genre%, %year%
+    %file%, %path%, %title%, %artist%, %album%, %albumartist%, %genre%, %year%
     %status%, %time%, %precisetime%, %length%, %percentage%, %speed%
     %playlistlength%, %position%, %repeat%, %single%
     %volume%, %muted%, %frame%
@@ -72,6 +72,15 @@ getMediaFilename() {
     ")
 
     printf '%s' "$mediaFilename"
+}
+
+getMediaPath() {
+    mediaPath=$(printf '%s\n' "{ \"command\": [\"get_property\", \
+\"media-title\" ] }" | $SOCKETCOMMAND 2> /dev/null)
+    mediaPath=$(printf '%s\n' "$mediaPath" | cut -d: -f 2 | \
+        cut -d, -f 1 | sed s/\"//g)
+
+    printf '%s' "$mediaPath"
 }
 
 getMetadata() {
@@ -568,7 +577,7 @@ killSocket() {
 
 # kill all instances of mpv running under your user
 killAllMpv() {
-    pkill "mpv" /dev/null 2>&1 
+    pkill "mpv" /dev/null 2>&1
     exit
 }
 
@@ -638,6 +647,7 @@ formatPrint() {
     s#%muted%#$(getMuteStatus)#g
     s#%percentage%#$(getPercentage)#g
     s#%file%#$(getMediaFilename)#g
+    s#%path%#$(getMediaPath)#g
     s#%repeat%#$(getLoopStatus loop)#g
     s#%single%#$(getLoopStatus loop-file)#g
     s#%playlistlength%#$(getValue playlist-count)#g
