@@ -22,6 +22,7 @@ Distribution Packages:
 - [Arch](https://aur.archlinux.org/packages/mpvc-git) - `pacaur -y mpvc-git`
 - [Crux](https://github.com/wildefyr/wild-crux-ports) - `prt-get depinst mpvc`
 - [Gentoo](https://gitlab.com/xy2_/osman) - `emerge mpvc`
+- [Nixos](http://github.com/nixos/nixpkgs) - `nix-env -i mpvc`
 
 If you have packaged mpvc for your distribution, let me know so I can add it here.
 
@@ -63,7 +64,7 @@ correctly. This unfortunately is a limit of shell.
 - Any URL that is resolvable by mpv and/or youtube-dl can be added to the
   playlist, i.e. using [mps-youtube](https://github.com/mps-youtube/mps-youtube)
   with `player` set to mpvc and `playerargs` set to add.
-- mpvc options can be combined together to give improved results: `$ mpvc -P -j 1 ` will make mpvc always start playing when switching to the next track.  
+- mpvc options can be combined together to give improved results: `$ mpvc -P -j 1 ` will make mpvc always start playing when switching to the next track.
 
 ## TODO
 
