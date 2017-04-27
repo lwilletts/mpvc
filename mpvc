@@ -251,7 +251,7 @@ appendTrack() {
 
     ps ax -ww | grep -v grep | grep -wq "mpv.*$SOCKET" && {
         printf '%s\n' "{ \"command\": [\"loadfile\", \"$filename\", \
-\"append-play\" ] }" | $SOCKETCOMMAND /dev/null 2>&1
+\"append-play\" ] }" | $SOCKETCOMMAND 2>&1 > /dev/null
     } || {
         exec mpv --really-quiet --idle=once --input-ipc-server="${SOCKET}" \
             $MPVOPTIONS "$filename" &
