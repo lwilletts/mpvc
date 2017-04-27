@@ -211,9 +211,11 @@ getPlaylist() {
 
     calculateTerminalHeight
 
-    test "${SEQCOMMAND}" = "jot" && REPS=$((LAST - FIRST + 1))
+    test "${SEQCOMMAND}" = "jot" && \
+        NUMBERS=$("$SEQCOMMAND" $((LAST - FIRST + 1)) "$FIRST" "$LAST") || \
+        NUMBERS=$("$SEQCOMMAND" "$FIRST" "$LAST")
 
-    for i in $("$SEQCOMMAND" "$REPS" "$FIRST" "$LAST"); do
+    for i in $NUMBERS; do
         filename=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
 \"playlist/$((i - 1))/filename\"] }" | $SOCKETCOMMAND 2> /dev/null | \
             cut -d\" -f 4)
@@ -251,7 +253,7 @@ appendTrack() {
 
     ps ax -ww | grep -v grep | grep -wq "mpv.*$SOCKET" && {
         printf '%s\n' "{ \"command\": [\"loadfile\", \"$filename\", \
-\"append-play\" ] }" | $SOCKETCOMMAND /dev/null 2>&1
+\"append-play\" ] }" | $SOCKETCOMMAND 2>&1 > /dev/null
     } || {
         exec mpv --really-quiet --idle=once --input-ipc-server="${SOCKET}" \
             $MPVOPTIONS "$filename" &
