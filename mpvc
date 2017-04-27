@@ -213,7 +213,7 @@ getPlaylist() {
 
     test "${SEQCOMMAND}" = "jot" && REPS=$((LAST - FIRST + 1))
 
-    for i in $("$SEQCOMMAND" "$REPS" "$FIRST" "$LAST"); do
+    for i in $("$SEQCOMMAND" $REPS "$FIRST" "$LAST"); do
         filename=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
 \"playlist/$((i - 1))/filename\"] }" | $SOCKETCOMMAND 2> /dev/null | \
             cut -d\" -f 4)
