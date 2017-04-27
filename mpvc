@@ -249,7 +249,7 @@ appendTrack() {
         filename="$(pwd)/$filename"
     }
 
-    ps ax -ww | grep -v grep | grep -wq "mpv.*$SOCKET" && {
+    ps ax -ww | grep -v grep | grep -wq "mpv .*$SOCKET" && {
         printf '%s\n' "{ \"command\": [\"loadfile\", \"$filename\", \
 \"append-play\" ] }" | $SOCKETCOMMAND > /dev/null 2>&1
     } || {
@@ -977,6 +977,7 @@ main() {
             -k|--kill)      killSocket         ;;
             -f|--format)    continue           ;;
             -a|--append)    continue           ;;
+            -S|--socket)    continue           ;;
             -[1-999999])    continue           ;;
             --|---|----)    continue           ;;
             -?)             usage 1            ;;
