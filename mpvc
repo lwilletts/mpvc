@@ -25,8 +25,8 @@ Usage: $(basename $0) [-S "socket"] [-a "filenames"] [-f "format string"]
     -x | --speed    : Increase/decrease speed relative to the current speed.
     -X | --speedval : Set absolute speed.
     -m | --mute     : Toggle sound.
-    -l | --loop     : Loop currently playing file.
-    -L | --loopfile : Loop currently playing playlist.
+    -l | --loop     : Loop currently playing playlist.
+    -L | --loopfile : Loop currently playing file.
     -z | --shuffle  : Shuffle the current playlist.
     -k | --kill     : Kill the mpv process controlling the given socket.
     -K | --killall  : Kill all mpv processes indiscriminately.
@@ -39,7 +39,7 @@ Usage: $(basename $0) [-S "socket"] [-a "filenames"] [-f "format string"]
 Formatting:
     \`$(basename $0) --format\` will interpret the following delimiters if they are found:
 
-    %filename%, %title%, %artist%, %album%, %albumartist%, %genre%, %year%
+    %file%, %path%, %title%, %artist%, %album%, %albumartist%, %genre%, %year%
     %status%, %time%, %precisetime%, %length%, %percentage%, %speed%
     %playlistlength%, %position%, %repeat%, %single%
     %volume%, %muted%, %frame%
@@ -49,10 +49,10 @@ Exit codes:
      1: Input Argument error.
      2: Socket does not exist.
      3: Socket is not currently open.
-     4: Dependacy error.
+     4: Dependency error.
 EOF
 
-    test -z $1 && exit || exit $1
+    test -z "$1" && exit || exit "$1"
 }
 
     # Retrieval Functions
@@ -74,6 +74,15 @@ getMediaFilename() {
     printf '%s' "$mediaFilename"
 }
 
+getMediaPath() {
+    mediaPath=$(printf '%s\n' "{ \"command\": [\"get_property\", \
+\"media-title\" ] }" | $SOCKETCOMMAND 2> /dev/null)
+    mediaPath=$(printf '%s\n' "$mediaPath" | cut -d: -f 2 | \
+        cut -d, -f 1 | sed s/\"//g)
+
+    printf '%s' "$mediaPath"
+}
+
 getMetadata() {
     property=$1
 
@@ -85,8 +94,8 @@ getMetadata() {
     test "$errorCheck" = "error" && {
         result="N/A"
     } || {
-        metadata=$(printf '%s\n' "$metadata" | cut -d: -f 2 | \
-        cut -d, -f 1 | sed s/\"//g)
+        metadata=$(printf '%s\n' "$metadata" | \
+        sed 's/^"data":"\(.*\)","error":"success"$/\1/')
         result="$metadata"
     }
 
@@ -95,10 +104,7 @@ getMetadata() {
         result=$(getMediaFilename)
     }
 
-    printf '%s' "$result" | awk -F '&' '{
-        for (x=1; x<NF; x++) printf "%s\\&", $x
-        printf "%s", $NF
-        exit }'
+    printf '%s' "$result" | escapeSedChar '&' | escapeSedChar '#'
 }
 
 getDuration() {
@@ -119,17 +125,11 @@ getPercentage() {
 
 getValue() {
     property=$1
-    test "$property" != "precisetime" && {
-        value=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
+    value=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
 \"$property\"] }" | $SOCKETCOMMAND 2> /dev/null | cut -d\" -f 4 | cut -d. -f 1)
-    } || {
-        property="playback-time"
-        value=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
-\"$property\"] }" | $SOCKETCOMMAND 2> /dev/null | cut -d\" -f 4)
-    }
 
     test "$value" = "error" && {
-        test $# -ge 2 && printf '%s' $2 || printf '%s' "N/A"
+        test $# -ge 2 && printf '%s' "$2" || printf '%s' "N/A"
         return 1
     } || {
         printf '%s' "$value"
@@ -163,8 +163,8 @@ getPauseStatus() {
         $SOCKETCOMMAND 2> /dev/null | cut -d: -f 2 | cut -d, -f 1)
 
     case "$status" in
-        true)  status="playing" ;;
-        false) status="paused"  ;;
+        true)  status="paused"  ;;
+        false) status="playing" ;;
         *)     status="N/A"     ;;
     esac
 
@@ -173,9 +173,15 @@ getPauseStatus() {
 
 getLoopStatus() {
     property=$1
-    loop=$(printf '%s\n' "{ \"command\": [\"get_property\", \
+    status=$(printf '%s\n' "{ \"command\": [\"get_property\", \
 \"$property\" ] }" | $SOCKETCOMMAND 2> /dev/null | \
         cut -d: -f 2 | cut -d, -f 1 | sed s/\"//g)
+
+    case "$status" in
+        true | inf)  loop="yes" ;;
+        false)       loop="no"  ;;
+        *)           loop="N/A" ;;
+    esac
 
     printf '%s' "$loop"
 }
@@ -198,8 +204,8 @@ getPlaylist() {
     tracks=$(getValue playlist-count)
     currentTrack=$(getValue playlist-pos)
 
-    test $tracks -eq 0 -o "$currentTrack" = "N/A" && {
-        printf '%s\n' "mpv on ${SOCKET} is currently idle." >&2
+    test "$tracks" -eq 0 -o "$currentTrack" = "N/A" && {
+        printf '%s\n' "MPV instance on ${SOCKET} is currently idle." >&2
         exit 1
     }
 
@@ -207,7 +213,7 @@ getPlaylist() {
 
     test "${SEQCOMMAND}" = "jot" && REPS=$((LAST - FIRST + 1))
 
-    for i in $($SEQCOMMAND $REPS $FIRST $LAST); do
+    for i in $("$SEQCOMMAND" "$REPS" "$FIRST" "$LAST"); do
         filename=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
 \"playlist/$((i - 1))/filename\"] }" | $SOCKETCOMMAND 2> /dev/null | \
             cut -d\" -f 4)
@@ -218,12 +224,12 @@ getPlaylist() {
                 ;;
             *)
                 # this will probably look funky if there's a '/' in the filename
-                filename=$(printf '%s\n' "$filename" | rev | cut -d'/' -f 1 | rev)
+                filename=$(basename "$filename")
                 ;;
         esac
 
         test "$currentTrack" -eq $((i - 1)) && {
-            printf '[7m[40m%d	%s[0m\n' $i "${filename}"
+            printf '[7m[40m%d	%s[0m\n' "$i" "${filename}"
         } || {
             printf '%d	%s\n' $i "${filename}"
         }
@@ -238,17 +244,21 @@ getPlaylist() {
 appendTrack() {
     filename="$@"
 
-    ps ax -ww | grep -v grep | \
-    grep -wq "mpv[[:space:]].*--input-\(unix\|ipc\).*$SOCKET" && {
+    # require absolute paths
+    test -e "$filename" -a "$(printf "%s" "$filename" | cut -c 1)" != '/' && {
+        filename="$(pwd)/$filename"
+    }
+
+    ps ax -ww | grep -v grep | grep -wq "mpv.*$SOCKET" && {
         printf '%s\n' "{ \"command\": [\"loadfile\", \"$filename\", \
-\"append-play\" ] }" | $SOCKETCOMMAND 2>&1 > /dev/null
+\"append-play\" ] }" | $SOCKETCOMMAND /dev/null 2>&1
     } || {
-        exec mpv --really-quiet --idle=once --input-unix-socket=${SOCKET} \
+        exec mpv --really-quiet --idle=once --input-ipc-server="${SOCKET}" \
             $MPVOPTIONS "$filename" &
 
         # wait up to 5 seconds for mpv to start on $SOCKET
         for i in $($SEQCOMMAND 50); do
-            idlestatus=$(getValue idle)
+            idlestatus=$(getValue idle-active)
             test "$idlestatus" && break
             sleep 0.1
         done
@@ -260,7 +270,7 @@ appendTrack() {
             ;;
         *)
             # this will probably look funky if there's a '/' in the filename
-            filename=$(printf '%s\n' "$filename" | rev | cut -d'/' -f 1 | rev)
+            filename=$(basename "$filename")
             ;;
     esac
 
@@ -284,7 +294,7 @@ setTimeRelative() {
             ;;
     esac
 
-    timeSec=$(parseTimeString $timeArg) || exit $?
+    timeSec=$(parseTimeString "$timeArg") || exit $?
 
     test "$minusFlag" = "true" && {
         time=$(($time - $timeSec))
@@ -297,11 +307,11 @@ $time ] }" | $SOCKETCOMMAND > /dev/null
 }
 
 setTimeAbsolute() {
-    time=$(parseTimeString $1) || exit $?
+    time=$(parseTimeString "$1") || exit $?
 
     trackTime=$(getDuration)
 
-    test $time -ge $trackTime && {
+    test "$time" -ge "$trackTime" && {
         printf '%s\n' "Given time is greater than track length! ($(trackLength))"
         QUIETFLAG=true
         return 1
@@ -312,7 +322,7 @@ $time ] }" | $SOCKETCOMMAND > /dev/null
 }
 
 setVolumeRelative() {
-    intCheck $1
+    intCheck "$1"
 
     volume=$(getValue volume)
 
@@ -346,15 +356,15 @@ setVolumeAbsolute() {
         return 1
     }
 
-    intCheck $1
+    intCheck "$1"
     volume=$1
 
-    test $volume -lt 0 && {
+    test "$volume" -lt 0 && {
         printf '%s\n' "Volume cannot be set lower than 0%" >&2
         return 1
     }
 
-    test $volume -gt 130 && {
+    test "$volume" -gt 130 && {
         printf '%s\n' "Volume cannot be set great than 130%" >&2
         return 1
     }
@@ -366,7 +376,7 @@ setVolumeAbsolute() {
 setSpeedRelative() {
     speed=$(getSpeed)
 
-    fltCheck $1
+    fltCheck "$1"
     speed=$(echo "$speed+$1\n" | bc)
 
     printf '%s\n' "{ \"command\": [\"set_property_string\", \"speed\", \
@@ -374,7 +384,7 @@ setSpeedRelative() {
 }
 
 setSpeedAbsolute() {
-    fltCheck $1
+    fltCheck "$1"
     speed=$1
 
     printf '%s\n' "{ \"command\": [\"set_property_string\", \"speed\", \
@@ -382,7 +392,7 @@ setSpeedAbsolute() {
 }
 
 setTrackRelative() {
-    intCheck $1
+    intCheck "$1"
 
     currentTrack=$(getValue playlist-pos)
     desiredTrack=$((currentTrack + $1))
@@ -399,15 +409,15 @@ setTrackRelative() {
 
     test "$desiredTrack" -ge "$trackCount" && {
         repeat=$(getLoopStatus loop)
-        test "$repeat" = "inf" && {
+        test "$repeat" = "yes" && {
             desiredTrack=0
         }
     }
 
     test "$desiredTrack" -lt 0 && {
         repeat=$(getLoopStatus loop)
-        test "$repeat" = "inf" && {
-            setTrackAbsolute $trackCount
+        test "$repeat" = "yes" && {
+            setTrackAbsolute "$trackCount"
             return
         } || {
             desiredTrack=0
@@ -422,7 +432,7 @@ $desiredTrack ] }" | $SOCKETCOMMAND > /dev/null
 }
 
 setTrackAbsolute() {
-    intCheck $1
+    intCheck "$1"
 
     currentTrack=$1
     currentTrack=$((currentTrack - 1))
@@ -441,7 +451,7 @@ setTrackAbsolute() {
 }
 
 removeTrack() {
-    intCheck $1
+    intCheck "$1"
 
     trackToRemove=$1
     trackToRemove=$((trackToRemove - 1))
@@ -486,15 +496,14 @@ togglePause() {
     }
 
     status=$(getPauseStatus)
-    test "$status" = "playing" && status="false" || status="true"
+    test "$status" = "playing" && status="true" || status="false"
 
     printf '%s\n' "{ \"command\": [\"set_property\", \"pause\", $status ] }" | \
         $SOCKETCOMMAND > /dev/null
-
 }
 
 toggleMute() {
-    test -z $1 && {
+    test -z "$1" && {
         muted=$(getMuteStatus)
         test "$muted" = "no" && muted="true" || muted="false"
     } || {
@@ -506,9 +515,9 @@ toggleMute() {
 }
 
 toggleLoopFile() {
-    test -z $1 && {
+    test -z "$1" && {
         loopFile=$(getLoopStatus loop-file)
-        test $loopFile = "no" && loopFile="inf" || loopFile="no"
+        test "$loopFile" = "no" && loopFile="inf" || loopFile="no"
     } || {
         loopFile=$1
     }
@@ -518,9 +527,9 @@ toggleLoopFile() {
 }
 
 toggleLoopPlaylist() {
-    test -z $1 && {
+    test -z "$1" && {
         loopPlaylist=$(getLoopStatus loop)
-        test $loopPlaylist = "no" && loopPlaylist="inf" || loopPlaylist="no"
+        test "$loopPlaylist" = "no" && loopPlaylist="inf" || loopPlaylist="no"
     } || {
         loopPlaylist=$1
     }
@@ -538,7 +547,7 @@ shufflePlaylist() {
         QUIETFLAG=true
     }
 
-    test "$(getLoopStatus loop)" != "inf" && {
+    test "$(getLoopStatus loop)" != "yes" && {
         toggleLoopPlaylist inf
     }
 }
@@ -568,7 +577,7 @@ killSocket() {
 
 # kill all instances of mpv running under your user
 killAllMpv() {
-    pkill "mpv" 2>&1 > /dev/null
+    pkill "mpv" /dev/null 2>&1
     exit
 }
 
@@ -577,19 +586,19 @@ killAllMpv() {
 
 elapsedTime() {
     time=$(getValue playback-time)
-    formatTime $time
+    formatTime "$time"
 }
 
 preciseElapsedTime() {
-    time=$(getValue precisetime 0.0)
+    time=$(getValue playback-time 0.0)
     bigTime=$(printf '%s\n' "$time" | cut -d. -f 1)
     tinyTime=$(printf '%s\n' "$time" | cut -d. -f 2)
-    formatTime $bigTime $tinyTime
+    formatTime "$bigTime" "$tinyTime"
 }
 
 trackLength() {
     duration=$(getDuration)
-    formatTime $duration
+    formatTime "$duration"
 }
 
 # format seconds into HH:MM:SS format
@@ -604,7 +613,7 @@ formatTime() {
     test $minutes -lt 10 && minutes="0$minutes"
     test $hours -lt 10 && hours="0$hours"
 
-    test -z $2 && {
+    test -z "$2" && {
         printf '%s\n' "$hours:$minutes:$seconds"
     } || {
         milleSeconds=$2
@@ -617,12 +626,10 @@ formatTime() {
 
 # formats and prints according to $FORMATSTRING
 formatPrint() {
-
     # modified format string
     FORMATSTRING=$(printf '%s\n' "$FORMATSTRING" | sed "
     s#%status%#$(
     status=$(getPauseStatus)
-    test $status = "playing" && status="paused" || status="playing"
     printf '%s' "$status"
     )#g
 
@@ -639,7 +646,8 @@ formatPrint() {
     s#%length%#$(trackLength)#g
     s#%muted%#$(getMuteStatus)#g
     s#%percentage%#$(getPercentage)#g
-    s#%filename%#$(getMediaFilename)#g
+    s#%file%#$(getMediaFilename)#g
+    s#%path%#$(getMediaPath)#g
     s#%repeat%#$(getLoopStatus loop)#g
     s#%single%#$(getLoopStatus loop-file)#g
     s#%playlistlength%#$(getValue playlist-count)#g
@@ -663,8 +671,8 @@ speed: %speed%x volume: %volume%% muted: %muted% repeat: %repeat% single: %singl
 # catches if mpv is idle or not
 printFinalOutput() {
     test "$QUIETFLAG" != "true" && {
-        test $(getValue idle) = "yes" && {
-            printf '%s\n' "mpv on ${SOCKET} is currently idle." >&2
+        test "$(getValue idle-active)" = "yes" && {
+            printf '%s\n' "MPV instance on ${SOCKET} is currently idle." >&2
         } || {
             printDefaultStatus
         }
@@ -676,8 +684,15 @@ printFinalOutput() {
     # Misc. Functions
 ###############################################################################
 
+escapeSedChar() {
+    awk -F "$1" '{
+        for (x=1; x<NF; x++) printf "%s\\'"$1"'", $x
+        printf "%s", $NF
+        exit }'
+}
+
 intCheck() {
-    test $1 -ne 0 2> /dev/null
+    test "$1" -ne 0 2> /dev/null
     test $? -ne 2 || {
          printf '%s\n' "'$1' is not an integer." >&2
          exit 1
@@ -686,7 +701,7 @@ intCheck() {
 
 fltCheck() {
     testDecimal=$(echo "$1\n" | bc)
-    test $testDecimal -eq 0 2> /dev/null && {
+    test "$testDecimal" -eq 0 2> /dev/null && {
         printf '%s\n' "'$1' is not a number." >&2
         exit 1
     }
@@ -696,18 +711,18 @@ calculateTerminalHeight() {
     rows=$(($(tput lines) - 2))
     halfrows=$((rows / 2))
 
-    test $tracks -gt $rows && {
-        test $currentTrack -le $halfrows && {
+    test "$tracks" -gt $rows && {
+        test "$currentTrack" -le $halfrows && {
             FIRST=1
             LAST=$rows
             return
         }
-        test $((currentTrack + halfrows)) -ge $tracks && {
+        test $((currentTrack + halfrows)) -ge "$tracks" && {
             FIRST=$((tracks - rows + 1))
             LAST=$tracks
             return
         }
-        test $((currentTrack + halfrows)) -lt $tracks && {
+        test $((currentTrack + halfrows)) -lt "$tracks" && {
             FIRST=$((currentTrack - halfrows + 1))
             LAST=$((currentTrack + halfrows))
             return
@@ -719,7 +734,7 @@ calculateTerminalHeight() {
 }
 
 parseTimeString() {
-    printf '%s' $1 | grep -q -G -e "^\([0-9.]*:\)\{0,2\}[0-9.]*$" -e "^[0-9]*[sSmMhH]$" || {
+    printf '%s' "$1" | grep -q -G -e "^\([0-9.]*:\)\{0,2\}[0-9.]*$" -e "^[0-9]*[sSmMhH]$" || {
         cat >&2 << EOF
 Timestamp formats must match either H:M:S with hour and minute fields optional,
 or a single integer number with a unit of time appended: h, m, s.
@@ -736,13 +751,13 @@ EOF
             intCheck "$timeInt"
 
             case "$lastChar" in
-                h|H) timeInt=$(($timeInt * 60 * 60)) ;;
-                m|M) timeInt=$(($timeInt * 60))      ;;
+                h|H) timeInt=$(("$timeInt" * 60 * 60)) ;;
+                m|M) timeInt=$(("$timeInt" * 60))      ;;
             esac
 
             ;;
         *)
-            timeInt=$(printf '%s' $1 | awk -F ':' '{
+            timeInt=$(printf '%s' "$1" | awk -F ':' '{
                 time=0
                 for (x=1; x<=NF; x++) time=time*60+$x
                     printf "%d\n", time
@@ -752,25 +767,25 @@ EOF
             ;;
     esac
 
-    printf "%d" $timeInt
+    printf "%d" "$timeInt"
 }
 
 validateDeps() {
-    type mpv >/dev/null 2>&1 || {
+    hash mpv 2> /dev/null || {
         printf '%s\n' "mpv is not installed on your \$PATH." >&2
         exit 4
     }
 
-    type socat >/dev/null 2>&1 && SOCKETCOMMAND="socat - $SOCKET"
-    type nc >/dev/null 2>&1 && SOCKETCOMMAND="nc -U -N $SOCKET"
+    hash nc 2> /dev/null && SOCKETCOMMAND="nc -U -N $SOCKET"
+    hash socat 2> /dev/null && SOCKETCOMMAND="socat - $SOCKET"
 
     test "$SOCKETCOMMAND" || {
         printf '%s\n' "Cannot find socat or nc on your \$PATH." >&2
         exit 4
     }
 
-    type seq >/dev/null 2>&1 && SEQCOMMAND="seq"
-    type jot >/dev/null 2>&1 && SEQCOMMAND="jot"
+    hash jot 2> /dev/null && SEQCOMMAND="jot"
+    hash seq 2> /dev/null && SEQCOMMAND="seq"
 
     test "$SEQCOMMAND" || {
         printf '%s\n' "Cannot find seq or jot on your \$PATH." >&2
@@ -781,7 +796,7 @@ validateDeps() {
 validateSocket() {
     test "$PLAYFLAG" != "true" && {
         # test if socket exists
-        test -S $SOCKET || {
+        test -S "$SOCKET" || {
             printf '%s\n' "$SOCKET does not exist." >&2
             exit 2
         }
@@ -789,7 +804,7 @@ validateSocket() {
         # test if socket is open
         status="$(getPauseStatus)"
         test "$status" = "N/A" && {
-            printf '%s\n' "$SOCKET is not currently open or has been corrupted." >&2
+            printf '%s\n' "No MPV instance using $SOCKET."
             exit 3
         }
     } || {
@@ -846,12 +861,8 @@ main() {
     # mpc compatibility layer
     case $1 in
         play|start)
-            test "$(getPauseStatus)" = "playing" && {
-                test -z $2 && {
-                    setTrackAbsolute
-                } || {
-                    setTrackAbsolute $2
-                }
+            test -n "$2" && {
+                setTrackAbsolute "$2"
             }
 
             alwaysPlay
@@ -863,8 +874,8 @@ main() {
             printFinalOutput
             ;;
         del|delete)
-            test ! -z $2 && {
-                removeTrack $2
+            test ! -z "$2" && {
+                removeTrack "$2"
                 getPlaylist
             } || {
                 printf '%s\n' "Specify track number to remove from playlist."
@@ -877,7 +888,7 @@ main() {
             case "$firstChar" in
                 "+")
                     volume=$(printf '%s\n' "$2" | cut -d+ -f2)
-                    setVolumeRelative $volume
+                    setVolumeRelative "$volume"
                     ;;
                 "-")
                     volume=$(printf '%s\n' "$2" | cut -d- -f2)
@@ -885,7 +896,7 @@ main() {
                     ;;
                 *)
                     test ! -z "$2" && {
-                        setVolumeAbsolute $2
+                        setVolumeAbsolute "$2"
                     } || {
                         printf '%s\n' "Specify volume in/decrease amount or absolute amount."
                         return 1

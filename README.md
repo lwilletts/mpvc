@@ -12,14 +12,17 @@ addition to GNU-style arguments.
 ## Dependencies
 
 - `mpv`
-- `socat` / `nc` (netcat)
-- `seq` / `jot`
+- `socat` or `nc`, `socat` preferred due to the differing implementations of
+netcat across UNIXes.
+- `seq` or `jot`
 
 ## Install
 
 Distribution Packages:
 - [Arch](https://aur.archlinux.org/packages/mpvc-git) - `pacaur -y mpvc-git`
 - [Crux](https://github.com/wildefyr/wild-crux-ports) - `prt-get depinst mpvc`
+- [Gentoo](https://gitlab.com/xy2_/osman) - `emerge mpvc`
+- [Nixos](http://github.com/nixos/nixpkgs) - `nix-env -i mpvc`
 
 If you have packaged mpvc for your distribution, let me know so I can add it here.
 
@@ -32,7 +35,7 @@ Use the Makefile provided or copy mpvc somewhere to your $PATH.
 For mpvc to work, mpv must be started with the following argument:
 
 `
-$ mpv --input-unix-socket=/tmp/mpvsocket song.flac
+$ mpv --input-ipc-server=/tmp/mpvsocket song.flac
 `
 
 Alternatively and probably preferably, mpvc can be used with the -a or --add
@@ -52,7 +55,7 @@ $ find . -type f | mpvc
 `
 
 You *could* use a subshell, but it won't phrase files with spaces in them
-correctly. ( It's very hard to phrase this correctly :( )
+correctly. This unfortunately is a limit of shell.
 
 ## Useful Tricks
 
@@ -61,13 +64,7 @@ correctly. ( It's very hard to phrase this correctly :( )
 - Any URL that is resolvable by mpv and/or youtube-dl can be added to the
   playlist, i.e. using [mps-youtube](https://github.com/mps-youtube/mps-youtube)
   with `player` set to mpvc and `playerargs` set to add.
-- Multiple options can be combined together to give improved result:
-
-`
-$ mpvc -P -j 1
-`
-
-- This will make mpvc always start playing when switching to the next track.
+- mpvc options can be combined together to give improved results: `$ mpvc -P -j 1 ` will make mpvc always start playing when switching to the next track.
 
 ## TODO
 
