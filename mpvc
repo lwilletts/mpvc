@@ -771,21 +771,21 @@ EOF
 }
 
 validateDeps() {
-    hash mpv 2> /dev/null || {
+    type mpv > /dev/null 2>&1 || {
         printf '%s\n' "mpv is not installed on your \$PATH." >&2
         exit 4
     }
 
-    hash nc 2> /dev/null && SOCKETCOMMAND="nc -U -N $SOCKET"
-    hash socat 2> /dev/null && SOCKETCOMMAND="socat - $SOCKET"
+    type nc > /dev/null 2>&1 && SOCKETCOMMAND="nc -U -N $SOCKET"
+    type socat > /dev/null 2>&1 && SOCKETCOMMAND="socat - $SOCKET"
 
     test "$SOCKETCOMMAND" || {
         printf '%s\n' "Cannot find socat or nc on your \$PATH." >&2
         exit 4
     }
 
-    hash jot 2> /dev/null && SEQCOMMAND="jot"
-    hash seq 2> /dev/null && SEQCOMMAND="seq"
+    type jot > /dev/null 2>&1 && SEQCOMMAND="jot"
+    type seq > /dev/null 2>&1 && SEQCOMMAND="seq"
 
     test "$SEQCOMMAND" || {
         printf '%s\n' "Cannot find seq or jot on your \$PATH." >&2
