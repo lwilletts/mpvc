@@ -734,7 +734,7 @@ calculateTerminalHeight() {
 }
 
 parseTimeString() {
-    printf '%s' "$1" | grep -q -G -e "^\([0-9.]*:\)\{0,2\}[0-9.]*$" -e "^[0-9]*[sSmMhH]$" || {
+    printf '%s' "$1" | grep -q -e "^\([0-9.]*:\)\{0,2\}[0-9.]*$" -e "^[0-9]*[sSmMhH]$" || {
         cat >&2 << EOF
 Timestamp formats must match either H:M:S with hour and minute fields optional,
 or a single integer number with a unit of time appended: h, m, s.
