@@ -955,32 +955,32 @@ main() {
         test "$REMOVEFLAG"   = "true" && removeTrack "$arg";       REMOVEFLAG=false
 
         case "$arg" in
-            -t|--seek)      SEEKFLAG=true      ;;
-            -T|--time)      TIMEFLAG=true      ;;
-            -v|--vol)       VOLFLAG=true       ;;
-            -V|--volume)    VOLUMEFLAG=true    ;;
-            -x|--speed)     SPEEDFLAG=true     ;;
-            -X|--speedval)  SPEEDVALFLAG=true  ;;
-            -j|--track)     TRACKFLAG=true     ;;
-            -J|--tracknum)  TRACKVALFLAG=true  ;;
-            -r|--remove)    REMOVEFLAG=true    ;;
-            -s|--stop)      alwaysPause        ;;
-            -P|--play)      alwaysPlay         ;;
-            -p|--toggle)    togglePause        ;;
-            -m|--mute)      toggleMute         ;;
-            -i|--playlist)  getPlaylist        ;;
-            -L|--loop)      toggleLoopPlaylist ;;
-            -l|--loopfile)  toggleLoopFile     ;;
-            -z|--shuffle)   shufflePlaylist    ;;
-            -c|--crop)      cropPlaylist       ;;
-            -C|--clear)     clearPlaylist      ;;
-            -k|--kill)      killSocket         ;;
-            -f|--format)    continue           ;;
-            -a|--append)    continue           ;;
-            -S|--socket)    continue           ;;
-            -[1-999999])    continue           ;;
-            --|---|----)    continue           ;;
-            -?)             usage 1            ;;
+            -t|--seek|seek)            SEEKFLAG=true      ;;
+            -T|--time|time)            TIMEFLAG=true      ;;
+            -v|--vol|vol)              VOLFLAG=true       ;;
+            -V|--volume|volume)        VOLUMEFLAG=true    ;;
+            -x|--speed|speed)          SPEEDFLAG=true     ;;
+            -X|--speedval|speedval)    SPEEDVALFLAG=true  ;;
+            -j|--track|track)          TRACKFLAG=true     ;;
+            -J|--tracknum|tracknum)    TRACKVALFLAG=true  ;;
+            -r|--remove|remove)        REMOVEFLAG=true    ;;
+            -s|--stop|stop)            alwaysPause        ;;
+            -P|--play|play)            alwaysPlay         ;;
+            -p|--toggle|toggle)        togglePause        ;;
+            -m|--mute|mute)            toggleMute         ;;
+            -i|--playlist|playlist)    getPlaylist        ;;
+            -L|--loop|loop)            toggleLoopPlaylist ;;
+            -l|--loopfile|loopfile)    toggleLoopFile     ;;
+            -z|--shuffle|shuffle)      shufflePlaylist    ;;
+            -c|--crop|crop)            cropPlaylist       ;;
+            -C|--clear|clear)          clearPlaylist      ;;
+            -k|--kill|kill)            killSocket         ;;
+            -f|--format)               continue           ;;
+            -a|--append)               continue           ;;
+            -S|--socket)               continue           ;;
+            -[1-999999])               continue           ;;
+            --|---|----)               continue           ;;
+            -?)                        usage 1            ;;
         esac
     done
 
