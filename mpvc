@@ -797,7 +797,7 @@ validateSocket() {
     test "$PLAYFLAG" != "true" && {
         # test if socket exists
         test -S "$SOCKET" || {
-            printf '%s\n' "$SOCKET does not exist." >&2
+            printf '%s\n' "$SOCKET does not exist. Use mpv --input-ipc-server to start one." >&2
             exit 2
         }
 
