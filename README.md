@@ -1,8 +1,6 @@
 # mpvc
 
-An mpc-like control interface for mpv.
-
-mpvc also has a *nearly* complete compatibility layer for mpc commands in
+An mpc-like control interface for mpv with a *nearly* complete compatibility layer for mpc commands in
 addition to GNU-style arguments.
 
 [Check the mpc manpage for details.](http://linux.die.net/man/1/mpc)
@@ -20,7 +18,6 @@ netcat across UNIXes.
 
 Distribution Packages:
 - [Arch](https://aur.archlinux.org/packages/mpvc-git) - `pacaur -y mpvc-git`
-- [Crux](https://github.com/wildefyr/wild-crux-ports) - `prt-get depinst mpvc`
 - [Gentoo](https://gitlab.com/xy2_/osman) - `emerge mpvc`
 - [Nixos](http://github.com/nixos/nixpkgs) - `nix-env -i mpvc`
 
@@ -69,10 +66,3 @@ correctly. This unfortunately is a limit of shell.
 ## TODO
 
 Check out the [Issue Tracker](https://github.com/wildefyr/mpvc/issues)
-
-## Shameless Plug
-
-If you want to contact me about anything, my website can be found
-[here](https://fyrious.ninja) and I can also be found on the Freenode IRC under
-the nick 'Wildefyr' where I am often found in #crux and #6c37. If you're
-feeling particularly kind of heart, star this repository and/or follow me.
