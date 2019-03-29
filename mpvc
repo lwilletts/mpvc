@@ -249,6 +249,15 @@ appendTrack() {
         filename="$(pwd)/$filename"
     }
 
+    # don't add images to the queue by default
+    test "$IMAGEFLAG" != "true" && {
+        case $filename in
+            *.png|*.jpg|*.jpeg|*.gif|*.psd)
+                return
+                ;;
+        esac
+    }
+
     ps ax -ww | grep -v grep | grep -wq "mpv .*$SOCKET" && {
         printf '%s\n' "{ \"command\": [\"loadfile\", \"$filename\", \
 \"append-play\" ] }" | $SOCKETCOMMAND > /dev/null 2>&1
@@ -269,6 +278,7 @@ appendTrack() {
             filename="mps-yt stream"
             ;;
         *)
+            # return filename to relative path
             # this will probably look funky if there's a '/' in the filename
             filename=$(basename "$filename")
             ;;
@@ -995,14 +1005,15 @@ for arg in "$@"; do
     test "$FORMATFLAG" = "true" && FORMATSTRING=$arg && FORMATFLAG=false
 
     case $arg in
-        --version)        getVersion      ;;
-        -q|--quiet)       QUIETFLAG=true  ;;
-        -S|--socket)      SOCKETFLAG=true ;;
-        -f|--format)      FORMATFLAG=true ;;
+        --version)        getVersion                        ;;
+        -q|--quiet)       QUIETFLAG=true                    ;;
+        -I|--image)       IMAGEFLAG=true                    ;;
+        -S|--socket)      SOCKETFLAG=true                   ;;
+        -f|--format)      FORMATFLAG=true                   ;;
         -Q|--vid=no)      MPVOPTIONS="$MPVOPTIONS --vid=no" ;;
-        -K|--killall)     killAllMpv      ;;
-        --list-options)   usage 0         ;;
-        -h|--help|h|help) usage 0         ;;
+        -K|--killall)     killAllMpv                        ;;
+        --list-options)   usage 0                           ;;
+        -h|--help|h|help) usage 0                           ;;
     esac
 done
 
