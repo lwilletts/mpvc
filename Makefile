@@ -1,10 +1,17 @@
-PREFIX   = /usr/local
-MANDIR   = ${PREFIX}/share/man
-MANPAGES = mpvc
+PREFIX ?= /usr/local
+BINDIR ?= $(PREFIX)/bin
+MANDIR ?= $(PREFIX)/share/man
 
-.PHONY: all install uninstall
+SCRIPT = mpvc
+
+.PHONY: all link install uninstall
 
 all: install
+
+link: $(SCRIPT)
+	@for script in $(SCRIPT); do \
+		ln -svfn $(shell pwd)/$$script $(BINDIR) ; \
+	done
 
 install:
 	@echo 'Installing mpvc...'
