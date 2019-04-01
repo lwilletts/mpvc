@@ -39,7 +39,7 @@ but by default will close the ipc-server when all files have finished playing.
 
 To keep the ipc-server open permanently, use:
 ```
-mpv --input-ipc-server /tmp/mpvsocket
+$ mpv --input-ipc-server /tmp/mpvsocket
 ```
 
 ## Useful Tricks
