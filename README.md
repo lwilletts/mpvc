@@ -7,11 +7,17 @@ addition to GNU-style arguments. [Check out the mpc manpage for details.](http:/
 
 ## Dependencies
 
+Required:
+
 - `mpv`
-- `socat` / `nc`: `socat` preferred due to the differing implementations of
-netcat across UNIXes.
+- `socat` / `nc`: `socat` preferred due to the differing implementations of netcat across UNIXes.
 - `seq` / `jot`
+- A sane version of `awk`
+
+Optional:
+
 - `bc`: For changing playback speed.
+- soonTM: `youtube-dl` to download media for playback
 
 ## Install
 
@@ -22,7 +28,7 @@ Distribution Packages:
 - [Gentoo](https://gitlab.com/xy2_/osman) - `emerge mpvc`
 - [Nixos](http://github.com/nixos/nixpkgs) - `nix-env -i mpvc`
 
-To manually install mpvc, use the Makefile provided or copy mpvc somewhere to your $PATH.
+To manually install mpvc, use the Makefile provided or link/copy mpvc to somewhere to your $PATH.
 
 ## Usage
 
@@ -40,11 +46,20 @@ To keep the ipc-server open permanently, use: `mpv --input-ipc-server /tmp/mpvso
   your window manager documentation on how to bind keys to commands.
 - Any URL that is resolvable by mpv and/or youtube-dl can be added to the
   playlist, e.g. using [mps-youtube](https://github.com/mps-youtube/mps-youtube)
-  with `player` set to mpvc and `playerargs` set to add.
-- mpvc options can be combined together to give improved results: `$ mpvc -P -j 1 `
+  with `player` set to mpvc and `playerargs` set to add. Further improvements to
+  downloading URLs via youtube-dl 
+- mpvc GNU options can be combined together to give improved results: `$ mpvc -P -j 1 `
   will make mpvc always start playing when switching to the next track.
 - Piping files directly into mpvc is possible and preferable when
-  loading multiple directories to be played: `find . type -f | mpvc`
+  loading multiple directories to be played:
+```
+find . type -f | mpvc
+```
+- You can use m3u playlists with mpv by saving the absolute path of your media into a file:
+```
+find "$(pwd) -iname "*Your Artist Here*" > Artist.m3u
+cat Artist.m3u | mpvc add
+```
 
 ## Limitations
 
