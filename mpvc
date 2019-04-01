@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# wildefyr - 2016 (c) MIT
+# fyr - 2019 (c) MIT | /bin/sh mpvc
 # control mpv remotely using JSON ipc
 # https://mpv.io/manual/master/#json-ipc
 
@@ -28,6 +28,7 @@ Usage: $(basename $0) [-S "socket"] [-a "filenames"] [-f "format string"]
     -l | --loop     : Loop currently playing playlist.
     -L | --loopfile : Loop currently playing file.
     -z | --shuffle  : Shuffle the current playlist.
+    -I | --image    : Enable adding of images to the queue.
     -k | --kill     : Kill the mpv process controlling the given socket.
     -K | --killall  : Kill all mpv processes indiscriminately.
     -S | --socket   : Set socket location [default: $SOCKET].
@@ -58,11 +59,17 @@ EOF
     # Retrieval Functions
 ###############################################################################
 
+getMediaProperties() {
+    property="$1"
+
+    mediaValue=$(printf '%s\n' "{ \"command\": [\"get_property\", \
+\"${property}\" ] }" | $SOCKETCOMMAND 2> /dev/null | awk -F '"' '{print $4}')
+
+    printf '%s\n' "$mediaValue"
+}
+
 getMediaFilename() {
-    mediaFilename=$(printf '%s\n' "{ \"command\": [\"get_property\", \
-\"media-title\" ] }" | $SOCKETCOMMAND 2> /dev/null)
-    mediaFilename=$(printf '%s\n' "$mediaFilename" | cut -d: -f 2 | \
-        cut -d, -f 1 | sed s/\"//g)
+    mediaFilename=$(getMediaProperties media-title)
 
     # regex to match if filename is a weird googlefu URL
     mediaFilename=$(printf '%s\n' "${mediaFilename}" | sed "
@@ -74,28 +81,17 @@ getMediaFilename() {
     printf '%s' "$mediaFilename"
 }
 
-getMediaPath() {
-    mediaPath=$(printf '%s\n' "{ \"command\": [\"get_property\", \
-\"media-title\" ] }" | $SOCKETCOMMAND 2> /dev/null)
-    mediaPath=$(printf '%s\n' "$mediaPath" | cut -d: -f 2 | \
-        cut -d, -f 1 | sed s/\"//g)
-
-    printf '%s' "$mediaPath"
-}
-
 getMetadata() {
     property=$1
 
     metadata=$(printf '%s\n' "{ \"command\": [\"get_property\", \
 \"metadata/by-key/${property}\" ] }" | $SOCKETCOMMAND 2> /dev/null | \
-        tr -d "{}")
-    errorCheck=$(printf '%s\n' "$metadata" | cut -d\" -f 2)
+        tr -d "{}" | awk -F '"' '{print $4}')
 
-    test "$errorCheck" = "error" && {
+    # test for no result
+    test "$metadata" = "error" && {
         result="N/A"
     } || {
-        metadata=$(printf '%s\n' "$metadata" | \
-        sed 's/^"data":"\(.*\)","error":"success"$/\1/')
         result="$metadata"
     }
 
@@ -107,26 +103,11 @@ getMetadata() {
     printf '%s' "$result" | escapeSedChar '&' | escapeSedChar '#'
 }
 
-getDuration() {
-    duration=$(printf '%s\n' "{ \"command\": [\"get_property\", \
-\"duration\"] }" | $SOCKETCOMMAND 2> /dev/null | \
-    cut -d: -f 2 | cut -d. -f 1)
-
-    printf '%s' "$duration"
-}
-
-getPercentage() {
-    percentage=$(printf '%s\n' "{ \"command\": [\"get_property\", \
-\"percent-pos\" ] }" | $SOCKETCOMMAND 2> /dev/null | \
-    cut -d: -f 2 | cut -d, -f 1 | cut -d. -f 1)
-
-    printf "%d" "$percentage"
-}
-
 getValue() {
     property=$1
+
     value=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
-\"$property\"] }" | $SOCKETCOMMAND 2> /dev/null | cut -d\" -f 4 | cut -d. -f 1)
+\"${property}\"] }" | $SOCKETCOMMAND 2> /dev/null | awk -F '[".]' '{print $4}')
 
     test "$value" = "error" && {
         test $# -ge 2 && printf '%s' "$2" || printf '%s' "N/A"
@@ -139,15 +120,14 @@ getValue() {
 
 getSpeed() {
     speed=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
-\"speed\"] }" | $SOCKETCOMMAND 2> /dev/null | cut -d\" -f 4)
-    speed=$(printf '%0.2f\n' "$speed")
+\"speed\"] }" | $SOCKETCOMMAND 2> /dev/null | awk -F '"' '{print substr ($4, 0, 4)}')
 
     printf '%s' "$speed"
 }
 
 getMuteStatus() {
     muted=$(printf '%s\n' "{ \"command\": [\"get_property\", \"mute\" ] }" | \
-        $SOCKETCOMMAND 2> /dev/null | cut -d: -f 2 | cut -d, -f 1)
+        $SOCKETCOMMAND 2> /dev/null | awk -F '[":,]' '{print $4}')
 
     case "$muted" in
         true)  muted="yes" ;;
@@ -160,7 +140,7 @@ getMuteStatus() {
 
 getPauseStatus() {
     status=$(printf '%s\n' "{ \"command\": [\"get_property\", \"pause\" ] }" | \
-        $SOCKETCOMMAND 2> /dev/null | cut -d: -f 2 | cut -d, -f 1)
+        $SOCKETCOMMAND 2> /dev/null | awk -F '[":,]' '{print $4}')
 
     case "$status" in
         true)  status="paused"  ;;
@@ -319,7 +299,7 @@ $time ] }" | $SOCKETCOMMAND > /dev/null
 setTimeAbsolute() {
     time=$(parseTimeString "$1") || exit $?
 
-    trackTime=$(getDuration)
+    trackTime=$(getValue duration)
 
     test "$time" -ge "$trackTime" && {
         printf '%s\n' "Given time is greater than track length! ($(trackLength))"
@@ -607,7 +587,7 @@ preciseElapsedTime() {
 }
 
 trackLength() {
-    duration=$(getDuration)
+    duration=$(getValue duration)
     formatTime "$duration"
 }
 
@@ -655,9 +635,9 @@ formatPrint() {
     s#%volume%#$(getValue volume)#g
     s#%length%#$(trackLength)#g
     s#%muted%#$(getMuteStatus)#g
-    s#%percentage%#$(getPercentage)#g
+    s#%percentage%#$(getValue percent-pos)#g
     s#%file%#$(getMediaFilename)#g
-    s#%path%#$(getMediaPath)#g
+    s#%path%#$(getMediaProperties path)#g
     s#%repeat%#$(getLoopStatus loop)#g
     s#%single%#$(getLoopStatus loop-file)#g
     s#%playlistlength%#$(getValue playlist-count)#g
@@ -814,7 +794,7 @@ validateSocket() {
         # test if socket is open
         status="$(getPauseStatus)"
         test "$status" = "N/A" && {
-            printf '%s\n' "No MPV instance using $SOCKET."
+            printf '%s\n' "No files added to $SOCKET."
             exit 3
         }
     } || {
@@ -823,7 +803,7 @@ validateSocket() {
 }
 
 getVersion() {
-    printf '%s\n' "MPVC Release 1.2 (c) Laurence Willetts MIT"
+    printf '%s\n' "MPVC Release 1.3 (c) Laurence Willetts MIT"
     exit
 }
 
@@ -870,17 +850,12 @@ main() {
 
     # mpc compatibility layer
     case $1 in
-        play|start)
+        play|start|resume)
             test -n "$2" && {
                 setTrackAbsolute "$2"
             }
 
             alwaysPlay
-            printFinalOutput
-            ;;
-        stop)
-            alwaysPause
-            setTimeAbsolute 0
             printFinalOutput
             ;;
         del|delete)
@@ -940,16 +915,11 @@ main() {
         prev)     setTrackRelative -1 ; printFinalOutput ;;
         mute)     toggleMute true     ; printFinalOutput ;;
         unmute)   toggleMute false    ; printFinalOutput ;;
-        playlist) getPlaylist         ; exit ;;
-        shuffle)  shufflePlaylist     ; exit ;;
-        clear)    clearPlaylist       ; exit ;;
-        crop)     cropPlaylist        ; exit ;;
         # seek) to implement with full MPC options # with percentage!
         # move) to implement
         # consume) to implement # add on|off toggle
         # random) MPV doesn't have this control option!
         # create an issue or implement puesdo-random tracks
-        version)  getVersion          ;;
     esac
 
     # GNU-style options
@@ -965,32 +935,33 @@ main() {
         test "$REMOVEFLAG"   = "true" && removeTrack "$arg";       REMOVEFLAG=false
 
         case "$arg" in
-            -t|--seek|seek)            SEEKFLAG=true      ;;
-            -T|--time|time)            TIMEFLAG=true      ;;
-            -v|--vol|vol)              VOLFLAG=true       ;;
-            -V|--volume|volume)        VOLUMEFLAG=true    ;;
-            -x|--speed|speed)          SPEEDFLAG=true     ;;
-            -X|--speedval|speedval)    SPEEDVALFLAG=true  ;;
-            -j|--track|track)          TRACKFLAG=true     ;;
-            -J|--tracknum|tracknum)    TRACKVALFLAG=true  ;;
-            -r|--remove|remove)        REMOVEFLAG=true    ;;
-            -s|--stop|stop)            alwaysPause        ;;
-            -P|--play|play)            alwaysPlay         ;;
-            -p|--toggle|toggle)        togglePause        ;;
-            -m|--mute|mute)            toggleMute         ;;
-            -i|--playlist|playlist)    getPlaylist        ;;
-            -L|--loop|loop)            toggleLoopPlaylist ;;
-            -l|--loopfile|loopfile)    toggleLoopFile     ;;
-            -z|--shuffle|shuffle)      shufflePlaylist    ;;
-            -c|--crop|crop)            cropPlaylist       ;;
-            -C|--clear|clear)          clearPlaylist      ;;
-            -k|--kill|kill)            killSocket         ;;
-            -f|--format)               continue           ;;
-            -a|--append)               continue           ;;
-            -S|--socket)               continue           ;;
-            -[1-999999])               continue           ;;
-            --|---|----)               continue           ;;
-            -?)                        usage 1            ;;
+            -t|--seek|seek)            SEEKFLAG=true                  ;;
+            -T|--time|time)            TIMEFLAG=true                  ;;
+            -v|--vol|vol)              VOLFLAG=true                   ;;
+            -V|--volume|volume)        VOLUMEFLAG=true                ;;
+            -x|--speed|speed)          SPEEDFLAG=true                 ;;
+            -X|--speedval|speedval)    SPEEDVALFLAG=true              ;;
+            -j|--track|track)          TRACKFLAG=true                 ;;
+            -J|--tracknum|tracknum)    TRACKVALFLAG=true              ;;
+            -r|--remove|remove)        REMOVEFLAG=true                ;;
+            -s|--stop|stop)            alwaysPause; setTimeAbsolute 0 ;;
+            -P|--play)                 alwaysPlay                     ;;
+            -p|--toggle|toggle)        togglePause                    ;;
+            -m|--mute|mute)            toggleMute                     ;;
+            -i|--playlist|playlist)    getPlaylist                    ;;
+            -L|--loop|loop)            toggleLoopPlaylist             ;;
+            -l|--loopfile|loopfile)    toggleLoopFile                 ;;
+            -z|--shuffle|shuffle)      shufflePlaylist                ;;
+            -c|--crop|crop)            cropPlaylist                   ;;
+            -C|--clear|clear)          clearPlaylist                  ;;
+            -k|--kill|kill)            killSocket                     ;;
+            --version|version)         getVersion                     ;;
+            -f|--format)               continue                       ;;
+            -a|--append)               continue                       ;;
+            -S|--socket)               continue                       ;;
+            -[1-999999])               continue                       ;;
+            --|---|----)               continue                       ;;
+            -?)                        usage 1                        ;;
         esac
     done
 
