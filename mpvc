@@ -4,7 +4,7 @@
 # control mpv remotely using JSON ipc
 # https://mpv.io/manual/master/#json-ipc
 
-SOCKET=${SOCKET:-/tmp/mpvsocket}
+SOCKET=${MPVC_SOCKET:-/tmp/mpvsocket}
 MPVOPTIONS="--no-audio-display"
 
 usage() {
