@@ -105,7 +105,7 @@ getMetadata() {
     printf '%s' "$result" | escapeSedChar '&' | escapeSedChar '#'
 }
 
-# accepted properties: mute, pause, loop, loop-file, estimated-frame-number
+# accepted properties: mute, pause, loop-file, estimated-frame-number, width, height
 getProperty() {
     property=$1
 
@@ -123,7 +123,7 @@ getPropertyString() {
     result=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
 \"${property}\"] }" | $SOCKETCOMMAND 2> /dev/null | awk -F '[".]' '{print $4}')
 
-    test "$value" = "error" && {
+    test "$result" = "error" && {
         test $# -ge 2 && printf '%s' "$2" || printf '%s' "N/A"
         return 1
     } || {
@@ -137,6 +137,39 @@ getSpeed() {
 \"speed\"] }" | $SOCKETCOMMAND 2> /dev/null | awk -F '"' '{print substr ($4, 0, 4)}')
 
     printf '%s' "$speed"
+}
+
+# accepted properties: loop-file, loop-playlist
+getLoopStatus() {
+    property=$1
+
+    case "$property" in
+        loop-file)
+            status=$(getProperty loop-file)
+            ;;
+        loop-playlist)
+            status=$(printf '%s\n' "{ \"command\": [\"get_property\", \
+\"loop-playlist\"] }" | $SOCKETCOMMAND 2> /dev/null)
+            printf '%s\n' "$status" | grep "inf" > /dev/null 2>&1 && {
+                status="$(printf '%s\n' "$status" | cut -d\" -f 4)"
+            } || {
+                status="$(printf '%s\n' "$status" | awk -F '[":,]' '{print $4}')"
+            }
+            ;;
+    esac
+
+    test "$status" -ne 0 2> /dev/null
+    test $? -ne 2 && {
+        loop="$status"
+    } || {
+        case "$status" in
+            true | inf)      loop="yes"     ;;
+            false)           loop="no"      ;;
+            *)               loop="N/A"     ;;
+        esac
+    }
+
+    printf '%s' "$loop"
 }
 
 getMuteStatus() {
@@ -161,21 +194,6 @@ getPauseStatus() {
     esac
 
     printf '%s' "$status"
-}
-
-getLoopStatus() {
-    property=$1
-    status=$(printf '%s\n' "{ \"command\": [\"get_property\", \
-\"$property\" ] }" | $SOCKETCOMMAND 2> /dev/null | \
-        cut -d: -f 2 | cut -d, -f 1 | sed s/\"//g)
-
-    case "$status" in
-        true | inf)  loop="yes" ;;
-        false)       loop="no"  ;;
-        *)           loop="N/A" ;;
-    esac
-
-    printf '%s' "$loop"
 }
 
 # print all filenames in current playlist
@@ -406,7 +424,7 @@ setTrackRelative() {
     }
 
     test "$desiredTrack" -lt 0 && {
-        repeat=$(getLoopStatus loop)
+        repeat=$(getLoopStatus loop-file)
         test "$repeat" = "yes" && {
             setTrackAbsolute "$trackCount"
             return
@@ -519,13 +537,13 @@ toggleLoopFile() {
 
 toggleLoopPlaylist() {
     test -z "$1" && {
-        loopPlaylist=$(getLoopStatus loop)
+        loopPlaylist=$(getLoopStatus loop-playlist)
         test "$loopPlaylist" = "no" && loopPlaylist="inf" || loopPlaylist="no"
     } || {
         loopPlaylist=$1
     }
 
-    printf '%s\n' "{ \"command\": [\"set_property_string\", \"loop\", \
+    printf '%s\n' "{ \"command\": [\"set_property_string\", \"loop-playlist\", \
 \"$loopPlaylist\" ] }" | $SOCKETCOMMAND > /dev/null
 }
 
@@ -538,7 +556,7 @@ shufflePlaylist() {
         QUIETFLAG=true
     }
 
-    test "$(getLoopStatus loop)" != "yes" && {
+    test "$(getLoopStatus loop-playlist)" != "yes" && {
         toggleLoopPlaylist inf
     }
 }
@@ -643,7 +661,7 @@ formatPrint() {
     s#%percentage%#$(getPropertyString percent-pos)#g
     s#%file%#$(getMediaFilename)#g
     s#%path%#$(getMediaProperties path)#g
-    s#%repeat%#$(getLoopStatus loop)#g
+    s#%repeat%#$(getLoopStatus loop-playlist)#g
     s#%single%#$(getLoopStatus loop-file)#g
     s#%playlistlength%#$(getPropertyString playlist-count)#g
     s#%position%#$(($(getPropertyString playlist-pos) + 1))#g
