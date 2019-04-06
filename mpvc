@@ -16,7 +16,7 @@ Usage: $(basename $0) [-S "socket"] [-a "filenames"] [-f "format string"]
     -f | --format   : Enter a formatting string.
     -a | --add      : Add files to playlist.
     -i | --playlist : Print all filenames of tracks in current playlist.
-    -t | --seek     : Increase/decrease time relative to the current time.
+    -t | --seek     : Increases/decreases time relatively, accepts percentage values.
     -T | --time     : Set absolute time.
     -v | --vol      : Increase/decrease volume relative to the current volume.
     -V | --volume   : Set absolute volume.
@@ -286,6 +286,13 @@ appendTrack() {
 
 setTimeRelative() {
     time=$(getPropertyString playback-time)
+
+    printf '%s\n' "$1" | grep "%" > /dev/null 2>&1 && {
+        percentageValue=$(printf '%s\n' "$1" | rev | cut -c 2- | rev)
+        printf '%s\n' "{ \"command\": [\"set_property\", \"percent-pos\", \
+$percentageValue ] }" | $SOCKETCOMMAND > /dev/null
+        return
+    }
 
     sign=$(printf '%s' "$1" | cut -c 1)
     case "$sign" in
@@ -958,7 +965,6 @@ main() {
         prev)     setTrackRelative -1 ; printFinalOutput ;;
         mute)     toggleMute true     ; printFinalOutput ;;
         unmute)   toggleMute false    ; printFinalOutput ;;
-        # seek) to implement with full MPC options # with percentage!
         # move) to implement
         # consume) to implement # add on|off toggle
         # random) MPV doesn't have this control option!
@@ -988,7 +994,7 @@ main() {
             -J|--tracknum|tracknum)    TRACKVALFLAG=true              ;;
             -r|--remove|remove)        REMOVEFLAG=true                ;;
             -s|--stop|stop)            alwaysPause; setTimeAbsolute 0 ;;
-            -P|--play)                 alwaysPlay                     ;;
+            -P|--play|play)            alwaysPlay                     ;;
             -p|--toggle|toggle)        togglePause                    ;;
             -m|--mute|mute)            toggleMute                     ;;
             -i|--playlist|playlist)    getPlaylist                    ;;
