@@ -43,10 +43,17 @@ $ mpv --input-ipc-server /tmp/mpvsocket
 ```
 
 You can also specify the default ipc server in your $XDG_CONFIG_HOME/mpv.conf
-which will make all mpv instances you start be controllable via mpvc:
+which will make the most recent mpv instance you start be controllable via mpvc:
 ```
 input-ipc-server=/tmp/mpvsocket
 ```
+
+However, this might not be suitable for you, if you have background music added
+to the socket and you open a video using mpv, the new mpv instance will be the
+only one controllable through the socket and not the old one. You can get around
+this by adding the video via mpvc, but then you have to lose your current
+position in your music playlist and manually switch to the video.
+
 
 ## Useful Tricks
 
