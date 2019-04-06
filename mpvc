@@ -40,10 +40,10 @@ Usage: $(basename $0) [-S "socket"] [-a "filenames"] [-f "format string"]
 Formatting:
     \`$(basename $0) --format\` will interpret the following delimiters if they are found:
 
-    %file%, %path%, %title%, %artist%, %album%, %albumartist%, %genre%, %year%
-    %status%, %time%, %precisetime%, %length%, %percentage%, %speed%
+    %file%, %path%, %title%, %artist%, %album%, %albumartist%, %genre%, %year%, comment%
+    %status%, %time%, %precisetime%, %length%, %remaining%, %percentage%, %speed%
     %playlistlength%, %position%, %repeat%, %single%
-    %volume%, %muted%, %frame%
+    %volume%, %muted%, %frame%, %width%, %height%
 
 Exit codes:
      0: Program ran succesfully.
@@ -59,6 +59,7 @@ EOF
     # Retrieval Functions
 ###############################################################################
 
+# accepted properties: media-title, path
 getMediaProperties() {
     property="$1"
 
@@ -81,6 +82,7 @@ getMediaFilename() {
     printf '%s' "$mediaFilename"
 }
 
+# accepted properties: date, genre, title, album, artist, album_artist
 getMetadata() {
     property=$1
 
@@ -95,25 +97,37 @@ getMetadata() {
         result="$metadata"
     }
 
-    # test if title has no property
-    test "$property" = "title" && test "$result" = "N/A" && {
+    # test if title has no property and return filename instead
+    test "$property" = "title" && test "$metadata" = "error" && {
         result=$(getMediaFilename)
     }
 
     printf '%s' "$result" | escapeSedChar '&' | escapeSedChar '#'
 }
 
-getValue() {
+# accepted properties: mute, pause, loop, loop-file, estimated-frame-number
+getProperty() {
     property=$1
 
-    value=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
+    result=$(printf '%s\n' "{ \"command\": [\"get_property\", \
+\"${property}\"] }" | $SOCKETCOMMAND 2> /dev/null | awk -F '[":,]' '{print $4}')
+
+    printf '%s' "$result"
+}
+
+# accepted properties: idle-active, playlist-count, playlist-pos, playback-time,
+# playtime-remaining, time-remaining, percent-pos, duration volume
+getPropertyString() {
+    property=$1
+
+    result=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
 \"${property}\"] }" | $SOCKETCOMMAND 2> /dev/null | awk -F '[".]' '{print $4}')
 
     test "$value" = "error" && {
         test $# -ge 2 && printf '%s' "$2" || printf '%s' "N/A"
         return 1
     } || {
-        printf '%s' "$value"
+        printf '%s' "$result"
         return 0
     }
 }
@@ -126,8 +140,7 @@ getSpeed() {
 }
 
 getMuteStatus() {
-    muted=$(printf '%s\n' "{ \"command\": [\"get_property\", \"mute\" ] }" | \
-        $SOCKETCOMMAND 2> /dev/null | awk -F '[":,]' '{print $4}')
+    muted="$(getProperty mute)"
 
     case "$muted" in
         true)  muted="yes" ;;
@@ -139,8 +152,7 @@ getMuteStatus() {
 }
 
 getPauseStatus() {
-    status=$(printf '%s\n' "{ \"command\": [\"get_property\", \"pause\" ] }" | \
-        $SOCKETCOMMAND 2> /dev/null | awk -F '[":,]' '{print $4}')
+    status="$(getProperty pause)"
 
     case "$status" in
         true)  status="paused"  ;;
@@ -166,23 +178,10 @@ getLoopStatus() {
     printf '%s' "$loop"
 }
 
-getFrameNumber() {
-    frame=$(printf '%s\n' "{ \"command\": [\"get_property\", \
-\"estimated-frame-number\" ] }" | $SOCKETCOMMAND 2> /dev/null | tr -d "{}")
-    errorCheck=$(printf '%s\n' "$frame" | cut -d\" -f 2)
-    frame=$(printf '%s\n' "$frame" | cut -d: -f 2 | cut -d, -f 1 | sed s/\"//g)
-
-    test "$errorCheck" = "error" && {
-        printf '%s' "N/A"
-    } || {
-        printf '%s' "$frame"
-    }
-}
-
 # print all filenames in current playlist
 getPlaylist() {
-    tracks=$(getValue playlist-count)
-    currentTrack=$(getValue playlist-pos)
+    tracks=$(getPropertyString playlist-count)
+    currentTrack=$(getPropertyString playlist-pos)
 
     test "$tracks" -eq 0 -o "$currentTrack" = "N/A" && {
         printf '%s\n' "MPV instance on ${SOCKET} is currently idle." >&2
@@ -209,7 +208,7 @@ getPlaylist() {
         esac
 
         test "$currentTrack" -eq $((i - 1)) && {
-            printf '[7m[40m%d	%s[0m\n' "$i" "${filename}"
+            printf '[7m%d	%s[0m\n' "$i" "${filename}"
         } || {
             printf '%d	%s\n' $i "${filename}"
         }
@@ -247,9 +246,9 @@ appendTrack() {
 
         # wait up to 5 seconds for mpv to start on $SOCKET
         for i in $($SEQCOMMAND 50); do
-            idlestatus=$(getValue idle-active)
+            idlestatus=$(getPropertyString idle-active)
             test "$idlestatus" && break
-            sleep 0.1
+            sleep 0.01
         done
     }
 
@@ -268,7 +267,7 @@ appendTrack() {
 }
 
 setTimeRelative() {
-    time=$(getValue playback-time)
+    time=$(getPropertyString playback-time)
 
     sign=$(printf '%s' "$1" | cut -c 1)
     case "$sign" in
@@ -299,7 +298,7 @@ $time ] }" | $SOCKETCOMMAND > /dev/null
 setTimeAbsolute() {
     time=$(parseTimeString "$1") || exit $?
 
-    trackTime=$(getValue duration)
+    trackTime=$(getPropertyString duration)
 
     test "$time" -ge "$trackTime" && {
         printf '%s\n' "Given time is greater than track length! ($(trackLength))"
@@ -314,7 +313,7 @@ $time ] }" | $SOCKETCOMMAND > /dev/null
 setVolumeRelative() {
     intCheck "$1"
 
-    volume=$(getValue volume)
+    volume=$(getPropertyString volume)
 
     test "$volume" = "error" && {
         printf '%s\n' "Currently playing media does not have sound." >&2
@@ -339,7 +338,7 @@ setVolumeRelative() {
 
 setVolumeAbsolute() {
     # test if media has sound
-    volume=$(getValue volume)
+    volume=$(getPropertyString volume)
 
     test "$volume" = "error" && {
         printf '%s\n' "Currently playing media does not have sound." >&2
@@ -384,13 +383,13 @@ setSpeedAbsolute() {
 setTrackRelative() {
     intCheck "$1"
 
-    currentTrack=$(getValue playlist-pos)
+    currentTrack=$(getPropertyString playlist-pos)
     desiredTrack=$((currentTrack + $1))
-    trackCount=$(getValue playlist-count)
+    trackCount=$(getPropertyString playlist-count)
 
     # if time is greater than 10 seconds, set time to 0
     test "$desiredTrack" -lt "$currentTrack" && {
-        seconds=$(getValue playback-time)
+        seconds=$(getPropertyString playback-time)
         test "$seconds" -ge 10 && {
             setTimeAbsolute 0
             return
@@ -426,7 +425,7 @@ setTrackAbsolute() {
 
     currentTrack=$1
     currentTrack=$((currentTrack - 1))
-    trackCount=$(getValue playlist-count)
+    trackCount=$(getPropertyString playlist-count)
 
     test "$currentTrack" -lt 0 || test "$currentTrack" -ge "$trackCount" && {
         printf '%s\n' "Item $currentTrack is out of range of playlist." >&2
@@ -445,7 +444,7 @@ removeTrack() {
 
     trackToRemove=$1
     trackToRemove=$((trackToRemove - 1))
-    trackCount=$(getValue playlist-count)
+    trackCount=$(getPropertyString playlist-count)
 
     test "$trackToRemove" -lt 0 || test "$trackToRemove" -ge "$trackCount" && {
         printf '%s\n' "Item $trackToRemove is out of range of playlist." >&2
@@ -462,7 +461,7 @@ removeTrack() {
 }
 
 alwaysPlay() {
-    currentTrack=$(getValue playlist-pos)
+    currentTrack=$(getPropertyString playlist-pos)
     test "$currentTrack" = "N/A" && {
         setTrackAbsolute 1
         return
@@ -479,7 +478,7 @@ alwaysPause() {
 }
 
 togglePause() {
-    currentTrack=$(getValue playlist-pos)
+    currentTrack=$(getPropertyString playlist-pos)
     test "$currentTrack" = "N/A" && {
         setTrackAbsolute 1
         return
@@ -575,20 +574,25 @@ killAllMpv() {
 ###############################################################################
 
 elapsedTime() {
-    time=$(getValue playback-time)
+    time=$(getPropertyString playback-time)
     formatTime "$time"
 }
 
 preciseElapsedTime() {
-    time=$(getValue playback-time 0.0)
+    time=$(getPropertyString playback-time 0.0)
     bigTime=$(printf '%s\n' "$time" | cut -d. -f 1)
     tinyTime=$(printf '%s\n' "$time" | cut -d. -f 2)
     formatTime "$bigTime" "$tinyTime"
 }
 
 trackLength() {
-    duration=$(getValue duration)
+    duration=$(getPropertyString duration)
     formatTime "$duration"
+}
+
+playtimeRemaining() {
+    playtime=$(getPropertyString playtime-remaining)
+    formatTime "$playtime"
 }
 
 # format seconds into HH:MM:SS format
@@ -618,31 +622,32 @@ formatTime() {
 formatPrint() {
     # modified format string
     FORMATSTRING=$(printf '%s\n' "$FORMATSTRING" | sed "
-    s#%status%#$(
-    status=$(getPauseStatus)
-    printf '%s' "$status"
-    )#g
+    s#%status%#$(getPauseStatus)#g
 
     s#%year%#$(getMetadata date)#g
     s#%genre%#$(getMetadata genre)#g
     s#%title%#$(getMetadata title)#g
     s#%album%#$(getMetadata album)#g
     s#%artist%#$(getMetadata artist)#g
+    s#%comment%#$(getMetadata comment)#g
     s#%albumartist%#$(getMetadata album_artist)#g
     s#%speed%#$(getSpeed)#g
     s#%time%#$(elapsedTime)#g
     s#%precisetime%#$(preciseElapsedTime)#g
-    s#%volume%#$(getValue volume)#g
+    s#%volume%#$(getPropertyString volume)#g
     s#%length%#$(trackLength)#g
+    s#%remaining%#$(playtimeRemaining)#g
     s#%muted%#$(getMuteStatus)#g
-    s#%percentage%#$(getValue percent-pos)#g
+    s#%percentage%#$(getPropertyString percent-pos)#g
     s#%file%#$(getMediaFilename)#g
     s#%path%#$(getMediaProperties path)#g
     s#%repeat%#$(getLoopStatus loop)#g
     s#%single%#$(getLoopStatus loop-file)#g
-    s#%playlistlength%#$(getValue playlist-count)#g
-    s#%position%#$(($(getValue playlist-pos) + 1))#g
-    s#%frame%#$(getFrameNumber)#g
+    s#%playlistlength%#$(getPropertyString playlist-count)#g
+    s#%position%#$(($(getPropertyString playlist-pos) + 1))#g
+    s#%frame%#$(getProperty estimated-frame-number)#g
+    s#%width%#$(getProperty width)#g
+    s#%height%#$(getProperty height)#g
     ")
 
     printf '%s\n' "${FORMATSTRING}"
@@ -651,17 +656,27 @@ formatPrint() {
 
 # print default status of mpv instance
 printDefaultStatus() {
-    FORMATSTRING="\
-%artist% - %title%
+    artist=$(getMetadata artist)
+
+    test "$artist" != "N/A" && {
+        FORMATSTRING="\
+${artist} - %title%
 [%status%] #%position%/%playlistlength% %time%/%length% (%percentage%%)
 speed: %speed%x volume: %volume%% muted: %muted% repeat: %repeat% single: %single%"
+    } || {
+        FORMATSTRING="\
+%title%
+[%status%] #%position%/%playlistlength% %time%/%length% (%percentage%%)
+speed: %speed%x volume: %volume%% muted: %muted% repeat: %repeat% single: %single%"
+    }
+
     formatPrint
 }
 
 # catches if mpv is idle or not
 printFinalOutput() {
     test "$QUIETFLAG" != "true" && {
-        test "$(getValue idle-active)" = "yes" && {
+        test "$(getPropertyString idle-active)" = "yes" && {
             printf '%s\n' "MPV instance on ${SOCKET} is currently idle." >&2
         } || {
             printDefaultStatus
