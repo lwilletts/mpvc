@@ -45,7 +45,7 @@ $ mpv --input-ipc-server /tmp/mpvsocket
 You can also specify the default ipc server in your $XDG_CONFIG_HOME/mpv.conf
 which will make all mpv instances you start be controllable via mpvc:
 ```
-input-ipc-server
+input-ipc-server=/tmp/mpvsocket
 ```
 
 ## Useful Tricks
