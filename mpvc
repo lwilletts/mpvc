@@ -226,7 +226,7 @@ getPlaylist() {
         esac
 
         test "$currentTrack" -eq $((i - 1)) && {
-            printf '[7m%d	%s[0m\n' "$i" "${filename}"
+            printf '%d	[7m%s[0m\n' "$i" "${filename}"
         } || {
             printf '%d	%s\n' $i "${filename}"
         }
@@ -466,6 +466,40 @@ setTrackAbsolute() {
     sleep 0.5
 }
 
+moveTrack() {
+    intCheck "$1"
+
+    test -z "$2" && {
+        trackToMove=$(getPropertyString playlist-pos)
+        newTrackPosition=$1
+    } || {
+        trackToMove=$1
+        trackToMove=$((trackToMove - 1))
+        newTrackPosition=$2
+        trackCount=$(getPropertyString playlist-count)
+
+        test "$trackToMove" -lt 0 || test "$trackToMove" -ge "$trackCount" && {
+            printf '%s\n' "Item $trackToMove is out of range of playlist." >&2
+            exit 1
+        }
+    }
+
+    test "$newTrackPosition" -lt 0 && {
+        printf '%s\n' "Position $newTrackPosition is out of range of playlist." >&2
+        exit 1
+    }
+
+    test "$newTrackPosition" -eq 1 && newTrackPosition=0
+
+    printf '%s\n' "{ \"command\": [\"playlist-move\", \"$trackToMove\", \
+\"$newTrackPosition\" ] }" | $SOCKETCOMMAND > /dev/null
+
+    test "$QUIETFLAG" != "true" && {
+        getPlaylist
+        QUIETFLAG=true
+    }
+}
+
 removeTrack() {
     intCheck "$1"
 
@@ -478,8 +512,8 @@ removeTrack() {
         exit 1
     }
 
-    printf '%s\n' "{ \"command\": [\"playlist-remove\", \"$trackToRemove\" ] }" | \
-        $SOCKETCOMMAND > /dev/null
+    printf '%s\n' "{ \"command\": [\"playlist-remove\", \
+\"$trackToRemove\" ] }" | $SOCKETCOMMAND > /dev/null
 
     test "$QUIETFLAG" != "true" && {
         getPlaylist
@@ -960,12 +994,11 @@ main() {
             printFinalOutput
             ;;
         pause)    alwaysPause         ; printFinalOutput ;;
-        toggle)   togglePause         ; printFinalOutput ;;
         next)     setTrackRelative 1  ; printFinalOutput ;;
         prev)     setTrackRelative -1 ; printFinalOutput ;;
+        move)     moveTrack "$2" "$3" ; printFinalOutput ;;
         mute)     toggleMute true     ; printFinalOutput ;;
         unmute)   toggleMute false    ; printFinalOutput ;;
-        # move) to implement
         # consume) to implement # add on|off toggle
         # random) MPV doesn't have this control option!
         # create an issue or implement puesdo-random tracks
