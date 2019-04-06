@@ -74,7 +74,7 @@ $ find . type -f | mpvc
 - You can use m3u playlists with mpv by saving the absolute path of your media into a file:
 ```
 $ find "$(pwd)" -iname "*Your Artist Here*" > Artist.m3u
-$ cat Artist.m3u | mpvc add
+$ mpvc add Artist.m3u
 ```
 
 ## Limitations
