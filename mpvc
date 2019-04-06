@@ -363,6 +363,7 @@ setVolumeAbsolute() {
 }
 
 setSpeedRelative() {
+    validateBC
     speed=$(getSpeed)
 
     fltCheck "$1"
@@ -373,6 +374,7 @@ setSpeedRelative() {
 }
 
 setSpeedAbsolute() {
+    validateBC
     fltCheck "$1"
     speed=$1
 
@@ -777,7 +779,7 @@ EOF
 
 validateDeps() {
     type mpv > /dev/null 2>&1 || {
-        printf '%s\n' "mpv is not installed on your \$PATH." >&2
+        printf '%s\n' "Cannot find mpv on your \$PATH." >&2
         exit 4
     }
 
@@ -794,6 +796,14 @@ validateDeps() {
 
     test "$SEQCOMMAND" || {
         printf '%s\n' "Cannot find seq or jot on your \$PATH." >&2
+        exit 4
+    }
+}
+
+validateBC() {
+    type bc > /dev/null 2>&1 || {
+        printf '%s\n' "Cannot find bc on your \$PATH."
+        printf '%s\n' "Please install for speed control."
         exit 4
     }
 }
