@@ -196,6 +196,26 @@ getPauseStatus() {
     printf '%s' "$status"
 }
 
+getPlaylistFilename() {
+    track="$1"
+
+    filename=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
+\"playlist/$track/filename\"] }" | $SOCKETCOMMAND 2> /dev/null | \
+        cut -d\" -f 4)
+
+    case "$filename" in
+        *.googlevideo.com/*)
+            filename="mps-yt stream"
+            ;;
+        *)
+            # this will probably look funky if there's a '/' in the filename
+            filename=$(basename "$filename")
+            ;;
+    esac
+
+    printf '%s\n' "$filename"
+}
+
 # print all filenames in current playlist
 getPlaylist() {
     noColour="$1"
@@ -213,19 +233,7 @@ getPlaylist() {
     test "${SEQCOMMAND}" = "jot" && REPS=$((LAST - FIRST + 1))
 
     for i in $("$SEQCOMMAND" $REPS "$FIRST" "$LAST"); do
-        filename=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
-\"playlist/$((i - 1))/filename\"] }" | $SOCKETCOMMAND 2> /dev/null | \
-            cut -d\" -f 4)
-
-        case "$filename" in
-            *.googlevideo.com/*)
-                filename="mps-yt stream"
-                ;;
-            *)
-                # this will probably look funky if there's a '/' in the filename
-                filename=$(basename "$filename")
-                ;;
-        esac
+        filename=$(getPlaylistFilename $((i - 1)))
 
         test "$noColour" != "nocolour" && {
             test "$currentTrack" -eq $((i - 1)) && {
@@ -243,7 +251,7 @@ getPlaylist() {
 ###############################################################################
 
 appendTrack() {
-    filename="$*"
+    filename="$@"
 
     # require absolute paths
     test -e "$filename" -a "$(printf "%s" "$filename" | cut -c 1)" != '/' && {
@@ -501,7 +509,6 @@ moveTrack() {
     test "$QUIETFLAG" != "true" && {
         getPlaylist
         exit
-        QUIETFLAG=true
     }
 }
 
@@ -517,13 +524,13 @@ removeTrack() {
         exit 1
     }
 
+    filename=$(getPlaylistFilename $trackToRemove)
     printf '%s\n' "{ \"command\": [\"playlist-remove\", \
 \"$trackToRemove\" ] }" | $SOCKETCOMMAND > /dev/null
 
     test "$QUIETFLAG" != "true" && {
-        getPlaylist
+        printf '%s\n' "$filename has been removed from the playlist."
         exit
-        QUIETFLAG=true
     }
 }
 
@@ -823,8 +830,8 @@ EOF
             intCheck "$timeInt"
 
             case "$lastChar" in
-                h|H) timeInt=$(("$timeInt" * 60 * 60)) ;;
-                m|M) timeInt=$(("$timeInt" * 60))      ;;
+                h|H) timeInt=$((timeInt * 60 * 60)) ;;
+                m|M) timeInt=$((timeInt * 60))      ;;
             esac
 
             ;;
@@ -939,7 +946,7 @@ main() {
     validateSocket
 
     # mpc compatibility layer
-    case $1 in
+    case "$1" in
         play|start|resume)
             test -n "$2" && {
                 setTrackAbsolute "$2"
