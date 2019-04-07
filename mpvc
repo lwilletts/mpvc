@@ -955,17 +955,6 @@ main() {
             alwaysPlay
             printFinalOutput
             ;;
-        del|delete)
-            test ! -z "$2" && {
-                removeTrack "$2"
-                getPlaylist
-                exit
-            } || {
-                printf '%s\n' "Specify track number to remove from playlist."
-            }
-
-            return
-            ;;
         volume)
             firstChar=$(printf '%s\n' "$2" | cut -c 1)
             case "$firstChar" in
@@ -1039,7 +1028,7 @@ main() {
             -X|--speedval|speedval)          SPEEDVALFLAG=true              ;;
             -j|--track|track)                TRACKFLAG=true                 ;;
             -J|--tracknum|tracknum)          TRACKVALFLAG=true              ;;
-            -r|--remove|remove)              REMOVEFLAG=true                ;;
+            -r|--remove|remove|del|delete)   REMOVEFLAG=true                ;;
             -s|--stop|stop)                  alwaysPause; setTimeAbsolute 0 ;;
             -P|--play|play)                  alwaysPlay                     ;;
             -p|--toggle|toggle)              togglePause                    ;;
