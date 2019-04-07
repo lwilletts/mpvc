@@ -198,12 +198,14 @@ getPauseStatus() {
 
 # print all filenames in current playlist
 getPlaylist() {
+    noColour="$1"
+
     tracks=$(getPropertyString playlist-count)
     currentTrack=$(getPropertyString playlist-pos)
 
     test "$tracks" -eq 0 -o "$currentTrack" = "N/A" && {
         printf '%s\n' "MPV instance on ${SOCKET} is currently idle." >&2
-        exit 1
+       exit 1
     }
 
     calculateTerminalHeight
@@ -225,21 +227,23 @@ getPlaylist() {
                 ;;
         esac
 
-        test "$currentTrack" -eq $((i - 1)) && {
-            printf '%d	[7m%s[0m\n' "$i" "${filename}"
+        test "$noColour" != "nocolour" && {
+            test "$currentTrack" -eq $((i - 1)) && {
+                printf '%d	[7m %s[0m\n' "$i" "${filename} "
+            } || {
+                printf '%d	 %s\n' "$i" "${filename}"
+            }
         } || {
-            printf '%d	%s\n' $i "${filename}"
+            printf '%d	%s\n' "$i" "${filename}"
         }
     done
-
-    exit
 }
 
     # Control Functions
 ###############################################################################
 
 appendTrack() {
-    filename="$@"
+    filename="$*"
 
     # require absolute paths
     test -e "$filename" -a "$(printf "%s" "$filename" | cut -c 1)" != '/' && {
@@ -311,9 +315,9 @@ $percentageValue ] }" | $SOCKETCOMMAND > /dev/null
     timeSec=$(parseTimeString "$timeArg") || exit $?
 
     test "$minusFlag" = "true" && {
-        time=$(($time - $timeSec))
+        time=$((time - timeSec))
     } || {
-        time=$(($time + $timeSec))
+        time=$((time + timeSec))
     }
 
     printf '%s\n' "{ \"command\": [\"set_property\", \"playback-time\", \
@@ -392,7 +396,7 @@ setSpeedRelative() {
     speed=$(getSpeed)
 
     fltCheck "$1"
-    speed=$(echo "$speed+$1\n" | bc)
+    speed=$(printf '%s\n' "$speed+$1" | bc)
 
     printf '%s\n' "{ \"command\": [\"set_property_string\", \"speed\", \
 \"$speed\" ] }" | $SOCKETCOMMAND > /dev/null
@@ -496,6 +500,7 @@ moveTrack() {
 
     test "$QUIETFLAG" != "true" && {
         getPlaylist
+        exit
         QUIETFLAG=true
     }
 }
@@ -517,6 +522,7 @@ removeTrack() {
 
     test "$QUIETFLAG" != "true" && {
         getPlaylist
+        exit
         QUIETFLAG=true
     }
 }
@@ -766,7 +772,7 @@ intCheck() {
 }
 
 fltCheck() {
-    testDecimal=$(echo "$1\n" | bc)
+    testDecimal=$(printf '%s\n' "$1" | bc)
     test "$testDecimal" -eq 0 2> /dev/null && {
         printf '%s\n' "'$1' is not a number." >&2
         exit 1
@@ -946,6 +952,7 @@ main() {
             test ! -z "$2" && {
                 removeTrack "$2"
                 getPlaylist
+                exit
             } || {
                 printf '%s\n' "Specify track number to remove from playlist."
             }
@@ -1017,33 +1024,33 @@ main() {
         test "$REMOVEFLAG"   = "true" && removeTrack "$arg";       REMOVEFLAG=false
 
         case "$arg" in
-            -t|--seek|seek)            SEEKFLAG=true                  ;;
-            -T|--time|time)            TIMEFLAG=true                  ;;
-            -v|--vol|vol)              VOLFLAG=true                   ;;
-            -V|--volume|volume)        VOLUMEFLAG=true                ;;
-            -x|--speed|speed)          SPEEDFLAG=true                 ;;
-            -X|--speedval|speedval)    SPEEDVALFLAG=true              ;;
-            -j|--track|track)          TRACKFLAG=true                 ;;
-            -J|--tracknum|tracknum)    TRACKVALFLAG=true              ;;
-            -r|--remove|remove)        REMOVEFLAG=true                ;;
-            -s|--stop|stop)            alwaysPause; setTimeAbsolute 0 ;;
-            -P|--play|play)            alwaysPlay                     ;;
-            -p|--toggle|toggle)        togglePause                    ;;
-            -m|--mute|mute)            toggleMute                     ;;
-            -i|--playlist|playlist)    getPlaylist                    ;;
-            -L|--loop|loop)            toggleLoopPlaylist             ;;
-            -l|--loopfile|loopfile)    toggleLoopFile                 ;;
-            -z|--shuffle|shuffle)      shufflePlaylist                ;;
-            -c|--crop|crop)            cropPlaylist                   ;;
-            -C|--clear|clear)          clearPlaylist                  ;;
-            -k|--kill|kill)            killSocket                     ;;
-            --version|version)         getVersion                     ;;
-            -f|--format)               continue                       ;;
-            -a|--append)               continue                       ;;
-            -S|--socket)               continue                       ;;
-            -[1-999999])               continue                       ;;
-            --|---|----)               continue                       ;;
-            -?)                        usage 1                        ;;
+            -t|--seek|seek)                  SEEKFLAG=true                  ;;
+            -T|--time|time)                  TIMEFLAG=true                  ;;
+            -v|--vol|vol)                    VOLFLAG=true                   ;;
+            -V|--volume|volume)              VOLUMEFLAG=true                ;;
+            -x|--speed|speed)                SPEEDFLAG=true                 ;;
+            -X|--speedval|speedval)          SPEEDVALFLAG=true              ;;
+            -j|--track|track)                TRACKFLAG=true                 ;;
+            -J|--tracknum|tracknum)          TRACKVALFLAG=true              ;;
+            -r|--remove|remove)              REMOVEFLAG=true                ;;
+            -s|--stop|stop)                  alwaysPause; setTimeAbsolute 0 ;;
+            -P|--play|play)                  alwaysPlay                     ;;
+            -p|--toggle|toggle)              togglePause                    ;;
+            -m|--mute|mute)                  toggleMute                     ;;
+            -i|--playlist|playlist)          getPlaylist; exit              ;;
+            -L|--loop|loop)                  toggleLoopPlaylist             ;;
+            -l|--loopfile|loopfile)          toggleLoopFile                 ;;
+            -z|--shuffle|shuffle)            shufflePlaylist                ;;
+            -c|--crop|crop)                  cropPlaylist                   ;;
+            -C|--clear|clear)                clearPlaylist                  ;;
+            -k|--kill|kill)                  killSocket                     ;;
+            --version|version)               getVersion                     ;;
+            -f|--format)                     continue                       ;;
+            -a|--append)                     continue                       ;;
+            -S|--socket)                     continue                       ;;
+            -[1-9][0-9][0-9][0-9][0-9][0-9]) continue                       ;;
+            --|---|----)                     continue                       ;;
+            -?)                              usage 1                        ;;
         esac
     done
 
