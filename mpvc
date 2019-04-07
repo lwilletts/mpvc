@@ -9,25 +9,26 @@ MPVOPTIONS="--no-audio-display"
 
 usage() {
     cat >&2 << EOF
-Usage: $(basename $0) [-S "socket"] [-a "filenames"] [-f "format string"]
+Usage: $(basename $0) [-S "socket"] [-a "filenames"] [-o "path"] [-f "format string"]
     -p | --toggle   : Toggle playback.
     -s | --stop     : Always stop playback.
     -P | --play     : Always start playback.
     -f | --format   : Enter a formatting string.
     -a | --add      : Add files to playlist.
     -i | --playlist : Print all filenames of tracks in current playlist.
-    -t | --seek     : Increases/decreases time relatively, accepts percentage values.
-    -T | --time     : Set absolute time.
-    -v | --vol      : Increase/decrease volume relative to the current volume.
-    -V | --volume   : Set absolute volume.
+    -o | --save     : Save current playlist to given path.
     -j | --track    : Go forwards/backwards through the playlist queue.
     -J | --tracknum : Jump to playlist item number.
-    -x | --speed    : Increase/decrease speed relative to the current speed.
-    -X | --speedval : Set absolute speed.
-    -m | --mute     : Toggle sound.
+    -z | --shuffle  : Shuffle the current playlist.
     -l | --loop     : Loop currently playing playlist.
     -L | --loopfile : Loop currently playing file.
-    -z | --shuffle  : Shuffle the current playlist.
+    -v | --vol      : Increase/decrease volume relative to the current volume.
+    -V | --volume   : Set absolute volume.
+    -m | --mute     : Toggle sound.
+    -t | --seek     : Increases/decreases time relatively, accepts percentage values.
+    -T | --time     : Set absolute time.
+    -x | --speed    : Increase/decrease speed relative to the current speed.
+    -X | --speedval : Set absolute speed.
     -I | --image    : Enable adding of images to the queue.
     -k | --kill     : Kill the mpv process controlling the given socket.
     -K | --killall  : Kill all mpv processes indiscriminately.
@@ -45,12 +46,16 @@ Formatting:
     %playlistlength%, %position%, %repeat%, %single%
     %volume%, %muted%, %frame%, %width%, %height%
 
+MPC compatibility layer:
+    mpvc features a nearly complete compatibility layer for mpc commands in
+    addition to GNU style arguments. http://linux.die.net/man/1/mpc
+
 Exit codes:
-     0: Program ran succesfully.
-     1: Input Argument error.
-     2: Socket does not exist.
-     3: Socket is not currently open.
-     4: Dependency error.
+    0: Program ran succesfully.
+    1: Input Argument error.
+    2: Socket does not exist.
+    3: Socket is not currently open.
+    4: Dependency error.
 EOF
 
     test -z "$1" && exit || exit "$1"
