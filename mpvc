@@ -258,10 +258,11 @@ appendTrack() {
         filename="$(pwd)/$filename"
     }
 
-    # don't add images to the queue by default
+    # don't add images or bad files to the queue by default
+    # this doesn't stop mpv from resolving directories and adding them anyway
     test "$IMAGEFLAG" != "true" && {
         case $filename in
-            *.png|*.jpg|*.jpeg|*.gif|*.psd)
+            *.png|*.jpg|*.jpeg|*.gif|*.psd|*.pdf)
                 return
                 ;;
         esac
