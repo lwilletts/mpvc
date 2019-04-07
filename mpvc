@@ -207,10 +207,6 @@ getPlaylistFilename() {
         *.googlevideo.com/*)
             filename="mps-yt stream"
             ;;
-        *)
-            # this will probably look funky if there's a '/' in the filename
-            filename=$(basename "$filename")
-            ;;
     esac
 
     printf '%s\n' "$filename"
@@ -234,6 +230,7 @@ getPlaylist() {
 
     for i in $("$SEQCOMMAND" $REPS "$FIRST" "$LAST"); do
         filename=$(getPlaylistFilename $((i - 1)))
+        filename=$(basename "$filename")
 
         test "$noColour" != "nocolour" && {
             test "$currentTrack" -eq $((i - 1)) && {
@@ -245,6 +242,35 @@ getPlaylist() {
             printf '%d	%s\n' "$i" "${filename}"
         }
     done
+}
+
+# saves playlist to file but with no path checking. we live dangerously
+savePlaylist() {
+    saveLocation="$1"
+
+    test -e "$saveLocation.m3u" && {
+        printf '%s\n' "File exists! Overwrite? (y for yes, anything else no)"
+
+        oldstty=$(stty -g)
+        stty raw -echo; key="$(head -c 1)"; stty $oldstty
+        case $key in
+            y) ;;
+            *) return ;;
+        esac
+    }
+
+    printf '%s\n' "Adding files to $saveLocation.m3u..."
+
+    FIRST=1
+    LAST=$(getPropertyString playlist-count)
+
+    test "${SEQCOMMAND}" = "jot" && REPS=$((LAST - FIRST + 1))
+
+    for i in $("$SEQCOMMAND" $REPS "$FIRST" "$LAST"); do
+        printf '%s\n' "$(getPlaylistFilename $((i - 1)))" >> "$saveLocation".m3u
+    done
+
+    QUIETFLAG=true
 }
 
     # Control Functions
@@ -509,7 +535,7 @@ moveTrack() {
 
     test "$QUIETFLAG" != "true" && {
         getPlaylist
-        exit
+        QUIETFLAG=true
     }
 }
 
@@ -526,6 +552,8 @@ removeTrack() {
     }
 
     filename=$(getPlaylistFilename $trackToRemove)
+    filename=$(basename "$filename")
+
     printf '%s\n' "{ \"command\": [\"playlist-remove\", \
 \"$trackToRemove\" ] }" | $SOCKETCOMMAND > /dev/null
 
@@ -698,7 +726,6 @@ formatPrint() {
     # modified format string
     FORMATSTRING=$(printf '%s\n' "$FORMATSTRING" | sed "
     s#%status%#$(getPauseStatus)#g
-
     s#%year%#$(getMetadata date)#g
     s#%genre%#$(getMetadata genre)#g
     s#%title%#$(getMetadata title)#g
@@ -1005,7 +1032,6 @@ main() {
         move)     moveTrack "$2" "$3" ; printFinalOutput ;;
         mute)     toggleMute true     ; printFinalOutput ;;
         unmute)   toggleMute false    ; printFinalOutput ;;
-        # save) save playlist to file
         # find) do fuzzy search
         # idleloop) observe_property
         # consume) to implement # add on|off toggle
@@ -1024,6 +1050,7 @@ main() {
         test "$TRACKFLAG"    = "true" && setTrackRelative "$arg";  TRACKFLAG=false
         test "$TRACKVALFLAG" = "true" && setTrackAbsolute "$arg";  TRACKVALFLAG=false
         test "$REMOVEFLAG"   = "true" && removeTrack "$arg";       REMOVEFLAG=false
+        test "$SAVEFLAG"     = "true" && savePlaylist "$arg";      SAVEPLAYLIST=false
 
         case "$arg" in
             -t|--seek|seek)                  SEEKFLAG=true                  ;;
@@ -1034,7 +1061,8 @@ main() {
             -X|--speedval)                   SPEEDVALFLAG=true              ;;
             -j|--track)                      TRACKFLAG=true                 ;;
             -J|--tracknum)                   TRACKVALFLAG=true              ;;
-            -r|--remove|rm|del)              REMOVEFLAG=true                ;;
+            -r|--remove|rm|remove|del)       REMOVEFLAG=true                ;;
+            --save|save)                     SAVEFLAG=true                  ;;
             -s|--stop|stop)                  alwaysPause; setTimeAbsolute 0 ;;
             -P|--play|play)                  alwaysPlay                     ;;
             -p|--toggle|toggle)              togglePause                    ;;
@@ -1059,8 +1087,10 @@ main() {
     done
 
     # produce format strings last
-    test ! -z "$FORMATSTRING" && formatPrint
-    printFinalOutput
+    test "$QUIETFLAG" != "true" && {
+        test ! -z "$FORMATSTRING" && formatPrint
+        printFinalOutput
+    }
 }
 
 # more global argument parsing
