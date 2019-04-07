@@ -901,6 +901,8 @@ validateSocket() {
 }
 
 getVersion() {
+    mpv --version
+
     printf '%s\n' "MPVC Release 1.3 (c) Laurence Willetts MIT"
     exit
 }
@@ -1003,6 +1005,9 @@ main() {
         move)     moveTrack "$2" "$3" ; printFinalOutput ;;
         mute)     toggleMute true     ; printFinalOutput ;;
         unmute)   toggleMute false    ; printFinalOutput ;;
+        # save) save playlist to file
+        # find) do fuzzy search
+        # idleloop) observe_property
         # consume) to implement # add on|off toggle
         # random) MPV doesn't have this control option!
         # create an issue or implement puesdo-random tracks
@@ -1022,18 +1027,20 @@ main() {
 
         case "$arg" in
             -t|--seek|seek)                  SEEKFLAG=true                  ;;
-            -T|--time|time)                  TIMEFLAG=true                  ;;
-            -v|--vol|vol)                    VOLFLAG=true                   ;;
-            -V|--volume|volume)              VOLUMEFLAG=true                ;;
+            -T|--time)                       TIMEFLAG=true                  ;;
+            -v|--vol)                        VOLFLAG=true                   ;;
+            -V|--volume)                     VOLUMEFLAG=true                ;;
             -x|--speed|speed)                SPEEDFLAG=true                 ;;
-            -X|--speedval|speedval)          SPEEDVALFLAG=true              ;;
-            -j|--track|track)                TRACKFLAG=true                 ;;
-            -J|--tracknum|tracknum)          TRACKVALFLAG=true              ;;
-            -r|--remove|remove|del|delete)   REMOVEFLAG=true                ;;
+            -X|--speedval)                   SPEEDVALFLAG=true              ;;
+            -j|--track)                      TRACKFLAG=true                 ;;
+            -J|--tracknum)                   TRACKVALFLAG=true              ;;
+            -r|--remove|rm|del)              REMOVEFLAG=true                ;;
             -s|--stop|stop)                  alwaysPause; setTimeAbsolute 0 ;;
             -P|--play|play)                  alwaysPlay                     ;;
             -p|--toggle|toggle)              togglePause                    ;;
-            -m|--mute|mute)                  toggleMute                     ;;
+            -m|--mute)                       toggleMute                     ;;
+            mute)                            toggleMute true                ;;
+            unmute)                          toggleMute false               ;;
             -i|--playlist|playlist)          getPlaylist; exit              ;;
             -L|--loop|loop)                  toggleLoopPlaylist             ;;
             -l|--loopfile|loopfile)          toggleLoopFile                 ;;
