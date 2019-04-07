@@ -1,7 +1,7 @@
 # mpvc
 
 An mpc-like control interface for mpv with a nearly complete compatibility layer for mpc commands in
-addition to GNU-style arguments. [Check out the mpc manpage for details.](http://linux.die.net/man/1/mpc)
+addition to GNU style arguments. [Check out the mpc manpage for details.](http://linux.die.net/man/1/mpc)
 
 ![ExampleOutput](https://github.com/Wildefyr/mpvc/blob/master/output.png)
 
@@ -17,7 +17,6 @@ Required:
 Optional:
 
 - `bc`: For changing playback speed.
-- soonTM: `youtube-dl` to download media for playback
 
 ## Install
 
@@ -48,11 +47,10 @@ which will make the most recent mpv instance you start be controllable via mpvc:
 input-ipc-server=/tmp/mpvsocket
 ```
 
-However, this might not be suitable for you, if you have background music added
-to the socket and you open a video using mpv, the new mpv instance will be the
-only one controllable through the socket and not the old one. You can get around
-this by adding the video via mpvc, but then you have to lose your current
-position in your music playlist and manually switch to the video.
+However, this may not be suitable if you have background music added
+to the socket and then open a video using mpv. The new mpv instance will be
+controllable through the socket, but the previous instance is not. You can get around
+this by adding the video via mpvc, and manually switch to the video.
 
 
 ## Useful Tricks
@@ -62,8 +60,7 @@ position in your music playlist and manually switch to the video.
   your window manager documentation on how to bind keys to commands.
 - Any URL that is resolvable by mpv and/or youtube-dl can be added to the
   playlist, e.g. using [mps-youtube](https://github.com/mps-youtube/mps-youtube)
-  with `player` set to mpvc and `playerargs` set to add. Further improvements to
-  downloading URLs via youtube-dl
+  with `player` set to mpvc and `playerargs` set to add.
 - mpvc GNU options can be combined together to give improved results: `$ mpvc -P -j 1`
   will make mpvc always start playing when switching to the next track.
 - Piping files directly into mpvc is possible and preferable when
@@ -75,6 +72,11 @@ $ find . type -f | mpvc
 ```
 $ find "$(pwd)" -iname "*Your Artist Here*" > Artist.m3u
 $ mpvc add Artist.m3u
+```
+- You can save your current playlist to a file for later playback:
+```
+$ mpvc save myPlaylist
+Adding files to myPlaylist.m3u...
 ```
 
 ## Limitations
