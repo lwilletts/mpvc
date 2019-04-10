@@ -64,6 +64,28 @@ EOF
     # Retrieval Functions
 ###############################################################################
 
+# match given filename string to appropriate output
+# accepted properties: filename
+cleanFilename() {
+    filename="$1"
+
+    case "$filename" in
+        *.googlevideo.com/*)
+            filename="mps-yt stream"
+            printf '%s\n' "$filename"
+            ;;
+        */youtu*)
+            printf '%s\n' "$filename"
+            ;;
+        *)
+            # return filename to relative path
+            # this will probably look funky if there's a '/' in the filename
+            filename=$(basename "$filename")
+            printf '%s\n' "$filename"
+            ;;
+    esac
+}
+
 # accepted properties: media-title, path
 getMediaProperties() {
     property="$1"
@@ -110,6 +132,7 @@ getMetadata() {
     printf '%s' "$result" | escapeSedChar '&' | escapeSedChar '#'
 }
 
+# retrieve integer/boolean property
 # accepted properties: mute, pause, loop-file, estimated-frame-number, width, height
 getProperty() {
     property=$1
@@ -137,6 +160,7 @@ getPropertyString() {
     }
 }
 
+# accepted properties: speed
 getSpeed() {
     speed=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
 \"speed\"] }" | $SOCKETCOMMAND 2> /dev/null | awk -F '"' '{print substr ($4, 0, 4)}')
@@ -208,11 +232,7 @@ getPlaylistFilename() {
 \"playlist/$track/filename\"] }" | $SOCKETCOMMAND 2> /dev/null | \
         cut -d\" -f 4)
 
-    case "$filename" in
-        *.googlevideo.com/*)
-            filename="mps-yt stream"
-            ;;
-    esac
+    filename=$(cleanFilename "$filename")
 
     printf '%s\n' "$filename"
 }
@@ -226,7 +246,7 @@ getPlaylist() {
 
     test "$tracks" -eq 0 -o "$currentTrack" = "N/A" && {
         printf '%s\n' "MPV instance on ${SOCKET} is currently idle." >&2
-       exit 1
+        exit 1
     }
 
     calculateTerminalHeight
@@ -235,7 +255,6 @@ getPlaylist() {
 
     for i in $("$SEQCOMMAND" $REPS "$FIRST" "$LAST"); do
         filename=$(getPlaylistFilename $((i - 1)))
-        filename=$(basename "$filename")
 
         test "$noColour" != "nocolour" && {
             test "$currentTrack" -eq $((i - 1)) && {
@@ -254,7 +273,7 @@ savePlaylist() {
     saveLocation="$1"
 
     test -e "$saveLocation.m3u" && {
-        printf '%s\n' "File exists! Overwrite? (y for yes, anything else no)"
+        printf '%s\n' "Playlist exists! Overwrite? (y for yes, anything else no)"
 
         oldstty=$(stty -g)
         stty raw -echo; key="$(head -c 1)"; stty $oldstty
@@ -314,16 +333,7 @@ appendTrack() {
         done
     }
 
-    case "$filename" in
-        *.googlevideo.com/*)
-            filename="mps-yt stream"
-            ;;
-        *)
-            # return filename to relative path
-            # this will probably look funky if there's a '/' in the filename
-            filename=$(basename "$filename")
-            ;;
-    esac
+    filename=$(cleanFilename "$filename")
 
     printf '%s\n' "Adding: ${filename}"
 }
@@ -557,7 +567,6 @@ removeTrack() {
     }
 
     filename=$(getPlaylistFilename $trackToRemove)
-    filename=$(basename "$filename")
 
     printf '%s\n' "{ \"command\": [\"playlist-remove\", \
 \"$trackToRemove\" ] }" | $SOCKETCOMMAND > /dev/null
@@ -654,7 +663,7 @@ cropPlaylist() {
         $SOCKETCOMMAND > /dev/null
 
     test "$QUIETFLAG" != "true" && {
-        printf '%s\n' "Playlist cropped."
+        getPlaylist
         QUIETFLAG=true
     }
 }
