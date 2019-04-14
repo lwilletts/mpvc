@@ -50,21 +50,20 @@ input-ipc-server=/tmp/mpvsocket
 However, this may not be suitable if you have background music added
 to the socket and then open a video using mpv. The new mpv instance will be
 controllable through the socket, but the previous instance is not. You can get around
-this by adding the video via mpvc, and manually switch to the video.
-
+this by adding the video via mpvc, and manually switching to the video.
 
 ## Useful Tricks
 
-- Hotkey daemons like [sxhkd](https://github.com/baskerville/sxhkd)
-  can be used to bind mpvc commands to key combinations. Alternatively check
-  your window manager documentation on how to bind keys to commands.
-- Any URL that is resolvable by mpv and/or youtube-dl can be added to the
-  playlist, e.g. using [mps-youtube](https://github.com/mps-youtube/mps-youtube)
-  with `player` set to mpvc and `playerargs` set to add.
-- mpvc GNU options can be combined together to give improved results: `$ mpvc -P -j 1`
-  will make mpvc always start playing when switching to the next track.
-- Piping files directly into mpvc is possible and preferable when
-  loading multiple directories to be played:
+- Hotkey daemons like [sxhkd](https://github.com/baskerville/sxhkd) can be used
+  to bind mpvc commands to key combinations. Alternatively check your window
+  manager documentation on how to bind keys to commands.
+- Any URL that can be played using mpv can be added to the playlist, e.g. using
+  [mps-youtube](https://github.com/mps-youtube/mps-youtube) with `player` set to
+  mpvc and `playerargs` set to add.
+- mpvc GNU options can be combined together to give improved results: `$ mpvc -P
+  -j 1` will make mpvc always start playing when switching to the next track.
+- Piping files directly into mpvc is possible and preferable when loading
+  multiple directories to be played:
 ```
 $ find . type -f | mpvc
 ```
@@ -78,6 +77,16 @@ $ mpvc add Artist.m3u
 $ mpvc save myPlaylist
 Adding files to myPlaylist.m3u...
 ```
+- You can specify default player options directly through mpv.conf:
+```
+volume=70
+loop-playlist
+```
+- mpvc executes faster ~4x faster when using dash syslinked to /bin/sh instead
+of bash. Another faster alternative is mksh.
+- mpvc should be fully POSIX compliant, meaning it should run on any unix-like
+variant. [Please report an issue if you experience
+trouble.](https://github.com/lwilletts/mpvc/issues)
 
 ## Limitations
 
