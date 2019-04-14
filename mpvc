@@ -75,6 +75,9 @@ cleanFilename() {
             printf '%s\n' "$filename"
             ;;
         */youtu*)
+            # this is fucking slow
+            # filename="$(curl -sL "https://youtu.be/XOJBb7WybLM" | \
+            #    awk -F '[="]' '/class="watch-title"/ {print $12}') [$filename]"
             printf '%s\n' "$filename"
             ;;
         *)
@@ -118,14 +121,14 @@ getMetadata() {
         tr -d "{}" | awk -F '"' '{print $4}')
 
     # test for no result
-    test "$metadata" = "error" && {
+    test "$metadata" = "property not found" && {
         result="N/A"
     } || {
         result="$metadata"
     }
 
     # test if title has no property and return filename instead
-    test "$property" = "title" && test "$metadata" = "error" && {
+    test "$property" = "title" && test "$metadata" = "property not found" && {
         result=$(getMediaFilename)
     }
 
@@ -225,14 +228,16 @@ getPauseStatus() {
     printf '%s' "$status"
 }
 
+# accepted properties: $1: filename $2: full path flag to skip basename
 getPlaylistFilename() {
     track="$1"
+    fullpathFlag="$2"
 
     filename=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
 \"playlist/$track/filename\"] }" | $SOCKETCOMMAND 2> /dev/null | \
         cut -d\" -f 4)
 
-    filename=$(cleanFilename "$filename")
+    test "$fullpathFlag" != "fullpath" && filename=$(cleanFilename "$filename")
 
     printf '%s\n' "$filename"
 }
@@ -266,6 +271,19 @@ getPlaylist() {
             printf '%d	%s\n' "$i" "${filename}"
         }
     done
+}
+
+# open mpvc to retrieve all metadata from a playlist file
+getFilenameMetadata() {
+    intCheck "$1"
+
+    trackToMetadata="$1"
+
+    filename=$(getPlaylistFilename $trackToMetadata fullpath)
+    echo $filename
+
+    # mpvc -S /tmp/tempsock -m -a "$filename" -f \
+# "Artist: %artist%"
 }
 
 # saves playlist to file but with no path checking. we live dangerously
@@ -999,7 +1017,7 @@ main() {
             alwaysPlay
             printFinalOutput
             ;;
-        volume)
+        vol|volume)
             firstChar=$(printf '%s\n' "$2" | cut -c 1)
             case "$firstChar" in
                 "+")
@@ -1040,6 +1058,7 @@ main() {
 
             printFinalOutput
             ;;
+        metadata) getFilenameMetadata "$2" ;;
         pause)    alwaysPause         ; printFinalOutput ;;
         next)     setTrackRelative 1  ; printFinalOutput ;;
         prev)     setTrackRelative -1 ; printFinalOutput ;;
