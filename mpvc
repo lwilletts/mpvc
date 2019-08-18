@@ -10,40 +10,41 @@ MPVOPTIONS="--no-audio-display"
 usage() {
     cat >&2 << EOF
 Usage: $(basename $0) [-S "socket"] [-a "filenames"] [-o "path"] [-f "format string"]
-    -p | --toggle   : Toggle playback.
-    -s | --stop     : Always stop playback.
-    -P | --play     : Always start playback.
-    -f | --format   : Enter a formatting string.
-    -a | --add      : Add files to playlist.
-    -i | --playlist : Print all filenames of tracks in current playlist.
-    -o | --save     : Save current playlist to given path.
-    -j | --track    : Go forwards/backwards through the playlist queue.
-    -J | --tracknum : Jump to playlist item number.
-    -z | --shuffle  : Shuffle the current playlist.
-    -l | --loop     : Loop currently playing playlist.
-    -L | --loopfile : Loop currently playing file.
-    -v | --vol      : Increase/decrease volume relative to the current volume.
-    -V | --volume   : Set absolute volume.
-    -m | --mute     : Toggle sound.
-    -t | --seek     : Increases/decreases time relatively, accepts percentage values.
-    -T | --time     : Set absolute time.
-    -x | --speed    : Increase/decrease speed relative to the current speed.
-    -X | --speedval : Set absolute speed.
-    -I | --image    : Enable adding of images to the queue.
-    -k | --kill     : Kill the mpv process controlling the given socket.
-    -K | --killall  : Kill all mpv processes indiscriminately.
-    -S | --socket   : Set socket location [default: $SOCKET].
-    -q | --quiet    : Surpress all text output.
-    -Q | --vid=no   : Start mpv with video output disabled.
-    -- |            : When adding files all options after -- are passed to mpv.
-    -h | --help     : Print this help.
+    -p | --toggle       : Toggle playback.
+    -s | --stop         : Always stop playback.
+    -P | --play         : Always start playback.
+    -f | --format       : Enter a formatting string.
+    -a | --add          : Add files to playlist.
+    -i | --playlist     : Print filenames of tracks that will fit in terminal window.
+    -I | --fullplaylist : Print all filenames of tracks in current playlist.
+    -o | --save         : Save current playlist to given path.
+    -j | --track        : Go forwards/backwards through the playlist queue.
+    -J | --tracknum     : Jump to playlist item number.
+    -z | --shuffle      : Shuffle the current playlist.
+    -l | --loop         : Loop currently playing playlist.
+    -L | --loopfile     : Loop currently playing file.
+    -v | --vol          : Increase/decrease volume relative to current volume.
+    -V | --volume       : Set absolute volume.
+    -m | --mute         : Toggle sound.
+    -t | --seek         : Increases/decreases time relatively, accepts % values.
+    -T | --time         : Set absolute time.
+    -x | --speed        : Increase/decrease speed relative to the current speed.
+    -X | --speedval     : Set absolute speed.
+    -I | --image        : Enable adding of images to the queue.
+    -k | --kill         : Kill the mpv process controlling the given socket.
+    -K | --killall      : Kill all mpv processes indiscriminately.
+    -S | --socket       : Set socket location [default: $SOCKET].
+    -q | --quiet        : Surpress all text output.
+    -Q | --vid=no       : Start mpv with video output disabled.
+    -- |                : After adding files options after -- are passed to mpv.
+    -h | --help         : Print this help.
 
 Formatting:
     \`$(basename $0) --format\` will interpret the following delimiters if they are found:
 
-    %file%, %path%, %title%, %artist%, %album%, %albumartist%, %genre%, %year%, comment%
-    %status%, %time%, %precisetime%, %length%, %remaining%, %percentage%, %speed%
-    %playlistlength%, %position%, %repeat%, %single%
+    %file%, %path%, %title%, %artist%, %album%, %albumartist%, %genre%, %year%
+    %percentage%, %playlistlength%, %position%, %repeat%, %single%, %speed%
+    %comment%, %status%, %time%, %precisetime%, %length%, %remaining%
     %volume%, %muted%, %frame%, %width%, %height%
 
 MPC compatibility layer:
@@ -255,6 +256,37 @@ getPlaylist() {
     }
 
     calculateTerminalHeight
+
+    test "${SEQCOMMAND}" = "jot" && REPS=$((LAST - FIRST + 1))
+
+    for i in $("$SEQCOMMAND" $REPS "$FIRST" "$LAST"); do
+        filename=$(getPlaylistFilename $((i - 1)))
+
+        test "$noColour" != "nocolour" && {
+            test "$currentTrack" -eq $((i - 1)) && {
+                printf '%d	[7m %s[0m\n' "$i" "${filename} "
+            } || {
+                printf '%d	 %s\n' "$i" "${filename}"
+            }
+        } || {
+            printf '%d	%s\n' "$i" "${filename}"
+        }
+    done
+}
+
+getFullPlaylist() {
+    noColour="$1"
+
+    tracks=$(getPropertyString playlist-count)
+    currentTrack=$(getPropertyString playlist-pos)
+
+    test "$tracks" -eq 0 -o "$currentTrack" = "N/A" && {
+        printf '%s\n' "MPV instance on ${SOCKET} is currently idle." >&2
+        exit 1
+    }
+
+    FIRST=1
+    LAST=$(getPropertyString playlist-count)
 
     test "${SEQCOMMAND}" = "jot" && REPS=$((LAST - FIRST + 1))
 
@@ -1116,6 +1148,7 @@ main() {
             mute)                            toggleMute true                ;;
             unmute)                          toggleMute false               ;;
             -i|--playlist|playlist)          getPlaylist; exit              ;;
+            -I|--fullplaylist|fullplaylist)  getFullPlaylist; exit          ;;
             -L|--loop|loop)                  toggleLoopPlaylist             ;;
             -l|--loopfile|loopfile)          toggleLoopFile                 ;;
             -z|--shuffle|shuffle)            shufflePlaylist                ;;
