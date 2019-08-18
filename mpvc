@@ -807,6 +807,10 @@ speed: %speed%x volume: %volume%% muted: %muted% repeat: %repeat% single: %singl
     formatPrint
 }
 
+printPrettyOutput() {
+    exit 0
+}
+
 # catches if mpv is idle or not
 printFinalOutput() {
     test "$QUIETFLAG" != "true" && {
@@ -1013,7 +1017,15 @@ main() {
     # mpc compatibility layer
     case "$1" in
         play|start|resume)
-            intCheck "$2" && setTrackAbsolute "$2"
+            case "$2" in
+                $)
+                    setTrackAbsolute $(getPropertyString playlist-count)
+                    ;;
+                *)
+                    intCheck "$2" && setTrackAbsolute "$2"
+                    ;;
+            esac
+
             alwaysPlay
             printFinalOutput
             ;;
@@ -1065,6 +1077,7 @@ main() {
         move)     moveTrack "$2" "$3" ; printFinalOutput ;;
         mute)     toggleMute true     ; printFinalOutput ;;
         unmute)   toggleMute false    ; printFinalOutput ;;
+        pretty)   printPrettyOutput ;;
         # find) do fuzzy search
         # idleloop) observe_property
         # consume) to implement # add on|off toggle
