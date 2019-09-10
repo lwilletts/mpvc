@@ -97,7 +97,7 @@ getMediaProperties() {
     mediaValue=$(printf '%s\n' "{ \"command\": [\"get_property\", \
 \"${property}\" ] }" | $SOCKETCOMMAND 2> /dev/null | awk -F '"' '{print $4}')
 
-    printf '%s\n' "$mediaValue"
+    printf '%s\n' "$mediaValue" | escapeSedChar '&' | escapeSedChar '#'
 }
 
 getMediaFilename() {
