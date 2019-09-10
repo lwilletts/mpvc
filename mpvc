@@ -1050,6 +1050,9 @@ main() {
     case "$1" in
         play|start|resume)
             case "$2" in
+                0)
+                    setTrackAbsolute 1
+                    ;;
                 $)
                     setTrackAbsolute $(getPropertyString playlist-count)
                     ;;
