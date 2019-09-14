@@ -15,7 +15,7 @@ Usage: $(basename $0) [-S "socket"] [-a "filenames"] [-o "path"] [-f "format str
     -P | --play         : Always start playback.
     -f | --format       : Enter a formatting string.
     -a | --add          : Add files to playlist.
-    -i | --playlist     : Print filenames of tracks that will fit in terminal window.
+    -i | --playlist     : Print filenames of tracks to fit within terminal.
     -I | --fullplaylist : Print all filenames of tracks in current playlist.
     -o | --save         : Save current playlist to given path.
     -j | --track        : Go forwards/backwards through the playlist queue.
@@ -42,10 +42,10 @@ Usage: $(basename $0) [-S "socket"] [-a "filenames"] [-o "path"] [-f "format str
 Formatting:
     \`$(basename $0) --format\` will interpret the following delimiters if they are found:
 
-    %file%, %path%, %title%, %artist%, %album%, %albumartist%, %genre%, %year%
-    %percentage%, %playlistlength%, %position%, %repeat%, %single%, %speed%
-    %comment%, %status%, %time%, %precisetime%, %length%, %remaining%
-    %volume%, %muted%, %frame%, %width%, %height%
+    %file%, %path%, %dir%, %title%, %artist%, %album%, %albumartist%, comment%,
+    %genre%, %year%, %percentage%, %playlistlength%, %position%, %repeat%,
+    %single, %status%, %time%, %precisetime%, %speed%, %length%, %remaining%
+    %volume%, %muted%, %frame%, %width%, %height%, %ab-loop-a%, %ab-loop-b%
 
 MPC compatibility layer:
     mpvc features a nearly complete compatibility layer for mpc commands in
@@ -807,6 +807,7 @@ formatPrint() {
     s#%percentage%#$(getPropertyString percent-pos)#g
     s#%file%#$(getMediaFilename)#g
     s#%path%#$(getMediaProperties path)#g
+    s#%dir%#$(getPropertyString working-directory)#g
     s#%repeat%#$(getLoopStatus loop-playlist)#g
     s#%single%#$(getLoopStatus loop-file)#g
     s#%playlistlength%#$(getPropertyString playlist-count)#g
