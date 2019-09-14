@@ -100,19 +100,6 @@ getMediaProperties() {
     printf '%s\n' "$mediaValue" | escapeSedChar '&' | escapeSedChar '#'
 }
 
-getMediaFilename() {
-    mediaFilename=$(getMediaProperties media-title)
-
-    # regex to match if filename is a weird googlefu URL
-    mediaFilename=$(printf '%s\n' "${mediaFilename}" | sed "
-    s/mp4&.*/mps-yt stream/
-    s/webm&.*/mps-yt stream/
-    s/3gpp&.*/mps-yt stream/
-    ")
-
-    printf '%s' "$mediaFilename"
-}
-
 # accepted properties: date, genre, title, album, artist, album_artist
 getMetadata() {
     property=$1
@@ -130,7 +117,7 @@ getMetadata() {
 
     # test if title has no property and return filename instead
     test "$property" = "title" && test "$metadata" = "property not found" && {
-        result=$(getMediaFilename)
+        result=$(getPropertyString filename)
     }
 
     printf '%s' "$result" | escapeSedChar '&' | escapeSedChar '#'
@@ -805,7 +792,7 @@ formatPrint() {
     s#%remaining%#$(playtimeRemaining)#g
     s#%muted%#$(getMuteStatus)#g
     s#%percentage%#$(getPropertyString percent-pos)#g
-    s#%file%#$(getMediaFilename)#g
+    s#%name%#$(getMediaProperties filename)#g
     s#%path%#$(getMediaProperties path)#g
     s#%dir%#$(getPropertyString working-directory)#g
     s#%repeat%#$(getLoopStatus loop-playlist)#g
