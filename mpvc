@@ -329,8 +329,8 @@ savePlaylist() {
         oldstty=$(stty -g)
         stty raw -echo; key="$(head -c 1)"; stty $oldstty
         case $key in
-            y) ;;
-            *) return ;;
+            y) rm $saveLocation.m3u ;;
+            *) return               ;;
         esac
     }
 
@@ -342,7 +342,7 @@ savePlaylist() {
     test "${SEQCOMMAND}" = "jot" && REPS=$((LAST - FIRST + 1))
 
     for i in $("$SEQCOMMAND" $REPS "$FIRST" "$LAST"); do
-        printf '%s\n' "$(getPlaylistFilename $((i - 1)))" >> "$saveLocation".m3u
+        printf '%s\n' "$(getPlaylistFilename $((i - 1)) fullpath)" >> "$saveLocation".m3u
     done
 
     QUIETFLAG=true
