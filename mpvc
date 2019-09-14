@@ -515,7 +515,7 @@ setTrackRelative() {
     }
 
     test "$desiredTrack" -ge "$trackCount" && {
-        repeat=$(getLoopStatus loop)
+        repeat=$(getLoopStatus loop-playlist)
         test "$repeat" = "yes" && {
             desiredTrack=0
         }
