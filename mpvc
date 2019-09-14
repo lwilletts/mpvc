@@ -70,12 +70,12 @@ EOF
 cleanFilename() {
     filename="$1"
 
-    case $filename in
+    case "$filename" in
         *.googlevideo.com/*)
             filename="mps-yt stream"
             printf '%s\n' "$filename"
             ;;
-        *youtu*)
+        *youtu*|watch*)
             # no other option but to use jq
             type jq > /dev/null 2>&1 && {
                 # this is fucking quick
@@ -87,7 +87,7 @@ jq -r '.title')"
                 title="$filename"
             }
 
-            printf '%s\n' "$title - youtube"
+            printf '%s\n' "$title"
             ;;
         *)
             # return filename to relative path
@@ -125,7 +125,13 @@ getMetadata() {
 
     # test if title has no property and return filename instead
     test "$property" = "title" && test "$metadata" = "property not found" && {
-        result=$(getPropertyString filename)
+            result=$(getPropertyString filename)
+    }
+
+    test "$property" = "title" && {
+        title=$(cleanFilename "$result")
+        printf '%s' "$title" | escapeSedChar '&' | escapeSedChar '#'
+        return 0
     }
 
     printf '%s' "$result" | escapeSedChar '&' | escapeSedChar '#'
