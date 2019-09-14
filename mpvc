@@ -42,7 +42,7 @@ Usage: $(basename $0) [-S "socket"] [-a "filenames"] [-o "path"] [-f "format str
 Formatting:
     \`$(basename $0) --format\` will interpret the following delimiters if they are found:
 
-    %file%, %path%, %dir%, %title%, %artist%, %album%, %albumartist%, comment%,
+    %name%, %path%, %dir%, %title%, %artist%, %album%, %albumartist%, comment%,
     %genre%, %year%, %percentage%, %playlistlength%, %position%, %repeat%,
     %single, %status%, %time%, %precisetime%, %speed%, %length%, %remaining%
     %volume%, %muted%, %frame%, %width%, %height%, %ab-loop-a%, %ab-loop-b%
@@ -75,7 +75,7 @@ cleanFilename() {
             filename="mps-yt stream"
             printf '%s\n' "$filename"
             ;;
-        */youtu*)
+        watch?*)
             # this is fucking slow
             # filename="$(curl -sL "https://youtu.be/XOJBb7WybLM" | \
             #    awk -F '[="]' '/class="watch-title"/ {print $12}') [$filename]"
@@ -592,21 +592,28 @@ moveTrack() {
 }
 
 removeTrack() {
-    intCheck "$1" || exit 1
 
     trackToRemove=$1
-    trackToRemove=$((trackToRemove - 1))
-    trackCount=$(getPropertyString playlist-count)
 
-    test "$trackToRemove" -lt 0 || test "$trackToRemove" -ge "$trackCount" && {
-        printf '%s\n' "Item $trackToRemove is out of range of playlist." >&2
-        exit 1
+    test "$trackToRemove" = "current" && {
+        printf '%s\n' "{ \"command\": [\"playlist-remove\", \
+        \"$trackToRemove\" ] }" | $SOCKETCOMMAND > /dev/null
+    } || {
+        intCheck "$1" || exit 1
+
+        trackToRemove=$((trackToRemove - 1))
+        trackCount=$(getPropertyString playlist-count)
+
+        test "$trackToRemove" -lt 0 || test "$trackToRemove" -ge "$trackCount" && {
+            printf '%s\n' "Item $trackToRemove is out of range of playlist." >&2
+            exit 1
+        }
+
+        filename=$(getPlaylistFilename $trackToRemove)
+
+        printf '%s\n' "{ \"command\": [\"playlist-remove\", \
+        \"$trackToRemove\" ] }" | $SOCKETCOMMAND > /dev/null
     }
-
-    filename=$(getPlaylistFilename $trackToRemove)
-
-    printf '%s\n' "{ \"command\": [\"playlist-remove\", \
-\"$trackToRemove\" ] }" | $SOCKETCOMMAND > /dev/null
 
     test "$QUIETFLAG" != "true" && {
         printf '%s\n' "$filename has been removed from the playlist."
