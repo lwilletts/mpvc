@@ -70,16 +70,24 @@ EOF
 cleanFilename() {
     filename="$1"
 
-    case "$filename" in
+    case $filename in
         *.googlevideo.com/*)
             filename="mps-yt stream"
             printf '%s\n' "$filename"
             ;;
-        watch?*)
-            # this is fucking slow
-            # filename="$(curl -sL "https://youtu.be/XOJBb7WybLM" | \
-            #    awk -F '[="]' '/class="watch-title"/ {print $12}') [$filename]"
-            printf '%s\n' "$filename"
+        *youtu*)
+            # no other option but to use jq
+            type jq > /dev/null 2>&1 && {
+                # this is fucking quick
+                id="$(printf '%s\n' "$filename" | cut -d'=' -f 2)"
+                title="$(curl -sL \
+"https://youtube.com/oembed?url=https://youtube.com/watch?v=$id" | \
+jq -r '.title')"
+            } || {
+                title="$filename"
+            }
+
+            printf '%s\n' "$title - youtube"
             ;;
         *)
             # return filename to relative path
