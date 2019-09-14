@@ -814,6 +814,8 @@ formatPrint() {
     s#%frame%#$(getProperty estimated-frame-number)#g
     s#%width%#$(getProperty width)#g
     s#%height%#$(getProperty height)#g
+    s#%ab-loop-a%#$(getProperty ab-loop-a)#g
+    s#%ab-loop-b%#$(getProperty ab-loop-b)#g
     ")
 
     printf '%s\n' "${FORMATSTRING}"
