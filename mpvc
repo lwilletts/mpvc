@@ -124,8 +124,13 @@ getMetadata() {
     }
 
     # test if title has no property and return filename instead
-    test "$property" = "title" && test "$metadata" = "property not found" && {
+    test "$property" = "title" && {
+        test "$metadata" = "property not found" && {
             result=$(getPropertyString filename)
+        }
+        test "$metadata" = "error" && {
+            result=$(getPropertyString filename)
+        }
     }
 
     test "$property" = "title" && {
@@ -1140,7 +1145,7 @@ main() {
         test "$TRACKFLAG"    = "true" && setTrackRelative "$arg";  TRACKFLAG=false
         test "$TRACKVALFLAG" = "true" && setTrackAbsolute "$arg";  TRACKVALFLAG=false
         test "$REMOVEFLAG"   = "true" && removeTrack "$arg";       REMOVEFLAG=false
-        test "$SAVEFLAG"     = "true" && savePlaylist "$arg";      SAVEPLAYLIST=false
+        test "$SAVEFLAG"     = "true" && savePlaylist "$arg";      SAVEFLAG=false
 
         case "$arg" in
             -t|--seek|seek)                  SEEKFLAG=true                  ;;
