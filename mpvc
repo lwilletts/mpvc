@@ -374,7 +374,7 @@ appendTrack() {
         esac
     }
 
-    ps ax -ww | grep -v grep | grep -wq "mpv .*$SOCKET" && {
+    pgrep -f "mpv .*$SOCKET" && {
         printf '%s\n' "{ \"command\": [\"loadfile\", \"$filename\", \
 \"append-play\" ] }" | $SOCKETCOMMAND > /dev/null 2>&1
     } || {
@@ -734,8 +734,8 @@ clearPlaylist() {
     QUIETFLAG=true
 
     # kill any running process of mpvc add
-    ps ax -ww | grep -v grep | grep -wq "mpvc add" && {
-        kill -9 "$(ps ax | grep -v grep | grep "mpvc add" | cut -d\  -f 1)"
+    pgrep -f "mpvc add" > /dev/null 2>&1 && {
+        pkill -f "mpvc add"
     }
 
     cropPlaylist
