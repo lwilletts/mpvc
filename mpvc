@@ -374,7 +374,7 @@ appendTrack() {
         esac
     }
 
-    pgrep -f "mpv .*$SOCKET" && {
+    pgrep -f "mpv .*$SOCKET" > /dev/null 2>&1  && {
         printf '%s\n' "{ \"command\": [\"loadfile\", \"$filename\", \
 \"append-play\" ] }" | $SOCKETCOMMAND > /dev/null 2>&1
     } || {
