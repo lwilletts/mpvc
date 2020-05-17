@@ -263,20 +263,20 @@ getPlaylist() {
 
     calculateTerminalHeight
 
-    test "${SEQCOMMAND}" = "jot" && REPS=$((LAST - FIRST + 1))
-
-    for i in $("$SEQCOMMAND" $REPS "$FIRST" "$LAST"); do
-        filename=$(getPlaylistFilename $((i - 1)))
+    while [ "$FIRST" -le "$LAST" ]; do
+        filename=$(getPlaylistFilename $((FIRST - 1)))
 
         test "$noColour" != "nocolour" && {
-            test "$currentTrack" -eq $((i - 1)) && {
-                printf '%d	[7m %s[0m\n' "$i" "${filename} "
+            test "$currentTrack" -eq $((FIRST - 1)) && {
+                printf '%d	[7m %s[0m\n' "$FIRST" "${filename} "
             } || {
-                printf '%d	 %s\n' "$i" "${filename}"
+                printf '%d	 %s\n' "$FIRST" "${filename}"
             }
         } || {
-            printf '%d	%s\n' "$i" "${filename}"
+            printf '%d	%s\n' "$FIRST" "${filename}"
         }
+
+        FIRST=$((FIRST + 1))
     done
 }
 
@@ -294,20 +294,20 @@ getFullPlaylist() {
     FIRST=1
     LAST=$(getPropertyString playlist-count)
 
-    test "${SEQCOMMAND}" = "jot" && REPS=$((LAST - FIRST + 1))
-
-    for i in $("$SEQCOMMAND" $REPS "$FIRST" "$LAST"); do
-        filename=$(getPlaylistFilename $((i - 1)))
+    while [ "$FIRST" -le "$LAST" ]; do
+        filename=$(getPlaylistFilename $((FIRST - 1)))
 
         test "$noColour" != "nocolour" && {
-            test "$currentTrack" -eq $((i - 1)) && {
-                printf '%d	[7m %s[0m\n' "$i" "${filename} "
+            test "$currentTrack" -eq $((FIRST - 1)) && {
+                printf '%d	[7m %s[0m\n' "$FIRST" "${filename} "
             } || {
-                printf '%d	 %s\n' "$i" "${filename}"
+                printf '%d	 %s\n' "$FIRST" "${filename}"
             }
         } || {
-            printf '%d	%s\n' "$i" "${filename}"
+            printf '%d	%s\n' "$FIRST" "${filename}"
         }
+
+        FIRST=$((FIRST + 1))
     done
 }
 
@@ -344,10 +344,10 @@ savePlaylist() {
     FIRST=1
     LAST=$(getPropertyString playlist-count)
 
-    test "${SEQCOMMAND}" = "jot" && REPS=$((LAST - FIRST + 1))
+    while [ "$FIRST" -le "$LAST" ]; do
+        printf '%s\n' "$(getPlaylistFilename $((FIRST - 1)) fullpath)" >> "$saveLocation".m3u
 
-    for i in $("$SEQCOMMAND" $REPS "$FIRST" "$LAST"); do
-        printf '%s\n' "$(getPlaylistFilename $((i - 1)) fullpath)" >> "$saveLocation".m3u
+        FIRST=$((FIRST + 1))
     done
 
     QUIETFLAG=true
@@ -374,7 +374,7 @@ appendTrack() {
         esac
     }
 
-    pgrep -f "mpv .*$SOCKET" > /dev/null 2>&1  && {
+    pgrep -f "mpv .*$SOCKET" > /dev/null 2>&1 && {
         printf '%s\n' "{ \"command\": [\"loadfile\", \"$filename\", \
 \"append-play\" ] }" | $SOCKETCOMMAND > /dev/null 2>&1
     } || {
@@ -382,10 +382,10 @@ appendTrack() {
             $MPVOPTIONS "$filename" &
 
         # wait up to 5 seconds for mpv to start on $SOCKET
-        for i in $($SEQCOMMAND 50); do
+        for i in 0 1 2 3 4 5 6 7 8 9; do
             idlestatus=$(getPropertyString idle-active)
             test "$idlestatus" && break
-            sleep 0.01
+            sleep 0.5
         done
     }
 
@@ -915,11 +915,13 @@ calculateTerminalHeight() {
             LAST=$rows
             return
         }
+
         test $((currentTrack + halfrows)) -ge "$tracks" && {
             FIRST=$((tracks - rows + 1))
             LAST=$tracks
             return
         }
+
         test $((currentTrack + halfrows)) -lt "$tracks" && {
             FIRST=$((currentTrack - halfrows + 1))
             LAST=$((currentTrack + halfrows))
@@ -979,14 +981,6 @@ validateDeps() {
 
     test "$SOCKETCOMMAND" || {
         printf '%s\n' "Cannot find socat or nc on your \$PATH." >&2
-        exit 4
-    }
-
-    type jot > /dev/null 2>&1 && SEQCOMMAND="jot"
-    type seq > /dev/null 2>&1 && SEQCOMMAND="seq"
-
-    test "$SEQCOMMAND" || {
-        printf '%s\n' "Cannot find seq or jot on your \$PATH." >&2
         exit 4
     }
 }

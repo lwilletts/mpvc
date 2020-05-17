@@ -11,8 +11,7 @@ Required:
 
 - `mpv`
 - `socat` / `nc`: `socat` preferred due to the differing implementations of netcat across UNIXes.
-- `seq` / `jot`
-- A sane version of `awk`
+- sane version of `awk`
 
 Optional:
 
