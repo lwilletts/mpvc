@@ -64,7 +64,7 @@ this by adding the video via mpvc, and manually switching to the video.
 - Piping files directly into mpvc is possible and preferable when loading
   multiple directories to be played:
 ```
-$ find . type -f | mpvc
+$ find . -type f | mpvc
 ```
 - You can use m3u playlists with mpv by saving the absolute path of your media into a file:
 ```
