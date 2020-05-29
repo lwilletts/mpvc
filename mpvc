@@ -116,23 +116,30 @@ getMetadata() {
 \"metadata/by-key/${property}\" ] }" | $SOCKETCOMMAND 2> /dev/null | \
         tr -d "{}" | awk -F '"' '{print $4}')
 
-    case "$property" in
-        "title")
-            # test if title has no property and return filename instead
-            case "$metadata" in
-                "property not found") result=$(getPropertyString filename) ;;
-                "error")              result=$(getPropertyString filename) ;;
-                *)                    result=$(cleanFilename "$result")    ;;
-            esac
+    # test for no result
+    case "$metadata" in
+        "property not found")
+            result="N/A"
             ;;
         *)
-            # test for no result
-            case "$metadata" in
-                "property not found") result="N/A"       ;;
-                *)                    result="$metadata" ;;
-            esac
+            result="$metadata"
             ;;
     esac
+
+    # test if title has no property and return filename instead
+    if [ "$property" = "title" ]; then
+        case "$metadata" in
+            "property not found")
+                result=$(getPropertyString filename)
+                ;;
+            "error")
+                result=$(getPropertyString filename)
+                ;;
+            *)
+                result=$(cleanFilename "$result")
+                ;;
+        esac
+    fi
 
     printf '%s' "$result" | escapeSedChar '&' | escapeSedChar '#'
 }
@@ -839,13 +846,13 @@ printDefaultStatus() {
     case "$artist" in
         "N/A")
             FORMATSTRING="\
-${artist} - %title%
+%title%
 [%status%] #%position%/%playlistlength% %time%/%length% (%percentage%%)
 speed: %speed%x volume: %volume%% muted: %muted% repeat: %repeat% single: %single%"
             ;;
         *)
             FORMATSTRING="\
-%title%
+${artist} - %title%
 [%status%] #%position%/%playlistlength% %time%/%length% (%percentage%%)
 speed: %speed%x volume: %volume%% muted: %muted% repeat: %repeat% single: %single%"
             ;;
