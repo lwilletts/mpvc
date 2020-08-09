@@ -79,7 +79,7 @@ cleanFilename() {
             # no other option but to use jq
             if type jq > /dev/null 2>&1; then
                 # this is fucking quick
-                id="$(printf '%s\n' "$filename" | cut -d'=' -f 2)"
+                id="${filename#*.}"
                 title="$(curl -sL \
 "https://youtube.com/oembed?url=https://youtube.com/watch?v=$id" | \
 jq -r '.title')"
@@ -365,9 +365,9 @@ appendTrack() {
     filename="$*"
 
     # require absolute paths
-    [ -e "$filename" ] && [ "$(printf "%s" "$filename" | cut -c 1)" != '/' ] && {
-        filename="$(pwd)/$filename"
-    }
+    if [ -e "$filename" ]; then
+        [ "$(printf "%s" "$filename" | cut -c 1)" != '/' ] && filename="$(pwd)/$filename"
+    fi
 
     # skip over various other filetypes and images unless wanted
     # this doesn't stop mpv from resolving directories and adding them anyway
@@ -377,6 +377,8 @@ appendTrack() {
             ;;
         *.png|*.jpg|*.jpeg|*.gif|*.psd|*.pdf)
             [ "$IMAGEFLAG" != "true" ] && return
+            ;;
+        https*)
             ;;
     esac
 
@@ -761,8 +763,8 @@ elapsedTime() {
 
 preciseElapsedTime() {
     time=$(getPropertyString playback-time 0.0)
-    bigTime=$(printf '%s\n' "$time" | cut -d. -f 1)
-    tinyTime=$(printf '%s\n' "$time" | cut -d. -f 2)
+    bigTime=${time%%.*}
+    tinyTime=${time#*.}
     formatTime "$bigTime" "$tinyTime"
 }
 
@@ -1020,10 +1022,10 @@ main() {
 
     # grab mpv options first if any
     for arg in "$@"; do
-        test "$MPVFLAG" = "true" && {
+        [ "$MPVFLAG" = "true" ] && {
             MPVOPTIONS="$MPVOPTIONS $arg"
         } || {
-            test "$arg" = "--" && MPVFLAG=true
+            [ "$arg" = "--" ] && MPVFLAG=true
         }
     done
 
@@ -1084,7 +1086,7 @@ main() {
                     setVolumeRelative "-${volume}"
                     ;;
                 *)
-                    test ! -z "$2" && {
+                    [ -n "$2" ] && {
                         setVolumeAbsolute "$2"
                     } || {
                         printf '%s\n' "Specify volume in/decrease amount or absolute amount."
@@ -1177,16 +1179,16 @@ main() {
     done
 
     # produce format strings last
-    test "$QUIETFLAG" != "true" && {
-        test ! -z "$FORMATSTRING" && formatPrint
+    [ "$QUIETFLAG" != "true" ] && {
+        [ -n "$FORMATSTRING" ] && formatPrint
         printFinalOutput
     }
 }
 
 # more global argument parsing
 for arg in "$@"; do
-    test "$SOCKETFLAG" = "true" && SOCKET=$arg && SOCKETFLAG=false
-    test "$FORMATFLAG" = "true" && FORMATSTRING=$arg && FORMATFLAG=false
+    [ "$SOCKETFLAG" = "true" ] && SOCKET=$arg && SOCKETFLAG=false
+    [ "$FORMATFLAG" = "true" ] && FORMATSTRING=$arg && FORMATFLAG=false
 
     case $arg in
         --version)        getVersion                        ;;
@@ -1201,7 +1203,7 @@ for arg in "$@"; do
     esac
 done
 
-test "$QUIETFLAG" = "true" && {
+[ "$QUIETFLAG" = "true" ] && {
     main "$@" >/dev/null 2>&1
 } || {
     main "$@"
