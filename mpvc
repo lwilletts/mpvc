@@ -403,6 +403,22 @@ appendTrack() {
     printf '%s\n' "Adding: ${filename}"
 }
 
+playNext() {
+    # add track to the playlist
+    appendTrack "$1"
+
+    # find position of track to move
+    trackToMove="$(getPropertyString playlist-count)"
+
+    # find position of current track
+    newTrackPosition="$(getPropertyString playlist-pos)"
+
+    QUIETFLAG="true"
+
+    # set position of next track
+    moveTrack "$trackToMove" "$((newTrackPosition + 1))"
+}
+
 setTimeRelative() {
     time=$(getPropertyString playback-time)
 
@@ -1054,7 +1070,13 @@ main() {
             ;;
     esac
 
-    validateSocket
+    case "$1" in
+        add|-a|--append|playnext|-A|--playnext)
+            ;;
+        *)
+            validateSocket
+            ;;
+    esac
 
     # mpc compatibility layer
     case "$1" in
@@ -1142,6 +1164,7 @@ main() {
         [ "$TRACKVALFLAG" = "true" ] && setTrackAbsolute "$arg";  TRACKVALFLAG=false
         [ "$REMOVEFLAG"   = "true" ] && removeTrack "$arg";       REMOVEFLAG=false
         [ "$SAVEFLAG"     = "true" ] && savePlaylist "$arg";      SAVEFLAG=false
+        [ "$PLAYNEXT"     = "true" ] && playNext "$arg";          PLAYNEXT=false
 
         case "$arg" in
             -t|--seek|seek)                  SEEKFLAG=true                  ;;
@@ -1156,6 +1179,7 @@ main() {
             --save|save)                     SAVEFLAG=true                  ;;
             -s|--stop|stop)                  alwaysPause; setTimeAbsolute 0 ;;
             -P|--play|play)                  alwaysPlay                     ;;
+            -A|--playnext|playnext)          PLAYNEXT=true                  ;;
             -p|--toggle|toggle)              togglePause                    ;;
             -m|--mute)                       toggleMute                     ;;
             mute)                            toggleMute true                ;;
