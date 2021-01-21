@@ -156,14 +156,15 @@ getProperty() {
     printf '%s' "$result"
 }
 
-# accepted properties: idle-active, playlist-count, playlist-pos, playback-time,
+# accepted properties: filename, idle-active, playlist-count, playlist-pos, playback-time,
 #                      playtime-remaining, time-remaining, percent-pos,
 #                      duration, volume
 getPropertyString() {
     property=$1
 
     result=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
-\"${property}\"] }" | $SOCKETCOMMAND 2> /dev/null | awk -F '[".]' '{print $4}')
+\"${property}\"] }" | $SOCKETCOMMAND 2> /dev/null | cut -d'"' -f 4 | \
+    rev | cut -d'.' -f 2- | rev)
 
     case "$result" in
         "error")
