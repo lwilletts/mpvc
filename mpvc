@@ -62,6 +62,11 @@ EOF
     [  -z "$1" ] && exit || exit "$1"
 }
 
+eprintf() {
+        printf "$@" >&2
+        exit 1
+}
+
     # Retrieval Functions
 ###############################################################################
 
@@ -257,8 +262,7 @@ getPlaylist() {
     currentTrack=$(getPropertyString playlist-pos)
 
     [ "$tracks" -eq 0 ] || [ "$currentTrack" = "N/A" ] && {
-        printf '%s\n' "${SOCKET} is currently idle." >&2
-        exit 1
+        eprintf '%s\n' "${SOCKET} is currently idle."
     }
 
     calculateTerminalHeight
@@ -290,8 +294,7 @@ getFullPlaylist() {
     currentTrack=$(getPropertyString playlist-pos)
 
     [  "$tracks" -eq 0 ] || [ "$currentTrack" = "N/A" ] && {
-        printf '%s\n' "${SOCKET} is currently idle." >&2
-        exit 1
+        eprintf '%s\n' "${SOCKET} is currently idle."
     }
 
     FIRST=1
@@ -477,20 +480,17 @@ setVolumeRelative() {
     volume=$(getPropertyString volume)
 
     [ "$volume" = "error" ] && {
-        printf '%s\n' "Currently playing media does not have sound." >&2
-        exit 1
+        eprintf '%s\n' "Currently playing media does not have sound."
     }
 
     volume=$((volume + $1))
 
     [ $volume -lt 0 ] && {
-        printf '%s\n' "Volume cannot be set lower than 0%" >&2
-        exit 1
+        eprintf '%s\n' "Volume cannot be set lower than 0%"
     }
 
     [ $volume -gt 130 ] && {
-        printf '%s\n' "Volume cannot be set great than 130%" >&2
-        exit 1
+        eprintf '%s\n' "Volume cannot be set great than 130%"
     }
 
     printf '%s\n' "{ \"command\": [\"set_property\", \"volume\", $volume ] }" | \
@@ -511,13 +511,11 @@ setVolumeAbsolute() {
     volume=$1
 
     [ $volume -lt 0 ] && {
-        printf '%s\n' "Volume cannot be set lower than 0%" >&2
-        exit 1
+        eprintf '%s\n' "Volume cannot be set lower than 0%"
     }
 
     [ $volume -gt 130 ] && {
-        printf '%s\n' "Volume cannot be set great than 130%" >&2
-        exit 1
+        eprintf '%s\n' "Volume cannot be set great than 130%"
     }
 
     printf '%s\n' "{ \"command\": [\"set_property\", \"volume\", $volume ] }" | \
@@ -592,8 +590,7 @@ setTrackAbsolute() {
     trackCount=$(getPropertyString playlist-count)
 
     [ "$currentTrack" -lt 0 ] || [ "$currentTrack" -ge "$trackCount" ] && {
-        printf '%s\n' "Item $currentTrack is out of range of playlist." >&2
-        exit 1
+        eprintf '%s\n' "Item $currentTrack is out of range of playlist."
     }
 
     printf '%s\n' "{ \"command\": [\"set_property\", \
@@ -616,14 +613,12 @@ moveTrack() {
         trackCount=$(getPropertyString playlist-count)
 
         [ "$trackToMove" -lt 0 ] || [ "$trackToMove" -ge "$trackCount" ] && {
-            printf '%s\n' "Item $trackToMove is out of range of playlist." >&2
-            exit 1
+            eprintf '%s\n' "Item $trackToMove is out of range of playlist."
         }
     fi
 
     [ "$newTrackPosition" -lt 0 ] && {
-        printf '%s\n' "Position $newTrackPosition is out of range of playlist." >&2
-        exit 1
+        eprintf '%s\n' "Position $newTrackPosition is out of range of playlist."
     }
 
     [ "$newTrackPosition" -eq 1 ] && newTrackPosition=0
@@ -650,8 +645,7 @@ removeTrack() {
         trackCount=$(getPropertyString playlist-count)
 
         [ "$trackToRemove" -lt 0 ] || [ "$trackToRemove" -ge "$trackCount" ] && {
-            printf '%s\n' "Item $trackToRemove is out of range of playlist." >&2
-            exit 1
+            eprintf '%s\n' "Item $trackToRemove is out of range of playlist."
         }
 
         filename="$(getPlaylistFilename $trackToRemove)"
@@ -661,8 +655,7 @@ removeTrack() {
     fi
 
     [  "$QUIETFLAG" != "true" ] && {
-        printf '%s\n' "$filename has been removed from the playlist."
-        exit
+        eprintf '%s\n' "$filename has been removed from the playlist."
     }
 }
 
