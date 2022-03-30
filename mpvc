@@ -67,6 +67,7 @@ equiet() { "$@" 2> /dev/null; }
 oquiet() { "$@" 1> /dev/null; }
 quiet() { "$@" > /dev/null 2>&1; }
 sockcmd() { printf '%s\n' "$@" | oquiet $SOCKETCOMMAND; }
+sockecmd() { printf '%s\n' "$@" | equiet $SOCKETCOMMAND; }
 
     # Retrieval Functions
 ###############################################################################
@@ -108,7 +109,7 @@ jq -r '.title')"
 getMediaProperties() {
     property="$1"
 
-    mediaValue=$(sockcmd '{ "command": ["get_property", "'${property}'" ] }' |
+    mediaValue=$(sockecmd '{ "command": ["get_property", "'${property}'" ] }' |
         awk -F '"' '{print $4}')
 
     printf '%s\n' "$mediaValue" | escapeSedChar '&' | escapeSedChar '#'
@@ -119,7 +120,7 @@ getMetadata() {
     property=$1
 
     metadata=$(
-        sockcmd '{ "command": ["get_property", "metadata/by-key/'${property}'" ] }' |
+        sockecmd '{ "command": ["get_property", "metadata/by-key/'${property}'" ] }' |
             tr -d "{}" | awk -F '"' '{print $4}')
 
     # test for no result
@@ -168,8 +169,8 @@ getProperty() {
 getPropertyString() {
     property=$1
 
-    result=$(sockcmd '{ "command": ["get_property_string", "'${property}'"] }'
-        | cut -d'"' -f 4 | rev | cut -d'.' -f 2- | rev)
+    result=$(sockecmd '{ "command": ["get_property_string", "'${property}'"] }' |
+        cut -d'"' -f 4 | rev | cut -d'.' -f 2- | rev)
 
     case "$result" in
         "error")
@@ -184,7 +185,7 @@ getPropertyString() {
 
 # accepted properties: speed
 getSpeed() {
-    speed=$(sockcmd '{ "command": ["get_property_string", "'speed'"] }' |
+    speed=$(sockecmd '{ "command": ["get_property_string", "'speed'"] }' |
         awk -F '"' '{print substr ($4, 0, 4)}')
 
     printf '%s' "$speed"
@@ -199,7 +200,7 @@ getLoopStatus() {
             status=$(getProperty loop-file)
             ;;
         loop-playlist)
-            status=$(sockcmd '{ "command": ["get_property", "loop-playlist"] }')
+            status=$(sockecmd '{ "command": ["get_property", "loop-playlist"] }')
             case "$status" in
                 *inf*) status="$(printf '%s\n' "$status" | cut -d\" -f 4)"               ;;
                 *)     status="$(printf '%s\n' "$status" | awk -F '[":,]' '{print $4}')" ;;
@@ -244,7 +245,7 @@ getPlaylistFilename() {
     track="$1"
     fullpathFlag="$2"
 
-    filename=$(sockcmd '{ "command": ["get_property_string", "playlist/'$track'/filename"] }' |
+    filename=$(sockecmd '{ "command": ["get_property_string", "playlist/'$track'/filename"] }' |
         cut -d\" -f 4)
 
     [  "$fullpathFlag" != "fullpath" ] && filename=$(cleanFilename "$filename")
@@ -521,7 +522,7 @@ setSpeedRelative() {
     fltCheck "$1" || exit 1
     speed=$(printf '%s\n' "$speed+$1" | bc)
 
-    sockcmd '{ "command": ["set_property_string", "speed", '"$speed"' ] }'
+    sockcmd '{ "command": ["set_property_string", "speed", "'$speed'" ] }'
 }
 
 setSpeedAbsolute() {
@@ -529,7 +530,7 @@ setSpeedAbsolute() {
     fltCheck "$1" || exit 1
     speed=$1
 
-    sockcmd '{ "command": ["set_property_string", "speed", '"$speed"' ] }'
+    sockcmd '{ "command": ["set_property_string", "speed", "'$speed'" ] }'
 }
 
 setTrackRelative() {
