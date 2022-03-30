@@ -7,9 +7,12 @@
 SOCKET=${MPVC_SOCKET:-/tmp/mpvsocket}
 MPVOPTIONS="--no-audio-display"
 
+PROGNAME=$(basename $0)
+PROGVERSION="1.3"
+
 usage() {
     cat >&2 << EOF
-Usage: $(basename $0) [-S "socket"] [-a "filenames"] [-o "path"] [-f "format string"]
+Usage: $PROGNAME [-S "socket"] [-a "filenames"] [-o "path"] [-f "format string"]
     -p | --toggle       : Toggle playback.
     -s | --stop         : Always stop playback.
     -P | --play         : Always start playback.
@@ -40,7 +43,7 @@ Usage: $(basename $0) [-S "socket"] [-a "filenames"] [-o "path"] [-f "format str
     -h | --help         : Print this help.
 
 Formatting:
-    \`$(basename $0) --format\` will interpret the following delimiters if they are found:
+    \`$PROGNAME --format\` will interpret the following delimiters if they are found:
 
     %name%, %path%, %dir%, %title%, %artist%, %album%, %albumartist%, comment%,
     %genre%, %year%, %percentage%, %playlistlength%, %position%, %repeat%,
@@ -62,12 +65,15 @@ EOF
     [  -z "$1" ] && exit || exit "$1"
 }
 
-eprintf() { printf "$@" >&2; exit 1; }
 equiet() { "$@" 2> /dev/null; }
 oquiet() { "$@" 1> /dev/null; }
 quiet() { "$@" > /dev/null 2>&1; }
+
 sockcmd() { printf '%s\n' "$@" | oquiet $SOCKETCOMMAND; }
 sockecmd() { printf '%s\n' "$@" | equiet $SOCKETCOMMAND; }
+
+pprintf() { printf "%s" "$@"; }
+eprintf() { printf '%s\n' "$@" >&2; exit 1; }
 
     # Retrieval Functions
 ###############################################################################
@@ -157,10 +163,10 @@ getMetadata() {
 getProperty() {
     property=$1
 
-    result=$(printf '%s\n' "{ \"command\": [\"get_property\", \
-\"${property}\"] }" | equiet $SOCKETCOMMAND | awk -F '[":,]' '{print $4}')
+    result=$(sockecmd '{ "command": ["get_property", "'${property}'"] }' |
+        awk -F '[":,]' '{print $4}')
 
-    printf '%s' "$result"
+    pprintf "$result"
 }
 
 # accepted properties: filename, idle-active, playlist-count, playlist-pos, playback-time,
@@ -174,11 +180,11 @@ getPropertyString() {
 
     case "$result" in
         "error")
-            [ $# -ge 2 ] && printf '%s' "$2" || printf '%s' "N/A"
+            [ $# -ge 2 ] && pprintf "$2" || pprintf "N/A"
             return 1
             ;;
         *)
-            printf '%s' "$result"
+            pprintf "$result"
             ;;
     esac
 }
@@ -261,7 +267,7 @@ getPlaylist() {
     currentTrack=$(getPropertyString playlist-pos)
 
     [ "$tracks" -eq 0 ] || [ "$currentTrack" = "N/A" ] && {
-        eprintf '%s\n' "${SOCKET} is currently idle."
+        eprintf "${SOCKET} is currently idle."
     }
 
     calculateTerminalHeight
@@ -293,7 +299,7 @@ getFullPlaylist() {
     currentTrack=$(getPropertyString playlist-pos)
 
     [  "$tracks" -eq 0 ] || [ "$currentTrack" = "N/A" ] && {
-        eprintf '%s\n' "${SOCKET} is currently idle."
+        eprintf "${SOCKET} is currently idle."
     }
 
     FIRST=1
@@ -475,17 +481,17 @@ setVolumeRelative() {
     volume=$(getPropertyString volume)
 
     [ "$volume" = "error" ] && {
-        eprintf '%s\n' "Currently playing media does not have sound."
+        eprintf "Currently playing media does not have sound."
     }
 
     volume=$((volume + $1))
 
     [ $volume -lt 0 ] && {
-        eprintf '%s\n' "Volume cannot be set lower than 0%"
+        eprintf "Volume cannot be set lower than 0%"
     }
 
     [ $volume -gt 130 ] && {
-        eprintf '%s\n' "Volume cannot be set great than 130%"
+        eprintf "Volume cannot be set great than 130%"
     }
 
     sockcmd '{ "command": ["set_property", "volume", '$volume' ] }'
@@ -505,11 +511,11 @@ setVolumeAbsolute() {
     volume=$1
 
     [ $volume -lt 0 ] && {
-        eprintf '%s\n' "Volume cannot be set lower than 0%"
+        eprintf "Volume cannot be set lower than 0%"
     }
 
     [ $volume -gt 130 ] && {
-        eprintf '%s\n' "Volume cannot be set great than 130%"
+        eprintf "Volume cannot be set great than 130%"
     }
 
     sockcmd '{ "command": ["set_property", "volume", '$volume' ] }'
@@ -580,7 +586,7 @@ setTrackAbsolute() {
     trackCount=$(getPropertyString playlist-count)
 
     [ "$currentTrack" -lt 0 ] || [ "$currentTrack" -ge "$trackCount" ] && {
-        eprintf '%s\n' "Item $currentTrack is out of range of playlist."
+        eprintf "Item $currentTrack is out of range of playlist."
     }
 
     sockcmd '{ "command": ["set_property", "playlist-pos", '$currentTrack' ] }'
@@ -602,12 +608,12 @@ moveTrack() {
         trackCount=$(getPropertyString playlist-count)
 
         [ "$trackToMove" -lt 0 ] || [ "$trackToMove" -ge "$trackCount" ] && {
-            eprintf '%s\n' "Item $trackToMove is out of range of playlist."
+            eprintf "Item $trackToMove is out of range of playlist."
         }
     fi
 
     [ "$newTrackPosition" -lt 0 ] && {
-        eprintf '%s\n' "Position $newTrackPosition is out of range of playlist."
+        eprintf "Position $newTrackPosition is out of range of playlist."
     }
 
     [ "$newTrackPosition" -eq 1 ] && newTrackPosition=0
@@ -632,7 +638,7 @@ removeTrack() {
         trackCount=$(getPropertyString playlist-count)
 
         [ "$trackToRemove" -lt 0 ] || [ "$trackToRemove" -ge "$trackCount" ] && {
-            eprintf '%s\n' "Item $trackToRemove is out of range of playlist."
+            eprintf "Item $trackToRemove is out of range of playlist."
         }
 
         filename="$(getPlaylistFilename $trackToRemove)"
@@ -641,7 +647,7 @@ removeTrack() {
     fi
 
     [  "$QUIETFLAG" != "true" ] && {
-        eprintf '%s\n' "$filename has been removed from the playlist."
+        eprintf "$filename has been removed from the playlist."
     }
 }
 
@@ -973,8 +979,8 @@ validateDeps() {
 
 validateBC() {
     quiet type bc || {
-        printf '%s\n' "Cannot find bc on your \$PATH."
-        printf '%s\n' "Please install for speed control."
+        pprintf "Cannot find bc on your \$PATH.\n"
+        pprintf "Please install for speed control.\n"
         exit 4
     }
 }
@@ -998,7 +1004,7 @@ validateSocket() {
 getVersion() {
     mpv --version
 
-    printf '%s\n' "MPVC Release 1.3 (c) Laurence Willetts MIT"
+    pprintf "MPVC Release $PROGVERSION (c) Laurence Willetts MIT"
     exit
 }
 
