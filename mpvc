@@ -66,6 +66,7 @@ eprintf() { printf "$@" >&2; exit 1; }
 equiet() { "$@" 2> /dev/null; }
 oquiet() { "$@" 1> /dev/null; }
 quiet() { "$@" > /dev/null 2>&1; }
+sockcmd() { printf '%s\n' "$@" | oquiet $SOCKETCOMMAND; }
 
     # Retrieval Functions
 ###############################################################################
@@ -107,8 +108,8 @@ jq -r '.title')"
 getMediaProperties() {
     property="$1"
 
-    mediaValue=$(printf '%s\n' "{ \"command\": [\"get_property\", \
-\"${property}\" ] }" | equiet $SOCKETCOMMAND | awk -F '"' '{print $4}')
+    mediaValue=$(sockcmd '{ "command": ["get_property", "'${property}'" ] }' |
+        awk -F '"' '{print $4}')
 
     printf '%s\n' "$mediaValue" | escapeSedChar '&' | escapeSedChar '#'
 }
@@ -117,9 +118,9 @@ getMediaProperties() {
 getMetadata() {
     property=$1
 
-    metadata=$(printf '%s\n' "{ \"command\": [\"get_property\", \
-\"metadata/by-key/${property}\" ] }" | equiet $SOCKETCOMMAND | \
-        tr -d "{}" | awk -F '"' '{print $4}')
+    metadata=$(
+        sockcmd '{ "command": ["get_property", "metadata/by-key/'${property}'" ] }' |
+            tr -d "{}" | awk -F '"' '{print $4}')
 
     # test for no result
     case "$metadata" in
@@ -167,9 +168,8 @@ getProperty() {
 getPropertyString() {
     property=$1
 
-    result=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
-\"${property}\"] }" | equiet $SOCKETCOMMAND | cut -d'"' -f 4 | \
-    rev | cut -d'.' -f 2- | rev)
+    result=$(sockcmd '{ "command": ["get_property_string", "'${property}'"] }'
+        | cut -d'"' -f 4 | rev | cut -d'.' -f 2- | rev)
 
     case "$result" in
         "error")
@@ -184,8 +184,8 @@ getPropertyString() {
 
 # accepted properties: speed
 getSpeed() {
-    speed=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
-\"speed\"] }" | equiet $SOCKETCOMMAND | awk -F '"' '{print substr ($4, 0, 4)}')
+    speed=$(sockcmd '{ "command": ["get_property_string", "'speed'"] }' |
+        awk -F '"' '{print substr ($4, 0, 4)}')
 
     printf '%s' "$speed"
 }
@@ -199,8 +199,7 @@ getLoopStatus() {
             status=$(getProperty loop-file)
             ;;
         loop-playlist)
-            status=$(printf '%s\n' "{ \"command\": [\"get_property\", \
-\"loop-playlist\"] }" | equiet $SOCKETCOMMAND )
+            status=$(sockcmd '{ "command": ["get_property", "loop-playlist"] }')
             case "$status" in
                 *inf*) status="$(printf '%s\n' "$status" | cut -d\" -f 4)"               ;;
                 *)     status="$(printf '%s\n' "$status" | awk -F '[":,]' '{print $4}')" ;;
@@ -245,8 +244,7 @@ getPlaylistFilename() {
     track="$1"
     fullpathFlag="$2"
 
-    filename=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
-\"playlist/$track/filename\"] }" | equiet $SOCKETCOMMAND | \
+    filename=$(sockcmd '{ "command": ["get_property_string", "playlist/'$track'/filename"] }' |
         cut -d\" -f 4)
 
     [  "$fullpathFlag" != "fullpath" ] && filename=$(cleanFilename "$filename")
@@ -388,8 +386,7 @@ appendTrack() {
 
     # test if socket is open to add more files too, else start mpv socket up
     if quiet pgrep -f "mpv .*$SOCKET"; then
-        printf '%s\n' "{ \"command\": [\"loadfile\", \"$filename\", \
-\"append-play\" ] }" | quiet $SOCKETCOMMAND
+        sockcmd '{ "command": ["loadfile", "'$filename'", "append-play" ] }'
     else
         exec mpv --really-quiet --idle=once --input-ipc-server="${SOCKET}" \
             $MPVOPTIONS "$filename" &
@@ -428,8 +425,7 @@ setTimeRelative() {
 
     printf '%s\n' "$1" | quiet grep "%" && {
         percentageValue=$(printf '%s\n' "$1" | rev | cut -c 2- | rev)
-        printf '%s\n' "{ \"command\": [\"set_property\", \"percent-pos\", \
-$percentageValue ] }" | oquiet $SOCKETCOMMAND
+        sockcmd '{ "command": ["set_property", "percent-pos", '$percentageValue' ] }'
         return
     }
 
@@ -454,8 +450,7 @@ $percentageValue ] }" | oquiet $SOCKETCOMMAND
         *)      time=$((time + timeSec)) ;;
     esac
 
-    printf '%s\n' "{ \"command\": [\"set_property\", \"playback-time\", \
-$time ] }" | oquiet $SOCKETCOMMAND
+    sockcmd '{ "command": ["set_property", "playback-time", '$time' ] }'
 }
 
 setTimeAbsolute() {
@@ -469,8 +464,7 @@ setTimeAbsolute() {
         return 1
     }
 
-    printf '%s\n' "{ \"command\": [\"set_property\", \"playback-time\", \
-$time ] }" | oquiet $SOCKETCOMMAND
+    sockcmd '{ "command": "set_property", "playback-time", '$time' ] }'
 }
 
 setVolumeRelative() {
@@ -493,8 +487,7 @@ setVolumeRelative() {
         eprintf '%s\n' "Volume cannot be set great than 130%"
     }
 
-    printf '%s\n' "{ \"command\": [\"set_property\", \"volume\", $volume ] }" | \
-        oquiet $SOCKETCOMMAND
+    sockcmd '{ "command": ["set_property", "volume", '$volume' ] }'
 }
 
 setVolumeAbsolute() {
@@ -518,8 +511,7 @@ setVolumeAbsolute() {
         eprintf '%s\n' "Volume cannot be set great than 130%"
     }
 
-    printf '%s\n' "{ \"command\": [\"set_property\", \"volume\", $volume ] }" | \
-        oquiet $SOCKETCOMMAND
+    sockcmd '{ "command": ["set_property", "volume", '$volume' ] }'
 }
 
 setSpeedRelative() {
@@ -529,8 +521,7 @@ setSpeedRelative() {
     fltCheck "$1" || exit 1
     speed=$(printf '%s\n' "$speed+$1" | bc)
 
-    printf '%s\n' "{ \"command\": [\"set_property_string\", \"speed\", \
-\"$speed\" ] }" | oquiet $SOCKETCOMMAND
+    sockcmd '{ "command": ["set_property_string", "speed", '"$speed"' ] }'
 }
 
 setSpeedAbsolute() {
@@ -538,8 +529,7 @@ setSpeedAbsolute() {
     fltCheck "$1" || exit 1
     speed=$1
 
-    printf '%s\n' "{ \"command\": [\"set_property_string\", \"speed\", \
-\"$speed\" ] }" | oquiet $SOCKETCOMMAND
+    sockcmd '{ "command": ["set_property_string", "speed", '"$speed"' ] }'
 }
 
 setTrackRelative() {
@@ -575,8 +565,7 @@ setTrackRelative() {
         fi
     }
 
-    printf '%s\n' "{ \"command\": [\"set_property\", \"playlist-pos\", \
-$desiredTrack ] }" | oquiet $SOCKETCOMMAND
+    sockcmd '{ "command": ["set_property", "playlist-pos", '$desiredTrack' ] }'
 
     # tiny delay so printFinalOutput can catch up
     sleep 0.5
@@ -593,8 +582,7 @@ setTrackAbsolute() {
         eprintf '%s\n' "Item $currentTrack is out of range of playlist."
     }
 
-    printf '%s\n' "{ \"command\": [\"set_property\", \
-\"playlist-pos\", $currentTrack ] }" | oquiet $SOCKETCOMMAND
+    sockcmd '{ "command": ["set_property", "playlist-pos", '$currentTrack' ] }'
 
     # tiny delay so printFinalOutput can catch up
     sleep 0.5
@@ -623,8 +611,7 @@ moveTrack() {
 
     [ "$newTrackPosition" -eq 1 ] && newTrackPosition=0
 
-    printf '%s\n' "{ \"command\": [\"playlist-move\", \"$trackToMove\", \
-\"$newTrackPosition\" ] }" | oquiet $SOCKETCOMMAND
+    sockcmd '{ "command": ["playlist-move", "'$trackToMove'", "'$newTrackPosition'" ] }'
 
     [ "$QUIETFLAG" != "true" ] && {
         getPlaylist
@@ -636,8 +623,7 @@ removeTrack() {
     trackToRemove=$1
 
     if [ "$trackToRemove" = "current" ]; then
-        printf '%s\n' "{ \"command\": [\"playlist-remove\", \
-        \"$trackToRemove\" ] }" | oquiet $SOCKETCOMMAND
+        sockcmd '{ "command": ["playlist-remove", "'$trackToRemove'" ] }'
     else
         intCheck "$1" || exit 1
 
@@ -650,8 +636,7 @@ removeTrack() {
 
         filename="$(getPlaylistFilename $trackToRemove)"
 
-        printf '%s\n' "{ \"command\": [\"playlist-remove\", \
-        \"$trackToRemove\" ] }" | oquiet $SOCKETCOMMAND
+        sockcmd '{ "command": ["playlist-remove", "'$trackToRemove'" ] }'
     fi
 
     [  "$QUIETFLAG" != "true" ] && {
@@ -666,14 +651,12 @@ alwaysPlay() {
         return
     }
 
-    printf '%s\n' "{ \"command\": [\"set_property\", \"pause\", false ] }" | \
-        oquiet $SOCKETCOMMAND
+    sockcmd '{ "command": ["set_property", "pause", false ] }'
 }
 
 alwaysPause() {
     status="true"
-    printf '%s\n' "{ \"command\": [\"set_property\", \"pause\", $status ] }" | \
-        oquiet $SOCKETCOMMAND
+    sockcmd '{ "command": ["set_property", "pause", '$status' ] }'
 }
 
 togglePause() {
@@ -686,8 +669,7 @@ togglePause() {
     status=$(getPauseStatus)
     [  "$status" = "playing" ] && status="true" || status="false"
 
-    printf '%s\n' "{ \"command\": [\"set_property\", \"pause\", $status ] }" | \
-        oquiet $SOCKETCOMMAND
+    sockcmd '{ "command": ["set_property", "pause", '$status' ] }'
 }
 
 toggleMute() {
@@ -698,29 +680,25 @@ toggleMute() {
         muted=$1
     fi
 
-    printf '%s\n' "{ \"command\": [\"set_property\", \"mute\", $muted ] }" | \
-        oquiet $SOCKETCOMMAND
+    sockcmd '{ "command": ["set_property", "mute", '$muted' ] }'
 }
 
 toggleLoopFile() {
     loopFile=$(getLoopStatus loop-file)
     [ "$loopFile" = "no" ] && loopFile="inf" || loopFile="no"
 
-    printf '%s\n' "{ \"command\": [\"set_property_string\", \"loop-file\", \
-\"$loopFile\" ] }" | oquiet $SOCKETCOMMAND
+    sockcmd '{ "command": ["set_property_string", "loop-file", "'$loopFile'" ] }'
 }
 
 toggleLoopPlaylist() {
     loopPlaylist=$(getLoopStatus loop-playlist)
     [ "$loopPlaylist" = "no" ] && loopPlaylist="inf" || loopPlaylist="no"
 
-    printf '%s\n' "{ \"command\": [\"set_property_string\", \"loop-playlist\", \
-\"$loopPlaylist\" ] }" | oquiet $SOCKETCOMMAND
+    sockcmd '{ "command": ["set_property_string", "loop-playlist", "'$loopPlaylist'" ] }'
 }
 
 shufflePlaylist() {
-    printf '%s\n' "{ \"command\": [\"playlist-shuffle\" ] }" | \
-        oquiet $SOCKETCOMMAND
+    sockcmd '{ "command": ["playlist-shuffle" ] }'
 
     [  "$QUIETFLAG" != "true" ] && {
         printf '%s\n' "Playlist shuffled."
@@ -731,8 +709,7 @@ shufflePlaylist() {
 }
 
 cropPlaylist() {
-    printf '%s\n' "{ \"command\": [\"playlist-clear\" ] }" | \
-        oquiet $SOCKETCOMMAND
+    sockcmd '{ "command": ["playlist-clear" ] }'
 
     [ "$QUIETFLAG" != "true" ] && {
         getPlaylist
@@ -753,7 +730,7 @@ clearPlaylist() {
 
 # quit mpv process on given socket
 killSocket() {
-    printf '%s\n' "{ \"command\": [\"quit\"] }" | oquiet $SOCKETCOMMAND
+    sockcmd '{ "command": ["quit"] }'
     exit
 }
 
@@ -894,10 +871,7 @@ printFinalOutput() {
 ###############################################################################
 
 escapeSedChar() {
-    awk -F "$1" '{
-        for (x=1; x<NF; x++) printf "%s\\'"$1"'", $x
-        printf "%s", $NF
-        exit }'
+    awk ' { gsub("'$1'", "\\'$1'"); print $0; }'
 }
 
 intCheck() {
