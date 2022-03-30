@@ -62,10 +62,10 @@ EOF
     [  -z "$1" ] && exit || exit "$1"
 }
 
-eprintf() {
-        printf "$@" >&2
-        exit 1
-}
+eprintf() { printf "$@" >&2; exit 1; }
+equiet() { "$@" 2> /dev/null; }
+oquiet() { "$@" 1> /dev/null; }
+quiet() { "$@" > /dev/null 2>&1; }
 
     # Retrieval Functions
 ###############################################################################
@@ -82,7 +82,7 @@ cleanFilename() {
             ;;
         *youtu*|watch*)
             # no other option but to use jq
-            if type jq > /dev/null 2>&1; then
+            if quiet type jq; then
                 # this is fucking quick
                 id="${filename#*.}"
                 title="$(curl -sL \
@@ -108,7 +108,7 @@ getMediaProperties() {
     property="$1"
 
     mediaValue=$(printf '%s\n' "{ \"command\": [\"get_property\", \
-\"${property}\" ] }" | $SOCKETCOMMAND 2> /dev/null | awk -F '"' '{print $4}')
+\"${property}\" ] }" | equiet $SOCKETCOMMAND | awk -F '"' '{print $4}')
 
     printf '%s\n' "$mediaValue" | escapeSedChar '&' | escapeSedChar '#'
 }
@@ -118,7 +118,7 @@ getMetadata() {
     property=$1
 
     metadata=$(printf '%s\n' "{ \"command\": [\"get_property\", \
-\"metadata/by-key/${property}\" ] }" | $SOCKETCOMMAND 2> /dev/null | \
+\"metadata/by-key/${property}\" ] }" | equiet $SOCKETCOMMAND | \
         tr -d "{}" | awk -F '"' '{print $4}')
 
     # test for no result
@@ -156,7 +156,7 @@ getProperty() {
     property=$1
 
     result=$(printf '%s\n' "{ \"command\": [\"get_property\", \
-\"${property}\"] }" | $SOCKETCOMMAND 2> /dev/null | awk -F '[":,]' '{print $4}')
+\"${property}\"] }" | equiet $SOCKETCOMMAND | awk -F '[":,]' '{print $4}')
 
     printf '%s' "$result"
 }
@@ -168,7 +168,7 @@ getPropertyString() {
     property=$1
 
     result=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
-\"${property}\"] }" | $SOCKETCOMMAND 2> /dev/null | cut -d'"' -f 4 | \
+\"${property}\"] }" | equiet $SOCKETCOMMAND | cut -d'"' -f 4 | \
     rev | cut -d'.' -f 2- | rev)
 
     case "$result" in
@@ -185,7 +185,7 @@ getPropertyString() {
 # accepted properties: speed
 getSpeed() {
     speed=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
-\"speed\"] }" | $SOCKETCOMMAND 2> /dev/null | awk -F '"' '{print substr ($4, 0, 4)}')
+\"speed\"] }" | equiet $SOCKETCOMMAND | awk -F '"' '{print substr ($4, 0, 4)}')
 
     printf '%s' "$speed"
 }
@@ -200,7 +200,7 @@ getLoopStatus() {
             ;;
         loop-playlist)
             status=$(printf '%s\n' "{ \"command\": [\"get_property\", \
-\"loop-playlist\"] }" | $SOCKETCOMMAND 2> /dev/null)
+\"loop-playlist\"] }" | equiet $SOCKETCOMMAND )
             case "$status" in
                 *inf*) status="$(printf '%s\n' "$status" | cut -d\" -f 4)"               ;;
                 *)     status="$(printf '%s\n' "$status" | awk -F '[":,]' '{print $4}')" ;;
@@ -246,7 +246,7 @@ getPlaylistFilename() {
     fullpathFlag="$2"
 
     filename=$(printf '%s\n' "{ \"command\": [\"get_property_string\", \
-\"playlist/$track/filename\"] }" | $SOCKETCOMMAND 2> /dev/null | \
+\"playlist/$track/filename\"] }" | equiet $SOCKETCOMMAND | \
         cut -d\" -f 4)
 
     [  "$fullpathFlag" != "fullpath" ] && filename=$(cleanFilename "$filename")
@@ -387,9 +387,9 @@ appendTrack() {
     esac
 
     # test if socket is open to add more files too, else start mpv socket up
-    if pgrep -f "mpv .*$SOCKET" > /dev/null 2>&1; then
+    if quiet pgrep -f "mpv .*$SOCKET"; then
         printf '%s\n' "{ \"command\": [\"loadfile\", \"$filename\", \
-\"append-play\" ] }" | $SOCKETCOMMAND > /dev/null 2>&1
+\"append-play\" ] }" | quiet $SOCKETCOMMAND
     else
         exec mpv --really-quiet --idle=once --input-ipc-server="${SOCKET}" \
             $MPVOPTIONS "$filename" &
@@ -426,10 +426,10 @@ playNext() {
 setTimeRelative() {
     time=$(getPropertyString playback-time)
 
-    printf '%s\n' "$1" | grep "%" > /dev/null 2>&1 && {
+    printf '%s\n' "$1" | quiet grep "%" && {
         percentageValue=$(printf '%s\n' "$1" | rev | cut -c 2- | rev)
         printf '%s\n' "{ \"command\": [\"set_property\", \"percent-pos\", \
-$percentageValue ] }" | $SOCKETCOMMAND > /dev/null
+$percentageValue ] }" | oquiet $SOCKETCOMMAND
         return
     }
 
@@ -455,7 +455,7 @@ $percentageValue ] }" | $SOCKETCOMMAND > /dev/null
     esac
 
     printf '%s\n' "{ \"command\": [\"set_property\", \"playback-time\", \
-$time ] }" | $SOCKETCOMMAND > /dev/null
+$time ] }" | oquiet $SOCKETCOMMAND
 }
 
 setTimeAbsolute() {
@@ -470,7 +470,7 @@ setTimeAbsolute() {
     }
 
     printf '%s\n' "{ \"command\": [\"set_property\", \"playback-time\", \
-$time ] }" | $SOCKETCOMMAND > /dev/null
+$time ] }" | oquiet $SOCKETCOMMAND
 }
 
 setVolumeRelative() {
@@ -494,7 +494,7 @@ setVolumeRelative() {
     }
 
     printf '%s\n' "{ \"command\": [\"set_property\", \"volume\", $volume ] }" | \
-        $SOCKETCOMMAND > /dev/null
+        oquiet $SOCKETCOMMAND
 }
 
 setVolumeAbsolute() {
@@ -519,7 +519,7 @@ setVolumeAbsolute() {
     }
 
     printf '%s\n' "{ \"command\": [\"set_property\", \"volume\", $volume ] }" | \
-        $SOCKETCOMMAND > /dev/null
+        oquiet $SOCKETCOMMAND
 }
 
 setSpeedRelative() {
@@ -530,7 +530,7 @@ setSpeedRelative() {
     speed=$(printf '%s\n' "$speed+$1" | bc)
 
     printf '%s\n' "{ \"command\": [\"set_property_string\", \"speed\", \
-\"$speed\" ] }" | $SOCKETCOMMAND > /dev/null
+\"$speed\" ] }" | oquiet $SOCKETCOMMAND
 }
 
 setSpeedAbsolute() {
@@ -539,7 +539,7 @@ setSpeedAbsolute() {
     speed=$1
 
     printf '%s\n' "{ \"command\": [\"set_property_string\", \"speed\", \
-\"$speed\" ] }" | $SOCKETCOMMAND > /dev/null
+\"$speed\" ] }" | oquiet $SOCKETCOMMAND
 }
 
 setTrackRelative() {
@@ -576,7 +576,7 @@ setTrackRelative() {
     }
 
     printf '%s\n' "{ \"command\": [\"set_property\", \"playlist-pos\", \
-$desiredTrack ] }" | $SOCKETCOMMAND > /dev/null
+$desiredTrack ] }" | oquiet $SOCKETCOMMAND
 
     # tiny delay so printFinalOutput can catch up
     sleep 0.5
@@ -594,7 +594,7 @@ setTrackAbsolute() {
     }
 
     printf '%s\n' "{ \"command\": [\"set_property\", \
-\"playlist-pos\", $currentTrack ] }" | $SOCKETCOMMAND > /dev/null
+\"playlist-pos\", $currentTrack ] }" | oquiet $SOCKETCOMMAND
 
     # tiny delay so printFinalOutput can catch up
     sleep 0.5
@@ -624,7 +624,7 @@ moveTrack() {
     [ "$newTrackPosition" -eq 1 ] && newTrackPosition=0
 
     printf '%s\n' "{ \"command\": [\"playlist-move\", \"$trackToMove\", \
-\"$newTrackPosition\" ] }" | $SOCKETCOMMAND > /dev/null
+\"$newTrackPosition\" ] }" | oquiet $SOCKETCOMMAND
 
     [ "$QUIETFLAG" != "true" ] && {
         getPlaylist
@@ -637,7 +637,7 @@ removeTrack() {
 
     if [ "$trackToRemove" = "current" ]; then
         printf '%s\n' "{ \"command\": [\"playlist-remove\", \
-        \"$trackToRemove\" ] }" | $SOCKETCOMMAND > /dev/null
+        \"$trackToRemove\" ] }" | oquiet $SOCKETCOMMAND
     else
         intCheck "$1" || exit 1
 
@@ -651,7 +651,7 @@ removeTrack() {
         filename="$(getPlaylistFilename $trackToRemove)"
 
         printf '%s\n' "{ \"command\": [\"playlist-remove\", \
-        \"$trackToRemove\" ] }" | $SOCKETCOMMAND > /dev/null
+        \"$trackToRemove\" ] }" | oquiet $SOCKETCOMMAND
     fi
 
     [  "$QUIETFLAG" != "true" ] && {
@@ -667,13 +667,13 @@ alwaysPlay() {
     }
 
     printf '%s\n' "{ \"command\": [\"set_property\", \"pause\", false ] }" | \
-        $SOCKETCOMMAND > /dev/null
+        oquiet $SOCKETCOMMAND
 }
 
 alwaysPause() {
     status="true"
     printf '%s\n' "{ \"command\": [\"set_property\", \"pause\", $status ] }" | \
-        $SOCKETCOMMAND > /dev/null
+        oquiet $SOCKETCOMMAND
 }
 
 togglePause() {
@@ -687,7 +687,7 @@ togglePause() {
     [  "$status" = "playing" ] && status="true" || status="false"
 
     printf '%s\n' "{ \"command\": [\"set_property\", \"pause\", $status ] }" | \
-        $SOCKETCOMMAND > /dev/null
+        oquiet $SOCKETCOMMAND
 }
 
 toggleMute() {
@@ -699,7 +699,7 @@ toggleMute() {
     fi
 
     printf '%s\n' "{ \"command\": [\"set_property\", \"mute\", $muted ] }" | \
-        $SOCKETCOMMAND > /dev/null
+        oquiet $SOCKETCOMMAND
 }
 
 toggleLoopFile() {
@@ -707,7 +707,7 @@ toggleLoopFile() {
     [ "$loopFile" = "no" ] && loopFile="inf" || loopFile="no"
 
     printf '%s\n' "{ \"command\": [\"set_property_string\", \"loop-file\", \
-\"$loopFile\" ] }" | $SOCKETCOMMAND > /dev/null
+\"$loopFile\" ] }" | oquiet $SOCKETCOMMAND
 }
 
 toggleLoopPlaylist() {
@@ -715,12 +715,12 @@ toggleLoopPlaylist() {
     [ "$loopPlaylist" = "no" ] && loopPlaylist="inf" || loopPlaylist="no"
 
     printf '%s\n' "{ \"command\": [\"set_property_string\", \"loop-playlist\", \
-\"$loopPlaylist\" ] }" | $SOCKETCOMMAND > /dev/null
+\"$loopPlaylist\" ] }" | oquiet $SOCKETCOMMAND
 }
 
 shufflePlaylist() {
     printf '%s\n' "{ \"command\": [\"playlist-shuffle\" ] }" | \
-        $SOCKETCOMMAND > /dev/null
+        oquiet $SOCKETCOMMAND
 
     [  "$QUIETFLAG" != "true" ] && {
         printf '%s\n' "Playlist shuffled."
@@ -732,7 +732,7 @@ shufflePlaylist() {
 
 cropPlaylist() {
     printf '%s\n' "{ \"command\": [\"playlist-clear\" ] }" | \
-        $SOCKETCOMMAND > /dev/null
+        oquiet $SOCKETCOMMAND
 
     [ "$QUIETFLAG" != "true" ] && {
         getPlaylist
@@ -744,7 +744,7 @@ clearPlaylist() {
     QUIETFLAG="true"
 
     # kill any running process of mpvc add
-    pgrep -f "mpvc add" > /dev/null 2>&1 && pkill -f "mpvc add"
+    quiet pgrep -f "mpvc add" && pkill -f "mpvc add"
 
     cropPlaylist
     removeTrack 1
@@ -753,13 +753,13 @@ clearPlaylist() {
 
 # quit mpv process on given socket
 killSocket() {
-    printf '%s\n' "{ \"command\": [\"quit\"] }" | $SOCKETCOMMAND > /dev/null
+    printf '%s\n' "{ \"command\": [\"quit\"] }" | oquiet $SOCKETCOMMAND
     exit
 }
 
 # kill all instances of mpv running under your user
 killAllMpv() {
-    pkill "mpv" /dev/null 2>&1
+    quiet pkill "mpv"
     exit
 }
 
@@ -982,13 +982,13 @@ EOF
 }
 
 validateDeps() {
-    type mpv > /dev/null 2>&1 || {
+    quiet type mpv || {
         printf '%s\n' "Cannot find mpv on your \$PATH." >&2
         exit 4
     }
 
-    type nc > /dev/null 2>&1 && SOCKETCOMMAND="nc -U -N $SOCKET"
-    type socat > /dev/null 2>&1 && SOCKETCOMMAND="socat - $SOCKET"
+    quiet type nc && SOCKETCOMMAND="nc -U -N $SOCKET"
+    quiet type socat && SOCKETCOMMAND="socat - $SOCKET"
 
     [ "$SOCKETCOMMAND" ] || {
         printf '%s\n' "Cannot find socat or nc on your \$PATH." >&2
@@ -997,7 +997,7 @@ validateDeps() {
 }
 
 validateBC() {
-    type bc > /dev/null 2>&1 || {
+    quiet type bc || {
         printf '%s\n' "Cannot find bc on your \$PATH."
         printf '%s\n' "Please install for speed control."
         exit 4
@@ -1222,7 +1222,7 @@ for arg in "$@"; do
 done
 
 [ "$QUIETFLAG" = "true" ] && {
-    main "$@" >/dev/null 2>&1
+    quiet main "$@"
 } || {
     main "$@"
 }
