@@ -1035,6 +1035,11 @@ main() {
             QUIETFLAG="true"
 
             for arg in "$@"; do
+                echo "$arg" | grep -q '^https\?://'  && {
+                    appendTrack "$arg"
+                    shiftcount=$((shiftcount + 1))
+                }
+
                 [ -f "$arg" ] && {
                     appendTrack "$arg"
                     shiftcount=$((shiftcount + 1))
