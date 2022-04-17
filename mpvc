@@ -4,6 +4,7 @@
 # control mpv remotely using JSON ipc
 # https://mpv.io/manual/master/#json-ipc
 
+SOCKETCOMMAND=""
 SOCKET=${MPVC_SOCKET:-/tmp/mpvsocket}
 MPVOPTIONS="--no-audio-display"
 
@@ -70,8 +71,9 @@ equiet() { "$@" 2> /dev/null; }
 oquiet() { "$@" 1> /dev/null; }
 quiet() { "$@" > /dev/null 2>&1; }
 
-sockcmd() { printf '%s\n' "$@" | oquiet $SOCKETCOMMAND; }
-sockecmd() { printf '%s\n' "$@" | equiet $SOCKETCOMMAND; }
+_sockcmd() { printf '%s\n' "$@" | $SOCKETCOMMAND; }
+sockcmd()  { oquiet _sockcmd "$@"; }
+sockecmd() { equiet _sockcmd "$@"; }
 
 pprintf() { printf "%s" "$@"; }
 eprintf() { printf '%s\n' "$@" >&2; exit 1; }
