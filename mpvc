@@ -190,7 +190,7 @@ getPropertyString() {
     esac
 
     case "$result" in
-        "error")
+        "error"|"null")
             [ $# -ge 2 ] && pprintf "$2" || pprintf "N/A"
             return 1
             ;;
