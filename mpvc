@@ -44,8 +44,9 @@ Formatting:
 
     %name%, %path%, %dir%, %title%, %artist%, %album%, %albumartist%, comment%,
     %genre%, %year%, %percentage%, %playlistlength%, %position%, %repeat%,
-    %single, %status%, %time%, %precisetime%, %speed%, %length%, %remaining%
+    %single, %status%, %time%, %precisetime%, %speed%, %length%, %remaining%,
     %volume%, %muted%, %frame%, %width%, %height%, %ab-loop-a%, %ab-loop-b%
+
 
 MPC compatibility layer:
     mpvc features a nearly complete compatibility layer for mpc commands in
@@ -835,6 +836,7 @@ formatPrint() {
     s#%speed%#$(getSpeed)#g
     s#%time%#$(elapsedTime)#g
     s#%precisetime%#$(preciseElapsedTime)#g
+    s#%playback-time%#$(getProperty playback-time)#g
     s#%volume%#$(getPropertyString volume)#g
     s#%length%#$(trackLength)#g
     s#%remaining%#$(playtimeRemaining)#g
@@ -850,8 +852,8 @@ formatPrint() {
     s#%frame%#$(getProperty estimated-frame-number)#g
     s#%width%#$(getProperty width)#g
     s#%height%#$(getProperty height)#g
-    s#%ab-loop-a%#$(getProperty ab-loop-a)#g
-    s#%ab-loop-b%#$(getProperty ab-loop-b)#g
+    s#%ab-loop-a%#$(getPropertyString ab-loop-a)#g
+    s#%ab-loop-b%#$(getPropertyString ab-loop-b)#g
     ")
 
     printf '%s\n' "${FORMATSTRING}"
