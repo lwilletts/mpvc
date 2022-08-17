@@ -859,13 +859,13 @@ printDefaultStatus() {
             FORMATSTRING="\
 %title%
 [%status%] #%position%/%playlistlength% %time%/%length% (%percentage%%)
-speed: %speed%x volume: %volume%% muted: %muted% repeat: %repeat% single: %single%"
+speed:%speed%x volume:%volume%% muted:%muted% repeat:%repeat% single:%single%"
             ;;
         *)
             FORMATSTRING="\
 ${artist} - %title%
 [%status%] #%position%/%playlistlength% %time%/%length% (%percentage%%)
-speed: %speed%x volume: %volume%% muted: %muted% repeat: %repeat% single: %single%"
+speed:%speed%x volume:%volume%% muted:%muted% repeat:%repeat% single:%single%"
             ;;
     esac
 
