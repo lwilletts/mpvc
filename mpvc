@@ -485,7 +485,7 @@ setTimeAbsolute() {
         return 1
     }
 
-    sockcmd '{ "command": "set_property", "playback-time", '$time' ] }'
+    sockcmd '{ "command": [ "set_property", "playback-time", '$time' ] }'
 }
 
 setVolumeRelative() {
