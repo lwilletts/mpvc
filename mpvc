@@ -1213,7 +1213,7 @@ for arg in "$@"; do
         -I|--image)       IMAGEFLAG=true                    ;;
         -S|--socket)      SOCKETFLAG=true                   ;;
         -f|--format)      FORMATFLAG=true                   ;;
-        -Q|--vid=no)      MPVOPTIONS="$MPVOPTIONS --vid=no" ;;
+        -Q|--vid=no)      MPVOPTIONS="$MPVOPTIONS --vid=no"; shift ;;
         -K|--killall)     killAllMpv                        ;;
         --list-options)   usage 0                           ;;
         -h|--help|h|help) usage 0                           ;;
