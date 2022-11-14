@@ -633,7 +633,7 @@ moveTrack() {
     sockcmd '{ "command": ["playlist-move", "'$trackToMove'", "'$newTrackPosition'" ] }'
 
     [ "$QUIETFLAG" != "true" ] && {
-        getPlaylist
+        getPlaylist $COLOURFLAG
         QUIETFLAG="true"
     }
 }
@@ -1170,6 +1170,8 @@ main() {
             -J|--tracknum)                   TRACKVALFLAG=true              ;;
             -r|--remove|rm|remove|del)       REMOVEFLAG=true                ;;
             --save|save)                     SAVEFLAG=true                  ;;
+            --mono|mono)                     COLOURFLAG=nocolour            ;;
+            --colour|colour)                 COLOURFLAG=colour              ;;
             -s|--stop|stop)                  alwaysPause; setTimeAbsolute 0 ;;
             -P|--play|play)                  alwaysPlay                     ;;
             -A|--playnext|playnext)          PLAYNEXT=true                  ;;
@@ -1177,8 +1179,8 @@ main() {
             -m|--mute)                       toggleMute                     ;;
             mute)                            toggleMute true                ;;
             unmute)                          toggleMute false               ;;
-            -i|--playlist|playlist)          getPlaylist; exit              ;;
-            -I|--fullplaylist|fullplaylist)  getFullPlaylist; exit          ;;
+            -i|--playlist|playlist)          getPlaylist $COLOURFLAG; exit  ;;
+            -I|--fullplaylist|fullplaylist)  getFullPlaylist $COLOURFLAG; exit;;
             -L|--loop|loop)                  toggleLoopPlaylist             ;;
             -l|--loopfile|loopfile)          toggleLoopFile                 ;;
             -z|--shuffle|shuffle)            shufflePlaylist                ;;
