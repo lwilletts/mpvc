@@ -5,7 +5,7 @@
 # https://mpv.io/manual/master/#json-ipc
 
 SOCKETCOMMAND=""
-SOCKET=${MPVC_SOCKET:-/tmp/mpvsocket}
+SOCKET=${MPVC_SOCKET:-$HOME/.config/mpvc/mpvsocket}
 MPVOPTIONS="--no-audio-display --no-input-terminal"
 
 PROGNAME=$(basename $0)
@@ -405,6 +405,7 @@ appendTrack() {
     if quiet pgrep -f "mpv .*$SOCKET"; then
         sockcmd '{ "command": ["loadfile", "'"$filename"'", "append-play" ] }'
     else
+        mkdir -p $(dirname $SOCKET)
         exec mpv --really-quiet --idle=once --input-ipc-server="${SOCKET}" \
             $MPVOPTIONS "$filename" &
 
