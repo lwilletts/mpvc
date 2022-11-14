@@ -586,7 +586,7 @@ setTrackRelative() {
     sockcmd '{ "command": ["set_property", "playlist-pos", '$desiredTrack' ] }'
 
     # tiny delay so printFinalOutput can catch up
-    sleep 0.5
+    #sleep 0.5
 }
 
 setTrackAbsolute() {
@@ -1023,6 +1023,24 @@ getVersion() {
 main() {
     validateDeps
 
+    # more global argument parsing
+    for arg in "$@"; do
+        [ "$SOCKETFLAG" = "true" ] && SOCKET=$arg && SOCKETFLAG=false
+        [ "$FORMATFLAG" = "true" ] && FORMATSTRING=$arg && FORMATFLAG=false
+
+        case $arg in
+            --version)        getVersion                        ;;
+            -q|--quiet)       QUIETFLAG=true                    ;;
+            -I|--image)       IMAGEFLAG=true                    ;;
+            -S|--socket)      SOCKETFLAG=true                   ;;
+            -f|--format)      FORMATFLAG=true                   ;;
+            -Q|--vid=no)      MPVOPTIONS="$MPVOPTIONS --vid=no"; shift ;;
+            -K|--killall)     killAllMpv                        ;;
+            --list-options)   usage 0                           ;;
+            -h|--help|h|help) usage 0                           ;;
+        esac
+    done
+
     # grab mpv options first if any
     for arg in "$@"; do
         [ "$MPVFLAG" = "true" ] && {
@@ -1202,24 +1220,6 @@ main() {
         printFinalOutput
     }
 }
-
-# more global argument parsing
-for arg in "$@"; do
-    [ "$SOCKETFLAG" = "true" ] && SOCKET=$arg && SOCKETFLAG=false
-    [ "$FORMATFLAG" = "true" ] && FORMATSTRING=$arg && FORMATFLAG=false
-
-    case $arg in
-        --version)        getVersion                        ;;
-        -q|--quiet)       QUIETFLAG=true                    ;;
-        -I|--image)       IMAGEFLAG=true                    ;;
-        -S|--socket)      SOCKETFLAG=true                   ;;
-        -f|--format)      FORMATFLAG=true                   ;;
-        -Q|--vid=no)      MPVOPTIONS="$MPVOPTIONS --vid=no"; shift ;;
-        -K|--killall)     killAllMpv                        ;;
-        --list-options)   usage 0                           ;;
-        -h|--help|h|help) usage 0                           ;;
-    esac
-done
 
 [ "$QUIETFLAG" = "true" ] && {
     quiet main "$@"
