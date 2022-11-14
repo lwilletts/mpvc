@@ -6,7 +6,7 @@
 
 SOCKETCOMMAND=""
 SOCKET=${MPVC_SOCKET:-/tmp/mpvsocket}
-MPVOPTIONS="--no-audio-display"
+MPVOPTIONS="--no-audio-display --no-input-terminal"
 
 PROGNAME=$(basename $0)
 PROGVERSION="1.3"
@@ -408,14 +408,12 @@ appendTrack() {
         exec mpv --really-quiet --idle=once --input-ipc-server="${SOCKET}" \
             $MPVOPTIONS "$filename" &
 
-        oldstty=$(stty -g)
         # wait until mpv starts up
         while :; do
             idlestatus=$(getPropertyString idle-active)
             [ "$idlestatus" ] && break
             sleep 0.1
         done
-        stty "$oldstty"
     fi
 
     filename=$(cleanFilename "$filename")
