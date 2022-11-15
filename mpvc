@@ -1081,72 +1081,55 @@ main() {
     esac
 
     case "$1" in
-        add|-a|--append|playnext|-A|--playnext)
-            ;;
-        *)
-            validateSocket
-            ;;
+        add|-a|--append|playnext|-A|--playnext) ;;
+        *) validateSocket ;;
     esac
 
     # mpc compatibility layer
     case "$1" in
         play|start|resume)
             case "$2" in
-                0)
-                    setTrackAbsolute 1
-                    ;;
-                $)
-                    setTrackAbsolute "$(getPropertyString playlist-count)"
-                    ;;
-                *)
-                    intCheck "$2" && setTrackAbsolute "$2"
-                    ;;
+                0) setTrackAbsolute 1 ;;
+                $) setTrackAbsolute "$(getPropertyString playlist-count)" ;;
+                *) intCheck "$2" && setTrackAbsolute "$2" ;;
             esac
-
             alwaysPlay
             printFinalOutput
-            ;;
+        ;;
+
         vol|volume)
-            firstChar=$(printf '%s\n' "$2" | cut -c 1)
-            case "$firstChar" in
-                "+")
-                    volume=$(printf '%s\n' "$2" | cut -d+ -f2)
-                    setVolumeRelative "$volume"
-                    ;;
-                "-")
-                    volume=$(printf '%s\n' "$2" | cut -d- -f2)
-                    setVolumeRelative "-${volume}"
-                    ;;
+            case "$2" in
+                +*) setVolumeRelative "$2" ;;
+                -*) setVolumeRelative "$2" ;;
                 *)
-                    [ -n "$2" ] && {
-                        setVolumeAbsolute "$2"
-                    } || {
-                        printf '%s\n' "Specify volume in/decrease amount or absolute amount."
-                        return 1
-                    }
+                    if [ -z "$2" ]
+                    then
+                        eprintf "Specify volume in/decrease amount or absolute amount."
+                    fi
+                    setVolumeAbsolute "$2"
                     ;;
             esac
-
             printFinalOutput
-            ;;
+        ;;
+
         repeat)
             case "$2" in
                 "on")  toggleLoopPlaylist inf ;;
                 "off") toggleLoopPlaylist no  ;;
                 *)     toggleLoopPlaylist     ;;
             esac
-
             printFinalOutput
-            ;;
+        ;;
+
         single)
             case "$2" in
                 "on")  toggleLoopFile yes ;;
                 "off") toggleLoopFile no  ;;
                 *)     toggleLoopFile     ;;
             esac
-
             printFinalOutput
-            ;;
+        ;;
+
         metadata) getFilenameMetadata "$2" ;;
         pause)    alwaysPause         ; printFinalOutput ;;
         next)     setTrackRelative 1  ; printFinalOutput ;;
