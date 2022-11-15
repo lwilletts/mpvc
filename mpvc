@@ -1186,7 +1186,7 @@ main() {
             -j|--track)                      TRACKFLAG=true                 ;;
             -J|--tracknum)                   TRACKVALFLAG=true              ;;
             -r|--remove|rm|remove|del)       REMOVEFLAG=true                ;;
-            --save|save)                     SAVEFLAG=true                  ;;
+            -o|--save|save)                  SAVEFLAG=true                  ;;
             --mono|mono)                     COLOURFLAG=nocolour            ;;
             --colour|colour)                 COLOURFLAG=colour              ;;
             -s|--stop|stop)                  alwaysPause; setTimeAbsolute 0 ;;
