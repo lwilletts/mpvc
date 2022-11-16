@@ -133,26 +133,16 @@ getMetadata() {
 
     # test for no result
     case "$metadata" in
-        "property not found")
-            result="N/A"
-            ;;
-        *)
-            result="$metadata"
-            ;;
+        "property not found") result="N/A" ;;
+        *) result="$metadata" ;;
     esac
 
     # test if title has no property and return filename instead
     if [ "$property" = "title" ]; then
         case "$metadata" in
-            "property not found")
-                result=$(getPropertyString filename)
-                ;;
-            "error")
-                result=$(getPropertyString filename)
-                ;;
-            *)
-                result=$(cleanFilename "$result")
-                ;;
+            "property not found") result=$(getPropertyString filename) ;;
+            "error") result=$(getPropertyString filename) ;;
+            *) result=$(cleanFilename "$result") ;;
         esac
     fi
 
@@ -352,16 +342,14 @@ getFilenameMetadata() {
 savePlaylist() {
     saveLocation="$1"
 
-    [ -e "$saveLocation.m3u" ] && {
-        printf '%s\n' "Playlist exists! Overwrite? (y for yes, anything else no)"
-
-        oldstty=$(stty -g)
-        stty raw -echo; key="$(head -c 1)"; stty "$oldstty"
+    if [ -e "$saveLocation.m3u" ]
+    then
+        read -p "Playlist exists! Overwrite? (y for yes, anything else no)" key
         case $key in
             y) rm "$saveLocation.m3u" ;;
             *) return                 ;;
         esac
-    }
+    fi
 
     printf '%s\n' "Adding files to $saveLocation.m3u..."
 
@@ -391,14 +379,9 @@ appendTrack() {
     # skip over various other filetypes and images unless wanted
     # this doesn't stop mpv from resolving directories and adding them anyway
     case "$filename" in
-        *.txt|*.log|*.cue)
-            return
-            ;;
-        *.png|*.jpg|*.jpeg|*.gif|*.psd|*.pdf)
-            [ "$IMAGEFLAG" != "true" ] && return
-            ;;
-        https*)
-            ;;
+        *.txt|*.log|*.cue) return ;;
+        *.png|*.jpg|*.jpeg|*.gif|*.psd|*.pdf) [ "$IMAGEFLAG" != "true" ] && return ;;
+        https*) ;;
     esac
 
     # test if socket is open to add more files too, else start mpv socket up
@@ -413,7 +396,7 @@ appendTrack() {
         while :; do
             idlestatus=$(getPropertyString idle-active)
             [ "$idlestatus" ] && break
-            sleep 0.1
+            sleep 0.05
         done
     fi
 
@@ -603,7 +586,7 @@ setTrackAbsolute() {
     sockcmd '{ "command": ["set_property", "playlist-pos", '$currentTrack' ] }'
 
     # tiny delay so printFinalOutput can catch up
-    sleep 0.5
+    #sleep 0.5
 }
 
 moveTrack() {
