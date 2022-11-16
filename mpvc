@@ -1055,7 +1055,7 @@ main() {
         QUIETFLAG="true"
 
         while read -r line; do
-            [ -f "$line" ] && appendTrack "${line}"
+            [ -e "$line" ] && appendTrack "${line}"
         done
     fi
 
@@ -1064,25 +1064,27 @@ main() {
             shiftcount=0
             QUIETFLAG="true"
 
-            for arg in "$@"; do
-                echo "$arg" | grep -q '^https\?://'  && {
+            for arg in "$@";
+            do
+                if echo "$arg" | grep -q '^https\?://';
+                then
                     appendTrack "$arg"
                     shiftcount=$((shiftcount + 1))
-                }
-
-                [ -f "$arg" ] && {
+                elif [ -e "$arg" ]
+                then
                     appendTrack "$arg"
                     shiftcount=$((shiftcount + 1))
-                }
+                fi
             done
 
             shift "$((shiftcount + 1))"
-            ;;
-    esac
+        ;;
 
-    case "$1" in
-        add|-a|--append|playnext|-A|--playnext) ;;
-        *) validateSocket ;;
+        playnext|-A|--playnext)
+        ;;
+
+        *) validateSocket
+        ;;
     esac
 
     # mpc compatibility layer
