@@ -259,9 +259,10 @@ getPlaylistFilename() {
     printf '%s\n' "$filename"
 }
 
-# print all filenames in current playlist
+# print filenames in current playlist
 getPlaylist() {
     noColour="$1"
+    fullPlaylist="$2"
 
     tracks=$(getPropertyString playlist-count)
     currentTrack=$(getPropertyString playlist-pos)
@@ -270,40 +271,14 @@ getPlaylist() {
         eprintf "${SOCKET} is currently idle."
     }
 
-    calculateTerminalHeight
-
-    while [ "$FIRST" -le "$LAST" ]; do
-        filename=$(getPlaylistFilename $((FIRST - 1)))
-
-        case "$noColour" in
-            "nocolour")
-                printf '%d	%s\n' "$FIRST" "${filename}"
-                ;;
-            *)
-                if [ "$currentTrack" -eq $((FIRST - 1)) ]; then
-                    printf '%d	[7m %s[0m\n' "$FIRST" "${filename}"
-                else
-                    printf '%d	 %s\n' "$FIRST" "${filename}"
-                fi
-                ;;
-        esac
-
-        FIRST=$((FIRST + 1))
-    done
-}
-
-getFullPlaylist() {
-    noColour="$1"
-
-    tracks=$(getPropertyString playlist-count)
-    currentTrack=$(getPropertyString playlist-pos)
-
-    [  "$tracks" -eq 0 ] || [ "$currentTrack" = "N/A" ] && {
-        eprintf "${SOCKET} is currently idle."
-    }
-
-    FIRST=1
-    LAST=$(getPropertyString playlist-count)
+    # by default, display only tracks fitting terminal, otherwise, display all
+    if [ "$fullPlaylist" = "full" ]
+    then
+        FIRST=1
+        LAST=$tracks
+    else
+        calculateTerminalHeight
+    fi
 
     while [ "$FIRST" -le "$LAST" ]; do
         filename=$(getPlaylistFilename $((FIRST - 1)))
@@ -1115,6 +1090,7 @@ main() {
             printFinalOutput
         ;;
 
+        sockcmd)  _sockcmd "$2"; return ;;
         metadata) getFilenameMetadata "$2" ;;
         pause)    alwaysPause         ; printFinalOutput ;;
         next)     setTrackRelative 1  ; printFinalOutput ;;
@@ -1164,8 +1140,8 @@ main() {
             -m|--mute)                       toggleMute                     ;;
             mute)                            toggleMute true                ;;
             unmute)                          toggleMute false               ;;
-            -i|--playlist|playlist)          getPlaylist $COLOURFLAG; exit  ;;
-            -I|--fullplaylist|fullplaylist)  getFullPlaylist $COLOURFLAG; exit;;
+            -i|--playlist|playlist)          getPlaylist "$COLOURFLAG"; exit;;
+            -I|--fullplaylist|fullplaylist)  getPlaylist "$COLOURFLAG" "full"; exit;;
             -L|--loop|loop)                  toggleLoopPlaylist             ;;
             -l|--loopfile|loopfile)          toggleLoopFile                 ;;
             -z|--shuffle|shuffle)            shufflePlaylist                ;;
