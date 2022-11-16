@@ -1108,34 +1108,23 @@ main() {
 
     # GNU-style options
     for arg in "$@"; do
-        [ "$SEEKFLAG"     = "true" ] && setTimeRelative "$arg";   SEEKFLAG=false
-        [ "$TIMEFLAG"     = "true" ] && setTimeAbsolute "$arg";   TIMEFLAG=false
-        [ "$VOLFLAG"      = "true" ] && setVolumeRelative "$arg"; VOLFLAG=false
-        [ "$VOLUMEFLAG"   = "true" ] && setVolumeAbsolute "$arg"; VOLUMEFLAG=false
-        [ "$SPEEDFLAG"    = "true" ] && setSpeedRelative "$arg";  SPEEDFLAG=false
-        [ "$SPEEDVALFLAG" = "true" ] && setSpeedAbsolute "$arg";  SPEEDVALFLAG=false
-        [ "$TRACKFLAG"    = "true" ] && setTrackRelative "$arg";  TRACKFLAG=false
-        [ "$TRACKVALFLAG" = "true" ] && setTrackAbsolute "$arg";  TRACKVALFLAG=false
-        [ "$REMOVEFLAG"   = "true" ] && removeTrack "$arg";       REMOVEFLAG=false
-        [ "$SAVEFLAG"     = "true" ] && savePlaylist "$arg";      SAVEFLAG=false
-        [ "$PLAYNEXT"     = "true" ] && playNext "$arg";          PLAYNEXT=false
+        case "$1" in
+            -t|--seek|seek)                  shift; setTimeRelative "$1"    ;;
+            -T|--time)                       shift; setTimeAbsolute "$1"    ;;
+            -v|--vol)                        shift; setVolumeRelative "$1"  ;;
+            -V|--volume)                     shift; setVolumeAbsolute "$1"  ;;
+            -x|--speed|speed)                shift; setSpeedRelative "$1"   ;;
+            -X|--speedval)                   shift; setSpeedAbsolute "$1"   ;;
+            -j|--track)                      shift; setTrackRelative "$1"   ;;
+            -J|--tracknum)                   shift; setTrackAbsolute "$1"   ;;
+            -r|--remove|rm|remove|del)       shift; removeTrack "$1"        ;;
+            -o|--save|save)                  shift; savePlaylist "$1"       ;;
+            -A|--playnext|playnext)          shift; playNext "$1"           ;;
 
-        case "$arg" in
-            -t|--seek|seek)                  SEEKFLAG=true                  ;;
-            -T|--time)                       TIMEFLAG=true                  ;;
-            -v|--vol)                        VOLFLAG=true                   ;;
-            -V|--volume)                     VOLUMEFLAG=true                ;;
-            -x|--speed|speed)                SPEEDFLAG=true                 ;;
-            -X|--speedval)                   SPEEDVALFLAG=true              ;;
-            -j|--track)                      TRACKFLAG=true                 ;;
-            -J|--tracknum)                   TRACKVALFLAG=true              ;;
-            -r|--remove|rm|remove|del)       REMOVEFLAG=true                ;;
-            -o|--save|save)                  SAVEFLAG=true                  ;;
             --mono|mono)                     COLOURFLAG=nocolour            ;;
             --colour|colour)                 COLOURFLAG=colour              ;;
             -s|--stop|stop)                  alwaysPause; setTimeAbsolute 0 ;;
             -P|--play|play)                  alwaysPlay                     ;;
-            -A|--playnext|playnext)          PLAYNEXT=true                  ;;
             -p|--toggle|toggle)              togglePause                    ;;
             -m|--mute)                       toggleMute                     ;;
             mute)                            toggleMute true                ;;
@@ -1156,6 +1145,7 @@ main() {
             --|---|----)                     continue                       ;;
             -?)                              usage 1                        ;;
         esac
+        [ -n "$1" ] && shift
     done
 
     # produce format strings last
