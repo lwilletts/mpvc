@@ -980,6 +980,29 @@ getVersion() {
     exit
 }
 
+do_fuzzy_search()
+{
+    true
+}
+
+do_idleloop()
+{
+    unobserve_property 1
+    observe_property 1, "$@"
+}
+
+observe_property()
+{
+    # sockcmd '{ "command": ["observe_property", '"$@"' ] }'
+    echo -n '{ "command": ["observe_property", '"$@"' ] }' |
+        socat -t0 -,ignoreeof $SOCKET
+}
+
+unobserve_property()
+{
+    sockcmd '{ "command": ["unobserve_property", '"$@"' ] }'
+}
+
 main() {
     validateDeps
 
@@ -1101,8 +1124,8 @@ main() {
         mute)     toggleMute true     ; printFinalOutput ;;
         unmute)   toggleMute false    ; printFinalOutput ;;
         pretty)   printPrettyOutput ;;
-        # find) do fuzzy search
-        # idleloop) observe_property
+        find)     do_fuzzy_search "$@" ;;
+        idleloop) do_idleloop "$@"; return ;;
         # consume) to implement # add on|off toggle
         # random) MPV doesn't have this control option!
         # create an issue or implement puesdo-random tracks
