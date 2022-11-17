@@ -266,31 +266,19 @@ getPlaylist() {
     }
 
     # by default, display only tracks fitting terminal, otherwise, display all
-    if [ "$fullPlaylist" = "full" ]
-    then
-        FIRST=1
-        LAST=$tracks
-    else
-        calculateTerminalHeight
-    fi
+    FIRST=1
+    LAST=$tracks
+    [ "$fullPlaylist" != "full" ] && calculateTerminalHeight
 
-    while [ "$FIRST" -le "$LAST" ]; do
-        filename=$(getPlaylistFilename $((FIRST - 1)))
-
-        case "$noColour" in
-            "nocolour")
-                printf '%d	%s\n' "$FIRST" "${filename}"
-                ;;
-            *)
-                if [ "$currentTrack" -eq $((FIRST - 1)) ]; then
-                    printf '%d	[7m %s[0m\n' "$FIRST" "${filename}"
-                else
-                    printf '%d	 %s\n' "$FIRST" "${filename}"
-                fi
-                ;;
-        esac
-
-        FIRST=$((FIRST + 1))
+    for i in $( seq $(( $FIRST - 1 )) $(( $LAST - 1 )) )
+    do
+        filename=$(getPlaylistFilename $i)
+        fmtstr='%d	 %s\n'
+        if [ "$noColour" != "nocolour" ] && [ "$currentTrack" -eq $i ]
+        then
+            fmtstr='%d	[7m %s[0m\n'
+        fi
+        printf  "$fmtstr" "$i" "${filename}"
     done
 }
 
@@ -299,37 +287,30 @@ getFilenameMetadata() {
     intCheck "$1" || exit 1
 
     trackToMetadata="$1"
-
-    filename=$(getPlaylistFilename $trackToMetadata fullpath)
-    echo $filename
-
-    # mpvc -S /tmp/tempsock -m -a "$filename" -f \
-# "Artist: %artist%"
+    getPlaylistFilename $trackToMetadata fullpath
 }
 
 # saves playlist to file but with no path checking. we live dangerously
 savePlaylist() {
     saveLocation="$1"
+    savePlaylist="$saveLocation.m3u"
 
-    if [ -e "$saveLocation.m3u" ]
+    [ -z "$1" ] && usage 1
+    if [ -e "$savePlaylist" ]
     then
-        read -p "Playlist exists! Overwrite? (y for yes, anything else no)" key
+        read -p "Playlist $savePlaylist exists! Overwrite? [Y/n] " key
         case $key in
-            y) rm "$saveLocation.m3u" ;;
+            Y) rm "$savePlaylist" ;;
             *) return                 ;;
         esac
     fi
 
-    printf '%s\n' "Adding files to $saveLocation.m3u..."
-
-    FIRST=1
+    printf '%s\n' "Adding files to $savePlaylist ..."
     LAST=$(getPropertyString playlist-count)
-
-    while [ "$FIRST" -le "$LAST" ]; do
-        printf '%s\n' "$(getPlaylistFilename $((FIRST - 1)) fullpath)" >> "$saveLocation".m3u
-
-        FIRST=$((FIRST + 1))
-    done
+    for i in $(seq 0 $(( $LAST - 1 )) )
+    do
+        printf '%s\n' "$(getPlaylistFilename $i fullpath)"
+    done >> "$savePlaylist"
 
     QUIETFLAG="true"
 }
@@ -873,25 +854,25 @@ calculateTerminalHeight() {
     rows=$(($(tput lines) - 2))
     halfrows=$((rows / 2))
 
-    [  "$tracks" -gt $rows ] && {
-        [ "$currentTrack" -le $halfrows ] && {
+    if [ "$tracks" -gt $rows ]
+    then
+        if [ "$currentTrack" -le $halfrows ]
+        then
             FIRST=1
             LAST=$rows
             return
-        }
-
-        [  $((currentTrack + halfrows)) -ge "$tracks" ] && {
+        elif [  $((currentTrack + halfrows)) -ge "$tracks" ]
+        then
             FIRST=$((tracks - rows + 1))
             LAST=$tracks
             return
-        }
-
-        [  $((currentTrack + halfrows)) -lt "$tracks" ] && {
+        elif [  $((currentTrack + halfrows)) -lt "$tracks" ]
+        then
             FIRST=$((currentTrack - halfrows + 1))
             LAST=$((currentTrack + halfrows))
             return
-        }
-    }
+        fi
+    fi
 
     FIRST=1
     LAST=$tracks
