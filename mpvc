@@ -766,37 +766,42 @@ formatPrint() {
     F="$FORMATSTRING"
 
     # not that nice, in fact, way more ugly, but too way faster
-    case $F in (*%status%*) F=$(echo "$F" | sed "s#%status%#$(getPauseStatus)#g") ;; esac
-    case $F in (*%year%*) F=$(echo "$F" | sed "s#%year%#$(getMetadata date)#g") ;; esac
-    case $F in (*%genre%*) F=$(echo "$F" | sed "s#%genre%#$(getMetadata genre)#g") ;; esac
-    case $F in (*%title%*) F=$(echo "$F" | sed "s#%title%#$(getMetadata title)#g") ;; esac
-    case $F in (*%title%*) F=$(echo "$F" | sed "s#%title%#$(getMetadata title)#g") ;; esac
-    case $F in (*%album%*) F=$(echo "$F" | sed "s#%album%#$(getMetadata album)#g") ;; esac
-    case $F in (*%artist%*) F=$(echo "$F" | sed "s#%artist%#$(getMetadata artist)#g") ;; esac
-    case $F in (*%comment%*) F=$(echo "$F" | sed "s#%comment%#$(getMetadata comment)#g") ;; esac
-    case $F in (*%comment%*) F=$(echo "$F" | sed "s#%comment%#$(getMetadata comment)#g") ;; esac
-    case $F in (*%albumartist%*) F=$(echo "$F" | sed "s#%albumartist%#$(getMetadata album_artist)#g") ;; esac
-    case $F in (*%speed%*) F=$(echo "$F" | sed "s#%speed%#$(getSpeed)#g") ;; esac
-    case $F in (*%time%*) F=$(echo "$F" | sed "s#%time%#$(elapsedTime)#g") ;; esac
-    case $F in (*%precisetime%*) F=$(echo "$F" | sed "s#%precisetime%#$(preciseElapsedTime)#g") ;; esac
-    case $F in (*%playback-time%*) F=$(echo "$F" | sed "s#%playback-time%#$(getProperty playback-time)#g") ;; esac
-    case $F in (*%volume%*) F=$(echo "$F" | sed "s#%volume%#$(getPropertyString volume)#g") ;; esac
-    case $F in (*%length%*) F=$(echo "$F" | sed "s#%length%#$(trackLength)#g") ;; esac
-    case $F in (*%remaining%*) F=$(echo "$F" | sed "s#%remaining%#$(playtimeRemaining)#g") ;; esac
-    case $F in (*%muted%*) F=$(echo "$F" | sed "s#%muted%#$(getMuteStatus)#g") ;; esac
-    case $F in (*%percentage%*) F=$(echo "$F" | sed "s#%percentage%#$(getPropertyString percent-pos)#g") ;; esac
-    case $F in (*%name%*) F=$(echo "$F" | sed "s#%name%#$(getMediaProperties filename)#g") ;; esac
-    case $F in (*%path%*) F=$(echo "$F" | sed "s#%path%#$(getMediaProperties path)#g") ;; esac
-    case $F in (*%dir%*) F=$(echo "$F" | sed "s#%dir%#$(getPropertyString working-directory)#g") ;; esac
-    case $F in (*%repeat%*) F=$(echo "$F" | sed "s#%repeat%#$(getLoopStatus loop-playlist)#g") ;; esac
-    case $F in (*%single%*) F=$(echo "$F" | sed "s#%single%#$(getLoopStatus loop-file)#g") ;; esac
-    case $F in (*%playlistlength%*) F=$(echo "$F" | sed "s#%playlistlength%#$(getPropertyString playlist-count)#g") ;; esac
-    case $F in (*%position%*) F=$(echo "$F" | sed "s#%position%#$(($(getPropertyString playlist-pos) + 1))#g") ;; esac
-    case $F in (*%frame%*) F=$(echo "$F" | sed "s#%frame%#$(getProperty estimated-frame-number)#g") ;; esac
-    case $F in (*%width%*) F=$(echo "$F" | sed "s#%width%#$(getProperty width)#g") ;; esac
-    case $F in (*%height%*) F=$(echo "$F" | sed "s#%height%#$(getProperty height)#g") ;; esac
-    case $F in (*%ab-loop-a%*) F=$(echo "$F" | sed "s#%ab-loop-a%#$(getPropertyString ab-loop-a)#g") ;; esac
-    case $F in (*%ab-loop-b%*) F=$(echo "$F" | sed "s#%ab-loop-b%#$(getPropertyString ab-loop-b)#g") ;; esac
+    for f in $F
+    do
+        case $f in
+        (*%status%*) F=$(echo "$F" | sed "s#%status%#$(getPauseStatus)#g") ;;
+        (*%year%*) F=$(echo "$F" | sed "s#%year%#$(getMetadata date)#g") ;;
+        (*%genre%*) F=$(echo "$F" | sed "s#%genre%#$(getMetadata genre)#g") ;;
+        (*%title%*) F=$(echo "$F" | sed "s#%title%#$(getMetadata title)#g") ;;
+        (*%title%*) F=$(echo "$F" | sed "s#%title%#$(getMetadata title)#g") ;;
+        (*%album%*) F=$(echo "$F" | sed "s#%album%#$(getMetadata album)#g") ;;
+        (*%artist%*) F=$(echo "$F" | sed "s#%artist%#$(getMetadata artist)#g") ;;
+        (*%comment%*) F=$(echo "$F" | sed "s#%comment%#$(getMetadata comment)#g") ;;
+        (*%comment%*) F=$(echo "$F" | sed "s#%comment%#$(getMetadata comment)#g") ;;
+        (*%albumartist%*) F=$(echo "$F" | sed "s#%albumartist%#$(getMetadata album_artist)#g") ;;
+        (*%speed%*) F=$(echo "$F" | sed "s#%speed%#$(getSpeed)#g") ;;
+        (*%time%*) F=$(echo "$F" | sed "s#%time%#$(elapsedTime)#g") ;;
+        (*%precisetime%*) F=$(echo "$F" | sed "s#%precisetime%#$(preciseElapsedTime)#g") ;;
+        (*%playback-time%*) F=$(echo "$F" | sed "s#%playback-time%#$(getProperty playback-time)#g") ;;
+        (*%volume%*) F=$(echo "$F" | sed "s#%volume%#$(getPropertyString volume)#g") ;;
+        (*%length%*) F=$(echo "$F" | sed "s#%length%#$(trackLength)#g") ;;
+        (*%remaining%*) F=$(echo "$F" | sed "s#%remaining%#$(playtimeRemaining)#g") ;;
+        (*%muted%*) F=$(echo "$F" | sed "s#%muted%#$(getMuteStatus)#g") ;;
+        (*%percentage%*) F=$(echo "$F" | sed "s#%percentage%#$(getPropertyString percent-pos)#g") ;;
+        (*%name%*) F=$(echo "$F" | sed "s#%name%#$(getMediaProperties filename)#g") ;;
+        (*%path%*) F=$(echo "$F" | sed "s#%path%#$(getMediaProperties path)#g") ;;
+        (*%dir%*) F=$(echo "$F" | sed "s#%dir%#$(getPropertyString working-directory)#g") ;;
+        (*%repeat%*) F=$(echo "$F" | sed "s#%repeat%#$(getLoopStatus loop-playlist)#g") ;;
+        (*%single%*) F=$(echo "$F" | sed "s#%single%#$(getLoopStatus loop-file)#g") ;;
+        (*%playlistlength%*) F=$(echo "$F" | sed "s#%playlistlength%#$(getPropertyString playlist-count)#g") ;;
+        (*%position%*) F=$(echo "$F" | sed "s#%position%#$(($(getPropertyString playlist-pos) + 1))#g") ;;
+        (*%frame%*) F=$(echo "$F" | sed "s#%frame%#$(getProperty estimated-frame-number)#g") ;;
+        (*%width%*) F=$(echo "$F" | sed "s#%width%#$(getProperty width)#g") ;;
+        (*%height%*) F=$(echo "$F" | sed "s#%height%#$(getProperty height)#g") ;;
+        (*%ab-loop-a%*) F=$(echo "$F" | sed "s#%ab-loop-a%#$(getPropertyString ab-loop-a)#g") ;;
+        (*%ab-loop-b%*) F=$(echo "$F" | sed "s#%ab-loop-b%#$(getPropertyString ab-loop-b)#g") ;;
+        esac
+    done
 
     echo "${F}"
     exit
