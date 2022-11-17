@@ -20,6 +20,7 @@ Usage: $(basename $0) [-S "socket"] [-a "filenames"] [-o "path"] [-f "format str
     -o | --save         : Save current playlist to given path.
     -j | --track        : Go forwards/backwards through the playlist queue.
     -J | --tracknum     : Jump to playlist item number.
+    -c | --crop         : Clear the playlist except for the file currently playing.
     -z | --shuffle      : Shuffle the current playlist.
     -l | --loop         : Loop currently playing playlist.
     -L | --loopfile     : Loop currently playing file.
