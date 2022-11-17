@@ -747,7 +747,7 @@ formatPrint() {
     F="$FORMATSTRING"
 
     # not that nice, in fact, way more ugly, but too way faster
-    for f in $F
+    for f in $(echo "$FORMATSTRING" | sed 's#/# #g')
     do
         case $f in
         (*%status%*) F=$(echo "$F" | sed "s#%status%#$(getPauseStatus)#g") ;;
