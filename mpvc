@@ -296,17 +296,21 @@ savePlaylist() {
     saveLocation="$1"
     savePlaylist="$saveLocation.m3u"
 
-    [ -z "$1" ] && usage 1
-    if [ -e "$savePlaylist" ]
+    if [ -z "$saveLocation" ]
     then
-        read -p "Playlist $savePlaylist exists! Overwrite? [Y/n] " key
-        case $key in
-            Y) rm "$savePlaylist" ;;
-            *) return                 ;;
-        esac
+        savePlaylist="/dev/stdout"
+    else
+        if [ -e "$savePlaylist" ]
+        then
+            read -p "Playlist $savePlaylist exists! Overwrite? [Y/n] " key
+            case $key in
+                Y) > "$savePlaylist" ;;
+                *) return                 ;;
+            esac
+        fi
+        printf '%s\n' "Adding files to $savePlaylist ..."
     fi
 
-    printf '%s\n' "Adding files to $savePlaylist ..."
     LAST=$(getPropertyString playlist-count)
     for i in $(seq 0 $(( $LAST - 1 )) )
     do
