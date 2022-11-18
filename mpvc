@@ -197,7 +197,7 @@ getLoopStatus() {
             status=$(getProperty loop-file)
             ;;
         loop-playlist)
-            status=$(getProperty loop-playlist)
+            status=$(sockecmd '{ "command": ["get_property", "loop-playlist"] }')
             case "$status" in
                 *inf*) status="$(printf '%s\n' "$status" | cut -d '"' -f 4)"             ;;
                 *)     status="$(printf '%s\n' "$status" | awk -F '[":,]' '{print $4}')" ;;
