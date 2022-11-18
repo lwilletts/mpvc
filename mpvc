@@ -4,12 +4,18 @@
 # control mpv remotely using JSON ipc
 # https://mpv.io/manual/master/#json-ipc
 
+PROGNAME=$(basename $0)
+PROGVERSION="1.3"
+
 SOCKETCOMMAND=""
 SOCKET=${MPVC_SOCKET:-$HOME/.config/mpvc/mpvsocket}
 MPVOPTIONS="--no-audio-display --no-input-terminal"
 
-PROGNAME=$(basename $0)
-PROGVERSION="1.3"
+# print default status of mpv instance
+[ -z "$FORMATSTRING" ] && FORMATSTRING="\
+%artist% - %title%
+[%status%] #%position%/%playlistlength% %time%/%length% (%percentage%%)
+speed:%speed%x volume:%volume%% muted:%muted% repeat:%repeat% single:%single%"
 
 usage() {
     cat >&2 << EOF
@@ -51,7 +57,6 @@ Formatting:
     %single, %status%, %time%, %precisetime%, %speed%, %length%, %remaining%,
     %volume%, %muted%, %frame%, %width%, %height%, %ab-loop-a%, %ab-loop-b%
 
-
 MPC compatibility layer:
     mpvc features a nearly complete compatibility layer for mpc commands in
     addition to GNU style arguments. http://linux.die.net/man/1/mpc
@@ -70,11 +75,10 @@ EOF
 dquiet() { "$@" >&2; }
 equiet() { "$@" 2> /dev/null; }
 oquiet() { "$@" 1> /dev/null; }
-quiet() { "$@" > /dev/null 2>&1; }
+quiet()  { "$@" > /dev/null 2>&1; }
 
 _sockcmd() { printf '%s\n' "$@" | $SOCKETCOMMAND; }
 sockcmd()  { oquiet _sockcmd "$@"; }
-sockecmd() { equiet _sockcmd "$@"; }
 
 pprintf() { printf "%s" "$@"; }
 eprintf() { printf '%s\n' "$@" >&2; exit 1; }
@@ -86,31 +90,17 @@ eprintf() { printf '%s\n' "$@" >&2; exit 1; }
 # fn args: filename
 cleanFilename() {
     filename="$1"
-
+    result="$filename"
     case "$filename" in
-        *.googlevideo.com/*)
-            filename="mps-yt stream"
-            printf '%s\n' "$filename"
-            ;;
+        *.googlevideo.com/*) filename="mps-yt stream" ;;
         *youtu*|watch*)
-            # no other option but to use jq
             if quiet type jq; then
-                # this is fucking quick
-                id="${filename#*.}"
-                title="$(curl -sL "https://youtube.com/oembed?url=$filename" | jq -r '.title')"
-            else
-                title="$filename"
+                result="$(curl -sL "https://youtube.com/oembed?url=$filename"|jq -r '.title')"
             fi
-
-            printf '%s\n' "$title"
-            ;;
-        *)
-            # return filename to relative path
-            # this will probably look funky if there's a '/' in the filename
-            filename=$(basename "$filename")
-            printf '%s\n' "$filename"
-            ;;
+        ;;
+        *) result=$(basename "$filename") ;;
     esac
+    printf '%s\n' "$result"
 }
 
 # fn args: media-title, path
@@ -123,21 +113,18 @@ getMediaProperties() {
 getMetadata() {
     property=$1
 
-    metadata=$(
-        sockecmd '{ "command": ["get_property", "metadata/by-key/'${property}'" ] }' |
-            tr -d "{}" | awk -F '"' '{print $4}')
-
     # test for no result
+    metadata=$(socketCommand "get_property" "metadata/by-key/${property}")
     case "$metadata" in
-        "property not found") result="N/A" ;;
-        *) result="$metadata" ;;
+        '') result="N/A" ;;
+        *)  result="$metadata" ;;
     esac
 
     # test if title has no property and return filename instead
     if [ "$property" = "title" ]; then
         case "$metadata" in
-            "property not found") result=$(getPropertyString filename) ;;
-            "error") result=$(getPropertyString filename) ;;
+            null) result=$(getPropertyString filename) ;;
+            '') result=$(getPropertyString filename) ;;
             *) result=$(cleanFilename "$result") ;;
         esac
     fi
@@ -148,7 +135,7 @@ getMetadata() {
 socketCommand() {
     command="$1"
     property="$2"
-    sockecmd "{ \"command\": [\"${command}\", \"$property\"] }" |
+    _sockcmd "{ \"command\": [\"${command}\", \"$property\"] }" |
         awk -F '[:,]' '/"error":"success"/ { gsub("\"",""); print $2 }'
 }
 
@@ -168,17 +155,16 @@ getPropertyString() {
     case "$property" in
         volume|duration|percent-pos|playtime-remaining|playback-time)
             result=$(echo "$result" | sed 's/\.[0-9]\+%\?$//')
-            ;;
+        ;;
     esac
 
     case "$result" in
-        "error"|"null")
+        error|null)
             [ $# -ge 2 ] && pprintf "$2" || pprintf "N/A"
             return 1
-            ;;
-        *)
-            pprintf "$result"
-            ;;
+        ;;
+        *) pprintf "$result"
+        ;;
     esac
 }
 
@@ -760,28 +746,6 @@ formatPrint() {
     exit
 }
 
-# print default status of mpv instance
-printDefaultStatus() {
-    artist=$(getMetadata artist)
-
-    case "$artist" in
-        "N/A")
-            FORMATSTRING="\
-%title%
-[%status%] #%position%/%playlistlength% %time%/%length% (%percentage%%)
-speed:%speed%x volume:%volume%% muted:%muted% repeat:%repeat% single:%single%"
-            ;;
-        *)
-            FORMATSTRING="\
-${artist} - %title%
-[%status%] #%position%/%playlistlength% %time%/%length% (%percentage%%)
-speed:%speed%x volume:%volume%% muted:%muted% repeat:%repeat% single:%single%"
-            ;;
-    esac
-
-    formatPrint
-}
-
 printPrettyOutput() {
     exit 0
 }
@@ -789,12 +753,12 @@ printPrettyOutput() {
 # catches if mpv is idle or not
 printFinalOutput() {
     case "$QUIETFLAG" in
-        "true") ;;
+        true) ;;
         *)
             if [ "$(getPropertyString idle-active)" = "yes" ]; then
                 printf '%s\n' "MPV instance on ${SOCKET} is currently idle." >&2
             else
-                printDefaultStatus
+                formatPrint
             fi
     esac
 }
@@ -813,12 +777,10 @@ intCheck() {
 
 fltCheck() {
     intCheck "$1" && return 0
-
     case "$1" in
         *[0-9].[0-9]*)    return 0 ;;
         *.*.*|*[!-.0-9]*) ;;
     esac
-
     return 1
 }
 
@@ -929,31 +891,26 @@ getVersion() {
     exit
 }
 
-do_fuzzy_search()
-{
+do_fuzzy_search() {
     true
 }
 
-do_idleloop()
-{
+do_idleloop() {
     unobserve_property 1
     observe_property 1, "$@"
 }
 
-observe_property()
-{
+observe_property() {
     # sockcmd '{ "command": ["observe_property", '"$@"' ] }'
     echo -n '{ "command": ["observe_property", '"$@"' ] }' |
         socat -t0 -,ignoreeof $SOCKET
 }
 
-unobserve_property()
-{
+unobserve_property() {
     sockcmd '{ "command": ["unobserve_property", '"$@"' ] }'
 }
 
-startMpvd()
-{
+startMpvd() {
     mkdir -p $(dirname $SOCKET)
     MPVOPTIONS="$MPVOPTIONS --really-quiet --idle=once"
     exec mpv --input-ipc-server=${SOCKET} $MPVOPTIONS &
@@ -1069,7 +1026,7 @@ main() {
             printFinalOutput
         ;;
 
-        sockcmd)  _sockcmd "$2"; return ;;
+        sockcmd)  sockcmd "$2"; return ;;
         metadata) getFilenameMetadata "$2" ;;
         pause)    alwaysPause         ; printFinalOutput ;;
         next)     setTrackRelative 1  ; printFinalOutput ;;
@@ -1126,7 +1083,6 @@ main() {
         esac
         [ -n "$1" ] && shift
     done
-
     # produce format strings last
     [ "$QUIETFLAG" != "true" ] && printFinalOutput
 }
