@@ -170,15 +170,14 @@ getPropertyString() {
 
 # fn args: speed
 getSpeed() {
-    socketCommand "get_property_string" "speed" |
-        awk '{print substr ($1, 0, 4)}'
+    getPropertyString "speed" | awk '{print substr ($0, 0, 4)}'
 }
 
 # fn args: loop-file, loop-playlist
 getLoopStatus() {
     property=$1
 
-    status=$(socketCommand "get_property" "$property")
+    status=$(getProperty "$property")
     case "$status" in
         true | inf) loop="yes" ;;
         false)      loop="no"  ;;
@@ -190,7 +189,6 @@ getLoopStatus() {
 
 getMuteStatus() {
     muted="$(getProperty mute)"
-
     case "$muted" in
         true)  muted="yes" ;;
         false) muted="no"  ;;
@@ -202,7 +200,6 @@ getMuteStatus() {
 
 getPauseStatus() {
     status="$(getProperty pause)"
-
     case "$status" in
         true)  status="paused"  ;;
         false) status="playing" ;;
@@ -216,10 +213,8 @@ getPauseStatus() {
 getPlaylistFilename() {
     track="$1"
     fullpathFlag="$2"
-
-    filename=$(socketCommand "get_property_string" "playlist/$track/filename")
+    filename=$(getPropertyString "playlist/$track/filename")
     [  "$fullpathFlag" != "fullpath" ] && filename=$(cleanFilename "$filename")
-
     printf '%s\n' "$filename"
 }
 
@@ -293,9 +288,9 @@ appendTrack() {
     filename="$@"
 
     # require absolute paths
-    if [ -e "$filename" ]; then
-        case "$filename" in /*) ;; *) filename="$(pwd)/$filename" ;; esac
-    fi
+    case "$filename" in
+        /*) ;; *) [ -e "$filename" ] && filename="$(pwd)/$filename" ;;
+    esac
 
     # skip over various other filetypes and images unless wanted
     # this doesn't stop mpv from resolving directories and adding them anyway
@@ -318,47 +313,28 @@ appendTrack() {
 playNext() {
     # add track to the playlist
     appendTrack "$1"
-
     # find position of track to move
     trackToMove="$(getPropertyString playlist-count)"
-
     # find position of current track
     newTrackPosition="$(getPropertyString playlist-pos)"
-
     QUIETFLAG="true"
-
     # set position of next track
     moveTrack "$trackToMove" "$((newTrackPosition + 1))"
 }
 
 setTimeRelative() {
     time=$(getPropertyString playback-time)
-
-    printf '%s\n' "$1" | quiet grep "%" && {
-        percentageValue=$(printf '%s\n' "$1" | rev | cut -c 2- | rev)
-        sockcmd '{ "command": ["set_property", "percent-pos", '$percentageValue' ] }'
-        return
-    }
-
-    sign=$(printf '%s' "$1" | cut -c 1)
-    case "$sign" in
-        -)
-            minusFlag=true
-            timeArg=$(printf '%s' "$1" | cut -c 2-)
-            ;;
-        +)
-            timeArg=$(printf '%s' "$1" | cut -c 2-)
-            ;;
-        *)
-            timeArg=$1
-            ;;
+    case "$1" in
+        *%*) sockcmd '{ "command": ["set_property", "percent-pos", '${1%%%}' ] }'; return ;;
+        -*) timeArg=${1##-}; minusFlag=true ;;
+        +*) timeArg=${1##+}; minusFlag=false ;;
+        *)  timeArg=$1 ;;
     esac
 
     timeSec=$(parseTimeString "$timeArg") || exit $?
-
     case "$minusFlag" in
-        "true") time=$((time - timeSec)) ;;
-        *)      time=$((time + timeSec)) ;;
+        true) time=$((time - timeSec)) ;;
+        *)    time=$((time + timeSec)) ;;
     esac
 
     sockcmd '{ "command": ["set_property", "playback-time", '$time' ] }'
@@ -366,7 +342,6 @@ setTimeRelative() {
 
 setTimeAbsolute() {
     time=$(parseTimeString "$1") || exit $?
-
     trackTime=$(getPropertyString duration)
 
     [ "$time" -ge "$trackTime" ] && {
@@ -378,50 +353,17 @@ setTimeAbsolute() {
     sockcmd '{ "command": [ "set_property", "playback-time", '$time' ] }'
 }
 
-setVolumeRelative() {
-    intCheck "$1" || exit 1
-
+setVolume () {
+    intCheck "$vol" || exit 1
     # test if media has sound
     volume=$(getPropertyString volume)
-
-    [ "$volume" = "error" ] && {
-        eprintf "Currently playing media does not have sound."
-    }
-
-    volume=$((volume + $1))
-
-    [ $volume -lt 0 ] && {
-        eprintf "Volume cannot be set lower than 0%"
-    }
-
-    [ $volume -gt 130 ] && {
-        eprintf "Volume cannot be set great than 130%"
-    }
-
-    sockcmd '{ "command": ["set_property", "volume", '$volume' ] }'
-}
-
-setVolumeAbsolute() {
-    intCheck "$1" || exit 1
-
-    # test if media has sound
-    volume=$(getPropertyString volume)
-
-    [ "$volume" = "error" ] && {
-        printf '%s\n' "Currently playing media does not have sound." >&2
-        return 1
-    }
-
-    volume=$1
-
-    [ $volume -lt 0 ] && {
-        eprintf "Volume cannot be set lower than 0%"
-    }
-
-    [ $volume -gt 130 ] && {
-        eprintf "Volume cannot be set great than 130%"
-    }
-
+    [ "$volume" = "error" ] && eprintf "Currently playing media does not have sound."
+    case "$2" in
+        relative) volume=$((volume + $1)) ;;
+        absolute) volume=$1;;
+    esac
+    [ $volume -lt 0 ] && eprintf "Volume cannot be set lower than 0%"
+    [ $volume -gt 130 ] && eprintf "Volume cannot be set great than 130%"
     sockcmd '{ "command": ["set_property", "volume", '$volume' ] }'
 }
 
@@ -431,15 +373,12 @@ setSpeedRelative() {
 
     fltCheck "$1" || exit 1
     speed=$(printf '%s\n' "$speed+$1" | bc)
-
     sockcmd '{ "command": ["set_property_string", "speed", "'$speed'" ] }'
 }
 
 setSpeedAbsolute() {
-    validateBC
     fltCheck "$1" || exit 1
     speed=$1
-
     sockcmd '{ "command": ["set_property_string", "speed", "'$speed'" ] }'
 }
 
@@ -477,26 +416,16 @@ setTrackRelative() {
     }
 
     sockcmd '{ "command": ["set_property", "playlist-pos", '$desiredTrack' ] }'
-
-    # tiny delay so printFinalOutput can catch up
-    #sleep 0.5
 }
 
 setTrackAbsolute() {
     intCheck "$1" || exit 1
-
     currentTrack=$1
     currentTrack=$((currentTrack - 1))
     trackCount=$(getPropertyString playlist-count)
-
-    [ "$currentTrack" -lt 0 ] || [ "$currentTrack" -ge "$trackCount" ] && {
+    [ "$currentTrack" -lt 0 ] || [ "$currentTrack" -ge "$trackCount" ] &&
         eprintf "Item $currentTrack is out of range of playlist."
-    }
-
     sockcmd '{ "command": ["set_property", "playlist-pos", '$currentTrack' ] }'
-
-    # tiny delay so printFinalOutput can catch up
-    #sleep 0.5
 }
 
 moveTrack() {
@@ -516,12 +445,10 @@ moveTrack() {
         }
     fi
 
-    [ "$newTrackPosition" -lt 0 ] && {
+    [ "$newTrackPosition" -lt 0 ] &&
         eprintf "Position $newTrackPosition is out of range of playlist."
-    }
 
     [ "$newTrackPosition" -eq 1 ] && newTrackPosition=0
-
     sockcmd '{ "command": ["playlist-move", "'$trackToMove'", "'$newTrackPosition'" ] }'
 
     [ "$QUIETFLAG" != "true" ] && {
@@ -557,11 +484,10 @@ removeTrack() {
 
 alwaysPlay() {
     currentTrack=$(getPropertyString playlist-pos)
-    [ "$currentTrack" = "N/A" ] && {
+    if [ "$currentTrack" = "N/A" ]; then
         setTrackAbsolute 1
         return
-    }
-
+    fi
     sockcmd '{ "command": ["set_property", "pause", false ] }'
 }
 
@@ -579,7 +505,6 @@ togglePause() {
 
     status=$(getPauseStatus)
     [  "$status" = "playing" ] && status="true" || status="false"
-
     sockcmd '{ "command": ["set_property", "pause", '$status' ] }'
 }
 
@@ -590,21 +515,18 @@ toggleMute() {
     else
         muted=$1
     fi
-
     sockcmd '{ "command": ["set_property", "mute", '$muted' ] }'
 }
 
 toggleLoopFile() {
     loopFile=$(getLoopStatus loop-file)
     [ "$loopFile" = "no" ] && loopFile="inf" || loopFile="no"
-
     sockcmd '{ "command": ["set_property_string", "loop-file", "'$loopFile'" ] }'
 }
 
 toggleLoopPlaylist() {
     loopPlaylist=$(getLoopStatus loop-playlist)
     [ "$loopPlaylist" = "no" ] && loopPlaylist="inf" || loopPlaylist="no"
-
     sockcmd '{ "command": ["set_property_string", "loop-playlist", "'$loopPlaylist'" ] }'
 }
 
@@ -615,7 +537,6 @@ shufflePlaylist() {
         printf '%s\n' "Playlist shuffled."
         QUIETFLAG="true"
     }
-
     [ "$(getLoopStatus loop-playlist)" != "yes" ] && toggleLoopPlaylist inf
 }
 
@@ -886,7 +807,6 @@ validateSocket() {
 
 getVersion() {
     mpv --version
-
     pprintf "MPVC Release $PROGVERSION (c) Laurence Willetts MIT"
     exit
 }
@@ -943,10 +863,7 @@ main() {
 
     # grab mpv options first if any
     for arg in "$@"; do
-        if [ "$MPVFLAG" = "true" ]
-        then
-            MPVOPTIONS="$MPVOPTIONS $arg"
-        fi
+        [ "$MPVFLAG" = "true" ] && MPVOPTIONS="$MPVOPTIONS $arg"
         [ "$arg" = "--" ] && MPVFLAG=true
     done
 
@@ -962,7 +879,6 @@ main() {
         add|-a|--append)
             shiftcount=0
             QUIETFLAG="true"
-
             for arg in "$@";
             do
                 if echo "$arg" | grep -q '^https\?://';
@@ -975,15 +891,12 @@ main() {
                     shiftcount=$((shiftcount + 1))
                 fi
             done
-
             shift "$((shiftcount + 1))"
         ;;
 
-        playnext|-A|--playnext)
-        ;;
+        playnext|-A|--playnext) ;;
 
-        *) validateSocket
-        ;;
+        *) validateSocket ;;
     esac
 
     # mpc compatibility layer
@@ -1001,9 +914,9 @@ main() {
         vol|volume)
             case "$2" in
                 '') eprintf "Specify volume in/decrease amount or absolute amount." ;;
-                +*) setVolumeRelative "$2" ;;
-                -*) setVolumeRelative "$2" ;;
-                *)  setVolumeAbsolute "$2" ;;
+                +*) setVolume "$2" relative ;;
+                -*) setVolume "$2" relative ;;
+                *)  setVolume "$2" absolute ;;
             esac
             printFinalOutput
         ;;
@@ -1047,8 +960,8 @@ main() {
         case "$1" in
             -t|--seek|seek)                  shift; setTimeRelative "$1"    ;;
             -T|--time)                       shift; setTimeAbsolute "$1"    ;;
-            -v|--vol)                        shift; setVolumeRelative "$1"  ;;
-            -V|--volume)                     shift; setVolumeAbsolute "$1"  ;;
+            -v|--vol)                        shift; setVolume "$1" relative ;;
+            -V|--volume)                     shift; setVolume "$1" absolute ;;
             -x|--speed|speed)                shift; setSpeedRelative "$1"   ;;
             -X|--speedval)                   shift; setSpeedAbsolute "$1"   ;;
             -j|--track)                      shift; setTrackRelative "$1"   ;;
