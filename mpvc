@@ -303,10 +303,7 @@ savePlaylist() {
         if [ -e "$savePlaylist" ]
         then
             read -p "Playlist $savePlaylist exists! Overwrite? [Y/n] " key
-            case $key in
-                Y) > "$savePlaylist" ;;
-                *) return                 ;;
-            esac
+            [ "$key" != "Y" ] && return
         fi
         printf '%s\n' "Adding files to $savePlaylist ..."
     fi
@@ -315,7 +312,7 @@ savePlaylist() {
     for i in $(seq 0 $(( $LAST - 1 )) )
     do
         printf '%s\n' "$(getPlaylistFilename $i fullpath)"
-    done >> "$savePlaylist"
+    done > "$savePlaylist"
 
     QUIETFLAG="true"
 }
