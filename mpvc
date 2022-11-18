@@ -149,23 +149,26 @@ getMetadata() {
     printf '%s' "$result" | escapeSedChar '&' '#'
 }
 
+socketCommand() {
+    command="$1"
+    property="$2"
+    sockecmd '{ "command": ["'$command'", "'$property'"] }' |
+        awk -F '[:,]' '{gsub("\"",""); print $2}'
+}
+
 # retrieve integer/boolean property
 # fn args: mute, pause, loop-file, estimated-frame-number, width, height
 getProperty() {
-    property=$1
-    sockecmd '{ "command": ["get_property", "'${property}'"] }' |
-        awk -F '[:,]' '{gsub("\"",""); print $2}'
+    property="$1"
+    socketCommand "get_property" "$property"
 }
 
 # fn args: filename, idle-active, playlist-count, playlist-pos, playback-time,
 #          playtime-remaining, time-remaining, percent-pos, duration, volume
 getPropertyString() {
-    property=$1
+    property="$1"
 
-    result=$(sockecmd '{ "command": ["get_property_string", "'${property}'"] }' |
-        awk -F '[:,]' '{gsub("\"",""); print $2}'
-    )
-
+    result=$(socketCommand "get_property_string" "$property")
     case "$property" in
         volume|duration|percent-pos|playtime-remaining|playback-time)
             result=$(echo "$result" | sed 's/\.[0-9]\+%\?$//')
