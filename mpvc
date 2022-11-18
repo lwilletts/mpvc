@@ -149,7 +149,7 @@ socketCommand() {
     command="$1"
     property="$2"
     sockecmd '{ "command": ["'$command'", "'$property'"] }' |
-        awk -F '[:,]' '{gsub("\"",""); print $2}'
+        awk -F '[:,]' '/"error":"success"/ { gsub("\"",""); print $2 }'
 }
 
 # retrieve integer/boolean property
@@ -192,18 +192,7 @@ getSpeed() {
 getLoopStatus() {
     property=$1
 
-    case "$property" in
-        loop-file)
-            status=$(getProperty loop-file)
-            ;;
-        loop-playlist)
-            status=$(sockecmd '{ "command": ["get_property", "loop-playlist"] }')
-            case "$status" in
-                *inf*) status="$(printf '%s\n' "$status" | cut -d '"' -f 4)"             ;;
-                *)     status="$(printf '%s\n' "$status" | awk -F '[":,]' '{print $4}')" ;;
-            esac
-    esac
-
+    status=$(socketCommand "get_property" "$property")
     case "$status" in
         true | inf) loop="yes" ;;
         false)      loop="no"  ;;
@@ -847,7 +836,8 @@ fltCheck() {
 }
 
 calculateTerminalHeight() {
-    rows=$(($(tput lines) - 2))
+    crow=2 # TBD
+    rows=$(($(tput lines) - crow))
     halfrows=$((rows / 2))
 
     if [ "$tracks" -gt $rows ]
@@ -933,18 +923,16 @@ validateBC() {
 }
 
 validateSocket() {
-    [ "$PLAYFLAG" != "true" ] && {
-        # test if socket exists
-        [ -S "$SOCKET" ] || {
-            printf '%s\n' "$SOCKET does not exist. Use mpv --input-ipc-server to start one." >&2
-            exit 2
-        }
+    # test if socket exists
+    [ -S "$SOCKET" ] || {
+        printf '%s\n' "$SOCKET does not exist. Use mpv --input-ipc-server to start one." >&2
+        exit 2
+    }
 
-        # test if socket is open
-        [ "$(getPauseStatus)" = "N/A" ] && {
-            printf '%s\n' "No files added to $SOCKET."
-            exit 3
-        }
+    # test if socket is open
+    [ "$(getPauseStatus)" = "N/A" ] && {
+        printf '%s\n' "No files added to $SOCKET."
+        exit 3
     }
 }
 
@@ -1001,17 +989,16 @@ main() {
 
     # grab mpv options first if any
     for arg in "$@"; do
-        [ "$MPVFLAG" = "true" ] && {
+        if [ "$MPVFLAG" = "true" ]
+        then
             MPVOPTIONS="$MPVOPTIONS $arg"
-        } || {
-            [ "$arg" = "--" ] && MPVFLAG=true
-        }
+        fi
+        [ "$arg" = "--" ] && MPVFLAG=true
     done
 
     # grab piped input for input if it exists
     if [ -p /dev/stdin ]; then
         QUIETFLAG="true"
-
         while read -r line; do
             [ -e "$line" ] && appendTrack "${line}"
         done
@@ -1059,32 +1046,27 @@ main() {
 
         vol|volume)
             case "$2" in
+                '') eprintf "Specify volume in/decrease amount or absolute amount." ;;
                 +*) setVolumeRelative "$2" ;;
                 -*) setVolumeRelative "$2" ;;
-                *)
-                    if [ -z "$2" ]
-                    then
-                        eprintf "Specify volume in/decrease amount or absolute amount."
-                    fi
-                    setVolumeAbsolute "$2"
-                    ;;
+                *)  setVolumeAbsolute "$2" ;;
             esac
             printFinalOutput
         ;;
 
         repeat)
             case "$2" in
-                "on")  toggleLoopPlaylist inf ;;
-                "off") toggleLoopPlaylist no  ;;
-                *)     toggleLoopPlaylist     ;;
+                on)  toggleLoopPlaylist inf ;;
+                off) toggleLoopPlaylist no  ;;
+                *)   toggleLoopPlaylist     ;;
             esac
             printFinalOutput
         ;;
 
         single)
             case "$2" in
-                "on")  toggleLoopFile yes ;;
-                "off") toggleLoopFile no  ;;
+                on)  toggleLoopFile yes ;;
+                off) toggleLoopFile no  ;;
                 *)     toggleLoopFile     ;;
             esac
             printFinalOutput
