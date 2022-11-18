@@ -148,7 +148,7 @@ getMetadata() {
 socketCommand() {
     command="$1"
     property="$2"
-    sockecmd '{ "command": ["'$command'", "'$property'"] }' |
+    sockecmd "{ \"command\": [\"${command}\", \"$property\"] }" |
         awk -F '[:,]' '/"error":"success"/ { gsub("\"",""); print $2 }'
 }
 
@@ -185,7 +185,7 @@ getPropertyString() {
 # fn args: speed
 getSpeed() {
     socketCommand "get_property_string" "speed" |
-        awk -F '"' '{print substr ($4, 0, 4)}'
+        awk '{print substr ($1, 0, 4)}'
 }
 
 # fn args: loop-file, loop-playlist
@@ -231,9 +231,7 @@ getPlaylistFilename() {
     track="$1"
     fullpathFlag="$2"
 
-    filename=$(sockecmd '{ "command": ["get_property_string", "playlist/'$track'/filename"] }' |
-        cut -d '"' -f 4)
-
+    filename=$(socketCommand "get_property_string" "playlist/$track/filename")
     [  "$fullpathFlag" != "fullpath" ] && filename=$(cleanFilename "$filename")
 
     printf '%s\n' "$filename"
@@ -310,7 +308,7 @@ appendTrack() {
 
     # require absolute paths
     if [ -e "$filename" ]; then
-        [ "$(printf "%s" "$filename" | cut -c 1)" != '/' ] && filename="$(pwd)/$filename"
+        case "$filename" in /*) ;; *) filename="$(pwd)/$filename" ;; esac
     fi
 
     # skip over various other filetypes and images unless wanted
@@ -321,25 +319,14 @@ appendTrack() {
         https*) ;;
     esac
 
-    # test if socket is open to add more files too, else start mpv socket up
-    if quiet pgrep -f "mpv .*$SOCKET"; then
-        sockcmd '{ "command": ["loadfile", "'"$filename"'", "append-play" ] }'
-    else
-        mkdir -p $(dirname $SOCKET)
-        exec mpv --really-quiet --idle=once --input-ipc-server="${SOCKET}" \
-            $MPVOPTIONS "$filename" &
-
-        # wait until mpv starts up
-        while :; do
-            idlestatus=$(getPropertyString idle-active)
-            [ "$idlestatus" ] && break
-            sleep 0.05
-        done
+    # start mpv socket up
+    if ! quiet pgrep -f "mpv .*$SOCKET"; then
+        startMpvd
     fi
+    quiet socketCommand "loadfile" "$filename\", \"append-play"
 
     filename=$(cleanFilename "$filename")
-
-    printf '%s\n' "Adding: ${filename}"
+    printf '%s\n' "Adding: $filename"
 }
 
 playNext() {
@@ -885,14 +872,13 @@ EOF
                 h|H) timeInt=$((timeInt * 60 * 60)) ;;
                 m|M) timeInt=$((timeInt * 60))      ;;
             esac
-
             ;;
+
         *)
             timeInt=$(printf '%s' "$1" | awk -F ':' '{
                 for (x=1; x<=NF; x++) time=time*60+$x;
                 print time
             }')
-
             ;;
     esac
 
@@ -964,6 +950,17 @@ observe_property()
 unobserve_property()
 {
     sockcmd '{ "command": ["unobserve_property", '"$@"' ] }'
+}
+
+startMpvd()
+{
+    mkdir -p $(dirname $SOCKET)
+    MPVOPTIONS="$MPVOPTIONS --really-quiet --idle=once"
+    exec mpv --input-ipc-server=${SOCKET} $MPVOPTIONS &
+    # wait until mpv starts up
+    while sleep 0.1; do
+        [ -n "$(getPropertyString idle-active)" ] && break
+    done
 }
 
 main() {
@@ -1067,7 +1064,7 @@ main() {
             case "$2" in
                 on)  toggleLoopFile yes ;;
                 off) toggleLoopFile no  ;;
-                *)     toggleLoopFile     ;;
+                *)   toggleLoopFile     ;;
             esac
             printFinalOutput
         ;;
@@ -1131,10 +1128,7 @@ main() {
     done
 
     # produce format strings last
-    [ "$QUIETFLAG" != "true" ] && {
-        [ -n "$FORMATSTRING" ] && formatPrint
-        printFinalOutput
-    }
+    [ "$QUIETFLAG" != "true" ] && printFinalOutput
 }
 
 [ "$QUIETFLAG" = "true" ] && {
