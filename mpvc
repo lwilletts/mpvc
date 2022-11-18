@@ -83,7 +83,7 @@ eprintf() { printf '%s\n' "$@" >&2; exit 1; }
 ###############################################################################
 
 # match given filename string to appropriate output
-# accepted properties: filename
+# fn args: filename
 cleanFilename() {
     filename="$1"
 
@@ -113,7 +113,7 @@ cleanFilename() {
     esac
 }
 
-# accepted properties: media-title, path
+# fn args: media-title, path
 getMediaProperties() {
     property="$1"
 
@@ -123,7 +123,7 @@ getMediaProperties() {
     printf '%s\n' "$mediaValue" | escapeSedChar '&' '#'
 }
 
-# accepted properties: date, genre, title, album, artist, album_artist
+# fn args: date, genre, title, album, artist, album_artist
 getMetadata() {
     property=$1
 
@@ -150,17 +150,15 @@ getMetadata() {
 }
 
 # retrieve integer/boolean property
-# accepted properties: mute, pause, loop-file, estimated-frame-number, width,
-#                      height
+# fn args: mute, pause, loop-file, estimated-frame-number, width, height
 getProperty() {
     property=$1
     sockecmd '{ "command": ["get_property", "'${property}'"] }' |
         awk -F '[:,]' '{gsub("\"",""); print $2}'
 }
 
-# accepted properties: filename, idle-active, playlist-count, playlist-pos, playback-time,
-#                      playtime-remaining, time-remaining, percent-pos,
-#                      duration, volume
+# fn args: filename, idle-active, playlist-count, playlist-pos, playback-time,
+#          playtime-remaining, time-remaining, percent-pos, duration, volume
 getPropertyString() {
     property=$1
 
@@ -185,13 +183,13 @@ getPropertyString() {
     esac
 }
 
-# accepted properties: speed
+# fn args: speed
 getSpeed() {
     sockecmd '{ "command": ["get_property_string", "speed"] }' |
         awk -F '"' '{print substr ($4, 0, 4)}'
 }
 
-# accepted properties: loop-file, loop-playlist
+# fn args: loop-file, loop-playlist
 getLoopStatus() {
     property=$1
 
@@ -240,7 +238,7 @@ getPauseStatus() {
     printf '%s' "$status"
 }
 
-# accepted properties: $1: filename $2: full path flag to skip basename
+# fn args: $1: filename $2: full path flag to skip basename
 getPlaylistFilename() {
     track="$1"
     fullpathFlag="$2"
