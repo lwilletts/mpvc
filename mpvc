@@ -120,7 +120,7 @@ getMediaProperties() {
     mediaValue=$(sockecmd '{ "command": ["get_property", "'${property}'" ] }' |
         awk -F '"' '{print $4}')
 
-    printf '%s\n' "$mediaValue" | escapeSedChar '&' | escapeSedChar '#'
+    printf '%s\n' "$mediaValue" | escapeSedChar '&' '#'
 }
 
 # accepted properties: date, genre, title, album, artist, album_artist
@@ -146,7 +146,7 @@ getMetadata() {
         esac
     fi
 
-    printf '%s' "$result" | escapeSedChar '&' | escapeSedChar '#'
+    printf '%s' "$result" | escapeSedChar '&' '#'
 }
 
 # retrieve integer/boolean property
@@ -187,7 +187,7 @@ getPropertyString() {
 
 # accepted properties: speed
 getSpeed() {
-    sockecmd '{ "command": ["get_property_string", "'speed'"] }' |
+    sockecmd '{ "command": ["get_property_string", "speed"] }' |
         awk -F '"' '{print substr ($4, 0, 4)}'
 }
 
@@ -202,7 +202,7 @@ getLoopStatus() {
         loop-playlist)
             status=$(sockecmd '{ "command": ["get_property", "loop-playlist"] }')
             case "$status" in
-                *inf*) status="$(printf '%s\n' "$status" | cut -d\" -f 4)"               ;;
+                *inf*) status="$(printf '%s\n' "$status" | cut -d '"' -f 4)"             ;;
                 *)     status="$(printf '%s\n' "$status" | awk -F '[":,]' '{print $4}')" ;;
             esac
     esac
@@ -246,7 +246,7 @@ getPlaylistFilename() {
     fullpathFlag="$2"
 
     filename=$(sockecmd '{ "command": ["get_property_string", "playlist/'$track'/filename"] }' |
-        cut -d\" -f 4)
+        cut -d '"' -f 4)
 
     [  "$fullpathFlag" != "fullpath" ] && filename=$(cleanFilename "$filename")
 
@@ -831,7 +831,7 @@ printFinalOutput() {
 ###############################################################################
 
 escapeSedChar() {
-    awk ' { gsub("'$1'", "\\'$1'"); print $0; }'
+    awk ' { gsub("'$1'", "\\'$1'"); gsub("'$2'", "\\'$2'"); print $0; }'
 }
 
 intCheck() {
