@@ -116,11 +116,7 @@ cleanFilename() {
 # fn args: media-title, path
 getMediaProperties() {
     property="$1"
-
-    mediaValue=$(sockecmd '{ "command": ["get_property", "'${property}'" ] }' |
-        awk -F '"' '{print $4}')
-
-    printf '%s\n' "$mediaValue" | escapeSedChar '&' '#'
+    socketCommand "get_property" "${property}" | escapeSedChar '&' '#'
 }
 
 # fn args: date, genre, title, album, artist, album_artist
@@ -188,7 +184,7 @@ getPropertyString() {
 
 # fn args: speed
 getSpeed() {
-    sockecmd '{ "command": ["get_property_string", "speed"] }' |
+    socketCommand "get_property_string" "speed" |
         awk -F '"' '{print substr ($4, 0, 4)}'
 }
 
@@ -201,7 +197,7 @@ getLoopStatus() {
             status=$(getProperty loop-file)
             ;;
         loop-playlist)
-            status=$(sockecmd '{ "command": ["get_property", "loop-playlist"] }')
+            status=$(getProperty loop-playlist)
             case "$status" in
                 *inf*) status="$(printf '%s\n' "$status" | cut -d '"' -f 4)"             ;;
                 *)     status="$(printf '%s\n' "$status" | awk -F '[":,]' '{print $4}')" ;;
@@ -576,7 +572,7 @@ removeTrack() {
     trackToRemove=$1
 
     if [ "$trackToRemove" = "current" ]; then
-        sockcmd '{ "command": ["playlist-remove", "'$trackToRemove'" ] }'
+        socketCommand "playlist-remove" "$trackToRemove"
     else
         intCheck "$1" || exit 1
 
@@ -756,10 +752,8 @@ formatPrint() {
         (*%year%*) F=$(echo "$F" | sed "s#%year%#$(getMetadata date)#g") ;;
         (*%genre%*) F=$(echo "$F" | sed "s#%genre%#$(getMetadata genre)#g") ;;
         (*%title%*) F=$(echo "$F" | sed "s#%title%#$(getMetadata title)#g") ;;
-        (*%title%*) F=$(echo "$F" | sed "s#%title%#$(getMetadata title)#g") ;;
         (*%album%*) F=$(echo "$F" | sed "s#%album%#$(getMetadata album)#g") ;;
         (*%artist%*) F=$(echo "$F" | sed "s#%artist%#$(getMetadata artist)#g") ;;
-        (*%comment%*) F=$(echo "$F" | sed "s#%comment%#$(getMetadata comment)#g") ;;
         (*%comment%*) F=$(echo "$F" | sed "s#%comment%#$(getMetadata comment)#g") ;;
         (*%albumartist%*) F=$(echo "$F" | sed "s#%albumartist%#$(getMetadata album_artist)#g") ;;
         (*%speed%*) F=$(echo "$F" | sed "s#%speed%#$(getSpeed)#g") ;;
@@ -905,10 +899,8 @@ EOF
             ;;
         *)
             timeInt=$(printf '%s' "$1" | awk -F ':' '{
-                time=0
-                for (x=1; x<=NF; x++) time=time*60+$x
-                    printf "%d\n", time
-                    exit
+                for (x=1; x<=NF; x++) time=time*60+$x;
+                print time
             }')
 
             ;;
