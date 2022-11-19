@@ -286,7 +286,6 @@ savePlaylist() {
 
 appendTrack() {
     filename="$@"
-
     # require absolute paths
     case "$filename" in
         /*) ;; *) [ -e "$filename" ] && filename="$(pwd)/$filename" ;;
@@ -305,7 +304,6 @@ appendTrack() {
         startMpvd
     fi
     quiet socketCommand "loadfile" "$filename\", \"append-play"
-
     filename=$(cleanFilename "$filename")
     printf '%s\n' "Adding: $filename"
 }
@@ -743,20 +741,15 @@ EOF
         exit 1
     }
 
-    lastChar=$(printf '%s\n' "$1" | rev | cut -c 1)
-
-    case "$lastChar" in
-        s|S|m|M|h|H)
-            timeInt=$(printf '%s' "$1" | rev | cut -c 2- | rev)
-
+    case "$1" in
+        *s|*S|*m|*M|*h|*H)
+            timeInt=${1%%?}
             intCheck "$timeInt" || exit 1
-
-            case "$lastChar" in
-                h|H) timeInt=$((timeInt * 60 * 60)) ;;
-                m|M) timeInt=$((timeInt * 60))      ;;
+            case "$1" in
+                *h|*H) timeInt=$((timeInt * 60 * 60)) ;;
+                *m|*M) timeInt=$((timeInt * 60))      ;;
             esac
             ;;
-
         *)
             timeInt=$(printf '%s' "$1" | awk -F ':' '{
                 for (x=1; x<=NF; x++) time=time*60+$x;
@@ -764,23 +757,20 @@ EOF
             }')
             ;;
     esac
-
     printf "%d" "$timeInt"
 }
 
 validateDeps() {
-    quiet type mpv || {
+    if quiet type mpv; then
         printf '%s\n' "Cannot find mpv on your \$PATH." >&2
         exit 4
-    }
-
+    fi
     quiet type nc && SOCKETCOMMAND="nc -U -N $SOCKET"
     quiet type socat && SOCKETCOMMAND="socat - $SOCKET"
-
-    [ "$SOCKETCOMMAND" ] || {
+    if [ -z "$SOCKETCOMMAND" ]; then
         printf '%s\n' "Cannot find socat or nc on your \$PATH." >&2
         exit 4
-    }
+    fi
 }
 
 validateBC() {
@@ -797,7 +787,6 @@ validateSocket() {
         printf '%s\n' "$SOCKET does not exist. Use mpv --input-ipc-server to start one." >&2
         exit 2
     }
-
     # test if socket is open
     [ "$(getPauseStatus)" = "N/A" ] && {
         printf '%s\n' "No files added to $SOCKET."
@@ -842,7 +831,6 @@ startMpvd() {
 
 main() {
     validateDeps
-
     # more global argument parsing
     for arg in "$@"; do
         [ "$SOCKETFLAG" = "true" ] && SOCKET=$arg && SOCKETFLAG=false
