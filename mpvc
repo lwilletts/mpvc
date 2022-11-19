@@ -671,15 +671,11 @@ printPrettyOutput() {
 
 # catches if mpv is idle or not
 printFinalOutput() {
-    case "$QUIETFLAG" in
-        true) ;;
-        *)
-            if [ "$(getPropertyString idle-active)" = "yes" ]; then
-                printf '%s\n' "MPV instance on ${SOCKET} is currently idle." >&2
-            else
-                formatPrint
-            fi
-    esac
+    if [ "$QUIETFLAG" != "true" ] && [ "$(getPropertyString idle-active)" = "yes" ]; then
+        printf '%s\n' "MPV instance on ${SOCKET} is currently idle." >&2
+    else
+        formatPrint
+    fi
 }
 
     # Misc. Functions
@@ -761,7 +757,7 @@ EOF
 }
 
 validateDeps() {
-    if quiet type mpv; then
+    if ! quiet type mpv; then
         printf '%s\n' "Cannot find mpv on your \$PATH." >&2
         exit 4
     fi
@@ -805,18 +801,9 @@ do_fuzzy_search() {
 }
 
 do_idleloop() {
-    unobserve_property 1
-    observe_property 1, "$@"
-}
-
-observe_property() {
-    # sockcmd '{ "command": ["observe_property", '"$@"' ] }'
-    echo -n '{ "command": ["observe_property", '"$@"' ] }' |
-        socat -t0 -,ignoreeof $SOCKET
-}
-
-unobserve_property() {
-    sockcmd '{ "command": ["unobserve_property", '"$@"' ] }'
+    sockcmd '{ "command": ["unobserve_property", 1 ] }'
+    sockcmd '{ "command": ["observe_property", '1, "$@"' ] }'
+    socat -t0 -,ignoreeof $SOCKET
 }
 
 startMpvd() {
