@@ -135,7 +135,7 @@ getMetadata() {
 socketCommand() {
     command="$1"
     property="$2"
-    _sockcmd "{ \"command\": [\"${command}\", \"$property\"] }" |
+    equiet _sockcmd "{ \"command\": [\"${command}\", \"$property\"] }" |
         awk -F '[:,]' '/"error":"success"/ { gsub("\"",""); print $2 }'
 }
 
@@ -343,7 +343,7 @@ setTimeAbsolute() {
     trackTime=$(getPropertyString duration)
 
     [ "$time" -ge "$trackTime" ] && {
-        printf '%s\n' "Given time is greater than track length! ($(trackLength))"
+        printf '%s\n' "Given time is greater than track length! ($(getTrackLength))"
         QUIETFLAG="true"
         return 1
     }
@@ -573,19 +573,19 @@ killAllMpv() {
     # Time Functions
 ###############################################################################
 
-elapsedTime() {
+getElapsedTime() {
     time=$(getPropertyString playback-time)
     formatTime "$time"
 }
 
-preciseElapsedTime() {
+getElapsedTimePrecise() {
     time=$(getPropertyString playback-time 0.0)
     bigTime=${time%%.*}
     tinyTime=${time#*.}
     formatTime "$bigTime" "$tinyTime"
 }
 
-trackLength() {
+getTrackLength() {
     duration=$(getPropertyString duration)
     formatTime "$duration"
 }
@@ -638,11 +638,11 @@ formatPrint() {
         (*%comment%*) F=$(echo "$F" | sed "s#%comment%#$(getMetadata comment)#g") ;;
         (*%albumartist%*) F=$(echo "$F" | sed "s#%albumartist%#$(getMetadata album_artist)#g") ;;
         (*%speed%*) F=$(echo "$F" | sed "s#%speed%#$(getSpeed)#g") ;;
-        (*%time%*) F=$(echo "$F" | sed "s#%time%#$(elapsedTime)#g") ;;
-        (*%precisetime%*) F=$(echo "$F" | sed "s#%precisetime%#$(preciseElapsedTime)#g") ;;
+        (*%time%*) F=$(echo "$F" | sed "s#%time%#$(getElapsedTime)#g") ;;
+        (*%precisetime%*) F=$(echo "$F" | sed "s#%precisetime%#$(getElapsedTimePrecise)#g") ;;
         (*%playback-time%*) F=$(echo "$F" | sed "s#%playback-time%#$(getProperty playback-time)#g") ;;
         (*%volume%*) F=$(echo "$F" | sed "s#%volume%#$(getPropertyString volume)#g") ;;
-        (*%length%*) F=$(echo "$F" | sed "s#%length%#$(trackLength)#g") ;;
+        (*%length%*) F=$(echo "$F" | sed "s#%length%#$(getTrackLength)#g") ;;
         (*%remaining%*) F=$(echo "$F" | sed "s#%remaining%#$(playtimeRemaining)#g") ;;
         (*%muted%*) F=$(echo "$F" | sed "s#%muted%#$(getMuteStatus)#g") ;;
         (*%percentage%*) F=$(echo "$F" | sed "s#%percentage%#$(getPropertyString percent-pos)#g") ;;
@@ -914,7 +914,7 @@ main() {
             printFinalOutput
         ;;
 
-        sockcmd)  sockcmd "$2"; return ;;
+        sockcmd)  _sockcmd "$2"; return ;;
         metadata) getFilenameMetadata "$2" ;;
         pause)    alwaysPause         ; printFinalOutput ;;
         next)     setTrackRelative 1  ; printFinalOutput ;;
