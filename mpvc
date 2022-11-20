@@ -301,7 +301,7 @@ appendTrack() {
 
     # start mpv socket up
     if ! quiet pgrep -f "mpv .*$SOCKET"; then
-        startMpvd
+        startMpvd --really-quiet --idle=once
     fi
     quiet socketCommand "loadfile" "$filename\", \"append-play"
     filename=$(cleanFilename "$filename")
@@ -808,8 +808,7 @@ do_idleloop() {
 
 startMpvd() {
     mkdir -p $(dirname $SOCKET)
-    MPVOPTIONS="$MPVOPTIONS --really-quiet --idle=once"
-    exec mpv --input-ipc-server=${SOCKET} $MPVOPTIONS &
+    exec mpv --input-ipc-server=${SOCKET} $MPVOPTIONS "$@" &
     # wait until mpv starts up
     while sleep 0.1; do
         [ -n "$(getPropertyString idle-active)" ] && break
@@ -870,6 +869,7 @@ main() {
         ;;
 
         playnext|-A|--playnext) ;;
+        mpv|--mpv)     startMpvd --idle=yes --input-terminal; return;;
 
         *) validateSocket ;;
     esac
