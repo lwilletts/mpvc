@@ -281,6 +281,18 @@ savePlaylist() {
     QUIETFLAG="true"
 }
 
+# loads a playlist from stdin
+loadPlaylist() {
+    QUIETFLAG="true"
+    while read -r line;
+    do
+        if [ -e "$line" ]
+        then
+            appendTrack "${line}"
+        fi
+    done
+}
+
     # Control Functions
 ###############################################################################
 
@@ -842,12 +854,7 @@ main() {
     done
 
     # grab piped input for input if it exists
-    if [ -p /dev/stdin ]; then
-        QUIETFLAG="true"
-        while read -r line; do
-            [ -e "$line" ] && appendTrack "${line}"
-        done
-    fi
+    [ -p /dev/stdin ] && loadPlaylist
 
     case "$1" in
         add|-a|--append)
@@ -943,6 +950,7 @@ main() {
             -J|--tracknum)                   shift; setTrackAbsolute "$1"   ;;
             -r|--remove|rm|remove|del)       shift; removeTrack "$1"        ;;
             -o|--save|save)                  shift; savePlaylist "$1"       ;;
+            --load|load)                     shift; loadPlaylist "$1"       ;;
             -A|--playnext|playnext)          shift; playNext "$1"           ;;
 
             --mono|mono)                     COLOURFLAG=nocolour            ;;
