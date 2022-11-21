@@ -378,11 +378,10 @@ setVolume () {
 }
 
 setSpeedRelative() {
-    validateBC
     speed=$(getSpeed)
 
     fltCheck "$1" || exit 1
-    speed=$(printf '%s\n' "$speed+$1" | bc)
+    speed=$(echo "$speed $1" | awk '{print $1 + $2}')
     sockcmd '{ "command": ["set_property_string", "speed", "'$speed'" ] }'
 }
 
@@ -781,25 +780,17 @@ validateDeps() {
     fi
 }
 
-validateBC() {
-    quiet type bc || {
-        pprintf "Cannot find bc on your \$PATH.\n"
-        pprintf "Please install for speed control.\n"
-        exit 4
-    }
-}
-
 validateSocket() {
     # test if socket exists
-    [ -S "$SOCKET" ] || {
+    if [ ! -S "$SOCKET" ]; then
         printf '%s\n' "$SOCKET does not exist. Use mpv --input-ipc-server to start one." >&2
         exit 2
-    }
+    fi
     # test if socket is open
-    [ "$(getPauseStatus)" = "N/A" ] && {
+    if [ "$(getPauseStatus)" = "N/A" ]; then
         printf '%s\n' "No files added to $SOCKET."
         exit 3
-    }
+    fi
 }
 
 getVersion() {
