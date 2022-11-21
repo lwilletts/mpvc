@@ -13,10 +13,6 @@ Required:
 - `socat` / `nc`: `socat` preferred due to the differing implementations of netcat across UNIXes.
 - sane version of `awk`
 
-Optional:
-
-- `bc`: For changing playback speed.
-
 ## Install
 
 If you have packaged mpvc for your distribution, let me know so I can add it here.
