@@ -4,11 +4,11 @@
 # control mpv remotely using JSON ipc
 # https://mpv.io/manual/master/#json-ipc
 
-PROGNAME=$(basename $0)
+PROGNAME="$(basename "$0")"
 PROGVERSION="1.3"
 
 SOCKETCOMMAND=""
-SOCKET=${MPVC_SOCKET:-$HOME/.config/mpvc/mpvsocket}
+SOCKET="${MPVC_SOCKET:-$HOME/.config/mpvc/mpvsocket}"
 MPVOPTIONS="--no-audio-display --no-input-terminal"
 
 # print default status of mpv instance
@@ -69,7 +69,7 @@ Exit codes:
     4: Dependency error.
 EOF
 
-    [  -z "$1" ] && exit || exit "$1"
+    if [ -n "$1" ]; then exit "$1"; else exit; fi;
 }
 
 dquiet() { "$@" >&2; }
@@ -82,6 +82,7 @@ sockcmd()  { oquiet _sockcmd "$@"; }
 
 pprintf() { printf "%s" "$@"; }
 eprintf() { printf '%s\n' "$@" >&2; exit 1; }
+eeprintf() { e=$1; shift; printf '%s\n' "$@" >&2; exit $e; }
 
     # Retrieval Functions
 ###############################################################################
@@ -160,7 +161,7 @@ getPropertyString() {
 
     case "$result" in
         error|null)
-            [ $# -ge 2 ] && pprintf "$2" || pprintf "N/A"
+            if [ $# -ge 2 ]; then pprintf "$2"; else pprintf "N/A"; fi
             return 1
         ;;
         *) pprintf "$result"
@@ -176,14 +177,12 @@ getSpeed() {
 # fn args: loop-file, loop-playlist
 getLoopStatus() {
     property=$1
-
     status=$(getProperty "$property")
     case "$status" in
         true | inf) loop="yes" ;;
         false)      loop="no"  ;;
         *)          loop="N/A" ;;
     esac
-
     printf '%s' "$loop"
 }
 
@@ -194,7 +193,6 @@ getMuteStatus() {
         false) muted="no"  ;;
         *)     muted="N/A" ;;
     esac
-
     printf '%s' "$muted"
 }
 
@@ -205,7 +203,6 @@ getPauseStatus() {
         false) status="playing" ;;
         *)     status="N/A"     ;;
     esac
-
     printf '%s' "$status"
 }
 
@@ -227,19 +224,19 @@ getPlaylist() {
     currentTrack=$(getPropertyString playlist-pos)
 
     [ "$tracks" -eq 0 ] || [ "$currentTrack" = "N/A" ] && {
-        eprintf "${SOCKET} is currently idle."
+        eprintf "$SOCKET is currently idle."
     }
 
     # by default, display only tracks fitting terminal, otherwise, display all
     FIRST=1
     LAST=$tracks
-    [ "$fullPlaylist" != "full" ] && calculateTerminalHeight
+    [ "$fullPlaylist" != "full" ] && calculateTerminalHeight "$currentTrack" "$tracks"
 
-    for i in $( seq $(( $FIRST - 1 )) $(( $LAST - 1 )) )
+    for i in $( seq $(( FIRST - 1 )) $(( LAST - 1 )) )
     do
-        filename=$(getPlaylistFilename $i)
+        filename=$(getPlaylistFilename "$i")
         fmtstr='%d	 %s\n'
-        if [ "$noColour" != "nocolour" ] && [ "$currentTrack" -eq $i ]
+        if [ "$noColour" != "nocolour" ] && [ "$currentTrack" -eq "$i" ]
         then
             fmtstr='%d	[7m %s[0m\n'
         fi
@@ -252,7 +249,7 @@ getFilenameMetadata() {
     intCheck "$1" || exit 1
 
     trackToMetadata="$1"
-    getPlaylistFilename $trackToMetadata fullpath
+    getPlaylistFilename "$trackToMetadata" fullpath
 }
 
 # saves playlist to file but with no path checking. we live dangerously
@@ -266,16 +263,16 @@ savePlaylist() {
     else
         if [ -e "$savePlaylist" ]
         then
-            read -p "Playlist $savePlaylist exists! Overwrite? [Y/n] " key
+            echo "Playlist $savePlaylist exists! Overwrite? [Y/n] "; read -r key
             [ "$key" != "Y" ] && return
         fi
         printf '%s\n' "Adding files to $savePlaylist ..."
     fi
 
     LAST=$(getPropertyString playlist-count)
-    for i in $(seq 0 $(( $LAST - 1 )) )
+    for i in $(seq 0 $(( LAST - 1 )) )
     do
-        printf '%s\n' "$(getPlaylistFilename $i fullpath)"
+        printf '%s\n' "$(getPlaylistFilename "$i" fullpath)"
     done > "$savePlaylist"
 
     QUIETFLAG="true"
@@ -297,7 +294,7 @@ loadPlaylist() {
 ###############################################################################
 
 appendTrack() {
-    filename="$@"
+    filename="$*"
     # require absolute paths
     case "$filename" in
         /*) ;; *) [ -e "$filename" ] && filename="$(pwd)/$filename" ;;
@@ -335,7 +332,7 @@ playNext() {
 setTimeRelative() {
     time=$(getPropertyString playback-time)
     case "$1" in
-        *%*) sockcmd '{ "command": ["set_property", "percent-pos", '${1%%%}' ] }'; return ;;
+        *%*) sockcmd '{ "command": ["set_property", "percent-pos", '"${1%%%}"' ] }'; return ;;
         -*) timeArg=${1##-}; minusFlag=true ;;
         +*) timeArg=${1##+}; minusFlag=false ;;
         *)  timeArg=$1 ;;
@@ -360,11 +357,11 @@ setTimeAbsolute() {
         return 1
     }
 
-    sockcmd '{ "command": [ "set_property", "playback-time", '$time' ] }'
+    sockcmd '{ "command": [ "set_property", "playback-time", '"$time"' ] }'
 }
 
 setVolume () {
-    intCheck "$vol" || exit 1
+    intCheck "$1" || exit 1
     # test if media has sound
     volume=$(getPropertyString volume)
     [ "$volume" = "error" ] && eprintf "Currently playing media does not have sound."
@@ -372,28 +369,26 @@ setVolume () {
         relative) volume=$((volume + $1)) ;;
         absolute) volume=$1;;
     esac
-    [ $volume -lt 0 ] && eprintf "Volume cannot be set lower than 0%"
-    [ $volume -gt 130 ] && eprintf "Volume cannot be set great than 130%"
-    sockcmd '{ "command": ["set_property", "volume", '$volume' ] }'
+    [ "$volume" -lt 0 ] && eprintf "Volume cannot be set lower than 0%"
+    [ "$volume" -gt 130 ] && eprintf "Volume cannot be set great than 130%"
+    sockcmd '{ "command": ["set_property", "volume", '"$volume"' ] }'
 }
 
 setSpeedRelative() {
     speed=$(getSpeed)
-
     fltCheck "$1" || exit 1
     speed=$(echo "$speed $1" | awk '{print $1 + $2}')
-    sockcmd '{ "command": ["set_property_string", "speed", "'$speed'" ] }'
+    sockcmd '{ "command": ["set_property_string", "speed", "'"$speed"'" ] }'
 }
 
 setSpeedAbsolute() {
     fltCheck "$1" || exit 1
     speed=$1
-    sockcmd '{ "command": ["set_property_string", "speed", "'$speed'" ] }'
+    sockcmd '{ "command": ["set_property_string", "speed", "'"$speed"'" ] }'
 }
 
 setTrackRelative() {
     intCheck "$1" || exit 1
-
     currentTrack=$(getPropertyString playlist-pos)
     desiredTrack=$((currentTrack + $1))
     trackCount=$(getPropertyString playlist-count)
@@ -423,7 +418,6 @@ setTrackRelative() {
             desiredTrack=0
         fi
     }
-
     sockcmd '{ "command": ["set_property", "playlist-pos", '$desiredTrack' ] }'
 }
 
@@ -461,7 +455,7 @@ moveTrack() {
     sockcmd '{ "command": ["playlist-move", "'$trackToMove'", "'$newTrackPosition'" ] }'
 
     [ "$QUIETFLAG" != "true" ] && {
-        getPlaylist $COLOURFLAG
+        getPlaylist "$COLOURFLAG"
         QUIETFLAG="true"
     }
 }
@@ -501,8 +495,7 @@ alwaysPlay() {
 }
 
 alwaysPause() {
-    status="true"
-    sockcmd '{ "command": ["set_property", "pause", '$status' ] }'
+    sockcmd '{ "command": ["set_property", "pause", true ] }'
 }
 
 togglePause() {
@@ -524,7 +517,7 @@ toggleMute() {
     else
         muted=$1
     fi
-    sockcmd '{ "command": ["set_property", "mute", '$muted' ] }'
+    sockcmd '{ "command": ["set_property", "mute", '"$muted"' ] }'
 }
 
 toggleLoopFile() {
@@ -560,7 +553,6 @@ cropPlaylist() {
 
 clearPlaylist() {
     QUIETFLAG="true"
-
     # kill any running process of mpvc add
     quiet pgrep -f "mpvc add" && pkill -f "mpvc add"
 
@@ -683,7 +675,7 @@ printPrettyOutput() {
 # catches if mpv is idle or not
 printFinalOutput() {
     if [ "$QUIETFLAG" != "true" ] && [ "$(getPropertyString idle-active)" = "yes" ]; then
-        printf '%s\n' "MPV instance on ${SOCKET} is currently idle." >&2
+        printf '%s\n' "MPV instance on $SOCKET is currently idle." >&2
     else
         formatPrint
     fi
@@ -693,7 +685,7 @@ printFinalOutput() {
 ###############################################################################
 
 escapeSedChar() {
-    awk ' { gsub("'$1'", "\\'$1'"); gsub("'$2'", "\\'$2'"); print $0; }'
+    awk -v r1="$1" -v r2="$2" '{ gsub(r1, "\\"r1); gsub(r2, "\\"r2); print $0; }'
 }
 
 intCheck() {
@@ -711,32 +703,22 @@ fltCheck() {
 }
 
 calculateTerminalHeight() {
+    ctrack="$1"
+    tracks="$2"
+
     crow=2 # TBD
     rows=$(($(tput lines) - crow))
     halfrows=$((rows / 2))
 
-    if [ "$tracks" -gt $rows ]
-    then
-        if [ "$currentTrack" -le $halfrows ]
-        then
-            FIRST=1
-            LAST=$rows
-            return
-        elif [  $((currentTrack + halfrows)) -ge "$tracks" ]
-        then
-            FIRST=$((tracks - rows + 1))
-            LAST=$tracks
-            return
-        elif [  $((currentTrack + halfrows)) -lt "$tracks" ]
-        then
-            FIRST=$((currentTrack - halfrows + 1))
-            LAST=$((currentTrack + halfrows))
-            return
-        fi
+    if [ "$tracks" -le $rows ]; then
+        FIRST=1; LAST=$tracks
+    elif [ "$ctrack" -le $halfrows ]; then
+        FIRST=1; LAST=$rows
+    elif [  $((ctrack + halfrows)) -ge "$tracks" ]; then
+        FIRST=$((tracks - rows + 1)); LAST=$tracks
+    elif [  $((ctrack + halfrows)) -lt "$tracks" ]; then
+        FIRST=$((ctrack - halfrows + 1)); LAST=$((ctrack + halfrows))
     fi
-
-    FIRST=1
-    LAST=$tracks
 }
 
 parseTimeString() {
@@ -769,27 +751,23 @@ EOF
 
 validateDeps() {
     if ! quiet type mpv; then
-        printf '%s\n' "Cannot find mpv on your \$PATH." >&2
-        exit 4
+        eeprintf 4 "Cannot find mpv on your \$PATH."
     fi
     quiet type nc && SOCKETCOMMAND="nc -U -N $SOCKET"
     quiet type socat && SOCKETCOMMAND="socat - $SOCKET"
     if [ -z "$SOCKETCOMMAND" ]; then
-        printf '%s\n' "Cannot find socat or nc on your \$PATH." >&2
-        exit 4
+        eeprintf 4 "Cannot find socat or nc on your \$PATH."
     fi
 }
 
 validateSocket() {
     # test if socket exists
     if [ ! -S "$SOCKET" ]; then
-        printf '%s\n' "$SOCKET does not exist. Use mpv --input-ipc-server to start one." >&2
-        exit 2
+        eeprintf 2 "$SOCKET does not exist. Use mpv --input-ipc-server to start one."
     fi
     # test if socket is open
     if [ "$(getPauseStatus)" = "N/A" ]; then
-        printf '%s\n' "No files added to $SOCKET."
-        exit 3
+        eeprintf 3 "No files added to $SOCKET."
     fi
 }
 
@@ -805,13 +783,13 @@ do_fuzzy_search() {
 
 do_idleloop() {
     sockcmd '{ "command": ["unobserve_property", 1 ] }'
-    sockcmd '{ "command": ["observe_property", '1, "$@"' ] }'
-    socat -t0 -,ignoreeof $SOCKET
+    sockcmd '{ "command": ["observe_property", '1, "$*"' ] }'
+    socat -t0 -,ignoreeof "$SOCKET"
 }
 
 startMpvd() {
-    mkdir -p $(dirname $SOCKET)
-    exec mpv --input-ipc-server=${SOCKET} $MPVOPTIONS "$@" &
+    mkdir -p "$(dirname "$SOCKET")"
+    exec mpv "--input-ipc-server=$SOCKET" $MPVOPTIONS "$@" &
     # wait until mpv starts up
     while sleep 0.1; do
         [ -n "$(getPropertyString idle-active)" ] && break
@@ -974,8 +952,8 @@ main() {
     [ "$QUIETFLAG" != "true" ] && printFinalOutput
 }
 
-[ "$QUIETFLAG" = "true" ] && {
+if [ "$QUIETFLAG" = "true" ]; then
     quiet main "$@"
-} || {
+else
     main "$@"
-}
+fi
