@@ -95,9 +95,7 @@ cleanFilename() {
     case "$filename" in
         *.googlevideo.com/*) filename="mps-yt stream" ;;
         *youtu*|watch*)
-            if quiet type jq; then
-                result="$(curl -sL "https://youtube.com/oembed?url=$filename"|jq -r '.title')"
-            fi
+            result="$(curl -sL "https://youtube.com/oembed?url=$filename" | getJSONField 'title:')"
         ;;
         *) result=$(basename "$filename") ;;
     esac
@@ -115,7 +113,7 @@ getMetadata() {
     property=$1
 
     # test for no result
-    metadata=$(socketCommand "get_property" "metadata/by-key/${property}")
+    metadata=$(getProperty "metadata/by-key/${property}")
     case "$metadata" in
         '') result="N/A" ;;
         *)  result="$metadata" ;;
@@ -133,11 +131,20 @@ getMetadata() {
     printf '%s' "$result" | escapeSedChar '&' '#'
 }
 
+getJSONField() {
+    awk -F, -v jfield="$1" '{
+        gsub("[{\"}]","");
+        for (i=1;i<=NF;i++) {
+            if ($i ~ jfield) { gsub(jfield, "", $i); print $i }
+        }
+    }'
+}
+
 socketCommand() {
     command="$1"
     property="$2"
-    equiet _sockcmd "{ \"command\": [\"${command}\", \"$property\"] }" |
-        awk -F '[:,]' '/"error":"success"/ { gsub("\"",""); print $2 }'
+    # mimics jq JSON parsing using awk, but, should instead use jq(1) TBD
+    equiet _sockcmd "{ \"command\": [ \"$command\", \"$property\"] }" | getJSONField "data:"
 }
 
 # retrieve integer/boolean property
@@ -704,8 +711,7 @@ fltCheck() {
 calculateTerminalHeight() {
     ctrack="$1"
     tracks="$2"
-
-    crow=2 # TBD
+    crow=2
     rows=$(($(tput lines) - crow))
     halfrows=$((rows / 2))
 
