@@ -72,17 +72,17 @@ EOF
     if [ -n "$1" ]; then exit "$1"; else exit; fi;
 }
 
-dquiet() { "$@" >&2; }
 equiet() { "$@" 2> /dev/null; }
 oquiet() { "$@" 1> /dev/null; }
 quiet()  { "$@" > /dev/null 2>&1; }
+warn() { echo "$@" >&2; }
 
-_sockcmd() { printf '%s\n' "$@" | $SOCKETCOMMAND; }
+_sockcmd() { echo "$@" | $SOCKETCOMMAND; }
 sockcmd()  { oquiet _sockcmd "$@"; }
 
-pprintf() { printf "%s" "$@"; }
-eprintf() { printf '%s\n' "$@" >&2; exit 1; }
-eeprintf() { e=$1; shift; printf '%s\n' "$@" >&2; exit "$e"; }
+pprintf() { echo "$@"; }
+eprintf() { warn "$@"; exit 1; }
+eeprintf() { e=$1; shift; warn "$@"; exit "$e"; }
 
     # Retrieval Functions
 ###############################################################################
@@ -151,29 +151,22 @@ socketCommand() {
 # fn args: mute, pause, loop-file, estimated-frame-number, width, height
 getProperty() {
     property="$1"
-    socketCommand "get_property" "$property"
+    result=$(socketCommand "get_property" "$property")
+    echo "$result"
 }
 
 # fn args: filename, idle-active, playlist-count, playlist-pos, playback-time,
 #          playtime-remaining, time-remaining, percent-pos, duration, volume
 getPropertyString() {
     property="$1"
-
     result=$(socketCommand "get_property_string" "$property")
     case "$property" in
         volume|duration|percent-pos|playtime-remaining|playback-time)
-            result=$(echo "$result" | sed 's/\.[0-9]\+%\?$//')
+            result="${result%%%}"
+            result="${result%%.[0-9]*}"
         ;;
     esac
-
-    case "$result" in
-        error|null)
-            if [ $# -ge 2 ]; then pprintf "$2"; else pprintf "N/A"; fi
-            return 1
-        ;;
-        *) pprintf "$result"
-        ;;
-    esac
+    echo "$result"
 }
 
 # fn args: speed
@@ -356,19 +349,16 @@ setTimeRelative() {
 setTimeAbsolute() {
     time=$(parseTimeString "$1") || exit $?
     trackTime=$(getPropertyString duration)
-
-    [ "$time" -ge "$trackTime" ] && {
+    if [ "$time" -ge "$trackTime" ]; then
         printf '%s\n' "Given time is greater than track length! ($(getTrackLength))"
         QUIETFLAG="true"
         return 1
-    }
-
+    fi
     sockcmd '{ "command": [ "set_property", "playback-time", '"$time"' ] }'
 }
 
 setVolume () {
     intCheck "$1" || exit 1
-    # test if media has sound
     volume=$(getPropertyString volume)
     [ "$volume" = "error" ] && eprintf "Currently playing media does not have sound."
     case "$2" in
@@ -380,16 +370,13 @@ setVolume () {
     sockcmd '{ "command": ["set_property", "volume", '"$volume"' ] }'
 }
 
-setSpeedRelative() {
+setSpeed() {
     speed=$(getSpeed)
     fltCheck "$1" || exit 1
-    speed=$(echo "$speed $1" | awk '{print $1 + $2}')
-    sockcmd '{ "command": ["set_property_string", "speed", "'"$speed"'" ] }'
-}
-
-setSpeedAbsolute() {
-    fltCheck "$1" || exit 1
-    speed=$1
+    case "$2" in
+        absolute) speed=$1 ;;
+        relative) speed=$(echo "$speed $1" | awk '{print $1 + $2}') ;;
+    esac
     sockcmd '{ "command": ["set_property_string", "speed", "'"$speed"'" ] }'
 }
 
@@ -439,7 +426,6 @@ setTrackAbsolute() {
 
 moveTrack() {
     intCheck "$1" || exit 1
-
     if [ -z "$2" ]; then
         trackToMove=$(getPropertyString playlist-pos)
         newTrackPosition=$1
@@ -635,7 +621,7 @@ formatPrint() {
     F="$FORMATSTRING"
 
     # not that nice, in fact, way more ugly, but too way faster
-    for f in $(echo "$FORMATSTRING" | sed 's#/# #g')
+    for f in $(echo "$F" | sed 's#/# #g')
     do
         case $f in
         (*%status%*) F=$(echo "$F" | sed "s#%status%#$(getPauseStatus)#g") ;;
@@ -756,12 +742,12 @@ EOF
 
 validateDeps() {
     if ! quiet type mpv; then
-        eeprintf 4 "Cannot find mpv on your \$PATH."
+        eeprintf 4 'Cannot find mpv on your $PATH.'
     fi
     quiet type nc && SOCKETCOMMAND="nc -U -N $SOCKET"
     quiet type socat && SOCKETCOMMAND="socat - $SOCKET"
     if [ -z "$SOCKETCOMMAND" ]; then
-        eeprintf 4 "Cannot find socat or nc on your \$PATH."
+        eeprintf 4 'Cannot find socat or nc on your $PATH.'
     fi
 }
 
@@ -778,7 +764,7 @@ validateSocket() {
 
 getVersion() {
     mpv --version
-    pprintf "MPVC Release $PROGVERSION (c) Laurence Willetts MIT"
+    echo "MPVC Release $PROGVERSION (c) Laurence Willetts MIT"
     exit
 }
 
@@ -917,8 +903,8 @@ main() {
             -T|--time)                       shift; setTimeAbsolute "$1"    ;;
             -v|--vol)                        shift; setVolume "$1" relative ;;
             -V|--volume)                     shift; setVolume "$1" absolute ;;
-            -x|--speed|speed)                shift; setSpeedRelative "$1"   ;;
-            -X|--speedval)                   shift; setSpeedAbsolute "$1"   ;;
+            -x|--speed|speed)                shift; setSpeed "$1" relative  ;;
+            -X|--speedval)                   shift; setSpeed "$1" absolute  ;;
             -j|--track)                      shift; setTrackRelative "$1"   ;;
             -J|--tracknum)                   shift; setTrackAbsolute "$1"   ;;
             -r|--remove|rm|remove|del)       shift; removeTrack "$1"        ;;
