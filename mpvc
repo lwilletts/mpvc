@@ -82,7 +82,7 @@ sockcmd()  { oquiet _sockcmd "$@"; }
 
 pprintf() { printf "%s" "$@"; }
 eprintf() { printf '%s\n' "$@" >&2; exit 1; }
-eeprintf() { e=$1; shift; printf '%s\n' "$@" >&2; exit $e; }
+eeprintf() { e=$1; shift; printf '%s\n' "$@" >&2; exit "$e"; }
 
     # Retrieval Functions
 ###############################################################################
@@ -235,12 +235,11 @@ getPlaylist() {
     for i in $( seq $(( FIRST - 1 )) $(( LAST - 1 )) )
     do
         filename=$(getPlaylistFilename "$i")
-        fmtstr='%d	 %s\n'
-        if [ "$noColour" != "nocolour" ] && [ "$currentTrack" -eq "$i" ]
-        then
-            fmtstr='%d	[7m %s[0m\n'
+        if [ "$noColour" != "nocolour" ] && [ "$currentTrack" -eq "$i" ]; then
+            printf '%d	[7m %s[0m\n' "$i" "${filename}"
+        else
+            printf '%d	 %s\n' "$i" "${filename}"
         fi
-        printf  "$fmtstr" "$i" "${filename}"
     done
 }
 
@@ -789,11 +788,10 @@ do_idleloop() {
 
 startMpvd() {
     mkdir -p "$(dirname "$SOCKET")"
-    exec mpv "--input-ipc-server=$SOCKET" $MPVOPTIONS "$@" &
+    # shellcheck disable=SC2086
+    exec mpv --input-ipc-server="$SOCKET" $MPVOPTIONS "$@" &
     # wait until mpv starts up
-    while sleep 0.1; do
-        [ -n "$(getPropertyString idle-active)" ] && break
-    done
+    until [ -n "$(getPropertyString idle-active)" ]; do sleep 0.1; done
 }
 
 main() {
