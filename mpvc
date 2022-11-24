@@ -355,14 +355,14 @@ setTimeRelative() {
 }
 
 setTimeAbsolute() {
-    time=$(parseTimeString "$1") || exit $?
+    timeSec=$(parseTimeString "$1") || exit $?
     trackTime=$(getPropertyString duration)
-    if [ "$time" -ge "$trackTime" ]; then
+    if [ "$timeSec" -ge "$trackTime" ]; then
         printf '%s\n' "Given time is greater than track length! ($(getTrackLength))"
         QUIETFLAG="true"
         return 1
     fi
-    sockcmd '{ "command": [ "set_property", "playback-time", '"$time"' ] }'
+    sockcmd '{ "command": [ "set_property", "playback-time", '"$timeSec"' ] }'
 }
 
 setVolume () {
@@ -379,8 +379,8 @@ setVolume () {
 }
 
 setSpeed() {
-    speed=$(getSpeed)
     fltCheck "$1" || exit 1
+    speed=$(getSpeed)
     case "$2" in
         absolute) speed=$1 ;;
         relative) speed=$(echo "$speed $1" | awk '{print $1 + $2}') ;;
@@ -388,49 +388,37 @@ setSpeed() {
     sockcmd '{ "command": ["set_property_string", "speed", "'"$speed"'" ] }'
 }
 
-setTrackRelative() {
+setTrack() {
     intCheck "$1" || exit 1
     currentTrack=$(getPropertyString playlist-pos)
-    desiredTrack=$((currentTrack + $1))
     trackCount=$(getPropertyString playlist-count)
-
-    # if time is greater than 10 seconds, set time to 0
-    if [ "$desiredTrack" -lt "$currentTrack" ]; then
-        seconds=$(getPropertyString playback-time)
-        [ "$seconds" -ge 10 ] && {
-            setTimeAbsolute 0
-            return
-        }
+    case "$2" in
+        relative)
+            newTrack=$((currentTrack + $1))
+            # if time is greater than 10 seconds, set time to 0
+            if [ "$newTrack" -lt "$currentTrack" ]; then
+                seconds=$(getPropertyString playback-time)
+                [ "$seconds" -ge 10 ] && setTimeAbsolute 0 && return
+            fi
+            if [ "$newTrack" -ge "$trackCount" ]; then
+                repeat=$(getLoopStatus loop-playlist)
+                [ "$repeat" = "yes" ] && newTrack=0
+            fi
+            if [ "$newTrack" -lt 0 ]; then
+                repeat=$(getLoopStatus loop-file)
+                if [ "$repeat" = "yes" ]; then
+                    newTrack=$trackCount
+                else
+                    newTrack=0
+                fi
+            fi
+        ;;
+        absolute) newTrack=$1 ;;
+    esac
+    if [ "$newTrack" -lt 0 ] || [ "$newTrack" -ge "$trackCount" ]; then
+        eprintf "Item $newTrack is out of range of playlist."
     fi
-
-    if [ "$desiredTrack" -ge "$trackCount" ]; then
-        repeat=$(getLoopStatus loop-playlist)
-        [ "$repeat" = "yes" ] && {
-            desiredTrack=0
-        }
-    fi
-
-    if [ "$desiredTrack" -lt 0 ]; then
-        repeat=$(getLoopStatus loop-file)
-        if [ "$repeat" = "yes" ]; then
-            setTrackAbsolute "$trackCount"
-            return
-        else
-            desiredTrack=0
-        fi
-    fi
-    sockcmd '{ "command": ["set_property", "playlist-pos", '$desiredTrack' ] }'
-}
-
-setTrackAbsolute() {
-    intCheck "$1" || exit 1
-    currentTrack=$1
-    currentTrack=$((currentTrack - 1))
-    trackCount=$(getPropertyString playlist-count)
-    if [ "$currentTrack" -lt 0 ] || [ "$currentTrack" -ge "$trackCount" ]; then
-        eprintf "Item $currentTrack is out of range of playlist."
-    fi
-    sockcmd '{ "command": ["set_property", "playlist-pos", '$currentTrack' ] }'
+    sockcmd '{ "command": ["set_property", "playlist-pos", '$newTrack' ] }'
 }
 
 moveTrack() {
@@ -488,7 +476,7 @@ removeTrack() {
 alwaysPlay() {
     currentTrack=$(getPropertyString playlist-pos)
     if [ "$currentTrack" = "N/A" ]; then
-        setTrackAbsolute 1
+        setTrack 1 absolute
         return
     fi
     sockcmd '{ "command": ["set_property", "pause", false ] }'
@@ -502,7 +490,7 @@ setPause() {
 togglePause() {
     currentTrack=$(getPropertyString playlist-pos)
     if [ "$currentTrack" = "N/A" ]; then
-        setTrackAbsolute 1; return
+        setTrack 1 absolute; return
     fi
     pause="$(getProperty pause)"
     [  "$pause" = "true" ] && pause="false" || pause="true"
@@ -841,9 +829,9 @@ main() {
     case "$1" in
         play|start|resume)
             case "$2" in
-                0) setTrackAbsolute 1 ;;
-                $) setTrackAbsolute "$(getPropertyString playlist-count)" ;;
-                *) intCheck "$2" && setTrackAbsolute "$2" ;;
+                0) setTrack 1 absolute;;
+                $) setTrack "$(getPropertyString playlist-count)" absolue;;
+                *) intCheck "$2" && setTrack "$2" absolute;;
             esac
             alwaysPlay
             printFinalOutput
@@ -876,8 +864,8 @@ main() {
         sockcmd)  _sockcmd "$2"; return ;;
         metadata) getFilenameMetadata "$2" ;;
         pause)    setPause true       ; printFinalOutput ;;
-        next)     setTrackRelative 1  ; printFinalOutput ;;
-        prev)     setTrackRelative -1 ; printFinalOutput ;;
+        next)     setTrack 1 relative ; printFinalOutput ;;
+        prev)     setTrack -1 relative; printFinalOutput ;;
         move)     moveTrack "$2" "$3" ; printFinalOutput ;;
         mute)     toggleMute true     ; printFinalOutput ;;
         unmute)   toggleMute false    ; printFinalOutput ;;
@@ -903,8 +891,8 @@ main() {
             -V|--volume)                     shift; setVolume "$1" absolute ;;
             -x|--speed|speed)                shift; setSpeed "$1" relative  ;;
             -X|--speedval)                   shift; setSpeed "$1" absolute  ;;
-            -j|--track)                      shift; setTrackRelative "$1"   ;;
-            -J|--tracknum)                   shift; setTrackAbsolute "$1"   ;;
+            -j|--track)                      shift; setTrack "$1" relative  ;;
+            -J|--tracknum)                   shift; setTrack "$1" absolute  ;;
             -r|--remove|rm|remove|del)       shift; removeTrack "$1"        ;;
             -o|--save|save)                  shift; savePlaylist "$1"       ;;
             --load|load)                     shift; loadPlaylist "$1"       ;;
