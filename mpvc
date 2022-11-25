@@ -392,6 +392,8 @@ setTrack() {
     intCheck "$1" || exit 1
     currentTrack=$(getPropertyString playlist-pos)
     trackCount=$(getPropertyString playlist-count)
+
+    [ "$ctrack" = "null" ] && return
     case "$2" in
         relative)
             newTrack=$((currentTrack + $1))
@@ -489,7 +491,7 @@ setPause() {
 
 togglePause() {
     currentTrack=$(getPropertyString playlist-pos)
-    if [ "$currentTrack" = "N/A" ]; then
+    if [ "$currentTrack" = "null" ]; then
         setTrack 1 absolute; return
     fi
     pause="$(getProperty pause)"
@@ -587,7 +589,7 @@ playtimeRemaining() {
 
 # format seconds into HH:MM:SS format
 formatTime() {
-    [  "$1" = "N/A" ] && return 1
+    [  "$1" = "null" ] && return 1
 
     rawSeconds=$1
     seconds=$((rawSeconds % 60))
@@ -709,10 +711,7 @@ calculateTerminalHeight() {
     rows=$((lines - crow))
     halfrows=$((rows / 2))
 
-    if [ -z "$ctrack" ] ||  [ "$ctrack" = "null" ]; then
-        return
-    fi
-
+    [ "$ctrack" = "null" ] && return
     if [ "$tracks" -le $rows ]; then
         FIRST=1; LAST=$tracks
     elif [ "$ctrack" -le $halfrows ]; then
