@@ -295,7 +295,6 @@ appendTrack() {
     esac
 
     # skip over various other filetypes and images unless wanted
-    # this doesn't stop mpv from resolving directories and adding them anyway
     case "$filename" in
         *.txt|*.log|*.cue) return ;;
         *.png|*.jpg|*.jpeg|*.gif|*.psd|*.pdf) [ "$IMAGEFLAG" != "true" ] && return ;;
@@ -392,8 +391,7 @@ setTrack() {
     intCheck "$1" || exit 1
     currentTrack=$(getPropertyString playlist-pos)
     trackCount=$(getPropertyString playlist-count)
-
-    [ "$ctrack" = "null" ] && return
+    [ "$currentTrack" = "null" ] && currentTrack=0
     case "$2" in
         relative)
             newTrack=$((currentTrack + $1))
@@ -420,7 +418,7 @@ setTrack() {
     if [ "$newTrack" -lt 0 ] || [ "$newTrack" -ge "$trackCount" ]; then
         eprintf "Item $newTrack is out of range of playlist."
     fi
-    sockcmd '{ "command": ["set_property", "playlist-pos", '$newTrack' ] }'
+    sockcmd '{ "command": ["set_property", "playlist-pos", '"$newTrack"' ] }'
 }
 
 moveTrack() {
@@ -453,19 +451,15 @@ moveTrack() {
 
 removeTrack() {
     trackToRemove=$1
-
     if [ "$trackToRemove" = "current" ]; then
         socketCommand "playlist-remove" "$trackToRemove"
     else
         intCheck "$1" || exit 1
-
         trackToRemove=$((trackToRemove - 1))
         trackCount=$(getPropertyString playlist-count)
-
         if [ "$trackToRemove" -lt 0 ] || [ "$trackToRemove" -ge "$trackCount" ]; then
             eprintf "Item $trackToRemove is out of range of playlist."
         fi
-
         filename="$(getPlaylistFilename $trackToRemove)"
         socketCommand "playlist-remove" "$trackToRemove"
     fi
@@ -478,8 +472,7 @@ removeTrack() {
 alwaysPlay() {
     currentTrack=$(getPropertyString playlist-pos)
     if [ "$currentTrack" = "N/A" ]; then
-        setTrack 1 absolute
-        return
+        setTrack 1 absolute; return
     fi
     sockcmd '{ "command": ["set_property", "pause", false ] }'
 }
@@ -500,11 +493,10 @@ togglePause() {
 }
 
 toggleMute() {
+    muted=$1
     if [  -z "$1" ]; then
         muted=$(getMuteStatus)
         [  "$muted" = "no" ] && muted="true" || muted="false"
-    else
-        muted=$1
     fi
     sockcmd '{ "command": ["set_property", "mute", '"$muted"' ] }'
 }
@@ -523,21 +515,19 @@ toggleLoopPlaylist() {
 
 shufflePlaylist() {
     sockcmd '{ "command": ["playlist-shuffle" ] }'
-
-    [  "$QUIETFLAG" != "true" ] && {
+    if [ "$QUIETFLAG" != "true" ]; then
         printf '%s\n' "Playlist shuffled."
         QUIETFLAG="true"
-    }
+    fi
     [ "$(getLoopStatus loop-playlist)" != "yes" ] && toggleLoopPlaylist inf
 }
 
 cropPlaylist() {
     sockcmd '{ "command": ["playlist-clear" ] }'
-
-    [ "$QUIETFLAG" != "true" ] && {
+    if [ "$QUIETFLAG" != "true" ]; then
         getPlaylist
         QUIETFLAG="true"
-    }
+    fi
 }
 
 clearPlaylist() {
@@ -724,14 +714,11 @@ calculateTerminalHeight() {
 }
 
 parseTimeString() {
-    printf '%s' "$1" | grep -q -e "^\([0-9.]*:\)\{0,2\}[0-9.]*$" -e "^[0-9]*[sSmMhH]$" || {
-        cat >&2 << EOF
-Timestamp formats must match either H:M:S with hour and minute fields optional,
-or a single integer number with a unit of time appended: h, m, s.
-EOF
+    if ! echo "$1" | grep -q -e "^\([0-9.]*:\)\{0,2\}[0-9.]*$" -e "^[0-9]*[sSmMhH]$"; then
+        warn "Timestamp formats must match either H:M:S with hour and minute fields optional,"
+        warn "or a single integer number with a unit of time appended: h, m, s."
         exit 1
-    }
-
+    fi
     case "$1" in
         *s|*S|*m|*M|*h|*H)
             timeInt=${1%%?}
@@ -742,35 +729,25 @@ EOF
             esac
             ;;
         *)
-            timeInt=$(printf '%s' "$1" | awk -F ':' '{
-                for (x=1; x<=NF; x++) time=time*60+$x;
-                print time
-            }')
+            timeInt=$(printf '%s' "$1" |
+                awk -F ':' '{ for (x=1; x<=NF; x++) t=t*60+$x; print t }')
             ;;
     esac
     printf "%d" "$timeInt"
 }
 
 validateDeps() {
-    if ! quiet type mpv; then
-        eeprintf 4 "Cannot find mpv on your \$PATH."
-    fi
+    ! quiet type mpv && eeprintf 4 "Cannot find mpv on your \$PATH."
     quiet type nc && SOCKETCOMMAND="nc -U -N $SOCKET"
     quiet type socat && SOCKETCOMMAND="socat - $SOCKET"
-    if [ -z "$SOCKETCOMMAND" ]; then
-        eeprintf 4 "Cannot find socat or nc on your \$PATH."
-    fi
+    [ -z "$SOCKETCOMMAND" ] && eeprintf 4 "Cannot find socat or nc on your \$PATH."
 }
 
 validateSocket() {
     # test if socket exists
-    if [ ! -S "$SOCKET" ]; then
-        eeprintf 2 "$SOCKET does not exist. Use mpv --input-ipc-server to start one."
-    fi
+    [ ! -S "$SOCKET" ] && eeprintf 2 "$SOCKET does not exist. Use mpv --input-ipc-server to start one."
     # test if socket is open
-    if [ "$(getPauseStatus)" = "N/A" ]; then
-        eeprintf 3 "No files added to $SOCKET."
-    fi
+    [ "$(getPauseStatus)" = "N/A" ] && eeprintf 3 "No files added to $SOCKET."
 }
 
 getVersion() {
@@ -829,7 +806,7 @@ main() {
         play|start|resume)
             case "$2" in
                 0) setTrack 1 absolute;;
-                $) setTrack "$(getPropertyString playlist-count)" absolue;;
+                $) setTrack "$(getPropertyString playlist-count)" absolute;;
                 *) intCheck "$2" && setTrack "$2" absolute;;
             esac
             alwaysPlay
