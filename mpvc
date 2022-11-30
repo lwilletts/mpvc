@@ -452,16 +452,15 @@ moveTrack() {
 removeTrack() {
     trackToRemove=$1
     if [ "$trackToRemove" = "current" ]; then
-        socketCommand "playlist-remove" "$trackToRemove"
+        oquiet socketCommand "playlist-remove" "$trackToRemove"
     else
         intCheck "$1" || exit 1
-        trackToRemove=$((trackToRemove - 1))
         trackCount=$(getPropertyString playlist-count)
         if [ "$trackToRemove" -lt 0 ] || [ "$trackToRemove" -ge "$trackCount" ]; then
             eprintf "Item $trackToRemove is out of range of playlist."
         fi
         filename="$(getPlaylistFilename $trackToRemove)"
-        socketCommand "playlist-remove" "$trackToRemove"
+        oquiet socketCommand "playlist-remove" "$trackToRemove"
     fi
 
     if [ "$QUIETFLAG" != "true" ]; then
