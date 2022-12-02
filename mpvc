@@ -231,9 +231,9 @@ getPlaylist() {
     do
         filename=$(getPlaylistFilename "$i")
         if [ "$noColour" != "nocolour" ] && [ "$currentTrack" != "null" ] && [ "$currentTrack" -eq "$i" ]; then
-            printf '%d	[7m %s[0m\n' "$i" "${filename}"
+            printf '%d  [7m%s[0m\n' "$i" "${filename}"
         else
-            printf '%d	 %s\n' "$i" "${filename}"
+            printf '%d  %s\n' "$i" "${filename}"
         fi
     done
 }
@@ -678,13 +678,13 @@ fltCheck() {
 getCurrentLine() {
     l=2
 #    t=$(stty -g)
-#
 #    exec < /dev/tty
 #    stty raw -echo min 0
 #    tput u7 > /dev/tty
 #    sleep 0.1
 #    IFS='[;' read -r R l
 #    stty "$t"
+#    [ ${l%%;*} -ge $(tput lines) ] && l=2
     echo "${l%%;*}"
 }
 
