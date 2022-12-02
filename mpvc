@@ -99,7 +99,7 @@ cleanFilename() {
         ;;
         *) result=$(basename "$filename") ;;
     esac
-    printf '%s\n' "$result"
+    echo "$result"
 }
 
 # fn args: media-title, path
@@ -180,7 +180,7 @@ getLoopStatus() {
         false)      loop="no"  ;;
         *)          loop="N/A" ;;
     esac
-    printf '%s' "$loop"
+    echo "$loop"
 }
 
 getMuteStatus() {
@@ -190,7 +190,7 @@ getMuteStatus() {
         false) muted="no"  ;;
         *)     muted="N/A" ;;
     esac
-    printf '%s' "$muted"
+    echo "$muted"
 }
 
 getPauseStatus() {
@@ -200,7 +200,7 @@ getPauseStatus() {
         false) status="playing" ;;
         *)     status="N/A"     ;;
     esac
-    printf '%s' "$status"
+    echo "$status"
 }
 
 # fn args: $1: filename $2: full path flag to skip basename
@@ -209,7 +209,7 @@ getPlaylistFilename() {
     fullpathFlag="$2"
     filename=$(getPropertyString "playlist/$track/filename")
     [  "$fullpathFlag" != "fullpath" ] && filename=$(cleanFilename "$filename")
-    printf '%s\n' "$filename"
+    echo "$filename"
 }
 
 # print filenames in current playlist
@@ -219,11 +219,9 @@ getPlaylist() {
 
     tracks=$(getPropertyString playlist-count)
     currentTrack=$(getPropertyString playlist-pos)
-
-    if [ "$tracks" -eq 0 ]; then
-        eprintf "$SOCKET is currently idle."
+    if [ -z "$tracks" ] || [ "$tracks" -eq 0 ]; then
+        eprintf "Socket ${SOCKET##$HOME/} is currently idle."
     fi
-
     # by default, display only tracks fitting terminal, otherwise, display all
     FIRST=1
     LAST=$tracks
@@ -261,13 +259,13 @@ savePlaylist() {
             echo "Playlist $savePlaylist exists! Overwrite? [Y/n] "; read -r key
             [ "$key" != "Y" ] && return
         fi
-        printf '%s\n' "Adding files to $savePlaylist ..."
+        echo "Adding files to $savePlaylist ..."
     fi
 
     LAST=$(getPropertyString playlist-count)
     for i in $(seq 0 $(( LAST - 1 )) )
     do
-        printf '%s\n' "$(getPlaylistFilename "$i" fullpath)"
+        echo "$(getPlaylistFilename "$i" fullpath)"
     done > "$savePlaylist"
     QUIETFLAG="true"
 }
@@ -306,7 +304,7 @@ appendTrack() {
     fi
     quiet socketCommand "loadfile" "$filename\", \"append-play"
     filename=$(cleanFilename "$filename")
-    printf '%s\n' "Adding: $filename"
+    echo "Adding: $filename"
 }
 
 appendTracks() {
@@ -357,7 +355,7 @@ setTimeAbsolute() {
     timeSec=$(parseTimeString "$1") || exit $?
     trackTime=$(getPropertyString duration)
     if [ "$timeSec" -ge "$trackTime" ]; then
-        printf '%s\n' "Given time is greater than track length! ($(getTrackLength))"
+        echo "Given time is greater than track length! ($(getTrackLength))"
         QUIETFLAG="true"
         return 1
     fi
@@ -428,7 +426,6 @@ moveTrack() {
         newTrackPosition=$1
     else
         trackToMove=$1
-        trackToMove=$((trackToMove - 1))
         newTrackPosition=$2
         trackCount=$(getPropertyString playlist-count)
 
@@ -470,8 +467,8 @@ removeTrack() {
 
 alwaysPlay() {
     currentTrack=$(getPropertyString playlist-pos)
-    if [ "$currentTrack" = "N/A" ]; then
-        setTrack 1 absolute; return
+    if [ "$currentTrack" = "null" ]; then
+        setTrack 0 absolute; return
     fi
     sockcmd '{ "command": ["set_property", "pause", false ] }'
 }
@@ -484,7 +481,7 @@ setPause() {
 togglePause() {
     currentTrack=$(getPropertyString playlist-pos)
     if [ "$currentTrack" = "null" ]; then
-        setTrack 1 absolute; return
+        setTrack 0 absolute; return
     fi
     pause="$(getProperty pause)"
     [  "$pause" = "true" ] && pause="false" || pause="true"
@@ -515,7 +512,7 @@ toggleLoopPlaylist() {
 shufflePlaylist() {
     sockcmd '{ "command": ["playlist-shuffle" ] }'
     if [ "$QUIETFLAG" != "true" ]; then
-        printf '%s\n' "Playlist shuffled."
+        echo "Playlist shuffled."
         QUIETFLAG="true"
     fi
     [ "$(getLoopStatus loop-playlist)" != "yes" ] && toggleLoopPlaylist inf
@@ -533,10 +530,9 @@ clearPlaylist() {
     QUIETFLAG="true"
     # kill any running process of mpvc add
     quiet pgrep -f "mpvc add" && pkill -f "mpvc add"
-
     cropPlaylist
-    removeTrack 1
-    printf '%s\n' "Playlist cleared."
+    removeTrack 0
+    echo "Playlist cleared."
 }
 
 # quit mpv process on given socket
@@ -547,7 +543,7 @@ killSocket() {
 
 # kill all instances of mpv running under your user
 killAllMpv() {
-    quiet pkill "mpv"
+    quiet pkill -f "mpv "
     exit
 }
 
@@ -591,10 +587,10 @@ formatTime() {
     [ $hours -lt 10 ] && hours="0$hours"
 
     if [ -z "$2" ]; then
-        printf '%s\n' "$hours:$minutes:$seconds"
+        echo "$hours:$minutes:$seconds"
     else
         milleSeconds=$2
-        printf '%s\n' "$hours:$minutes:$seconds.$milleSeconds"
+        echo "$hours:$minutes:$seconds.$milleSeconds"
     fi
 }
 
@@ -651,7 +647,7 @@ printPrettyOutput() {
 # catches if mpv is idle or not
 printFinalOutput() {
     if [ "$QUIETFLAG" != "true" ] && [ "$(getPropertyString idle-active)" = "yes" ]; then
-        printf '%s\n' "MPV instance on $SOCKET is currently idle." >&2
+        warn "MPV instance on ${SOCKET##$HOME/} is currently idle."
     else
         formatPrint
         exit
@@ -744,9 +740,9 @@ validateDeps() {
 
 validateSocket() {
     # test if socket exists
-    [ ! -S "$SOCKET" ] && eeprintf 2 "$SOCKET does not exist. Use mpv --input-ipc-server to start one."
+    [ ! -S "$SOCKET" ] && eeprintf 2 "${SOCKET##$HOME/} does not exist. Use mpv --input-ipc-server to start one."
     # test if socket is open
-    [ "$(getPauseStatus)" = "N/A" ] && eeprintf 3 "No files added to $SOCKET."
+    [ "$(getPauseStatus)" = "N/A" ] && eeprintf 3 "No files added to ${SOCKET##$HOME/}."
 }
 
 getVersion() {
@@ -793,6 +789,10 @@ main() {
                 -q|--quiet)       QUIETFLAG=true; shift                    ;;
                 --mono|mono)      COLOURFLAG=nocolour; shift               ;;
                 --colour|colour)  COLOURFLAG=colour; shift                 ;;
+
+                --version|version)getVersion; shift              ;;
+                --list-options)   usage 0; shift                 ;;
+                -h|--help|h|help) usage 0; shift                 ;;
             esac
         fi
     done
@@ -804,7 +804,7 @@ main() {
     case "$1" in
         play|start|resume)
             case "$2" in
-                0) setTrack 1 absolute;;
+                0) setTrack 0 absolute;;
                 $) setTrack "$(getPropertyString playlist-count)" absolute;;
                 *) intCheck "$2" && setTrack "$2" absolute;;
             esac
@@ -895,10 +895,7 @@ main() {
             -[1-9][0-9][0-9][0-9][0-9][0-9]) continue                       ;;
             --|---|----)                     continue                       ;;
 
-            --version|version)               getVersion                     ;;
-            --list-options)                  usage 0                        ;;
-            -h|--help|h|help)                usage 0                        ;;
-            -?)                              usage 1                        ;;
+            -?)                              usage 1; shift                 ;;
         esac
         [ -n "$1" ] && shift
     done
