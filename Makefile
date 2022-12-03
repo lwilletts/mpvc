@@ -2,7 +2,7 @@ PREFIX ?= /usr/local
 BINDIR ?= $(PREFIX)/bin
 MANDIR ?= $(PREFIX)/share/man
 
-SCRIPT = mpvc
+SCRIPT = mpvc mpvc-tui
 
 .PHONY: all link install uninstall
 
