@@ -52,14 +52,24 @@ mpvctui_headerc()
     printf "${ccolor}${hdr}${CRST}\n"
 }
 
+mpvctui_tips()
+{
+    hint=$(( count % 40 ))
+    case $hint in
+    0|1)  echo ": type control+c to enter prompt";;
+    10|11) echo ": check $PROGURL/wiki for more tips!";;
+    20|21) echo ": version $PROGVERSION at $PROGURL";;
+    30|31) echo ": update $MPVC_UPDATEC refresh $(( count % MPVC_CLEARC))/$MPVC_CLEARC";;
+    esac
+}
+
 mpvctui_watcher()
 {
-    mpvctui_header0 "Running ${PROGNAME%%.sh}"
+    mpvctui_header0 "Running ${PROGNAME%%.sh}$(mpvctui_tips)"
     mpvctui_header1 "Status"
-    mpvc
+    mpvc status
     mpvctui_header1 "Playlist"
-    mpvc -i
-    mpvctui_header1 "Hint control+c to enter prompt"
+    mpvc playlist
 }
 
 mpvctui_input()
@@ -68,10 +78,11 @@ mpvctui_input()
     case "$cmd" in
         mpvc*) QUIETFLAG=true $cmd;;
         pwd) pwd;;
-        exit) exit;;
+        exit|quit|q) exit;;
         version) echo "version: $PROGNAME $PROGVERSION at $PROGURL";;
         *) echo 'mpvc: Type mpvc commands at "mpvc:" prompt, or "exit" to leave';;
     esac
+    mpvctui_watch
 }
 
 mpvctui_watch()
