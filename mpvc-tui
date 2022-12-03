@@ -1,0 +1,114 @@
+#!/bin/sh
+#
+# @file mpvc-tui
+# @description mpvc tui, terminal user interface
+# @author gmt4 <gmt4 at github.com> (c) Copyright 2022.
+# @url github.com/gmt4/mpvc
+#
+
+PROGNAME=`basename "$0"`;
+PROGVERSION=v1.0;
+PROGURL="github.com/gmt4/mpvc"
+
+CBLACK='\033[0;30m'
+CRED='\033[0;31m'
+CGREEN='\033[1;32m'
+CBLUE='\033[0;34m'
+CPURPLE='\033[1;35m'
+CCYAN='\033[0;36m'
+CYELLOW='\033[1;33m'
+CBLUEL='\033[1;34m'
+CCYANL='\033[1;36m'
+CWHITE='\033[1;37m'
+CRST='\033[0m'
+
+MPVC_COLOR0="$CGREEN"
+MPVC_COLOR1="$CYELLOW"
+MPVC_UPDATEC=1
+MPVC_CLEARC=4
+
+mpvctui_header0() { mpvctui_headerc '═' '[' ']' "$MPVC_COLOR0" "* $*"; }
+mpvctui_header1() { mpvctui_headerc '─' '[' ']' "$MPVC_COLOR1" "+ $*"; }
+
+# Displays "──[ $@ ]─────────────────────────────────────────────────────"
+mpvctui_headerc()
+{
+    char="$1"; shift
+    cstart="$1"; shift
+    cend="$1"; shift
+    ccolor="$1"; shift
+
+    cols=$(tput cols)
+    hdr="${char}${char}${cstart} $* ${cend}"
+    rem=$(( cols - ${#hdr} ))
+    # when SHELL=dash, ${#hdr} is 4 chars smaller
+    [ -z "$BASH" ] && rem=$(( rem + 4 ))
+
+    for i in $(seq 1 $rem)
+    do
+        hdr="$hdr$char"
+    done
+
+    printf "${ccolor}${hdr}${CRST}\n"
+}
+
+mpvctui_watcher()
+{
+    mpvctui_header0 "Running ${PROGNAME%%.sh}"
+    mpvctui_header1 "Status"
+    mpvc
+    mpvctui_header1 "Playlist"
+    mpvc -i
+    mpvctui_header1 "Hint control+c to enter prompt"
+}
+
+mpvctui_input()
+{
+    read -r -p "mpvc: " cmd
+    case "$cmd" in
+        mpvc*) QUIETFLAG=true $cmd;;
+        pwd) pwd;;
+        exit) exit;;
+        version) echo "version: $PROGNAME $PROGVERSION at $PROGURL";;
+        *) echo 'mpvc: Type mpvc commands at "mpvc:" prompt, or "exit" to leave';;
+    esac
+}
+
+mpvctui_watch()
+{
+    while sleep $MPVC_UPDATEC
+    do
+        output=$(mpvctui_watcher "$@" 2>&1)
+        [ $(( count % MPVC_CLEARC )) -eq 0 ] && tput clear
+        tput cup 0 0
+        echo "$output"
+        count=$(( count + 1 ))
+    done
+}
+
+usage()
+{
+    echo "usage: $PROGNAME [$optflags] cmd # @version $PROGVERSION $PROGURL";
+    exit;
+}
+
+optflags="0:1:d:hx"
+main()
+{
+    trap mpvctui_input INT
+    while getopts "$optflags" flag;
+    do
+        case "$flag" in
+        0) MPVC_COLOR0="$OPTARG";;
+        1) MPVC_COLOR1="$OPTARG";;
+        d) MPVC_DIR="$OPTARG"; cd "$MPVC_DIR" || return;;
+        x) xterm -e "$0" -w "$@"; exit;;
+        *) usage;;
+        esac
+    done
+    shift $((OPTIND - 1));
+
+    mpvctui_watch "$@"
+}
+
+main "$@"
