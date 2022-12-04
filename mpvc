@@ -676,16 +676,23 @@ fltCheck() {
 }
 
 getCurrentLine() {
-    l=2
-#    t=$(stty -g)
-#    exec < /dev/tty
-#    stty raw -echo min 0
-#    tput u7 > /dev/tty
-#    sleep 0.1
-#    IFS='[;' read -r R l
-#    stty "$t"
-#    [ ${l%%;*} -ge $(tput lines) ] && l=2
-    echo "${l%%;*}"
+    l=0
+    minlines=8
+    lines=$(tput lines)
+    t=$(stty -g)
+    exec < /dev/tty
+    stty raw -echo min 0
+    tput u7 > /dev/tty
+    sleep 0.1
+    IFS='[;' read -r R l
+    stty "$t"
+    l=${l%%;*}
+
+    printf '\r' >&2
+    intCheck "$l" || l=$minlines
+    [ "$l" -le 0 ] && l=$minlines
+    [ "$l" -ge "$lines" ] && l=$minlines
+    echo "$l"
 }
 
 calculateTerminalHeight() {
@@ -696,7 +703,7 @@ calculateTerminalHeight() {
     rows=$((lines - crow))
     halfrows=$((rows / 2))
 
-    [ "$ctrack" = "null" ] && return
+    [ "$ctrack" = "null" ] && ctrack=0
     if [ "$tracks" -le $rows ]; then
         FIRST=1; LAST=$tracks
     elif [ "$ctrack" -le $halfrows ]; then
