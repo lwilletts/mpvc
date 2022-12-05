@@ -6,9 +6,9 @@
 # @url github.com/gmt4/mpvc
 #
 
-PROGNAME=`basename "$0"`;
+PROGNAME=$(basename "$0");
 PROGVERSION=v1.0;
-PROGURL="github.com/gmt4/mpvc"
+PROGURL="https://github.com/gmt4/mpvc"
 
 CBLACK='\033[0;30m'
 CRED='\033[0;31m'
@@ -58,8 +58,8 @@ mpvctui_tips()
     case $hint in
     0|1)  echo ": type control+c to enter prompt";;
     10|11) echo ": check $PROGURL/wiki for more tips!";;
-    20|21) echo ": version $PROGVERSION at $PROGURL";;
-    30|31) echo ": update $MPVC_UPDATEC refresh $(( count % MPVC_CLEARC))/$MPVC_CLEARC";;
+    20|21) echo ": version $PROGNAME $PROGVERSION at $PROGURL";;
+    30|31) echo ": update $MPVC_UPDATEC secs refresh $(( count % MPVC_CLEARC))/$MPVC_CLEARC";;
     esac
 }
 
@@ -113,7 +113,7 @@ main()
         0) MPVC_COLOR0="$OPTARG";;
         1) MPVC_COLOR1="$OPTARG";;
         d) MPVC_DIR="$OPTARG"; cd "$MPVC_DIR" || return;;
-        x) xterm -e "$0" -w "$@"; exit;;
+        x) shift; command -v xterm && xterm -e "$0" "$@"; exit;;
         *) usage;;
         esac
     done
