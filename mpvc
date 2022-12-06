@@ -677,7 +677,9 @@ fltCheck() {
 
 getCurrentLine() {
     l=0
-    minlines=8
+    minlines=2
+    [ -n "$MPVC_CLINE" ] && echo "$MPVC_CLINE" && return
+
     lines=$(tput lines)
     t=$(stty -g)
     exec < /dev/tty
@@ -688,7 +690,7 @@ getCurrentLine() {
     stty "$t"
     l=${l%%;*}
 
-    printf '\r' >&2
+    printf "\r" >&2
     intCheck "$l" || l=$minlines
     [ "$l" -le 0 ] && l=$minlines
     [ "$l" -ge "$lines" ] && l=$minlines
