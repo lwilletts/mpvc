@@ -3,9 +3,7 @@
 An mpc-like control interface for mpv with a nearly complete compatibility layer for mpc commands in
 addition to GNU style arguments. [Check out the mpc manpage for details.](http://linux.die.net/man/1/mpc)
 
-![TUI ExampleOutput](https://github.com/Wildefyr/mpvc/blob/master/mpvc-tui.png)
-
-![ExampleOutput](https://github.com/Wildefyr/mpvc/blob/master/output.png)
+![TUI ExampleOutput](https://github.com/gmt4/mpvc/blob/master/mpvc-tui.png)
 
 ## Dependencies
 
