@@ -26,9 +26,11 @@ MPVC_COLOR0="$CGREEN"
 MPVC_COLOR1="$CYELLOW"
 MPVC_UPDATEC=1
 MPVC_CLEARC=4
+export MPVC_CLINE=8
 
-mpvctui_header0() { mpvctui_headerc '═' '[' ']' "$MPVC_COLOR0" "* $*"; }
-mpvctui_header1() { mpvctui_headerc '─' '[' ']' "$MPVC_COLOR1" "+ $*"; }
+mpvctui_header0() { mpvctui_headerc '═' '[' ']' "$MPVC_COLOR0" " * $* "; }
+mpvctui_header1() { mpvctui_headerc '─' '[' ']' "$MPVC_COLOR1" " + $* "; }
+mpvctui_header2() { mpvctui_headerc '─' '─' '─' "$MPVC_COLOR1" "─"; }
 
 # Displays "──[ $@ ]─────────────────────────────────────────────────────"
 mpvctui_headerc()
@@ -39,7 +41,7 @@ mpvctui_headerc()
     ccolor="$1"; shift
 
     cols=$(tput cols)
-    hdr="${char}${char}${cstart} $* ${cend}"
+    hdr="${char}${char}${cstart}$*${cend}"
     rem=$(( cols - ${#hdr} ))
     # when SHELL=dash, ${#hdr} is 4 chars smaller
     [ -z "$BASH" ] && rem=$(( rem + 4 ))
@@ -70,6 +72,7 @@ mpvctui_watcher()
     mpvc status
     mpvctui_header1 "Playlist"
     mpvc playlist
+    #mpvctui_header2 ""
 }
 
 mpvctui_input()
