@@ -22,11 +22,22 @@ CCYANL='\033[1;36m'
 CWHITE='\033[1;37m'
 CRST='\033[0m'
 
-MPVC_COLOR0="$CGREEN"
-MPVC_COLOR1="$CYELLOW"
-MPVC_UPDATEC=1
-MPVC_CLEARC=4
-export MPVC_CLINE=8
+mpvctui_config()
+{
+    # user config location
+    MPVC_CONFIG="${MPVC_CONFIG:-$HOME/.config/mpvc/tui.rc}"
+    # load user defaults
+    MPVC_COLOR0="$CGREEN"
+    MPVC_COLOR1="$CYELLOW"
+    MPVC_UPDATEC=1
+    MPVC_CLEARC=4
+    export MPVC_CLINE=8
+    # if present load user config
+    if [ -r "$MPVC_CONFIG" ];
+    then
+        . "$MPVC_CONFIG"
+    fi
+}
 
 mpvctui_header0() { mpvctui_headerc '═' '[' ']' "$MPVC_COLOR0" " * $* "; }
 mpvctui_header1() { mpvctui_headerc '─' '[' ']' "$MPVC_COLOR1" " + $* "; }
@@ -122,6 +133,7 @@ main()
     done
     shift $((OPTIND - 1));
 
+    mpvctui_config
     mpvctui_watch "$@"
 }
 
