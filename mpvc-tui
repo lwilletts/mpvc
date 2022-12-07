@@ -10,38 +10,37 @@ PROGNAME=$(basename "$0");
 PROGVERSION=v1.0;
 PROGURL="https://github.com/gmt4/mpvc"
 
-CBLACK='\033[0;30m'
-CRED='\033[0;31m'
-CGREEN='\033[1;32m'
-CBLUE='\033[0;34m'
-CPURPLE='\033[1;35m'
-CCYAN='\033[0;36m'
-CYELLOW='\033[1;33m'
-CBLUEL='\033[1;34m'
-CCYANL='\033[1;36m'
-CWHITE='\033[1;37m'
-CRST='\033[0m'
+MPVC_CBLACK='\033[0;30m'
+MPVC_CRED='\033[0;31m'
+MPVC_CGREEN='\033[0;32m'
+MPVC_CGREENL='\033[1;32m'
+MPVC_CYELLOW='\033[0;33m'
+MPVC_CYELLOWL='\033[1;33m'
+MPVC_CBLUE='\033[0;34m'
+MPVC_CPURPLE='\033[0;35m'
+MPVC_CCYAN='\033[0;36m'
+MPVC_CWHITE='\033[0;37m'
+MPVC_CRST='\033[0m'
 
-mpvctui_config()
+# Set TUI defaults
+mpvctui_defaults()
 {
-    # user config location
-    MPVC_CONFIG="${MPVC_CONFIG:-$HOME/.config/mpvc/tui.rc}"
-    # load user defaults
-    MPVC_COLOR0="$CGREEN"
-    MPVC_COLOR1="$CYELLOW"
+    MPVC_COLOR0="$MPVC_CGREENL"
+    MPVC_COLOR1="$MPVC_CYELLOWL"
     MPVC_UPDATEC=1
     MPVC_CLEARC=4
+    MPVC_TERM=xterm
     export MPVC_CLINE=8
-    # if present load user config
-    if [ -r "$MPVC_CONFIG" ];
-    then
-        . "$MPVC_CONFIG"
-    fi
 }
 
-mpvctui_header0() { mpvctui_headerc '═' '[' ']' "$MPVC_COLOR0" " * $* "; }
-mpvctui_header1() { mpvctui_headerc '─' '[' ']' "$MPVC_COLOR1" " + $* "; }
-mpvctui_header2() { mpvctui_headerc '─' '─' '─' "$MPVC_COLOR1" "─"; }
+# Load user config
+mpvctui_config()
+{
+    MPVC_CONFIG="${MPVC_CONFIG:-$HOME/.config/mpvc/tui.rc}"
+    mpvctui_defaults
+    # if present load user config
+    [ -r "$MPVC_CONFIG" ] && . "$MPVC_CONFIG"
+}
 
 # Displays "──[ $@ ]─────────────────────────────────────────────────────"
 mpvctui_headerc()
@@ -62,8 +61,12 @@ mpvctui_headerc()
         hdr="$hdr$char"
     done
 
-    printf "${ccolor}${hdr}${CRST}\n"
+    printf "${ccolor}${hdr}${MPVC_CRST}\n"
 }
+
+mpvctui_header0() { mpvctui_headerc '═' '[' ']' "$MPVC_COLOR0" " * $* "; }
+mpvctui_header1() { mpvctui_headerc '─' '[' ']' "$MPVC_COLOR1" " + $* "; }
+mpvctui_header2() { mpvctui_headerc '─' '─' '─' "$MPVC_COLOR1" "─"; }
 
 mpvctui_tips()
 {
@@ -72,7 +75,7 @@ mpvctui_tips()
     0|1)  echo ": type control+c to enter prompt";;
     10|11) echo ": check $PROGURL/wiki for more tips!";;
     20|21) echo ": version $PROGNAME $PROGVERSION at $PROGURL";;
-    30|31) echo ": update $MPVC_UPDATEC secs refresh $(( count % MPVC_CLEARC))/$MPVC_CLEARC";;
+    30|31) echo ": update $MPVC_UPDATEC secs refresh $((count % MPVC_CLEARC))/$MPVC_CLEARC";;
     esac
 }
 
@@ -111,7 +114,7 @@ mpvctui_watch()
     done
 }
 
-usage()
+mpvctui_usage()
 {
     echo "usage: $PROGNAME [$optflags] cmd # @version $PROGVERSION $PROGURL";
     exit;
@@ -120,6 +123,7 @@ usage()
 optflags="0:1:d:hx"
 main()
 {
+    mpvctui_config
     trap mpvctui_input INT
     while getopts "$optflags" flag;
     do
@@ -127,13 +131,12 @@ main()
         0) MPVC_COLOR0="$OPTARG";;
         1) MPVC_COLOR1="$OPTARG";;
         d) MPVC_DIR="$OPTARG"; cd "$MPVC_DIR" || return;;
-        x) shift; command -v xterm && xterm -e "$0" "$@"; exit;;
-        *) usage;;
+        x) shift; command -v $MPVC_TERM && $MPVC_TERM -e "$0" "$@"; exit;;
+        *) mpvctui_usage;;
         esac
     done
     shift $((OPTIND - 1));
 
-    mpvctui_config
     mpvctui_watch "$@"
 }
 
