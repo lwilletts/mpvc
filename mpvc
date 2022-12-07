@@ -68,8 +68,7 @@ Exit codes:
     3: Socket is not currently open.
     4: Dependency error.
 EOF
-
-    if [ -n "$1" ]; then exit "$1"; else exit; fi;
+    exit "$1"
 }
 
 equiet() { "$@" 2> /dev/null; }
@@ -84,8 +83,7 @@ pprintf() { echo "$@"; }
 eprintf() { warn "$@"; exit 1; }
 eeprintf() { e=$1; shift; warn "$@"; exit "$e"; }
 
-    # Retrieval Functions
-###############################################################################
+## Retrieval Functions ########################################################
 
 # match given filename string to appropriate output
 # fn args: filename
@@ -104,21 +102,18 @@ cleanFilename() {
 
 # fn args: media-title, path
 getMediaProperties() {
-    property="$1"
-    socketCommand "get_property" "${property}" | escapeSedChar '&' '#'
+    socketCommand "get_property" "$1" | escapeSedChar '&' '#'
 }
 
 # fn args: date, genre, title, album, artist, album_artist
 getMetadata() {
-    property=$1
-    # test for no result
-    metadata=$(getProperty "metadata/by-key/${property}")
+    metadata=$(getProperty "metadata/by-key/$1")
     case "$metadata" in
         '') result="N/A" ;;
         *)  result="$metadata" ;;
     esac
-    # test if title has no property and return filename instead
-    if [ "$property" = "title" ]; then
+    # when no title metadata present, return filename
+    if [ "$1" = "title" ]; then
         case "$metadata" in
             null) result=$(getPropertyString filename) ;;
             '') result=$(getPropertyString filename) ;;
@@ -129,35 +124,27 @@ getMetadata() {
 }
 
 getJSONField() {
-    awk -F, -v jfield="$1" '{
+    awk -F, -v jf="$1" '{
         gsub("[{\"}]","");
-        for (i=1;i<=NF;i++) {
-            if ($i ~ jfield) { gsub(jfield, "", $i); print $i }
+        for (i=1; i<=NF; i++) { if ($i ~ jf) { gsub(jf, "", $i); print $i }
         }
     }'
 }
 
 socketCommand() {
-    command="$1"
-    property="$2"
-    # mimics jq JSON parsing using awk, but, should instead use jq(1) TBD
-    equiet _sockcmd "{ \"command\": [ \"$command\", \"$property\"] }" | getJSONField "data:"
+    equiet _sockcmd "{ \"command\": [ \"$1\", \"$2\"] }" | getJSONField "data:"
 }
 
-# retrieve integer/boolean property
 # fn args: mute, pause, loop-file, estimated-frame-number, width, height
 getProperty() {
-    property="$1"
-    result=$(socketCommand "get_property" "$property")
-    echo "$result"
+    socketCommand "get_property" "$1"
 }
 
 # fn args: filename, idle-active, playlist-count, playlist-pos, playback-time,
 #          playtime-remaining, time-remaining, percent-pos, duration, volume
 getPropertyString() {
-    property="$1"
-    result=$(socketCommand "get_property_string" "$property")
-    case "$property" in
+    result=$(socketCommand "get_property_string" "$1")
+    case "$1" in
         volume|duration|percent-pos|playtime-remaining|playback-time)
             result="${result%%%}"
             result="${result%%.[0-9]*}"
@@ -173,8 +160,7 @@ getSpeed() {
 
 # fn args: loop-file, loop-playlist
 getLoopStatus() {
-    property=$1
-    status=$(getProperty "$property")
+    status=$(getProperty "$1")
     case "$status" in
         true | inf) loop="yes" ;;
         false)      loop="no"  ;;
@@ -214,9 +200,7 @@ getPlaylistFilename() {
 
 # print filenames in current playlist
 getPlaylist() {
-    noColour="$1"
-    fullPlaylist="$2"
-
+    fullPlaylist="$1"
     tracks=$(getPropertyString playlist-count)
     currentTrack=$(getPropertyString playlist-pos)
     if [ -z "$tracks" ] || [ "$tracks" -eq 0 ]; then
@@ -230,10 +214,10 @@ getPlaylist() {
     for i in $( seq $(( FIRST - 1 )) $(( LAST - 1 )) )
     do
         filename=$(getPlaylistFilename "$i")
-        if [ "$noColour" != "nocolour" ] && [ "$currentTrack" != "null" ] && [ "$currentTrack" -eq "$i" ]; then
-            printf '%d  [7m%s[0m\n' "$i" "${filename}"
+        if [ "$COLOURFLAG" != "nocolour" ] && [ "$currentTrack" != "null" ] && [ "$currentTrack" -eq "$i" ]; then
+            printf '%d  [7m%s[0m\n' "$i" "$filename"
         else
-            printf '%d  %s\n' "$i" "${filename}"
+            printf '%d  %s\n' "$i" "$filename"
         fi
     done
 }
@@ -275,15 +259,11 @@ loadPlaylist() {
     QUIETFLAG="true"
     while read -r line;
     do
-        if [ -e "$line" ]
-        then
-            appendTrack "${line}"
-        fi
+        appendTrack "$line";
     done
 }
 
-    # Control Functions
-###############################################################################
+## Control Functions ##########################################################
 
 appendTrack() {
     filename="$*"
@@ -291,7 +271,6 @@ appendTrack() {
     case "$filename" in
         /*) ;; *) [ -e "$filename" ] && filename="$(pwd)/$filename" ;;
     esac
-
     # skip over various other filetypes and images unless wanted
     case "$filename" in
         *.txt|*.log|*.cue) return ;;
@@ -391,6 +370,7 @@ setTrack() {
     trackCount=$(getPropertyString playlist-count)
     [ "$currentTrack" = "null" ] && currentTrack=0
     case "$2" in
+        absolute) newTrack=$1 ;;
         relative)
             newTrack=$((currentTrack + $1))
             # if time is greater than 10 seconds, set time to 0
@@ -411,7 +391,6 @@ setTrack() {
                 fi
             fi
         ;;
-        absolute) newTrack=$1 ;;
     esac
     if [ "$newTrack" -lt 0 ] || [ "$newTrack" -ge "$trackCount" ]; then
         eprintf "Item $newTrack is out of range of playlist."
@@ -428,7 +407,6 @@ moveTrack() {
         trackToMove=$1
         newTrackPosition=$2
         trackCount=$(getPropertyString playlist-count)
-
         if [ "$trackToMove" -lt 0 ] || [ "$trackToMove" -ge "$trackCount" ]; then
             eprintf "Item $trackToMove is out of range of playlist."
         fi
@@ -436,12 +414,11 @@ moveTrack() {
 
     [ "$newTrackPosition" -lt 0 ] &&
         eprintf "Position $newTrackPosition is out of range of playlist."
-
     [ "$newTrackPosition" -eq 1 ] && newTrackPosition=0
     sockcmd '{ "command": ["playlist-move", "'$trackToMove'", "'$newTrackPosition'" ] }'
 
     if [ "$QUIETFLAG" != "true" ]; then
-        getPlaylist "$COLOURFLAG"
+        getPlaylist
         QUIETFLAG="true"
     fi
 }
@@ -474,8 +451,7 @@ alwaysPlay() {
 }
 
 setPause() {
-    pause=$1
-    sockcmd '{ "command": ["set_property", "pause", '"$pause"' ] }'
+    sockcmd '{ "command": ["set_property", "pause", '"$1"' ] }'
 }
 
 togglePause() {
@@ -547,8 +523,7 @@ killAllMpv() {
     exit
 }
 
-    # Time Functions
-###############################################################################
+## Time Functions #############################################################
 
 getElapsedTime() {
     time=$(getPropertyString playback-time)
@@ -575,7 +550,6 @@ playtimeRemaining() {
 # format seconds into HH:MM:SS format
 formatTime() {
     [  "$1" = "null" ] && return 1
-
     rawSeconds=$1
     seconds=$((rawSeconds % 60))
     minutes=$((rawSeconds / 60))
@@ -594,14 +568,12 @@ formatTime() {
     fi
 }
 
-    # Formatting and Printing Functions
-###############################################################################
+## Formatting and Printing Functions ##########################################
 
 # formats and prints according to $FORMATSTRING
 formatPrint() {
     # modified format string
     F="$FORMATSTRING"
-
     # not that nice, in fact, way more ugly, but too way faster
     for f in $(echo "$F" | sed 's#/# #g')
     do
@@ -654,8 +626,7 @@ printFinalOutput() {
     fi
 }
 
-    # Misc. Functions
-###############################################################################
+## Misc Functions #############################################################
 
 escapeSedChar() {
     awk -v r1="$1" -v r2="$2" '{ gsub(r1, "\\"r1); gsub(r2, "\\"r2); print $0; }'
@@ -691,9 +662,10 @@ getCurrentLine() {
     l=${l%%;*}
 
     printf "\r" >&2
-    intCheck "$l" || l=$minlines
-    [ "$l" -le 0 ] && l=$minlines
-    [ "$l" -ge "$lines" ] && l=$minlines
+    if ! intCheck "$l" || [ "$l" -le 0 ] || [ "$l" -ge "$lines" ];
+    then
+        l=$minlines
+    fi
     echo "$l"
 }
 
@@ -704,7 +676,6 @@ calculateTerminalHeight() {
     crow=$(getCurrentLine)
     rows=$((lines - crow))
     halfrows=$((rows / 2))
-
     [ "$ctrack" = "null" ] && ctrack=0
     if [ "$tracks" -le $rows ]; then
         FIRST=1; LAST=$tracks
@@ -772,7 +743,6 @@ do_idleloop() {
 
 startMpvd() {
     mkdir -p "$(dirname "$SOCKET")"
-    # shellcheck disable=SC2086
     exec mpv --input-ipc-server="$SOCKET" $MPVOPTIONS "$@" &
     # wait until mpv starts up
     until [ -n "$(getPropertyString idle-active)" ]; do sleep 0.1; done
@@ -780,95 +750,73 @@ startMpvd() {
 
 main() {
     validateDeps
-    # more global argument parsing
+    #validateSocket
+    # grab piped input if it exists (deprecated use explicit "mpvc load" instead)
+    #[ -p /dev/stdin ] && loadPlaylist
     for arg in "$@"; do
-        [ "$SOCKETFLAG" = "true" ] && SOCKET=$arg && SOCKETFLAG=false
-        [ "$FORMATFLAG" = "true" ] && FORMATSTRING=$arg && FORMATFLAG=false
-
         # grab mpv options first if any
-        [ "$arg" = "--" ] && MPVFLAG=true
-        if [ "$MPVFLAG" = "true" ]; then
-            MPVOPTIONS="$MPVOPTIONS $arg"
-        else
-            case $arg in
-                -Q|--vid=no)      MPVOPTIONS="$MPVOPTIONS --vid=no"; shift ;;
-                -S|--socket)      SOCKETFLAG=true; shift                   ;;
-                -f|--format)      FORMATFLAG=true; shift                   ;;
-                --image)          IMAGEFLAG=true; shift                    ;;
-                -q|--quiet)       QUIETFLAG=true; shift                    ;;
-                --mono|mono)      COLOURFLAG=nocolour; shift               ;;
-                --colour|colour)  COLOURFLAG=colour; shift                 ;;
+        [ "$arg" = "--" ] && { MPVFLAG=true; shift; continue; }
+        [ "$MPVFLAG" = "true" ] && { MPVOPTIONS="$MPVOPTIONS $arg"; shift; continue; }
 
-                --version|version)getVersion; shift              ;;
-                --list-options)   usage 0; shift                 ;;
-                -h|--help|h|help) usage 0; shift                 ;;
-            esac
-        fi
-    done
-
-    # grab piped input for input if it exists
-    [ -p /dev/stdin ] && loadPlaylist
-
-    # mpc compatibility layer
-    case "$1" in
-        play|start|resume)
-            case "$2" in
-                0) setTrack 0 absolute;;
-                $) setTrack "$(getPropertyString playlist-count)" absolute;;
-                *) intCheck "$2" && setTrack "$2" absolute;;
-            esac
-            alwaysPlay
-            printFinalOutput
-        ;;
-        vol|volume)
-            case "$2" in
-                '') eprintf "Specify volume in/decrease amount or absolute amount." ;;
-                +*) setVolume "$2" relative ;;
-                -*) setVolume "$2" relative ;;
-                *)  setVolume "$2" absolute ;;
-            esac
-            printFinalOutput
-        ;;
-        repeat)
-            case "$2" in
-                on)  toggleLoopPlaylist inf ;;
-                off) toggleLoopPlaylist no  ;;
-                *)   toggleLoopPlaylist     ;;
-            esac
-            printFinalOutput
-        ;;
-        single)
-            case "$2" in
-                on)  toggleLoopFile yes ;;
-                off) toggleLoopFile no  ;;
-                *)   toggleLoopFile     ;;
-            esac
-            printFinalOutput
-        ;;
-        sockcmd)  _sockcmd "$2"; return ;;
-        metadata) getFilenameMetadata "$2" ;;
-        pause)    setPause true       ; printFinalOutput ;;
-        next)     setTrack 1 relative ; printFinalOutput ;;
-        prev)     setTrack -1 relative; printFinalOutput ;;
-        move)     moveTrack "$2" "$3" ; printFinalOutput ;;
-        mute)     toggleMute true     ; printFinalOutput ;;
-        unmute)   toggleMute false    ; printFinalOutput ;;
-        pretty)   printPrettyOutput ;;
-        find)     do_fuzzy_search "$@"; return ;;
-        idleloop) do_idleloop "$@"; return ;;
-
-        add|-a|--append) appendTracks "$@"; shift "$((shiftcount + 1))" ;;
-        playnext|-A|--playnext) ;;
-        mpv|--mpv)     startMpvd --idle=yes --input-terminal; return;;
-        *) validateSocket ;;
-        # consume) to implement # add on|off toggle
-        # random) MPV doesn't have this control option!
-        # create an issue or implement pseudo-random tracks
-    esac
-
-    # GNU-style options
-    for arg in "$@"; do
         case "$1" in
+            # mpc compatibility layer
+            play|start|resume)
+                shift
+                case "$1" in
+                    0) setTrack 0 absolute;;
+                    $) setTrack "$(getPropertyString playlist-count)" absolute;;
+                    *) intCheck "$1" && setTrack "$1" absolute;;
+                esac
+                alwaysPlay
+                printFinalOutput
+            ;;
+            vol|volume)
+                shift
+                case "$1" in
+                    '') eprintf "Specify volume in/decrease amount or absolute amount." ;;
+                    +*) setVolume "$1" relative ;;
+                    -*) setVolume "$1" relative ;;
+                    *)  setVolume "$1" absolute ;;
+                esac
+                printFinalOutput
+            ;;
+            repeat)
+                shift
+                case "$1" in
+                    on)  toggleLoopPlaylist inf ;;
+                    off) toggleLoopPlaylist no  ;;
+                    *)   toggleLoopPlaylist     ;;
+                esac
+                printFinalOutput
+            ;;
+            single)
+                shift
+                case "$1" in
+                    on)  toggleLoopFile yes ;;
+                    off) toggleLoopFile no  ;;
+                    *)   toggleLoopFile     ;;
+                esac
+                printFinalOutput
+            ;;
+            sockcmd)  shift; _sockcmd "$1"; return ;;
+            metadata) shift; getFilenameMetadata "$1" ;;
+            pause)    setPause true       ; printFinalOutput ;;
+            next)     setTrack 1 relative ; printFinalOutput ;;
+            prev)     setTrack -1 relative; printFinalOutput ;;
+            move)     shift; moveTrack "$1" "$2" ; printFinalOutput ;;
+            mute)     toggleMute true     ; printFinalOutput ;;
+            unmute)   toggleMute false    ; printFinalOutput ;;
+            pretty)   printPrettyOutput ;;
+            find)     do_fuzzy_search "$@"; return ;;
+            idleloop) do_idleloop "$@"; return ;;
+
+            add|-a|--append) appendTracks "$@"; shift "$((shiftcount + 1))" ;;
+            mpv|--mpv)     startMpvd --idle=yes --input-terminal; return;;
+            # consume) to implement # add on|off toggle
+            # random) MPV doesn't have this control option!
+            # create an issue or implement pseudo-random tracks
+
+            # GNU-style options
             -t|--seek|seek)                  shift; setTimeRelative "$1"    ;;
             -T|--time)                       shift; setTimeAbsolute "$1"    ;;
             -v|--vol)                        shift; setVolume "$1" relative ;;
@@ -884,27 +832,30 @@ main() {
 
             -k|--kill|kill)                  killSocket                     ;;
             -K|--killall)                    killAllMpv                     ;;
-
             -s|--stop|stop)                  setPause true; setTimeAbsolute 0 ;;
-            -P|--play|play)                  alwaysPlay                     ;;
+            -P|--play)                       alwaysPlay                     ;;
             -p|--toggle|toggle)              togglePause                    ;;
             -m|--mute)                       toggleMute                     ;;
-            mute)                            toggleMute true                ;;
-            unmute)                          toggleMute false               ;;
-            -i|--playlist|playlist)          getPlaylist "$COLOURFLAG" ""; exit;;
-            -I|--fullplaylist|fullplaylist)  getPlaylist "$COLOURFLAG" "full"; exit;;
+            -i|--playlist|playlist)          getPlaylist ""; exit;;
+            -I|--fullplaylist|fullplaylist)  getPlaylist "full"; exit;;
             -L|--loop|loop)                  toggleLoopPlaylist             ;;
             -l|--loopfile|loopfile)          toggleLoopFile                 ;;
             -z|--shuffle|shuffle)            shufflePlaylist                ;;
             -c|--crop|crop)                  cropPlaylist                   ;;
             -C|--clear|clear)                clearPlaylist                  ;;
-            -f|--format)                     continue                       ;;
-            -a|--append)                     continue                       ;;
-            -S|--socket)                     continue                       ;;
-            -[1-9][0-9][0-9][0-9][0-9][0-9]) continue                       ;;
-            --|---|----)                     continue                       ;;
 
-            -?)                              usage 1; shift                 ;;
+            # global argument parsing
+            -f|--format)                     shift; FORMATSTRING="$1"       ;;
+            -S|--socket)                     shift; SOCKET="$1";            ;;
+            -Q|--vid=no)                     MPVOPTIONS="$MPVOPTIONS --vid=no"; ;;
+            --image)                         IMAGEFLAG=true;                ;;
+            -q|--quiet)                      QUIETFLAG=true;                ;;
+            --mono|mono)                     COLOURFLAG=nocolour;           ;;
+            --colour|colour)                 COLOURFLAG=colour;             ;;
+            --version|version)               getVersion;                    ;;
+            --list-options)                  usage 0;                       ;;
+            -h|--help|h|help)                usage 0;                       ;;
+            -?)                              usage 1;                       ;;
         esac
         [ -n "$1" ] && shift
     done
@@ -912,8 +863,4 @@ main() {
     [ "$QUIETFLAG" != "true" ] && printFinalOutput
 }
 
-if [ "$QUIETFLAG" = "true" ]; then
-    quiet main "$@"
-else
-    main "$@"
-fi
+if [ "$QUIETFLAG" = "true" ]; then quiet main "$@"; else main "$@"; fi
