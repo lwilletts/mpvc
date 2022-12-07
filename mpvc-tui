@@ -19,6 +19,7 @@ MPVC_CYELLOWL='\033[1;33m'
 MPVC_CBLUE='\033[0;34m'
 MPVC_CPURPLE='\033[0;35m'
 MPVC_CCYAN='\033[0;36m'
+MPVC_CCYANL='\033[1;36m'
 MPVC_CWHITE='\033[0;37m'
 MPVC_CRST='\033[0m'
 
@@ -30,6 +31,7 @@ mpvctui_defaults()
     MPVC_UPDATEC=1
     MPVC_CLEARC=4
     MPVC_TERM=xterm
+    MPVC_TIPS=true
     export MPVC_CLINE=8
 }
 
@@ -70,12 +72,14 @@ mpvctui_header2() { mpvctui_headerc '─' '─' '─' "$MPVC_COLOR1" "─"; }
 
 mpvctui_tips()
 {
-    hint=$(( count % 40 ))
-    case $hint in
+    [ "$MPVC_TIPS" = "false" ] && return
+    tip=$(( count % 50 ))
+    case $tip in
     0|1)  echo ": type control+c to enter prompt";;
     10|11) echo ": check $PROGURL/wiki for more tips!";;
-    20|21) echo ": version $PROGNAME $PROGVERSION at $PROGURL";;
-    30|31) echo ": update $MPVC_UPDATEC secs refresh $((count % MPVC_CLEARC))/$MPVC_CLEARC";;
+    20|21) echo ": change theme at ${MPVC_CONFIG##$HOME/}";;
+    30|31) echo ": version $PROGNAME $PROGVERSION at $PROGURL";;
+    40|41) echo ": update $MPVC_UPDATEC secs refresh $((count % MPVC_CLEARC))/$MPVC_CLEARC";;
     esac
 }
 
