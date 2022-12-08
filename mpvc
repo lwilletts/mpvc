@@ -612,10 +612,6 @@ formatPrint() {
     echo "${F}"
 }
 
-printPrettyOutput() {
-    exit 0
-}
-
 # catches if mpv is idle or not
 printFinalOutput() {
     if [ "$QUIETFLAG" != "true" ] && [ "$(getPropertyString idle-active)" = "yes" ]; then
@@ -731,10 +727,6 @@ getVersion() {
     exit
 }
 
-do_fuzzy_search() {
-    true
-}
-
 do_idleloop() {
     sockcmd '{ "command": ["unobserve_property", 1 ] }'
     sockcmd '{ "command": ["observe_property", '1, "$*"' ] }'
@@ -807,15 +799,14 @@ main() {
             move)     shift; moveTrack "$1" "$2" ; printFinalOutput ;;
             mute)     toggleMute true     ; printFinalOutput ;;
             unmute)   toggleMute false    ; printFinalOutput ;;
-            pretty)   printPrettyOutput ;;
-            find)     do_fuzzy_search "$@"; return ;;
+            pretty)   eprintf "$PROGNAME: $* not implemented" ;;
+            find)     eprintf "$PROGNAME: $* not implemented" ;;
             idleloop) do_idleloop "$@"; return ;;
 
             add|-a|--append) appendTracks "$@"; shift "$((shiftcount + 1))" ;;
             mpv|--mpv)       startMpvd --idle=yes --input-terminal; return;;
             # consume) to implement # add on|off toggle
             # random) MPV doesn't have this control option!
-            # create an issue or implement pseudo-random tracks
 
             # GNU-style options
             -t|--seek|seek)                  shift; setTimeRelative "$1"    ;;
