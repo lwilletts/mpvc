@@ -97,9 +97,11 @@ mpvctui_input()
 {
     read -r -p "mpvc: " cmd
     case "$cmd" in
-        mpvc*) QUIETFLAG=true $cmd;;
-        pwd) pwd;;
+        'mpvc '*) QUIETFLAG=true $cmd;;
+        'v mpvc '*) QUIETFLAG=false ${cmd##v };;
         exit|quit|q) exit;;
+        edit) ${EDITOR} "${MPVC_CONFIG}";;
+        reload) mpvctui_config;;
         version) echo "version: $PROGNAME $PROGVERSION at $PROGURL";;
         *) echo 'mpvc: Type mpvc commands at "mpvc:" prompt, or "exit" to leave';;
     esac
@@ -108,6 +110,7 @@ mpvctui_input()
 
 mpvctui_watch()
 {
+    trap mpvctui_input INT
     while sleep $MPVC_UPDATEC
     do
         output=$(mpvctui_watcher "$@" 2>&1)
@@ -128,7 +131,6 @@ optflags="0:1:d:hx"
 main()
 {
     mpvctui_config
-    trap mpvctui_input INT
     while getopts "$optflags" flag;
     do
         case "$flag" in
