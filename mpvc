@@ -750,14 +750,15 @@ startMpvd() {
 
 main() {
     validateDeps
-    #validateSocket
-    # grab piped input if it exists (deprecated use explicit "mpvc load" instead)
-    #[ -p /dev/stdin ] && loadPlaylist
+    case "$1" in
+        load|--load|-a|add|append|mpv) ;;
+        version|--version|help|--help|-h|--list-options|-Q|--vid=no|-S) ;;
+        *) validateSocket;; # otherwise, validate socket
+    esac
     for arg in "$@"; do
         # grab mpv options first if any
         [ "$arg" = "--" ] && { MPVFLAG=true; shift; continue; }
         [ "$MPVFLAG" = "true" ] && { MPVOPTIONS="$MPVOPTIONS $arg"; shift; continue; }
-
         case "$1" in
             # mpc compatibility layer
             play|start|resume)
@@ -811,7 +812,7 @@ main() {
             idleloop) do_idleloop "$@"; return ;;
 
             add|-a|--append) appendTracks "$@"; shift "$((shiftcount + 1))" ;;
-            mpv|--mpv)     startMpvd --idle=yes --input-terminal; return;;
+            mpv|--mpv)       startMpvd --idle=yes --input-terminal; return;;
             # consume) to implement # add on|off toggle
             # random) MPV doesn't have this control option!
             # create an issue or implement pseudo-random tracks
@@ -831,7 +832,7 @@ main() {
             -A|--playnext|playnext)          shift; playNext "$1"           ;;
 
             -k|--kill|kill)                  killSocket                     ;;
-            -K|--killall)                    killAllMpv                     ;;
+            -K|--killall|killall)            killAllMpv                     ;;
             -s|--stop|stop)                  setPause true; setTimeAbsolute 0 ;;
             -P|--play)                       alwaysPlay                     ;;
             -p|--toggle|toggle)              togglePause                    ;;
