@@ -17,7 +17,9 @@ MPVC_CGREENL='\033[1;32m'
 MPVC_CYELLOW='\033[0;33m'
 MPVC_CYELLOWL='\033[1;33m'
 MPVC_CBLUE='\033[0;34m'
+MPVC_CBLUEL='\033[1;34m'
 MPVC_CPURPLE='\033[0;35m'
+MPVC_CPURPLEL='\033[1;35m'
 MPVC_CCYAN='\033[0;36m'
 MPVC_CCYANL='\033[1;36m'
 MPVC_CWHITE='\033[0;37m'
@@ -32,13 +34,13 @@ mpvctui_defaults()
     MPVC_CLEARC=4
     MPVC_TERM=xterm
     MPVC_TIPS=true
-    export MPVC_CLINE=8
+    export MPVC_CLINE=7
 }
 
 # Load user config
 mpvctui_config()
 {
-    MPVC_CONFIG="${MPVC_CONFIG:-$HOME/.config/mpvc/tui.rc}"
+    MPVC_CONFIG="${MPVC_CONFIG:-$HOME/.config/mpvc/mpvc-tui.conf}"
     mpvctui_defaults
     # if present load user config
     [ -r "$MPVC_CONFIG" ] && . "$MPVC_CONFIG"
@@ -57,12 +59,10 @@ mpvctui_headerc()
     rem=$(( cols - ${#hdr} ))
     # when SHELL=dash, ${#hdr} is 4 chars smaller
     [ -z "$BASH" ] && rem=$(( rem + 4 ))
-
     for i in $(seq 1 $rem)
     do
         hdr="$hdr$char"
     done
-
     printf "${ccolor}${hdr}${MPVC_CRST}\n"
 }
 
@@ -103,7 +103,7 @@ mpvctui_input()
         edit) ${EDITOR} "${MPVC_CONFIG}";;
         reload) mpvctui_config;;
         version) echo "version: $PROGNAME $PROGVERSION at $PROGURL";;
-        *) echo 'mpvc: Type mpvc commands at "mpvc:" prompt, or "exit" to leave';;
+        *) echo 'mpvc: Type mpvc cmds at "mpvc:" prompt, "q" to quit, also edit & reload';;
     esac
     mpvctui_watch
 }
@@ -128,7 +128,7 @@ mpvctui_usage()
 }
 
 optflags="0:1:d:hx"
-main()
+mpvctui_main()
 {
     mpvctui_config
     while getopts "$optflags" flag;
@@ -146,4 +146,4 @@ main()
     mpvctui_watch "$@"
 }
 
-main "$@"
+mpvctui_main "$@"
