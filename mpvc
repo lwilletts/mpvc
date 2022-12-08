@@ -4,7 +4,7 @@
 # control mpv remotely using JSON ipc
 # https://mpv.io/manual/master/#json-ipc
 
-PROGNAME="$(basename "$0")"
+PROGNAME=$(basename "$0")
 PROGVERSION="1.3"
 
 SOCKETCOMMAND=""
