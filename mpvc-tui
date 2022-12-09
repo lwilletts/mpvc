@@ -40,10 +40,15 @@ mpvctui_defaults()
 # Load user config
 mpvctui_config()
 {
-    MPVC_CONFIG="${MPVC_CONFIG:-$HOME/.config/mpvc/mpvc-tui.conf}"
     mpvctui_defaults
+    XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}
+    MPVC_CONFIG="${MPVC_CONFIG:-$XDG_CONFIG_HOME/mpvc/mpvc-tui.conf}"
+    MPVC_HISTORY="${MPVC_HISTORY:-$XDG_CONFIG_HOME/mpvc/mpvc-tui.history}"
     # if present load user config
-    [ -r "$MPVC_CONFIG" ] && . "$MPVC_CONFIG"
+    if [ -r "$MPVC_CONFIG" ];
+    then
+        . "$MPVC_CONFIG"
+    fi
 }
 
 # Displays "──[ $@ ]─────────────────────────────────────────────────────"
@@ -96,12 +101,14 @@ mpvctui_watcher()
 mpvctui_input()
 {
     read -r -p "mpvc: " cmd
+    echo "$cmd" >> "$MPVC_HISTORY"
     case "$cmd" in
         'mpvc '*) QUIETFLAG=true $cmd;;
         'v mpvc '*) QUIETFLAG=false ${cmd##v };;
         exit|quit|q) exit;;
         edit) ${EDITOR} "${MPVC_CONFIG}";;
         reload) mpvctui_config;;
+        history) ${EDITOR} "${MPVC_HISTORY}";;
         version) echo "version: $PROGNAME $PROGVERSION at $PROGURL";;
         *) echo 'mpvc: Type mpvc cmds at "mpvc:" prompt, "q" to quit, also edit & reload';;
     esac
