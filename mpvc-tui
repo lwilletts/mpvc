@@ -10,31 +10,32 @@ PROGNAME=$(basename "$0");
 PROGVERSION=v1.0;
 PROGURL="https://github.com/gmt4/mpvc"
 
-MPVC_CBLACK='\033[0;30m'
-MPVC_CRED='\033[0;31m'
-MPVC_CGREEN='\033[0;32m'
-MPVC_CGREENL='\033[1;32m'
-MPVC_CYELLOW='\033[0;33m'
-MPVC_CYELLOWL='\033[1;33m'
-MPVC_CBLUE='\033[0;34m'
-MPVC_CBLUEL='\033[1;34m'
-MPVC_CPURPLE='\033[0;35m'
-MPVC_CPURPLEL='\033[1;35m'
-MPVC_CCYAN='\033[0;36m'
-MPVC_CCYANL='\033[1;36m'
-MPVC_CWHITE='\033[0;37m'
-MPVC_CRST='\033[0m'
-
 # Set TUI defaults
 mpvctui_defaults()
 {
+    MPVC_CBLACK='\033[0;30m'
+    MPVC_CRED='\033[0;31m'
+    MPVC_CGREEN='\033[0;32m'
+    MPVC_CGREENL='\033[1;32m'
+    MPVC_CYELLOW='\033[0;33m'
+    MPVC_CYELLOWL='\033[1;33m'
+    MPVC_CBLUE='\033[0;34m'
+    MPVC_CBLUEL='\033[1;34m'
+    MPVC_CPURPLE='\033[0;35m'
+    MPVC_CPURPLEL='\033[1;35m'
+    MPVC_CCYAN='\033[0;36m'
+    MPVC_CCYANL='\033[1;36m'
+    MPVC_CWHITE='\033[0;37m'
+    MPVC_CRST='\033[0m'
+
+    # config defaults
     MPVC_COLOR0="$MPVC_CGREENL"
     MPVC_COLOR1="$MPVC_CYELLOWL"
     MPVC_UPDATEC=1
     MPVC_CLEARC=4
     MPVC_TERM=xterm
     MPVC_TIPS=true
-    export MPVC_CLINE=7
+    export MPVC_CLINE=9
 }
 
 # Load user config
@@ -58,7 +59,6 @@ mpvctui_headerc()
     cstart="$1"; shift
     cend="$1"; shift
     ccolor="$1"; shift
-
     cols=$(tput cols)
     hdr="${char}${char}${cstart}$*${cend}"
     rem=$(( cols - ${#hdr} ))
@@ -73,7 +73,6 @@ mpvctui_headerc()
 
 mpvctui_header0() { mpvctui_headerc '═' '[' ']' "$MPVC_COLOR0" " * $* "; }
 mpvctui_header1() { mpvctui_headerc '─' '[' ']' "$MPVC_COLOR1" " + $* "; }
-mpvctui_header2() { mpvctui_headerc '─' '─' '─' "$MPVC_COLOR1" "─"; }
 
 mpvctui_tips()
 {
@@ -95,21 +94,23 @@ mpvctui_watcher()
     mpvc status
     mpvctui_header1 "Playlist"
     mpvc playlist
-    #mpvctui_header2 ""
+    mpvctui_header1 "Prompt"
 }
 
 mpvctui_input()
 {
-    read -r -p "mpvc: " cmd
-    echo "$cmd" >> "$MPVC_HISTORY"
+    if command -v rlwrap >/dev/null; then
+        cmd=$(rlwrap -o -c -S 'mpvc: ' -H "$MPVC_HISTORY" -f . -P '' cat)
+    else
+        read -r -p "mpvc: " cmd
+    fi
     case "$cmd" in
+        '!!'*) "${SHELL}" -c "${cmd##!!}";;
+        '!'*) ${cmd##!};;
         'mpvc '*) QUIETFLAG=true $cmd;;
-        'v mpvc '*) QUIETFLAG=false ${cmd##v };;
         exit|quit|q) exit;;
         edit) ${EDITOR} "${MPVC_CONFIG}";;
         reload) mpvctui_config;;
-        history) ${EDITOR} "${MPVC_HISTORY}";;
-        version) echo "version: $PROGNAME $PROGVERSION at $PROGURL";;
         *) echo 'mpvc: Type mpvc cmds at "mpvc:" prompt, "q" to quit, also edit & reload';;
     esac
     mpvctui_watch
@@ -130,19 +131,17 @@ mpvctui_watch()
 
 mpvctui_usage()
 {
-    echo "usage: $PROGNAME [$optflags] cmd # @version $PROGVERSION $PROGURL";
+    echo "usage: $PROGNAME -[$optflags] cmd # @version $PROGVERSION $PROGURL";
     exit;
 }
 
-optflags="0:1:d:hx"
+optflags="d:hx"
 mpvctui_main()
 {
     mpvctui_config
     while getopts "$optflags" flag;
     do
         case "$flag" in
-        0) MPVC_COLOR0="$OPTARG";;
-        1) MPVC_COLOR1="$OPTARG";;
         d) MPVC_DIR="$OPTARG"; cd "$MPVC_DIR" || return;;
         x) shift; command -v $MPVC_TERM && $MPVC_TERM -e "$0" "$@"; exit;;
         *) mpvctui_usage;;
