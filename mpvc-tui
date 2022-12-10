@@ -30,7 +30,8 @@ mpvctui_defaults()
 
     # config defaults
     MPVC_COLOR0="$MPVC_CGREENL"
-    MPVC_COLOR1="$MPVC_CYELLOWL"
+    MPVC_COLOR1="$MPVC_CCYAN"
+    MPVC_COLOR2="$MPVC_CYELLOW"
     MPVC_UPDATEC=1
     MPVC_CLEARC=4
     MPVC_TERM=xterm
@@ -50,7 +51,13 @@ mpvctui_config()
     then
         . "$MPVC_CONFIG"
     fi
+    if ! command -v rlwrap >/dev/null; then
+        mpvctui_warn "$PROGNAME: Warning: No rlwrap, Install to get history, filename & completion support!"
+        sleep 1
+    fi
 }
+
+mpvctui_warn() { echo "$@" >&2; }
 
 # Displays "──[ $@ ]─────────────────────────────────────────────────────"
 mpvctui_headerc()
@@ -73,17 +80,19 @@ mpvctui_headerc()
 
 mpvctui_header0() { mpvctui_headerc '═' '[' ']' "$MPVC_COLOR0" " * $* "; }
 mpvctui_header1() { mpvctui_headerc '─' '[' ']' "$MPVC_COLOR1" " + $* "; }
+mpvctui_header2() { mpvctui_headerc '─' '[' ']' "$MPVC_COLOR2" " + $* "; }
 
 mpvctui_tips()
 {
     [ "$MPVC_TIPS" = "false" ] && return
-    tip=$(( count % 50 ))
+    tip=$(( count % 60 ))
     case $tip in
-    0|1)  echo ": type control+c to enter prompt";;
+    0|1)   echo ": type control+c to enter prompt";;
     10|11) echo ": check $PROGURL/wiki for more tips!";;
     20|21) echo ": change theme at ${MPVC_CONFIG##$HOME/}";;
-    30|31) echo ": version $PROGNAME $PROGVERSION at $PROGURL";;
-    40|41) echo ": update $MPVC_UPDATEC secs refresh $((count % MPVC_CLEARC))/$MPVC_CLEARC";;
+    30|31) echo ": start $PROGNAME from wm launcher with: $PROGNAME -x";;
+    40|41) echo ": version $PROGNAME $PROGVERSION at $PROGURL";;
+    50|51) echo ": update $MPVC_UPDATEC secs refresh $((count % MPVC_CLEARC))/$MPVC_CLEARC";;
     esac
 }
 
@@ -99,10 +108,11 @@ mpvctui_watcher()
 
 mpvctui_input()
 {
+    MPVC_PROMPT="${PWD##*/} mpvc: "
     if command -v rlwrap >/dev/null; then
-        cmd=$(rlwrap -o -c -S 'mpvc: ' -H "$MPVC_HISTORY" -f . -P '' cat)
+        cmd=$(rlwrap -o -c -S "$MPVC_PROMPT" -H "$MPVC_HISTORY" -f . -P '' cat)
     else
-        read -r -p "mpvc: " cmd
+        read -r -p "$MPVC_PROMPT" cmd
     fi
     case "$cmd" in
         '!!'*) "${SHELL}" -c "${cmd##!!}";;
@@ -111,7 +121,7 @@ mpvctui_input()
         exit|quit|q) exit;;
         edit) ${EDITOR} "${MPVC_CONFIG}";;
         reload) mpvctui_config;;
-        *) echo 'mpvc: Type mpvc cmds at "mpvc:" prompt, "q" to quit, also edit & reload';;
+        *) echo 'mpvc: Type commands at "mpvc:" prompt, "q" to quit, also edit & reload';;
     esac
     mpvctui_watch
 }
@@ -132,6 +142,8 @@ mpvctui_watch()
 mpvctui_usage()
 {
     echo "usage: $PROGNAME -[$optflags] cmd # @version $PROGVERSION $PROGURL";
+    echo "  -x : Starts $PROGNAME in a new $MPVC_TERM (config \$MPVC_TERM)"
+    echo "  -d : Starts $PROGNAME in the directory given as argument"
     exit;
 }
 
