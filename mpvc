@@ -7,8 +7,8 @@
 PROGNAME=$(basename "$0")
 PROGVERSION="1.3"
 
-SOCKETCOMMAND=""
-SOCKET="${MPVC_SOCKET:-$HOME/.config/mpvc/mpvsocket}"
+MPVC_SOCKET="${MPVC_SOCKET:-$HOME/.config/mpvc/mpvsocket}"
+MPVC_SOCKETCMD="socat - $MPVC_SOCKET"
 MPVOPTIONS="--no-audio-display --no-input-terminal"
 
 # print default status of mpv instance
@@ -43,7 +43,7 @@ Usage: $PROGNAME [-S "socket"] [-a "filenames"] [-o "path"] [-f "format string"]
     -I | --image        : Enable adding of images to the queue.
     -k | --kill         : Kill the mpv process controlling the given socket.
     -K | --killall      : Kill all mpv processes indiscriminately.
-    -S | --socket       : Set socket location [default: $SOCKET].
+    -S | --socket       : Set socket location [default: $MPVC_SOCKET].
     -q | --quiet        : Surpress all text output.
     -Q | --vid=no       : Start mpv with video output disabled.
     -- |                : After adding files options after -- are passed to mpv.
@@ -76,7 +76,7 @@ oquiet() { "$@" 1> /dev/null; }
 quiet()  { "$@" > /dev/null 2>&1; }
 warn() { echo "$@" >&2; }
 
-_sockcmd() { echo "$@" | $SOCKETCOMMAND; }
+_sockcmd() { echo "$@" | $MPVC_SOCKETCMD; }
 sockcmd()  { oquiet _sockcmd "$@"; }
 
 pprintf() { echo "$@"; }
@@ -89,13 +89,13 @@ eeprintf() { e=$1; shift; warn "$@"; exit "$e"; }
 # fn args: filename
 cleanFilename() {
     filename="$1"
-    result="$filename"
+    result=""
     case "$filename" in
         *.googlevideo.com/*) filename="mps-yt stream" ;;
         *youtu*|watch*)
             result="$(curl -sL "https://youtube.com/oembed?url=$filename" | getJSONField 'title:')"
         ;;
-        *) result=$(basename "$filename") ;;
+        *) result=${filename##*/} ;;
     esac
     echo "$result"
 }
@@ -120,14 +120,13 @@ getMetadata() {
             *) result=$(cleanFilename "$result") ;;
         esac
     fi
-    printf '%s' "$result" | escapeSedChar '&' '#'
+    echo "$result" | escapeSedChar '&' '#'
 }
 
 getJSONField() {
     awk -F, -v jf="$1" '{
         gsub("[{\"}]","");
-        for (i=1; i<=NF; i++) { if ($i ~ jf) { gsub(jf, "", $i); print $i }
-        }
+        for (i=1; i<=NF; i++) { if ($i ~ jf) { gsub(jf, "", $i); print $i } }
     }'
 }
 
@@ -192,9 +191,9 @@ getPauseStatus() {
 # fn args: $1: filename $2: full path flag to skip basename
 getPlaylistFilename() {
     track="$1"
-    fullpathFlag="$2"
+    fullPath="$2"
     filename=$(getPropertyString "playlist/$track/filename")
-    [  "$fullpathFlag" != "fullpath" ] && filename=$(cleanFilename "$filename")
+    [  "$fullPath" != "fullpath" ] && filename=$(cleanFilename "$filename")
     echo "$filename"
 }
 
@@ -204,7 +203,7 @@ getPlaylist() {
     tracks=$(getPropertyString playlist-count)
     currentTrack=$(getPropertyString playlist-pos)
     if [ -z "$tracks" ] || [ "$tracks" -eq 0 ]; then
-        eprintf "Socket ${SOCKET##$HOME/} is currently idle."
+        eprintf "Socket ${MPVC_SOCKET##$HOME/} is currently idle."
     fi
     # by default, display only tracks fitting terminal, otherwise, display all
     FIRST=1
@@ -225,8 +224,8 @@ getPlaylist() {
 # open mpvc to retrieve all metadata from a playlist file
 getFilenameMetadata() {
     intCheck "$1" || exit 1
-    trackToMetadata="$1"
-    getPlaylistFilename "$trackToMetadata" fullpath
+    trackId="$1"
+    getPlaylistFilename "$trackId" fullpath
 }
 
 # saves playlist to file but with no path checking. we live dangerously
@@ -254,6 +253,15 @@ savePlaylist() {
     QUIETFLAG="true"
 }
 
+autoSavePlaylist()
+{
+    saveLocation="$1"
+    MPVC_PLAYLIST="${MPVC_PLAYLIST:-$HOME/.config/mpvc/playlist/}"
+    [ -z "$saveLocation" ] && saveLocation="$MPVC_PLAYLIST/$(date -Imin)"
+    mkdir -p $MPVC_PLAYLIST
+    savePlaylist "$saveLocation"
+}
+
 # loads a playlist from stdin
 loadPlaylist() {
     QUIETFLAG="true"
@@ -278,7 +286,7 @@ appendTrack() {
         https*) ;;
     esac
     # start mpv socket up
-    if ! quiet pgrep -f "mpv .*$SOCKET"; then
+    if ! quiet pgrep -f "mpv .*$MPVC_SOCKET"; then
         startMpvd --really-quiet --idle=once
     fi
     quiet socketCommand "loadfile" "$filename\", \"append-play"
@@ -615,7 +623,7 @@ formatPrint() {
 # catches if mpv is idle or not
 printFinalOutput() {
     if [ "$QUIETFLAG" != "true" ] && [ "$(getPropertyString idle-active)" = "yes" ]; then
-        warn "MPV instance on ${SOCKET##$HOME/} is currently idle."
+        warn "MPV instance on ${MPVC_SOCKET##$HOME/} is currently idle."
     else
         formatPrint
         exit
@@ -708,17 +716,17 @@ parseTimeString() {
 }
 
 validateDeps() {
-    ! quiet type mpv && eeprintf 4 "Cannot find mpv on your \$PATH."
-    quiet type nc && SOCKETCOMMAND="nc -U -N $SOCKET"
-    quiet type socat && SOCKETCOMMAND="socat - $SOCKET"
-    [ -z "$SOCKETCOMMAND" ] && eeprintf 4 "Cannot find socat or nc on your \$PATH."
+    quiet type mpv || eeprintf 4 "Cannot find mpv on your \$PATH."
+    quiet type socat || type nc || eeprintf 4 "Cannot find socat or nc on your \$PATH."
+    [ -z "$MPVC_SOCKETCMD" ] && MPVC_SOCKETCMD="socat - $MPVC_SOCKET"
+    [ -z "$MPVC_SOCKETCMD" ] && MPVC_SOCKETCMD="nc -U -N $MPVC_SOCKET"
 }
 
 validateSocket() {
     # test if socket exists
-    [ ! -S "$SOCKET" ] && eeprintf 2 "${SOCKET##$HOME/} does not exist. Use mpv --input-ipc-server to start one."
+    [ ! -S "$MPVC_SOCKET" ] && eeprintf 2 "${MPVC_SOCKET##$HOME/} does not exist. Use mpv --input-ipc-server to start one."
     # test if socket is open
-    [ "$(getPauseStatus)" = "N/A" ] && eeprintf 3 "No files added to ${SOCKET##$HOME/}."
+    [ "$(getPauseStatus)" = "N/A" ] && eeprintf 3 "No files added to ${MPVC_SOCKET##$HOME/}."
 }
 
 getVersion() {
@@ -730,12 +738,12 @@ getVersion() {
 do_idleloop() {
     sockcmd '{ "command": ["unobserve_property", 1 ] }'
     sockcmd '{ "command": ["observe_property", '1, "$*"' ] }'
-    socat -t0 -,ignoreeof "$SOCKET"
+    socat -t0 -,ignoreeof "$MPVC_SOCKET"
 }
 
 startMpvd() {
-    mkdir -p "$(dirname "$SOCKET")"
-    exec mpv --input-ipc-server="$SOCKET" $MPVOPTIONS "$@" &
+    mkdir -p "$(dirname "$MPVC_SOCKET")"
+    exec mpv --input-ipc-server="$MPVC_SOCKET" $MPVOPTIONS "$@" &
     # wait until mpv starts up
     until [ -n "$(getPropertyString idle-active)" ]; do sleep 0.1; done
 }
@@ -791,6 +799,7 @@ main() {
                 esac
                 printFinalOutput
             ;;
+            cmd)      shift; socketCommand "$@"; return ;;
             sockcmd)  shift; _sockcmd "$1"; return ;;
             metadata) shift; getFilenameMetadata "$1" ;;
             pause)    setPause true       ; printFinalOutput ;;
@@ -820,6 +829,7 @@ main() {
             -r|--remove|rm|remove|del)       shift; removeTrack "$1"        ;;
             -o|--save|save)                  shift; savePlaylist "$1"       ;;
             --load|load)                     shift; loadPlaylist "$1"       ;;
+            --autosave|autosave)             shift; autoSavePlaylist "$1"   ;;
             -A|--playnext|playnext)          shift; playNext "$1"           ;;
 
             -k|--kill|kill)                  killSocket                     ;;
@@ -838,7 +848,7 @@ main() {
 
             # global argument parsing
             -f|--format)                     shift; FORMATSTRING="$1"       ;;
-            -S|--socket)                     shift; SOCKET="$1";            ;;
+            -S|--socket)                     shift; MPVC_SOCKET="$1";            ;;
             -Q|--vid=no)                     MPVOPTIONS="$MPVOPTIONS --vid=no"; ;;
             --image)                         IMAGEFLAG=true;                ;;
             -q|--quiet)                      QUIETFLAG=true;                ;;
