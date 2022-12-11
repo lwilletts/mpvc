@@ -24,10 +24,11 @@ Usage: $PROGNAME [-S "socket"] [-a "filenames"] [-o "path"] [-f "format string"]
     -s | --stop         : Always stop playback.
     -P | --play         : Always start playback.
     -f | --format       : Enter a formatting string.
-    -a | --add          : Add files to playlist.
+    -a | --add          : Add files to playlist from given path (see --load for stdin).
     -i | --playlist     : Print filenames of tracks to fit within terminal.
     -I | --fullplaylist : Print all filenames of tracks in current playlist.
     -o | --save         : Save current playlist to given path.
+    -l | --load         : Load playlist from given path (stdin if none is specified).
     -j | --track        : Go forwards/backwards through the playlist queue.
     -J | --tracknum     : Jump to playlist item number.
     -z | --shuffle      : Shuffle the current playlist.
@@ -265,6 +266,7 @@ autoSavePlaylist()
 # loads a playlist from stdin
 loadPlaylist() {
     QUIETFLAG="true"
+    clearPlaylist
     while read -r line;
     do
         appendTrack "$line";
@@ -432,21 +434,21 @@ moveTrack() {
 }
 
 removeTrack() {
-    trackToRemove=$1
-    if [ "$trackToRemove" = "current" ]; then
-        oquiet socketCommand "playlist-remove" "$trackToRemove"
+    trackId=$1
+    if [ "$trackId" = "current" ]; then
+        oquiet socketCommand "playlist-remove" "$trackId"
     else
-        intCheck "$1" || exit 1
+        intCheck "$1" || return 1
         trackCount=$(getPropertyString playlist-count)
-        if [ "$trackToRemove" -lt 0 ] || [ "$trackToRemove" -ge "$trackCount" ]; then
-            eprintf "Item $trackToRemove is out of range of playlist."
+        if [ -z "$trackCount" ] || [ "$trackId" -lt 0 ] || [ "$trackId" -ge "$trackCount" ]; then
+            warn "Item $trackId is out of range of playlist."
         fi
-        filename="$(getPlaylistFilename $trackToRemove)"
-        oquiet socketCommand "playlist-remove" "$trackToRemove"
+        filename="$(getPlaylistFilename $trackId)"
+        oquiet socketCommand "playlist-remove" "$trackId"
     fi
 
     if [ "$QUIETFLAG" != "true" ]; then
-        eprintf "$filename has been removed from the playlist."
+        warn "$filename has been removed from the playlist."
     fi
 }
 
@@ -751,7 +753,7 @@ startMpvd() {
 main() {
     validateDeps
     case "$1" in
-        load|--load|-a|add|append|mpv) ;;
+        load|--load|-a|add|append|mpv|cmd|sockcmd) ;;
         version|--version|help|--help|-h|--list-options|-Q|--vid=no|-S) ;;
         *) validateSocket;; # otherwise, validate socket
     esac
