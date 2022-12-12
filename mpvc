@@ -68,14 +68,11 @@ EOF
 equiet() { "$@" 2> /dev/null; }
 oquiet() { "$@" 1> /dev/null; }
 quiet()  { "$@" > /dev/null 2>&1; }
-warn() { echo "$@" >&2; }
+warn()   { echo "$@" >&2; }
+eeprintf() { e=$1; shift; warn "$@"; exit "$e"; }
 
 _sockcmd() { echo "$@" | $MPVC_SOCKETCMD; }
 sockcmd()  { oquiet _sockcmd "$@"; }
-
-pprintf() { echo "$@"; }
-eprintf() { warn "$@"; exit 1; }
-eeprintf() { e=$1; shift; warn "$@"; exit "$e"; }
 
 mpvc_defaults()
 {
@@ -89,6 +86,11 @@ mpvc_defaults()
 %artist% - %title%
 [%status%] #%position%/%playlistlength% %time%/%length% (%percentage%%)
 speed:%speed%x volume:%volume%% muted:%muted% repeat:%repeat% single:%single%"
+    # validate deps
+    quiet type mpv || eeprintf 4 "Cannot find mpv on your \$PATH."
+    quiet type socat || type nc || eeprintf 4 "Cannot find socat or nc on your \$PATH."
+    [ -z "$MPVC_SOCKETCMD" ] && MPVC_SOCKETCMD="socat - $MPVC_SOCKET"
+    [ -z "$MPVC_SOCKETCMD" ] && MPVC_SOCKETCMD="nc -U -N $MPVC_SOCKET"
 }
 
 # Load user config
@@ -220,7 +222,7 @@ getPlaylist() {
     tracks=$(getPropertyString playlist-count)
     currentTrack=$(getPropertyString playlist-pos)
     if [ -z "$tracks" ] || [ "$tracks" -eq 0 ]; then
-        eprintf "Socket ${MPVC_SOCKET##$HOME/} is currently idle."
+        eeprintf 1 "Socket ${MPVC_SOCKET##$HOME/} is currently idle."
     fi
     # by default, display only tracks fitting terminal, otherwise, display all
     FIRST=1
@@ -247,21 +249,16 @@ getFilenameMetadata() {
 
 # saves playlist to file but with no path checking. we live dangerously
 savePlaylist() {
-    saveLocation="$1"
-    savePlaylist="$saveLocation.m3u"
-
-    if [ -z "$saveLocation" ]
-    then
+    savePlaylist="$1"
+    if [ -z "$savePlaylist" ]; then
         savePlaylist="/dev/stdout"
     else
-        if [ -e "$savePlaylist" ]
-        then
+        if [ -e "$savePlaylist" ]; then
             echo "Playlist $savePlaylist exists! Overwrite? [Y/n] "; read -r key
             [ "$key" != "Y" ] && return
         fi
         echo "Adding files to $savePlaylist ..."
     fi
-
     LAST=$(getPropertyString playlist-count)
     for i in $(seq 0 $(( LAST - 1 )) )
     do
@@ -270,20 +267,17 @@ savePlaylist() {
     QUIETFLAG="true"
 }
 
-autoSavePlaylist()
-{
+autoSavePlaylist() {
     playlistFile="${1:-$(date -Imin)}"
-    savePlaylist > "$MPVC_PLAYLIST/$playlistFile"
+    savePlaylist "$MPVC_PLAYLIST/$playlistFile"
 }
 
-autoLoadPlaylist()
-{
+autoLoadPlaylist() {
     playlistFile="${1:-$(date -Imin)}"
     loadPlaylist < "$MPVC_PLAYLIST/$playlistFile"
 }
 
-listPlaylist()
-{
+listPlaylist() {
     ls -1d "$MPVC_PLAYLIST"/*
 }
 
@@ -378,13 +372,13 @@ setTimeAbsolute() {
 setVolume () {
     intCheck "$1" || exit 1
     volume=$(getPropertyString volume)
-    [ "$volume" = "error" ] && eprintf "Currently playing media does not have sound."
+    [ "$volume" = "error" ] && eeprintf 1 "Currently playing media does not have sound."
     case "$2" in
         relative) volume=$((volume + $1)) ;;
         absolute) volume=$1;;
     esac
-    [ "$volume" -lt 0 ] && eprintf "Volume cannot be set lower than 0%"
-    [ "$volume" -gt 130 ] && eprintf "Volume cannot be set great than 130%"
+    [ "$volume" -lt 0 ] && eeprintf 1 "Volume cannot be set lower than 0%"
+    [ "$volume" -gt 130 ] && eeprintf 1 "Volume cannot be set great than 130%"
     sockcmd '{ "command": ["set_property", "volume", '"$volume"' ] }'
 }
 
@@ -427,7 +421,7 @@ setTrack() {
         ;;
     esac
     if [ "$newTrack" -lt 0 ] || [ "$newTrack" -ge "$trackCount" ]; then
-        eprintf "Item $newTrack is out of range of playlist."
+        eeprintf 1 "Item $newTrack is out of range of playlist."
     fi
     sockcmd '{ "command": ["set_property", "playlist-pos", '"$newTrack"' ] }'
 }
@@ -442,12 +436,12 @@ moveTrack() {
         newTrackPosition=$2
         trackCount=$(getPropertyString playlist-count)
         if [ "$trackToMove" -lt 0 ] || [ "$trackToMove" -ge "$trackCount" ]; then
-            eprintf "Item $trackToMove is out of range of playlist."
+            eeprintf 1 "Item $trackToMove is out of range of playlist."
         fi
     fi
 
     [ "$newTrackPosition" -lt 0 ] &&
-        eprintf "Position $newTrackPosition is out of range of playlist."
+        eeprintf 1 "Position $newTrackPosition is out of range of playlist."
     [ "$newTrackPosition" -eq 1 ] && newTrackPosition=0
     sockcmd '{ "command": ["playlist-move", "'$trackToMove'", "'$newTrackPosition'" ] }'
 
@@ -741,16 +735,9 @@ parseTimeString() {
     printf "%d" "$timeInt"
 }
 
-validateDeps() {
-    quiet type mpv || eeprintf 4 "Cannot find mpv on your \$PATH."
-    quiet type socat || type nc || eeprintf 4 "Cannot find socat or nc on your \$PATH."
-    [ -z "$MPVC_SOCKETCMD" ] && MPVC_SOCKETCMD="socat - $MPVC_SOCKET"
-    [ -z "$MPVC_SOCKETCMD" ] && MPVC_SOCKETCMD="nc -U -N $MPVC_SOCKET"
-}
-
 validateSocket() {
     # test if socket exists
-    [ ! -S "$MPVC_SOCKET" ] && eeprintf 2 "${MPVC_SOCKET##$HOME/} does not exist. Use mpv --input-ipc-server to start one."
+    [ ! -S "$MPVC_SOCKET" ] && eeprintf 2 "Socket ${MPVC_SOCKET##$HOME/} does not exist. Use mpv --input-ipc-server to start one."
     # test if socket is open
     [ "$(getPauseStatus)" = "N/A" ] && eeprintf 3 "No files added to ${MPVC_SOCKET##$HOME/}."
 }
@@ -775,7 +762,6 @@ startMpvd() {
 
 main() {
     mpvc_config
-    validateDeps
     case "$1" in
         -a|add|append|mpv|--mpv|cmd|sockcmd) ;;
         load|--load|autoload|--autoload|lsplaylists|--lsplaylists) ;;
@@ -801,7 +787,7 @@ main() {
             vol|volume)
                 shift
                 case "$1" in
-                    '') eprintf "Specify volume in/decrease amount or absolute amount." ;;
+                    '') eeprintf 1 "Specify volume in/decrease amount or absolute amount." ;;
                     +*) setVolume "$1" relative ;;
                     -*) setVolume "$1" relative ;;
                     *)  setVolume "$1" absolute ;;
@@ -835,8 +821,8 @@ main() {
             move)     shift; moveTrack "$1" "$2" ; printFinalOutput ;;
             mute)     toggleMute true     ; printFinalOutput ;;
             unmute)   toggleMute false    ; printFinalOutput ;;
-            pretty)   eprintf "$PROGNAME: $* not implemented" ;;
-            find)     eprintf "$PROGNAME: $* not implemented" ;;
+            pretty)   eeprintf 1 "$PROGNAME: $* not implemented" ;;
+            find)     eeprintf 1 "$PROGNAME: $* not implemented" ;;
             idleloop) do_idleloop "$@"; return ;;
 
             add|-a|--append) appendTracks "$@"; shift "$((shiftcount + 1))" ;;
