@@ -46,6 +46,9 @@ mpvctui_config()
     XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}
     MPVC_CONFIG="${MPVC_CONFIG:-$XDG_CONFIG_HOME/mpvc/mpvc-tui.conf}"
     MPVC_HISTORY="${MPVC_HISTORY:-$XDG_CONFIG_HOME/mpvc/mpvc-tui.history}"
+    # if not present, create config dir
+    mkdir -p "$(dirname "$MPVC_CONFIG")"
+    touch "$MPVC_HISTORY"
     # if present load user config
     if [ -r "$MPVC_CONFIG" ];
     then
