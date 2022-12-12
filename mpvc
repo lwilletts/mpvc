@@ -7,17 +7,6 @@
 PROGNAME=$(basename "$0")
 PROGVERSION="1.3"
 
-MPVC_PLAYLIST="${MPVC_PLAYLIST:-$HOME/.config/mpvc/playlist}"
-MPVC_SOCKET="${MPVC_SOCKET:-$HOME/.config/mpvc/mpvsocket}"
-MPVC_SOCKETCMD="socat - $MPVC_SOCKET"
-MPVOPTIONS="--no-audio-display --no-input-terminal"
-
-# print default status of mpv instance
-[ -z "$FORMATSTRING" ] && FORMATSTRING="\
-%artist% - %title%
-[%status%] #%position%/%playlistlength% %time%/%length% (%percentage%%)
-speed:%speed%x volume:%volume%% muted:%muted% repeat:%repeat% single:%single%"
-
 usage() {
     cat >&2 << EOF
 Usage: $PROGNAME [-S "socket"] [-a "filenames"] [-o "path"] [-f "format string"]
@@ -87,6 +76,29 @@ sockcmd()  { oquiet _sockcmd "$@"; }
 pprintf() { echo "$@"; }
 eprintf() { warn "$@"; exit 1; }
 eeprintf() { e=$1; shift; warn "$@"; exit "$e"; }
+
+mpvc_defaults()
+{
+    XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}
+    MPVC_PLAYLIST="${MPVC_HISTORY:-$XDG_CONFIG_HOME/mpvc/playlist}"
+    MPVC_SOCKET="${MPVC_SOCKET:-$XDG_CONFIG_HOME/mpvc/mpvsocket}"
+    MPVC_SOCKETCMD="socat - $MPVC_SOCKET"
+    MPVOPTIONS="--no-audio-display --no-input-terminal"
+    # print default status of mpv instance
+    [ -z "$FORMATSTRING" ] && FORMATSTRING="\
+%artist% - %title%
+[%status%] #%position%/%playlistlength% %time%/%length% (%percentage%%)
+speed:%speed%x volume:%volume%% muted:%muted% repeat:%repeat% single:%single%"
+}
+
+# Load user config
+mpvc_config()
+{
+    mpvc_defaults
+    # if not present, create config dir
+    mkdir -p "$(dirname "$MPVC_SOCKET")"
+    mkdir -p "$MPVC_PLAYLIST"
+}
 
 ## Retrieval Functions ########################################################
 
@@ -261,7 +273,6 @@ savePlaylist() {
 autoSavePlaylist()
 {
     playlistFile="${1:-$(date -Imin)}"
-    mkdir -p "$MPVC_PLAYLIST"
     savePlaylist > "$MPVC_PLAYLIST/$playlistFile"
 }
 
@@ -757,16 +768,17 @@ do_idleloop() {
 }
 
 startMpvd() {
-    mkdir -p "$(dirname "$MPVC_SOCKET")"
     exec mpv --input-ipc-server="$MPVC_SOCKET" $MPVOPTIONS "$@" &
     # wait until mpv starts up
     until [ -n "$(getPropertyString idle-active)" ]; do sleep 0.1; done
 }
 
 main() {
+    mpvc_config
     validateDeps
     case "$1" in
-        load|--load|-a|add|append|mpv|cmd|sockcmd) ;;
+        -a|add|append|mpv|--mpv|cmd|sockcmd) ;;
+        load|--load|autoload|--autoload|lsplaylists|--lsplaylists) ;;
         version|--version|help|--help|-h|--list-options|-Q|--vid=no|-S) ;;
         *) validateSocket;; # otherwise, validate socket
     esac
