@@ -7,6 +7,7 @@
 PROGNAME=$(basename "$0")
 PROGVERSION="1.3"
 
+MPVC_PLAYLIST="${MPVC_PLAYLIST:-$HOME/.config/mpvc/playlist/}"
 MPVC_SOCKET="${MPVC_SOCKET:-$HOME/.config/mpvc/mpvsocket}"
 MPVC_SOCKETCMD="socat - $MPVC_SOCKET"
 MPVOPTIONS="--no-audio-display --no-input-terminal"
@@ -29,6 +30,8 @@ Usage: $PROGNAME [-S "socket"] [-a "filenames"] [-o "path"] [-f "format string"]
     -I | --fullplaylist : Print all filenames of tracks in current playlist.
     -o | --save         : Save current playlist to given path.
     -l | --load         : Load playlist from given path (stdin if none is specified).
+    -o | --autosave     : Auto save current playlist to ${MPVC_PLAYLIST##$HOME/}.
+    -l | --autoload     : Auto load playlist from from ${MPVC_PLAYLIST##$HOME/}.
     -j | --track        : Go forwards/backwards through the playlist queue.
     -J | --tracknum     : Jump to playlist item number.
     -z | --shuffle      : Shuffle the current playlist.
@@ -256,11 +259,15 @@ savePlaylist() {
 
 autoSavePlaylist()
 {
-    saveLocation="$1"
-    MPVC_PLAYLIST="${MPVC_PLAYLIST:-$HOME/.config/mpvc/playlist/}"
-    [ -z "$saveLocation" ] && saveLocation="$MPVC_PLAYLIST/$(date -Imin)"
-    mkdir -p $MPVC_PLAYLIST
-    savePlaylist "$saveLocation"
+    playlistFile="${1:-$(date -Imin)}"
+    mkdir -p "$MPVC_PLAYLIST"
+    savePlaylist > "$MPVC_PLAYLIST/$playlistFile"
+}
+
+autoLoadPlaylist()
+{
+    playlistFile="${1:-$(date -Imin)}"
+    loadPlaylist < "$MPVC_PLAYLIST/$playlistFile"
 }
 
 # loads a playlist from stdin
@@ -832,6 +839,7 @@ main() {
             -o|--save|save)                  shift; savePlaylist "$1"       ;;
             --load|load)                     shift; loadPlaylist "$1"       ;;
             --autosave|autosave)             shift; autoSavePlaylist "$1"   ;;
+            --autoload|autoload)             shift; autoLoadPlaylist "$1"   ;;
             -A|--playnext|playnext)          shift; playNext "$1"           ;;
 
             -k|--kill|kill)                  killSocket                     ;;
