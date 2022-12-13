@@ -10,8 +10,8 @@ addition to GNU style arguments. [Check out the mpc manpage for details.](http:/
 Required:
 
 - `mpv`
-- `socat` / `nc`: `socat` preferred due to the differing implementations of netcat across UNIXes.
-- sane version of `awk`
+- `socat`: is recommended due to the differing implementations of `netcat` across UNIXes.
+- `awk`: a sane version of `awk` is recommended
 
 ## Install
 
