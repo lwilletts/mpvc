@@ -242,7 +242,7 @@ getPlaylist() {
 
 # open mpvc to retrieve all metadata from a playlist file
 getFilenameMetadata() {
-    intCheck "$1" || exit 1
+    isInt "$1" || exit 1
     trackId="$1"
     getPlaylistFilename "$trackId" fullpath
 }
@@ -260,9 +260,9 @@ savePlaylist() {
         echo "Adding files to $savePlaylist ..."
     fi
     LAST=$(getPropertyString playlist-count)
-    for i in $(seq 0 $(( LAST - 1 )) )
+    for i in $(seq 0 $(( LAST - 1 )) );
     do
-        echo "$(getPlaylistFilename "$i" fullpath)"
+        filename="$(getPlaylistFilename "$i" fullpath)"; echo "$filename";
     done > "$savePlaylist"
     QUIETFLAG="true"
 }
@@ -303,7 +303,7 @@ appendTrack() {
     case "$filename" in
         *.txt|*.log|*.cue) return ;;
         *.png|*.jpg|*.jpeg|*.gif|*.psd|*.pdf) [ "$IMAGEFLAG" != "true" ] && return ;;
-        https*) ;;
+        http*) ;;
     esac
     # start mpv socket up
     if ! quiet pgrep -f "mpv .*$MPVC_SOCKET"; then
@@ -317,15 +317,11 @@ appendTrack() {
 appendTracks() {
     shiftcount=0
     QUIETFLAG="true"
-    for arg in "$@";
-    do
-        if echo "$arg" | grep -q '^https\?://'; then
-            appendTrack "$arg"
-            shiftcount=$((shiftcount + 1))
-        elif [ -e "$arg" ]; then
-            appendTrack "$arg"
-            shiftcount=$((shiftcount + 1))
-        fi
+    for arg in "$@"; do
+        case "$arg" in
+        http*) appendTrack "$arg"; _=$((shiftcount+=1)) ;;
+        *)     if [ -e "$arg" ]; then appendTrack "$arg"; _=$((shiftcount+=1)); fi
+        esac
     done
     return $shiftcount
 }
@@ -370,7 +366,7 @@ setTimeAbsolute() {
 }
 
 setVolume () {
-    intCheck "$1" || exit 1
+    isInt "$1" || exit 1
     volume=$(getPropertyString volume)
     [ "$volume" = "error" ] && eeprintf 1 "Currently playing media does not have sound."
     case "$2" in
@@ -383,7 +379,7 @@ setVolume () {
 }
 
 setSpeed() {
-    fltCheck "$1" || exit 1
+    isFloat "$1" || exit 1
     speed=$(getSpeed)
     case "$2" in
         absolute) speed=$1 ;;
@@ -393,7 +389,7 @@ setSpeed() {
 }
 
 setTrack() {
-    intCheck "$1" || exit 1
+    isInt "$1" || exit 1
     currentTrack=$(getPropertyString playlist-pos)
     trackCount=$(getPropertyString playlist-count)
     [ "$currentTrack" = "null" ] && currentTrack=0
@@ -427,7 +423,7 @@ setTrack() {
 }
 
 moveTrack() {
-    intCheck "$1" || exit 1
+    isInt "$1" || exit 1
     if [ -z "$2" ]; then
         trackToMove=$(getPropertyString playlist-pos)
         newTrackPosition=$1
@@ -456,7 +452,7 @@ removeTrack() {
     if [ "$trackId" = "current" ]; then
         oquiet socketCommand "playlist-remove" "$trackId"
     else
-        intCheck "$1" || return 1
+        isInt "$1" || return 1
         trackCount=$(getPropertyString playlist-count)
         if [ -z "$trackCount" ] || [ "$trackId" -lt 0 ] || [ "$trackId" -ge "$trackCount" ]; then
             warn "Item $trackId is out of range of playlist."
@@ -579,20 +575,15 @@ playtimeRemaining() {
 formatTime() {
     [  "$1" = "null" ] && return 1
     rawSeconds=$1
+    milleSeconds=$2
     seconds=$((rawSeconds % 60))
     minutes=$((rawSeconds / 60))
     hours=$((minutes / 60))
-
-    [ $seconds -lt 10 ] && seconds="0$seconds"
-    [ $minutes -ge 60 ] && minutes=$((minutes - hours*60))
-    [ $minutes -lt 10 ] && minutes="0$minutes"
-    [ $hours -lt 10 ] && hours="0$hours"
-
-    if [ -z "$2" ]; then
-        echo "$hours:$minutes:$seconds"
+    minutes=$((minutes - hours*60))
+    if [ -z "$milleSeconds" ]; then
+        printf "%02d:%02d:%02d" "$hours" "$minutes" "$seconds"
     else
-        milleSeconds=$2
-        echo "$hours:$minutes:$seconds.$milleSeconds"
+        printf "%02d:%02d:%02d.%d" "$hours" "$minutes" "$seconds" "$milleSeconds"
     fi
 }
 
@@ -656,18 +647,12 @@ escapeSedChar() {
     awk -v r1="$1" -v r2="$2" '{ gsub(r1, "\\"r1); gsub(r2, "\\"r2); print $0; }'
 }
 
-intCheck() {
-    [ "$1" -ne 0 ] 2> /dev/null
-    [ "$?" -ne 2 ] || return 1
+isInt() {
+    printf '%d' "$1" >/dev/null
 }
 
-fltCheck() {
-    intCheck "$1" && return 0
-    case "$1" in
-        *[0-9].[0-9]*)    return 0 ;;
-        *.*.*|*[!-.0-9]*) ;;
-    esac
-    return 1
+isFloat() {
+    [ -z "${1##*.*}" ] && printf '%f' "$1" >/dev/null
 }
 
 getCurrentLine() {
@@ -686,7 +671,7 @@ getCurrentLine() {
     l=${l%%;*}
 
     printf "\r" >&2
-    if ! intCheck "$l" || [ "$l" -le 0 ] || [ "$l" -ge "$lines" ];
+    if ! isInt "$l" || [ "$l" -le 0 ] || [ "$l" -ge "$lines" ];
     then
         l=$minlines
     fi
@@ -721,7 +706,7 @@ parseTimeString() {
     case "$1" in
         *s|*S|*m|*M|*h|*H)
             timeInt=${1%%?}
-            intCheck "$timeInt" || exit 1
+            isInt "$timeInt" || exit 1
             case "$1" in
                 *h|*H) timeInt=$((timeInt * 60 * 60)) ;;
                 *m|*M) timeInt=$((timeInt * 60))      ;;
@@ -779,7 +764,7 @@ main() {
                 case "$1" in
                     0) setTrack 0 absolute;;
                     $) setTrack "$(getPropertyString playlist-count)" absolute;;
-                    *) intCheck "$1" && setTrack "$1" absolute;;
+                    *) isInt "$1" && setTrack "$1" absolute;;
                 esac
                 alwaysPlay
                 printFinalOutput
@@ -825,7 +810,7 @@ main() {
             find)     eeprintf 1 "$PROGNAME: $* not implemented" ;;
             idleloop) do_idleloop "$@"; return ;;
 
-            add|-a|--append) appendTracks "$@"; shift "$((shiftcount + 1))" ;;
+            add|-a|--append) appendTracks "$@"; shift "$((shiftcount+1))" ;;
             mpv|--mpv)       startMpvd --idle=yes --input-terminal; return;;
             # consume) to implement # add on|off toggle
             # random) MPV doesn't have this control option!
