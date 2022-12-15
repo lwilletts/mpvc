@@ -1,6 +1,7 @@
 #!/bin/sh
 #
 # fyr - 2019 (c) MIT | /bin/sh mpvc
+# gmt4 - 2022 | fork & contributions
 # control mpv remotely using JSON ipc
 # https://mpv.io/manual/master/#json-ipc
 
@@ -77,8 +78,10 @@ sockcmd()  { oquiet _sockcmd "$@"; }
 mpvc_defaults()
 {
     XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}
-    MPVC_PLAYLIST="${MPVC_HISTORY:-$XDG_CONFIG_HOME/mpvc/playlist}"
-    MPVC_SOCKET="${MPVC_SOCKET:-$XDG_CONFIG_HOME/mpvc/mpvsocket}"
+    MPVC_CONFIG_DIR="${MPVC_HISTORY:-$XDG_CONFIG_HOME/mpvc}"
+    MPVC_DATABASE="$MPVC_CONFIG_DIR/db.m3u"
+    MPVC_PLAYLIST="$MPVC_CONFIG_DIR/playlist"
+    MPVC_SOCKET="$MPVC_CONFIG_DIR/mpvsocket"
     MPVC_SOCKETCMD="socat - $MPVC_SOCKET"
     MPVOPTIONS="--no-audio-display --no-input-terminal"
     # print default status of mpv instance
@@ -262,7 +265,7 @@ savePlaylist() {
     LAST=$(getPropertyString playlist-count)
     for i in $(seq 0 $(( LAST - 1 )) );
     do
-        filename="$(getPlaylistFilename "$i" fullpath)"; echo "$filename";
+        getPlaylistFilename "$i" fullpath
     done > "$savePlaylist"
     QUIETFLAG="true"
 }
@@ -281,14 +284,19 @@ listPlaylist() {
     ls -1d "$MPVC_PLAYLIST"/*
 }
 
-# loads a playlist from stdin
+# loads a playlist from stdin. Note the buffer trick to avoid clear wiping the playlist.
 loadPlaylist() {
     QUIETFLAG="true"
+    buffer=""
+    while read -r line; do buffer="${buffer}\n${line}"; done
     clearPlaylist
-    while read -r line;
-    do
-        appendTrack "$line";
-    done
+    printf "$buffer\n" | while read -r line; do appendTrack "$line"; done
+}
+
+dbinit() {
+    locate -b '*.mp3' '*.mp4' '*.ogg' '*.opus' |
+        sed 's|^\(/.*/\).*|\1|' | sort | uniq |
+        tee "$MPVC_DATABASE"
 }
 
 ## Control Functions ##########################################################
@@ -749,7 +757,7 @@ main() {
     mpvc_config
     case "$1" in
         -a|add|append|mpv|--mpv|cmd|sockcmd) ;;
-        load|--load|autoload|--autoload|lsplaylists|--lsplaylists) ;;
+        load|--load|autoload|--autoload|lsplaylists|--lsplaylists|dbinit|--dbinit) ;;
         version|--version|help|--help|-h|--list-options|-Q|--vid=no|-S) ;;
         *) validateSocket;; # otherwise, validate socket
     esac
@@ -830,6 +838,7 @@ main() {
             --autosave|autosave)             shift; autoSavePlaylist "$1"; return   ;;
             --autoload|autoload)             shift; autoLoadPlaylist "$1"; return   ;;
             --lsplaylists|lsplaylists)       shift; listPlaylist "$1"; return       ;;
+            --dbinit|dbinit)                 shift; dbinit; return       ;;
             -A|--playnext|playnext)          shift; playNext "$1"           ;;
 
             -k|--kill|kill)                  killSocket                     ;;
