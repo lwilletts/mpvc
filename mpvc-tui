@@ -119,11 +119,9 @@ mpvctui_input()
     fi
     case "$cmd" in
         '!!'*) "${SHELL}" -c "${cmd##!!}";;
-        '!'*) ${cmd##!};;
+        '!'*) eval ${cmd##!};;
         'mpvc '*) QUIETFLAG=true $cmd;;
         exit|quit|q) exit;;
-        edit) ${EDITOR} "${MPVC_CONFIG}";;
-        reload) mpvctui_config;;
         *) echo 'mpvc: Type commands at "mpvc:" prompt, "q" to quit, also edit & reload';;
     esac
     mpvctui_watch
