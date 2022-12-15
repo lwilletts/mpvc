@@ -115,7 +115,7 @@ cleanFilename() {
     case "$filename" in
         *.googlevideo.com/*) filename="mps-yt stream" ;;
         *youtu*|watch*)
-            result="$(curl -sL "https://youtube.com/oembed?url=$filename" | getJSONField 'title:')"
+            result="$(curl -sL "https://youtube.com/oembed?url=$filename" | getJSONField '"title":')"
         ;;
         *) result=${filename##*/} ;;
     esac
@@ -146,14 +146,16 @@ getMetadata() {
 }
 
 getJSONField() {
-    awk -F, -v jf="$1" '{
-        gsub("[{\"}]","");
-        for (i=1; i<=NF; i++) { if ($i ~ jf) { gsub(jf, "", $i); print $i } }
+    awk -F ',"' -v jf="$1" '{
+        gsub("[{}]", "");
+        for (i=1; i<=NF; i++){
+            if ($i ~ jf){ r=$i; sub(jf, "", r); gsub("[\"]", "", r); print r}
+        }
     }'
 }
 
 socketCommand() {
-    equiet _sockcmd "{ \"command\": [ \"$1\", \"$2\"] }" | getJSONField "data:"
+    equiet _sockcmd "{ \"command\": [ \"$1\", \"$2\"] }" | getJSONField '"data":'
 }
 
 # fn args: mute, pause, loop-file, estimated-frame-number, width, height
