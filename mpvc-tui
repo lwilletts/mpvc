@@ -74,7 +74,7 @@ mpvctui_headerc()
     rem=$(( cols - ${#hdr} ))
     # when SHELL=dash, ${#hdr} is 4 chars smaller
     [ -z "$BASH" ] && rem=$(( rem + 4 ))
-    for i in $(seq 1 $rem)
+    for _ in $(seq 1 $rem)
     do
         hdr="$hdr$char"
     done
@@ -91,9 +91,9 @@ mpvctui_tips()
     tip=$(( count % 60 ))
     case $tip in
     0|1)   echo ": type control+c to enter prompt";;
-    10|11) echo ": check $PROGURL/wiki for more tips!";;
-    20|21) echo ": change theme at ${MPVC_CONFIG##$HOME/}";;
-    30|31) echo ": start $PROGNAME from wm launcher with: $PROGNAME -x";;
+    10|11) echo ": check more tips at $PROGURL!";;
+    20|21) echo ": customize theme at ${MPVC_CONFIG##$HOME/}";;
+    30|31) echo ": launch from WM with: $PROGNAME -x";;
     40|41) echo ": version $PROGNAME $PROGVERSION at $PROGURL";;
     50|51) echo ": update $MPVC_UPDATEC secs refresh $((count % MPVC_CLEARC))/$MPVC_CLEARC";;
     esac
@@ -111,11 +111,11 @@ mpvctui_watcher()
 
 mpvctui_input()
 {
-    MPVC_PROMPT="${PWD##*/} mpvc: "
+    MPVC_PROMPT="($PROGNAME) ${PWD##*/}: "
     if command -v rlwrap >/dev/null; then
         cmd=$(rlwrap -o -c -S "$MPVC_PROMPT" -H "$MPVC_HISTORY" -f . -P '' cat)
     else
-        read -r -p "$MPVC_PROMPT" cmd
+        echo "$MPVC_PROMPT"; read -r cmd
     fi
     case "$cmd" in
         '!!'*) "${SHELL}" -c "${cmd##!!}";;
