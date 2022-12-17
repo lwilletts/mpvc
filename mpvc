@@ -122,34 +122,28 @@ cleanFilename() {
     echo "$result"
 }
 
-# fn args: media-title, path
+# fn args: media-title, filename, path
 getMediaProperties() {
-    socketCommand "get_property" "$1" | escapeSedChar '&' '#'
+    socketCommand "get_property" "$1" | escapeChars '[&#]'
 }
 
 # fn args: date, genre, title, album, artist, album_artist
 getMetadata() {
-    metadata=$(getProperty "metadata/by-key/$1")
+    cmd="metadata/by-key/$1"
+    [ "$1" = "title" ] && cmd=media-title
+    metadata=$(getProperty "$cmd")
     case "$metadata" in
         '') result="N/A" ;;
-        *)  result="$metadata" ;;
+        *)  result=$(cleanFilename "$metadata")
     esac
-    # when no title metadata present, return filename
-    if [ "$1" = "title" ]; then
-        case "$metadata" in
-            null) result=$(getPropertyString filename) ;;
-            '') result=$(getPropertyString filename) ;;
-            *) result=$(cleanFilename "$result") ;;
-        esac
-    fi
-    echo "$result" | escapeSedChar '&' '#'
+    echo "$result" | escapeChars '[&#]'
 }
 
 getJSONField() {
     awk -F ',"' -v jf="$1" '{
         gsub("[{}]", "");
         for (i=1; i<=NF; i++){
-            if ($i ~ jf){ r=$i; sub(jf, "", r); gsub("[\"]", "", r); print r}
+            if ($i ~ jf){ r=$i; sub(jf, "", r); gsub("[\"]", "", r); print r; }
         }
     }'
 }
@@ -316,13 +310,11 @@ appendTrack() {
         *.png|*.jpg|*.jpeg|*.gif|*.psd|*.pdf) [ "$IMAGEFLAG" != "true" ] && return ;;
         http*) ;;
     esac
-    # start mpv socket up
     if ! quiet pgrep -f "mpv .*$MPVC_SOCKET"; then
         startMpvd --really-quiet --idle=once
     fi
-    quiet socketCommand "loadfile" "$filename\", \"append-play"
-    filename=$(cleanFilename "$filename")
-    echo "Adding: $filename"
+    quiet socketCommand "loadfile" "$filename" "append-play"
+    echo "Adding: $(cleanFilename "$filename")"
 }
 
 appendTracks() {
@@ -654,8 +646,8 @@ printFinalOutput() {
 
 ## Misc Functions #############################################################
 
-escapeSedChar() {
-    awk -v r1="$1" -v r2="$2" '{ gsub(r1, "\\"r1); gsub(r2, "\\"r2); print $0; }'
+escapeChars() {
+    awk -v r="$1" '{ gsub(r, "\\\\&"); print $0; }'
 }
 
 isInt() {
