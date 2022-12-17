@@ -79,11 +79,11 @@ mpvc_defaults()
 {
     XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}
     MPVC_CONFIG_DIR="${MPVC_HISTORY:-$XDG_CONFIG_HOME/mpvc}"
-    MPVC_DATABASE="$MPVC_CONFIG_DIR/db.m3u"
-    MPVC_PLAYLIST="$MPVC_CONFIG_DIR/playlist"
-    MPVC_SOCKET="$MPVC_CONFIG_DIR/mpvsocket"
+    MPVC_DATABASE="${MPVC_DATABASE:-$MPVC_CONFIG_DIR/db.m3u}"
+    MPVC_PLAYLIST="${MPVC_PLAYLIST:-MPVC_CONFIG_DIR/playlist}"
+    MPVC_SOCKET="${MPVC_SOCKET:-$MPVC_CONFIG_DIR/mpvsocket}"
     MPVC_SOCKETCMD="socat - $MPVC_SOCKET"
-    MPVOPTIONS="--no-audio-display --no-input-terminal"
+    MPVOPTIONS="${MPVOPTIONS:---no-audio-display --no-input-terminal}"
     # print default status of mpv instance
     [ -z "$FORMATSTRING" ] && FORMATSTRING="\
 %artist% - %title%
@@ -860,7 +860,7 @@ main() {
 
             # global argument parsing
             -f|--format)                     shift; FORMATSTRING="$1"       ;;
-            -S|--socket)                     shift; MPVC_SOCKET="$1";            ;;
+            -S|--socket)                     shift; MPVC_SOCKET="$1"; mpvc_config ;;
             -Q|--vid=no)                     MPVOPTIONS="$MPVOPTIONS --vid=no"; ;;
             --image)                         IMAGEFLAG=true;                ;;
             -q|--quiet)                      QUIETFLAG=true;                ;;
