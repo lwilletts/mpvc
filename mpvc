@@ -155,7 +155,8 @@ getJSONField() {
 }
 
 socketCommand() {
-    equiet _sockcmd "{ \"command\": [ \"$1\", \"$2\"] }" | getJSONField '"data":'
+    command=$(for i in "$@"; do printf "\"$i\", "; done)
+    equiet _sockcmd "{ \"command\": [ $command ] }" | getJSONField '"data":'
 }
 
 # fn args: mute, pause, loop-file, estimated-frame-number, width, height
