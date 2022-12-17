@@ -80,7 +80,7 @@ mpvc_defaults()
     XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}
     MPVC_CONFIG_DIR="${MPVC_HISTORY:-$XDG_CONFIG_HOME/mpvc}"
     MPVC_DATABASE="${MPVC_DATABASE:-$MPVC_CONFIG_DIR/db.m3u}"
-    MPVC_PLAYLIST="${MPVC_PLAYLIST:-MPVC_CONFIG_DIR/playlist}"
+    MPVC_PLAYLIST="${MPVC_PLAYLIST:-$MPVC_CONFIG_DIR/playlist}"
     MPVC_SOCKET="${MPVC_SOCKET:-$MPVC_CONFIG_DIR/mpvsocket}"
     MPVC_SOCKETCMD="socat - $MPVC_SOCKET"
     MPVOPTIONS="${MPVOPTIONS:---no-audio-display --no-input-terminal}"
