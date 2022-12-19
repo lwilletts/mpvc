@@ -295,6 +295,11 @@ dbinit() {
         tee "$MPVC_DATABASE"
 }
 
+dblist() {
+    cat "$MPVC_DATABASE"
+    for playlist in $(printf "%s\n" $MPVC_PLAYLIST/*); do echo $playlist; done
+}
+
 ## Control Functions ##########################################################
 
 appendTrack() {
@@ -751,7 +756,7 @@ main() {
     mpvc_config
     case "$1" in
         -a|add|append|mpv|--mpv|cmd|sockcmd) ;;
-        load|--load|autoload|--autoload|lsplaylists|--lsplaylists|dbinit|--dbinit) ;;
+        load|--load|autoload|--autoload|lsplaylists|--lsplaylists|dbinit|--dbinit|dblist|--dblist) ;;
         version|--version|help|--help|-h|--list-options|-Q|--vid=no|-S) ;;
         *) validateSocket;; # otherwise, validate socket
     esac
@@ -827,13 +832,14 @@ main() {
             -j|--track)                      shift; setTrack "$1" relative  ;;
             -J|--tracknum)                   shift; setTrack "$1" absolute  ;;
             -r|--remove|rm|remove|del)       shift; removeTrack "$1"        ;;
+            -A|--playnext|playnext)          shift; playNext "$1"           ;;
             -o|--save|save)                  shift; savePlaylist "$1"       ;;
             --load|load)                     shift; loadPlaylist "$1"       ;;
             --autosave|autosave)             shift; autoSavePlaylist "$1"; return   ;;
             --autoload|autoload)             shift; autoLoadPlaylist "$1"; return   ;;
             --lsplaylists|lsplaylists)       shift; listPlaylist "$1"; return       ;;
-            --dbinit|dbinit)                 shift; dbinit; return       ;;
-            -A|--playnext|playnext)          shift; playNext "$1"           ;;
+            --dblist|dblist)                 shift; dblist; return          ;;
+            --dbinit|dbinit)                 shift; dbinit; return          ;;
             --get|get|g)                     shift; socketCommand get_property "$@"; return;;
             --set|set|s)                     shift; socketCommand set_property "$@"; return;;
             --sets|sets|ss)                  shift; socketCommand set_property_string "$@"; return;;
