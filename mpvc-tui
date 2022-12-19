@@ -140,15 +140,35 @@ mpvctui_watch()
     done
 }
 
+mpvctui_isearch()
+{
+    curl -sL "https://yewtu.be/search?q=$*" |
+    awk '
+        /^ *<p dir="auto">/ {
+            gsub("^ *<p dir=\"auto\">",""); gsub("</p>",""); title=$0
+        }
+        /^ *<a title="Audio mode/ {
+            gsub("^ *<a title=\"Audio mode\" href=\"",""); gsub("\">",""); gsub("/watch", "https://youtube.com/watch");
+            print $0, title
+        }'
+}
+
+mpvctui_iplay()
+{
+    mpvctui_isearch "$@" | fzf -m |  awk '{print $1}' | mpvc load
+}
+
 mpvctui_usage()
 {
     echo "usage: $PROGNAME -[$optflags] cmd # @version $PROGVERSION $PROGURL";
     echo "  -x : Starts $PROGNAME in a new $MPVC_TERM (config \$MPVC_TERM)"
     echo "  -d : Starts $PROGNAME in the directory given as argument"
+    echo "  -s : Search for media using Invidious"
+    echo "  -p : Search & play media found using Invidious"
     exit;
 }
 
-optflags="d:hx"
+optflags="d:hs:p:x"
 mpvctui_main()
 {
     mpvctui_config
@@ -156,6 +176,8 @@ mpvctui_main()
     do
         case "$flag" in
         d) MPVC_DIR="$OPTARG"; cd "$MPVC_DIR" || return;;
+        s) mpvctui_isearch "$OPTARG"; return;;
+        p) mpvctui_iplay "$OPTARG"; return;;
         x) shift; command -v $MPVC_TERM && $MPVC_TERM -e "$0" "$@"; exit;;
         *) mpvctui_usage;;
         esac
