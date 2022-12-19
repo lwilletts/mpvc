@@ -114,9 +114,7 @@ cleanFilename() {
     result=""
     case "$filename" in
         *.googlevideo.com/*) filename="mps-yt stream" ;;
-        *youtu*|watch*)
-            result="$(curl -sL "https://youtube.com/oembed?url=$filename" | getJSONField '"title":')"
-        ;;
+        *youtu*|watch*) result="$(curl -sL "https://youtube.com/oembed?url=$filename" | getJSONField '"title":')" ;;
         *) result=${filename##*/} ;;
     esac
     echo "$result"
@@ -286,6 +284,7 @@ loadPlaylist() {
     QUIETFLAG="true"
     buffer=""
     while read -r line; do buffer="${buffer}\n${line}"; done
+    [ -z "$buffer" ] && return
     clearPlaylist
     printf "$buffer\n" | while read -r line; do appendTrack "$line"; done
 }
@@ -637,7 +636,7 @@ formatPrint() {
 # catches if mpv is idle or not
 printFinalOutput() {
     if [ "$QUIETFLAG" != "true" ] && [ "$(getPropertyString idle-active)" = "yes" ]; then
-        warn "MPV instance on ${MPVC_SOCKET##$HOME/} is currently idle."
+        warn "MPV on ${MPVC_SOCKET##$HOME/} is currently idle."
     else
         formatPrint
         exit
@@ -737,8 +736,8 @@ getVersion() {
 }
 
 do_idleloop() {
-    sockcmd '{ "command": ["unobserve_property", 1 ] }'
-    sockcmd '{ "command": ["observe_property", '1, "$*"' ] }'
+    socketCommand "unobserve_property" 1
+    socketCommand "observe_property" 1 "$@"
     socat -t0 -,ignoreeof "$MPVC_SOCKET"
 }
 
@@ -800,8 +799,6 @@ main() {
                 esac
                 printFinalOutput
             ;;
-            cmd)      shift; socketCommand "$@"; return ;;
-            sockcmd)  shift; _sockcmd "$1"; return ;;
             metadata) shift; getFilenameMetadata "$1" ;;
             pause)    setPause true       ; printFinalOutput ;;
             next)     setTrack 1 relative ; printFinalOutput ;;
@@ -812,6 +809,8 @@ main() {
             pretty)   eeprintf 1 "$PROGNAME: $* not implemented" ;;
             find)     eeprintf 1 "$PROGNAME: $* not implemented" ;;
             idleloop) do_idleloop "$@"; return ;;
+            cmd)      shift; socketCommand "$@"; return ;;
+            sockcmd)  shift; _sockcmd "$1"; return ;;
 
             add|-a|--append) appendTracks "$@"; shift "$((shiftcount+1))" ;;
             mpv|--mpv)       startMpvd --idle=yes --input-terminal; return;;
@@ -835,6 +834,10 @@ main() {
             --lsplaylists|lsplaylists)       shift; listPlaylist "$1"; return       ;;
             --dbinit|dbinit)                 shift; dbinit; return       ;;
             -A|--playnext|playnext)          shift; playNext "$1"           ;;
+            --get|get|g)                     shift; socketCommand get_property "$@"; return;;
+            --set|set|s)                     shift; socketCommand set_property "$@"; return;;
+            --sets|sets|ss)                  shift; socketCommand set_property_string "$@"; return;;
+            --gets|gets|gs)                  shift; socketCommand get_property_string "$@"; return;;
 
             -k|--kill|kill)                  killSocket                     ;;
             -K|--killall|killall)            killAllMpv                     ;;
