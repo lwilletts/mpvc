@@ -37,6 +37,7 @@ mpvctui_defaults()
     MPVC_CLEARC=4
     MPVC_TERM=xterm
     MPVC_TIPS=true
+    MPVC_SHELL=$(readlink -f /proc/$$/exe)
     export MPVC_CLINE=9
 }
 
@@ -73,8 +74,8 @@ mpvctui_headerc()
     cols=$(tput cols)
     hdr="${char}${char}${cstart}$*${cend}"
     rem=$(( cols - ${#hdr} ))
-    # when SHELL=dash, ${#hdr} is 4 chars smaller
-    [ -z "$BASH" ] && rem=$(( rem + 4 ))
+    # when SHELL=/bin/dash, ${#hdr} is 4 chars smaller
+    [ "$MPVC_SHELL" = "/bin/dash" ] && rem=$(( rem + 4 ))
     for _ in $(seq 1 $rem)
     do
         hdr="$hdr$char"
@@ -126,19 +127,19 @@ mpvctui_input()
         exit|quit|q) exit;;
         *) echo 'mpvc: Type commands at "mpvc:" prompt, "q" to quit, also edit & reload';;
     esac
-    mpvctui_watch
 }
 
 mpvctui_watch()
 {
     trap mpvctui_input INT
-    while sleep $MPVC_UPDATEC
+    while :
     do
         output=$(mpvctui_watcher "$@" 2>&1)
         [ $(( count % MPVC_CLEARC )) -eq 0 ] && tput clear
         tput cup 0 0
         echo "$output"
         count=$(( count + 1 ))
+        sleep $MPVC_UPDATEC
     done
 }
 
