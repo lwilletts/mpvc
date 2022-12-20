@@ -9,6 +9,7 @@
 PROGNAME=$(basename "$0");
 PROGVERSION=v1.0;
 PROGURL="https://github.com/gmt4/mpvc"
+SITEURL="https://gmt4.github.io/mpvc"
 
 # Set TUI defaults
 mpvctui_defaults()
@@ -88,14 +89,15 @@ mpvctui_header2() { mpvctui_headerc '─' '[' ']' "$MPVC_COLOR2" " + $* "; }
 mpvctui_tips()
 {
     [ "$MPVC_TIPS" = "false" ] && return
-    tip=$(( count % 60 ))
+    tip=$(( count % 70 ))
     case $tip in
     0|1)   echo ": type control+c to enter prompt";;
     10|11) echo ": check more tips at $PROGURL!";;
-    20|21) echo ": customize theme at ${MPVC_CONFIG##$HOME/}";;
-    30|31) echo ": launch from WM with: $PROGNAME -x";;
-    40|41) echo ": version $PROGNAME $PROGVERSION at $PROGURL";;
-    50|51) echo ": update $MPVC_UPDATEC secs refresh $((count % MPVC_CLEARC))/$MPVC_CLEARC";;
+    20|21) echo ": check more tips at $SITEURL!";;
+    30|31) echo ": customize theme at ${MPVC_CONFIG##$HOME/}";;
+    40|41) echo ": launch from WM with: $PROGNAME -x";;
+    50|51) echo ": version $PROGNAME $PROGVERSION at $PROGURL";;
+    60|61) echo ": update $MPVC_UPDATEC secs refresh $((count % MPVC_CLEARC))/$MPVC_CLEARC";;
     esac
 }
 
