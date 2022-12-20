@@ -231,9 +231,9 @@ getPlaylist() {
     do
         filename=$(getPlaylistFilename "$i")
         if [ "$COLOURFLAG" != "nocolour" ] && [ "$currentTrack" != "null" ] && [ "$currentTrack" -eq "$i" ]; then
-            printf '%.2d  [7m%s[0m\n' "$i" "$filename"
+            printf '%2d  [7m%s[0m\n' "$i" "$filename"
         else
-            printf '%.2d  %s\n' "$i" "$filename"
+            printf '%2d  %s\n' "$i" "$filename"
         fi
     done
 }
