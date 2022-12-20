@@ -162,8 +162,7 @@ mpvctui_iplay()
 
 mpvctui_jumptrack()
 {
-    #query=$(mpvc get "media-title") # --query="$query"
-    track=$(mpvc --mono fullplaylist | fzf --tac --no-sort | awk '{print $1}')
+    track=$(mpvc fullplaylist | fzf --ansi --tac --no-sort | awk '{print $1}')
     if [ -n "$track" ]
     then
         mpvc play "$track"
