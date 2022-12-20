@@ -2,6 +2,7 @@ MIT License
 
 Copyright (c) 2016 Laurence Willetts    <me@wildefyr.net>
 Copyright (c) 2016 Christian Heckendorf <heckendorfc@gmail.com>
+Copyright (c) 2022 gmt4.github.io       <gmt4@earthball>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
