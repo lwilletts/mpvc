@@ -158,17 +158,28 @@ mpvctui_iplay()
     mpvctui_isearch "$@" | fzf -m |  awk '{print $1}' | mpvc load
 }
 
+mpvctui_jumptrack()
+{
+    #query=$(mpvc get "media-title") # --query="$query"
+    track=$(mpvc --mono fullplaylist | fzf --tac --no-sort | awk '{print $1}')
+    if [ -n "$track" ]
+    then
+        mpvc play "$track"
+    fi
+}
+
 mpvctui_usage()
 {
     echo "usage: $PROGNAME -[$optflags] cmd # @version $PROGVERSION $PROGURL";
-    echo "  -x : Starts $PROGNAME in a new $MPVC_TERM (config \$MPVC_TERM)"
+    echo "  -x : Starts $PROGNAME in a new $MPVC_TERM (config \$MPVC_TERM) [combine -x with $optflags]"
     echo "  -d : Starts $PROGNAME in the directory given as argument"
+    echo "  -j : Jump to the selected song from the playlist"
     echo "  -s : Search for media using Invidious"
     echo "  -p : Search & play media found using Invidious"
     exit;
 }
 
-optflags="d:hs:p:x"
+optflags="d:jhs:p:x"
 mpvctui_main()
 {
     mpvctui_config
@@ -176,6 +187,7 @@ mpvctui_main()
     do
         case "$flag" in
         d) MPVC_DIR="$OPTARG"; cd "$MPVC_DIR" || return;;
+        j) mpvctui_jumptrack; return;;
         s) mpvctui_isearch "$OPTARG"; return;;
         p) mpvctui_iplay "$OPTARG"; return;;
         x) shift; command -v $MPVC_TERM && $MPVC_TERM -e "$0" "$@"; exit;;
