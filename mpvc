@@ -205,6 +205,11 @@ getPauseStatus() {
     echo "$status"
 }
 
+getPlaylistOnce() {
+    socketCommand "get_property_string" "playlist" |
+        sed 's|\\||g; s|^\[||; s|\]$||; s|,filename:|\n|g; s|filename:||;'
+}
+
 # fn args: $1: filename $2: full path flag to skip basename
 getPlaylistFilename() {
     track="$1"
@@ -216,9 +221,11 @@ getPlaylistFilename() {
 
 # print filenames in current playlist
 getPlaylist() {
+    i=0
     fullPlaylist="$1"
     tracks=$(getPropertyString playlist-count)
     currentTrack=$(getPropertyString playlist-pos)
+
     if [ -z "$tracks" ] || [ "$tracks" -eq 0 ]; then
         eeprintf 1 "Socket ${MPVC_SOCKET##$HOME/} is currently idle."
     fi
@@ -227,14 +234,19 @@ getPlaylist() {
     LAST=$tracks
     [ "$fullPlaylist" != "full" ] && calculateTerminalHeight "$currentTrack" "$tracks"
 
-    for i in $( seq $(( FIRST - 1 )) $(( LAST - 1 )) )
+    getPlaylistOnce |
+    while read filename;
     do
-        filename=$(getPlaylistFilename "$i")
-        if [ "$COLOURFLAG" != "nocolour" ] && [ "$currentTrack" != "null" ] && [ "$currentTrack" -eq "$i" ]; then
-            printf '%2d  [7m%s[0m\n' "$i" "$filename"
-        else
-            printf '%2d  %s\n' "$i" "$filename"
+        if [ $i -ge $FIRST -a $i -le $LAST ]; then
+            filename=$(cleanFilename "$filename")
+            isCurrent=$([ "$currentTrack" != "null" ] && [ "$currentTrack" -eq "$i" ] && echo true)
+            if [ "$COLOURFLAG" != "nocolour" ] && [ -n "$isCurrent" ]; then
+                printf '%2d  [7m%s[0m\n' "$i" "$filename"
+            else
+                printf '%2d  %s\n' "$i" "$filename"
+            fi
         fi
+        i=$(( $i + 1 ))
     done
 }
 
@@ -257,11 +269,7 @@ savePlaylist() {
         fi
         echo "Adding files to $savePlaylist ..."
     fi
-    LAST=$(getPropertyString playlist-count)
-    for i in $(seq 0 $(( LAST - 1 )) );
-    do
-        getPlaylistFilename "$i" fullpath
-    done > "$savePlaylist"
+    getPlaylistOnce > "$savePlaylist"
     QUIETFLAG="true"
 }
 
