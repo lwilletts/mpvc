@@ -821,7 +821,7 @@ main() {
 
             # GNU-style options
             -t|--seek|seek)                  shift; setTimeRelative "$1"    ;;
-            -T|--time)                       shift; setTimeAbsolute "$1"    ;;
+            -T|--time|time)                  shift; setTimeAbsolute "$1"    ;;
             -v|--vol)                        shift; setVolume "$1" relative ;;
             -V|--volume)                     shift; setVolume "$1" absolute ;;
             -x|--speed|speed)                shift; setSpeed "$1" relative  ;;
