@@ -178,9 +178,9 @@ getSpeed() {
 getLoopStatus() {
     status=$(getProperty "$1")
     case "$status" in
-        true | inf) loop="yes" ;;
-        false)      loop="no"  ;;
-        *)          loop="N/A" ;;
+        true|inf) loop="yes" ;;
+        false)    loop="no"  ;;
+        *)        loop="N/A" ;;
     esac
     echo "$loop"
 }
@@ -486,38 +486,27 @@ setPause() {
 }
 
 togglePause() {
-    currentTrack=$(getPropertyString playlist-pos)
-    if [ "$currentTrack" = "null" ]; then
-        setTrack 0 absolute; return
-    fi
-    pause="$(getProperty pause)"
-    [  "$pause" = "true" ] && pause="false" || pause="true"
-    sockcmd '{ "command": ["set_property", "pause", '"$pause"' ] }'
+    quiet socketCommand "cycle" "pause"
 }
 
 toggleMute() {
-    muted=$1
-    if [  -z "$1" ]; then
-        muted=$(getMuteStatus)
-        [  "$muted" = "no" ] && muted="true" || muted="false"
+    if [ $# -eq 0 ]; then
+        quiet socketCommand "cycle" "mute"
+    else
+        sockcmd '{ "command": ["set_property", "mute", '"$1"' ] }'
     fi
-    sockcmd '{ "command": ["set_property", "mute", '"$muted"' ] }'
 }
 
 toggleLoopFile() {
-    loopFile=$(getLoopStatus loop-file)
-    [ "$loopFile" = "no" ] && loopFile="inf" || loopFile="no"
-    sockcmd '{ "command": ["set_property_string", "loop-file", "'$loopFile'" ] }'
+    quiet socketCommand "cycle-values" "loop-file" "yes" "no"
 }
 
 toggleLoopPlaylist() {
-    loopPlaylist=$(getLoopStatus loop-playlist)
-    [ "$loopPlaylist" = "no" ] && loopPlaylist="inf" || loopPlaylist="no"
-    sockcmd '{ "command": ["set_property_string", "loop-playlist", "'$loopPlaylist'" ] }'
+    quiet socketCommand "cycle-values" "loop-playlist" "yes" "no"
 }
 
 shufflePlaylist() {
-    sockcmd '{ "command": ["playlist-shuffle" ] }'
+    quiet socketCommand "playlist-shuffle"
     if [ "$QUIETFLAG" != "true" ]; then
         echo "Playlist shuffled."
         QUIETFLAG="true"
@@ -526,7 +515,7 @@ shufflePlaylist() {
 }
 
 cropPlaylist() {
-    sockcmd '{ "command": ["playlist-clear" ] }'
+    quiet socketCommand "playlist-clear"
     if [ "$QUIETFLAG" != "true" ]; then
         getPlaylist
         QUIETFLAG="true"
