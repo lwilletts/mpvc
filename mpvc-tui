@@ -146,7 +146,9 @@ mpvctui_watch()
 
 mpvctui_isearch()
 {
-    curl -sL "https://yewtu.be/search?q=$*" |
+    url_search="https://yewtu.be/search?q=$(for f in "$@"; do printf "$f+"; done)"
+    echo "$url_search"
+    curl -sL "$url_search" |
     awk '
         /^ *<p dir="auto">/ {
             gsub("^ *<p dir=\"auto\">",""); gsub("</p>",""); title=$0
@@ -182,7 +184,7 @@ mpvctui_usage()
     exit;
 }
 
-optflags="d:jhs:p:x"
+optflags="d:jhspx"
 mpvctui_main()
 {
     mpvctui_config
@@ -190,9 +192,9 @@ mpvctui_main()
     do
         case "$flag" in
         d) MPVC_DIR="$OPTARG"; cd "$MPVC_DIR" || return;;
-        j) mpvctui_jumptrack; return;;
-        s) mpvctui_isearch "$OPTARG"; return;;
-        p) mpvctui_iplay "$OPTARG"; return;;
+        j) shift; mpvctui_jumptrack; return;;
+        s) shift; mpvctui_isearch "$@"; return;;
+        p) shift; mpvctui_iplay "$@"; return;;
         x) shift; command -v $MPVC_TERM && $MPVC_TERM -e "$0" "$@"; exit;;
         *) mpvctui_usage;;
         esac
