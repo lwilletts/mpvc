@@ -124,6 +124,7 @@ mpvctui_input()
         '!!'*) "${SHELL}" -c "${cmd##!!}";;
         '!'*) eval ${cmd##!};;
         'mpvc '*) QUIETFLAG=true $cmd;;
+        'mpvc-tui '*) $cmd;;
         exit|quit|q) exit;;
         *) echo 'mpvc: Type commands at "mpvc:" prompt, "q" to quit, also edit & reload';;
     esac
