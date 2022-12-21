@@ -207,7 +207,7 @@ getPauseStatus() {
 
 getPlaylistOnce() {
     socketCommand "get_property_string" "playlist" |
-        sed 's|\\||g; s|^\[||; s|\]$||; s|,filename:|\n|g; s|filename:||;'
+        sed 's|\\||g; s|^\[||; s|\]$||; s|,filename:|\n|g; s|filename:||; s|,playing:true||; s|,current:true||'
 }
 
 # fn args: $1: filename $2: full path flag to skip basename
@@ -230,7 +230,7 @@ getPlaylist() {
         eeprintf 1 "Socket ${MPVC_SOCKET##$HOME/} is currently idle."
     fi
     # by default, display only tracks fitting terminal, otherwise, display all
-    FIRST=1
+    FIRST=0
     LAST=$tracks
     [ "$fullPlaylist" != "full" ] && calculateTerminalHeight "$currentTrack" "$tracks"
 
@@ -239,12 +239,10 @@ getPlaylist() {
     do
         if [ $i -ge $FIRST -a $i -le $LAST ]; then
             filename=$(cleanFilename "$filename")
-            isCurrent=$([ "$currentTrack" != "null" ] && [ "$currentTrack" -eq "$i" ] && echo true)
-            if [ "$COLOURFLAG" != "nocolour" ] && [ -n "$isCurrent" ]; then
-                printf '%2d  [7m%s[0m\n' "$i" "$filename"
-            else
-                printf '%2d  %s\n' "$i" "$filename"
-            fi
+            case "$i" in
+            $currentTrack) [ "$COLOURFLAG" != "nocolour" ] && printf '%2d  [7m%s[0m\n' "$i" "$filename";;
+            *) printf '%2d  %s\n' "$i" "$filename";;
+            esac
         fi
         i=$(( $i + 1 ))
     done
@@ -297,13 +295,13 @@ loadPlaylist() {
     printf "$buffer\n" | while read -r line; do appendTrack "$line"; done
 }
 
-dbinit() {
+mpvc_dbinit() {
     locate -b '*.mp3' '*.mp4' '*.ogg' '*.opus' |
         sed 's|^\(/.*/\).*|\1|' | sort | uniq |
         tee "$MPVC_DATABASE"
 }
 
-dblist() {
+mpvc_dblist() {
     cat "$MPVC_DATABASE"
     for playlist in $(printf "%s\n" $MPVC_PLAYLIST/*); do echo $playlist; done
 }
@@ -691,13 +689,13 @@ calculateTerminalHeight() {
     halfrows=$((rows / 2))
     [ "$ctrack" = "null" ] && ctrack=0
     if [ "$tracks" -le $rows ]; then
-        FIRST=1; LAST=$tracks
+        FIRST=0; LAST=$tracks
     elif [ "$ctrack" -le $halfrows ]; then
-        FIRST=1; LAST=$rows
+        FIRST=0; LAST=$rows
     elif [  $((ctrack + halfrows)) -ge "$tracks" ]; then
-        FIRST=$((tracks - rows + 1)); LAST=$tracks
+        FIRST=$((tracks - rows)); LAST=$tracks
     elif [  $((ctrack + halfrows)) -lt "$tracks" ]; then
-        FIRST=$((ctrack - halfrows + 1)); LAST=$((ctrack + halfrows))
+        FIRST=$((ctrack - halfrows)); LAST=$((ctrack + halfrows))
     fi
 }
 
@@ -835,8 +833,8 @@ main() {
             --autosave|autosave)             shift; autoSavePlaylist "$1"; return   ;;
             --autoload|autoload)             shift; autoLoadPlaylist "$1"; return   ;;
             --lsplaylists|lsplaylists)       shift; listPlaylist "$1"; return       ;;
-            --dblist|dblist)                 shift; dblist; return          ;;
-            --dbinit|dbinit)                 shift; dbinit; return          ;;
+            --dblist|dblist)                 shift; mpvc_dblist; return          ;;
+            --dbinit|dbinit)                 shift; mpvc_dbinit; return          ;;
             --get|get|g)                     shift; socketCommand get_property "$@"; return;;
             --set|set|s)                     shift; socketCommand set_property "$@"; return;;
             --sets|sets|ss)                  shift; socketCommand set_property_string "$@"; return;;
