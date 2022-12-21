@@ -207,7 +207,14 @@ getPauseStatus() {
 
 getPlaylistOnce() {
     socketCommand "get_property_string" "playlist" |
-        sed 's|\\||g; s|^\[||; s|\]$||; s|,filename:|\n|g; s|filename:||; s|,playing:true||; s|,current:true||'
+    awk '
+        BEGIN { RS="filename\\\\:" }
+        {
+            gsub("\\\\",""); sub("^[[]|]|,$","");
+            sub(",current:true",""); sub(",playing:true","");
+            sub("^ *$", "");
+            print
+        }'
 }
 
 # fn args: $1: filename $2: full path flag to skip basename
