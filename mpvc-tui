@@ -11,6 +11,10 @@ PROGVERSION=v1.0;
 PROGURL="https://github.com/gmt4/mpvc"
 SITEURL="https://gmt4.github.io/mpvc"
 
+equiet() { "$@" 2> /dev/null; }
+oquiet() { "$@" 1> /dev/null; }
+quiet()  { "$@" > /dev/null 2>&1; }
+
 # Set TUI defaults
 mpvctui_defaults()
 {
@@ -56,7 +60,7 @@ mpvctui_config()
     then
         . "$MPVC_CONFIG"
     fi
-    if ! command -v rlwrap >/dev/null; then
+    if ! quiet command -v rlwrap; then
         mpvctui_warn "$PROGNAME: Warning: No rlwrap, Install to get history, filename & completion support!"
         sleep 1
     fi
@@ -115,7 +119,7 @@ mpvctui_watcher()
 mpvctui_input()
 {
     MPVC_PROMPT="($PROGNAME) ${PWD##*/}: "
-    if command -v rlwrap >/dev/null; then
+    if quiet command -v rlwrap; then
         cmd=$(rlwrap -o -c -S "$MPVC_PROMPT" -H "$MPVC_HISTORY" -f . -P '' cat)
     else
         echo "$MPVC_PROMPT"; read -r cmd
@@ -144,7 +148,7 @@ mpvctui_watch()
     done
 }
 
-mpvctui_isearch()
+mpvctui_iquery()
 {
     url_search="https://yewtu.be/search?q=$(for f in "$@"; do printf "$f+"; done)"
     echo "$url_search"
@@ -161,7 +165,7 @@ mpvctui_isearch()
 
 mpvctui_iplay()
 {
-    mpvctui_isearch "$@" | fzf -m |  awk '{print $1}' | mpvc load
+    mpvctui_iquery "$@" | fzf -m |  awk '{print $1}' | mpvc load
 }
 
 mpvctui_jumptrack()
@@ -173,18 +177,29 @@ mpvctui_jumptrack()
     fi
 }
 
+mpvctui_seektrack()
+{
+    pos=$(mpvc gets percent-pos)
+    pre='mpvc sets percent-pos {+1}; mpvc status'
+    (
+        seq 0 99
+        echo "$pos"
+    ) | sort -n | fzf --ansi --tac --no-sort --query="$pos" --preview="$pre"
+}
+
 mpvctui_usage()
 {
     echo "usage: $PROGNAME -[$optflags] cmd # @version $PROGVERSION $PROGURL";
     echo "  -x : Starts $PROGNAME in a new $MPVC_TERM (config \$MPVC_TERM) [combine -x with $optflags]"
     echo "  -d : Starts $PROGNAME in the directory given as argument"
-    echo "  -j : Jump to the selected song from the playlist"
-    echo "  -s : Search for media using Invidious"
+    echo "  -j : Jump to the selected media from the playlist"
+    echo "  -s : Seek time on the currently playing media"
+    echo "  -q : Search for media using Invidious"
     echo "  -p : Search & play media found using Invidious"
     exit;
 }
 
-optflags="d:jhspx"
+optflags="d:jhspqx"
 mpvctui_main()
 {
     mpvctui_config
@@ -193,9 +208,10 @@ mpvctui_main()
         case "$flag" in
         d) MPVC_DIR="$OPTARG"; cd "$MPVC_DIR" || return;;
         j) shift; mpvctui_jumptrack; return;;
-        s) shift; mpvctui_isearch "$@"; return;;
+        s) shift; mpvctui_seektrack; return;;
+        q) shift; mpvctui_iquery "$@"; return;;
         p) shift; mpvctui_iplay "$@"; return;;
-        x) shift; command -v $MPVC_TERM && $MPVC_TERM -e "$0" "$@"; exit;;
+        x) shift; quiet command -v $MPVC_TERM && $MPVC_TERM -e "$0" "$@"; exit;;
         *) mpvctui_usage;;
         esac
     done
