@@ -170,54 +170,53 @@ mpvctui_iplay()
 
 mpvctui_jumptrack()
 {
-    track=$(mpvc fullplaylist | fzf --ansi --tac --no-sort | awk '{print $1}')
-    if [ -n "$track" ]
-    then
-        mpvc play "$track"
-    fi
+    track=$(mpvc gets playlist-pos)
+    preview='mpvc play {+1}'
+    mpvc fullplaylist |
+        fzf --ansi --tac --no-sort --query="^$track\ "  --preview="$preview" --preview-window=up:15%
 }
 
 mpvctui_seektrack()
 {
-    pos=$(mpvc gets percent-pos)
-    pre='mpvc sets percent-pos {+1}; mpvc status'
+    pct=$(mpvc gets percent-pos)
+    preview='mpvc sets percent-pos {+1}; mpvc status'
     (
         seq 0 99
-        echo "$pos"
-    ) | sort -n | fzf --ansi --tac --no-sort --query="$pos" --preview="$pre"
+        echo "$pct"
+    ) | sort -n | fzf --ansi --tac --no-sort --query="$pct" --preview="$preview" --preview-window=up:15%
 }
 
 mpvctui_usage()
 {
     echo "usage: $PROGNAME -[$optflags] cmd # @version $PROGVERSION $PROGURL";
-    echo "  -x : Starts $PROGNAME in a new $MPVC_TERM (config \$MPVC_TERM) [combine -x with $optflags]"
-    echo "  -d : Starts $PROGNAME in the directory given as argument"
+    echo "  -t : Starts the TUI $PROGNAME"
+    echo "  -d : Move to the directory given as argument"
     echo "  -j : Jump to the selected media from the playlist"
     echo "  -s : Seek time on the currently playing media"
     echo "  -q : Search for media using Invidious"
     echo "  -p : Search & play media found using Invidious"
+    echo "  -x : Starts $PROGNAME in a new $MPVC_TERM (config \$MPVC_TERM) [combine -x with $optflags]"
     exit;
 }
 
-optflags="d:jhspqx"
+optflags="d:jhstpqx"
 mpvctui_main()
 {
+    [ $# -eq 0 ] && mpvctui_usage
     mpvctui_config
     while getopts "$optflags" flag;
     do
         case "$flag" in
         d) MPVC_DIR="$OPTARG"; cd "$MPVC_DIR" || return;;
-        j) shift; mpvctui_jumptrack; return;;
-        s) shift; mpvctui_seektrack; return;;
+        j) shift; mpvctui_jumptrack ;;
+        s) shift; mpvctui_seektrack ;;
+        t) shift; mpvctui_watch "$@" ;;
+        p) shift; mpvctui_iplay "$@" ;;
         q) shift; mpvctui_iquery "$@"; return;;
-        p) shift; mpvctui_iplay "$@"; return;;
         x) shift; quiet command -v $MPVC_TERM && $MPVC_TERM -e "$0" "$@"; exit;;
         *) mpvctui_usage;;
         esac
     done
-    shift $((OPTIND - 1));
-
-    mpvctui_watch "$@"
 }
 
 mpvctui_main "$@"
