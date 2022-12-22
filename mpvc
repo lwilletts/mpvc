@@ -210,10 +210,9 @@ getPlaylistOnce() {
     awk '
         BEGIN { RS="filename\\\\:" }
         {
-            gsub("\\\\",""); sub("^[[]|]|,$","");
-            sub(",current:true",""); sub(",playing:true","");
-            sub("^ *$", "");
-            print
+            gsub("\\\\", ""); sub("^[[]|]|,$", "");
+            sub(",current:true", ""); sub(",playing:true", "");
+            if (length($0)>0) print
         }'
 }
 
@@ -330,8 +329,10 @@ appendTrack() {
     if ! quiet pgrep -f "mpv .*$MPVC_SOCKET"; then
         startMpvd --really-quiet --idle=once
     fi
-    quiet socketCommand "loadfile" "$filename" "append-play"
-    echo "Adding: $(cleanFilename "$filename")"
+    if [ -n "$filename" ]; then
+        quiet socketCommand "loadfile" "$filename" "append-play"
+        echo "Adding: $(cleanFilename "$filename")"
+    fi
 }
 
 appendTracks() {
@@ -499,23 +500,22 @@ setPause() {
 }
 
 togglePause() {
-    quiet socketCommand "cycle" "pause"
+    quiet socketCommand "cycle-values" "pause" "yes" "no"
 }
 
 toggleMute() {
-    if [ $# -eq 0 ]; then
-        quiet socketCommand "cycle" "mute"
-    else
-        sockcmd '{ "command": ["set_property", "mute", '"$1"' ] }'
-    fi
+    if [ -n "$1" ]; then quiet socketCommand "set_property_string" "mute" "$1";
+    else quiet socketCommand "cycle-values" "mute" "yes" "no"; fi
 }
 
 toggleLoopFile() {
-    quiet socketCommand "cycle-values" "loop-file" "yes" "no"
+    if [ -n "$1" ]; then quiet socketCommand "set_property_string" "loop-file" "$1";
+    else quiet socketCommand "cycle-values" "loop-file" "yes" "no"; fi
 }
 
 toggleLoopPlaylist() {
-    quiet socketCommand "cycle-values" "loop-playlist" "yes" "no"
+    if [ -n "$1" ]; then quiet socketCommand "set_property_string" "loop-playlist" "$1";
+    else quiet socketCommand "cycle-values" "loop-playlist" "yes" "no"; fi
 }
 
 shufflePlaylist() {
@@ -546,7 +546,7 @@ clearPlaylist() {
 
 # quit mpv process on given socket
 killSocket() {
-    sockcmd '{ "command": ["quit"] }'
+    quiet socketCommand "quit"
     exit
 }
 
@@ -811,8 +811,8 @@ main() {
             next)     setTrack 1 relative ; printFinalOutput ;;
             prev)     setTrack -1 relative; printFinalOutput ;;
             move)     shift; moveTrack "$1" "$2" ; printFinalOutput ;;
-            mute)     toggleMute true     ; printFinalOutput ;;
-            unmute)   toggleMute false    ; printFinalOutput ;;
+            mute)     toggleMute yes     ; printFinalOutput ;;
+            unmute)   toggleMute no      ; printFinalOutput ;;
             pretty)   eeprintf 1 "$PROGNAME: $* not implemented" ;;
             find)     eeprintf 1 "$PROGNAME: $* not implemented" ;;
             idleloop) do_idleloop "$@"; return ;;
