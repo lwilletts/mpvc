@@ -186,6 +186,21 @@ mpvctui_seektrack()
     ) | sort -n | fzf --ansi --tac --no-sort --query="$pct" --preview="$preview" --preview-window=up:15%
 }
 
+mpvctui_notify()
+{
+    mpvc idleloop |
+        awk '
+            /tracks-changed/ {
+                t=systime()
+                cmd="notify-send -u normal -i dialog-information \"$(mpvc)\""
+                if (t - ot > 1)
+                    system(cmd);
+                ot=systime()
+
+                print t, $0
+            } '
+}
+
 mpvctui_usage()
 {
     echo "usage: $PROGNAME -[$optflags] cmd # @version $PROGVERSION $PROGURL";
@@ -195,11 +210,12 @@ mpvctui_usage()
     echo "  -s : Seek time on the currently playing media"
     echo "  -q : Search for media using Invidious"
     echo "  -p : Search & play media found using Invidious"
+    echo "  -n : Desktop notification using notify-send on mpvc events"
     echo "  -x : Starts $PROGNAME in a new $MPVC_TERM (config \$MPVC_TERM) [combine -x with $optflags]"
     exit;
 }
 
-optflags="d:jhstpqx"
+optflags="d:jhstnpqx"
 mpvctui_main()
 {
     [ $# -eq 0 ] && mpvctui_usage
@@ -211,6 +227,7 @@ mpvctui_main()
         j) shift; mpvctui_jumptrack ;;
         s) shift; mpvctui_seektrack ;;
         t) shift; mpvctui_watch "$@" ;;
+        n) shift; mpvctui_notify "$@" ;;
         p) shift; mpvctui_iplay "$@" ;;
         q) shift; mpvctui_iquery "$@"; return;;
         x) shift; quiet command -v $MPVC_TERM && $MPVC_TERM -e "$0" "$@"; exit;;
