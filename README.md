@@ -98,3 +98,9 @@ Like any piece of software, mpvc is not perfect:
 
 Check out the [Issue Tracker](https://github.com/wildefyr/mpvc/issues) for
 further improvements to be made.
+
+## Related
+
+* [ytmp](https://github.com/ifeelalright1970/ytmp)
+* [mpv-sockets](https://github.com/seanbreckenridge/mpv-sockets)
+
