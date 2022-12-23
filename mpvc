@@ -440,7 +440,7 @@ setTrack() {
     if [ "$newTrack" -lt 0 ] || [ "$newTrack" -ge "$trackCount" ]; then
         eeprintf 1 "Item $newTrack is out of range of playlist."
     fi
-    sockcmd '{ "command": ["set_property", "playlist-pos", '"$newTrack"' ] }'
+    equiet socketCommand "set_property" "playlist-pos" "$newTrack"
 }
 
 moveTrack() {
@@ -460,7 +460,7 @@ moveTrack() {
     [ "$newTrackPosition" -lt 0 ] &&
         eeprintf 1 "Position $newTrackPosition is out of range of playlist."
     [ "$newTrackPosition" -eq 1 ] && newTrackPosition=0
-    sockcmd '{ "command": ["playlist-move", "'$trackToMove'", "'$newTrackPosition'" ] }'
+    equiet socketCommand "playlist-move" "$trackToMove" "$newTrackPosition"
 
     if [ "$QUIETFLAG" != "true" ]; then
         getPlaylist
@@ -473,7 +473,7 @@ removeTrack() {
     if [ "$trackId" = "current" ]; then
         oquiet socketCommand "playlist-remove" "$trackId"
     else
-        isInt "$1" || return 1
+        isInt "$trackId" || return 1
         trackCount=$(getPropertyString playlist-count)
         if [ -z "$trackCount" ] || [ "$trackId" -lt 0 ] || [ "$trackId" -ge "$trackCount" ]; then
             warn "Item $trackId is out of range of playlist."
@@ -492,7 +492,7 @@ alwaysPlay() {
     if [ "$currentTrack" = "null" ]; then
         setTrack 0 absolute; return
     fi
-    sockcmd '{ "command": ["set_property", "pause", false ] }'
+    equiet socketCommand "set_property_string" "pause" "no"
 }
 
 setPause() {
@@ -501,6 +501,10 @@ setPause() {
 
 togglePause() {
     quiet socketCommand "cycle-values" "pause" "yes" "no"
+}
+
+toggleVideo() {
+    quiet socketCommand "cycle-values" "force-window" "yes" "no"
 }
 
 toggleMute() {
@@ -664,34 +668,11 @@ isFloat() {
     [ -z "${1##*.*}" ] && printf '%f' "$1" >/dev/null
 }
 
-getCurrentLine() {
-    l=0
-    minlines=2
-    [ -n "$MPVC_CLINE" ] && echo "$MPVC_CLINE" && return
-
-    lines=$(tput lines)
-    t=$(stty -g)
-    exec < /dev/tty
-    stty raw -echo min 0
-    tput u7 > /dev/tty
-    sleep 0.1
-    IFS='[;' read -r R l
-    stty "$t"
-    l=${l%%;*}
-
-    printf "\r" >&2
-    if ! isInt "$l" || [ "$l" -le 0 ] || [ "$l" -ge "$lines" ];
-    then
-        l=$minlines
-    fi
-    echo "$l"
-}
-
 calculateTerminalHeight() {
     ctrack="$1"
     tracks="$2"
     lines=$(tput lines)
-    crow=$(getCurrentLine)
+    crow=3
     rows=$((lines - crow))
     halfrows=$((rows / 2))
     [ "$ctrack" = "null" ] && ctrack=0
@@ -847,6 +828,7 @@ main() {
             --set|set|s)                     shift; socketCommand set_property "$@"; return;;
             --sets|sets|ss)                  shift; socketCommand set_property_string "$@"; return;;
             --gets|gets|gs)                  shift; socketCommand get_property_string "$@"; return;;
+            --togglev|togglev)               toggleVideo                    ;;
 
             -k|--kill|kill)                  killSocket                     ;;
             -K|--killall|killall)            killAllMpv                     ;;
