@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 #
 # fyr - 2019 (c) MIT | /bin/sh mpvc
 # gmt4 - 2022 | fork & contributions
@@ -111,11 +111,11 @@ mpvc_config()
 # fn args: filename
 cleanFilename() {
     filename="$1"
-    result=""
+    result="$1"
     case "$filename" in
         *.googlevideo.com/*) filename="mps-yt stream" ;;
         *youtu*|watch*) result="$(curl -sL "https://youtube.com/oembed?url=$filename" | getJSONField '"title":')" ;;
-        *) result=${filename##*/} ;;
+        *) [ -e "$filename" ] && result=${filename##*/} ;;
     esac
     echo "$result"
 }
@@ -210,9 +210,9 @@ getPlaylistOnce() {
     awk '
         BEGIN { RS="filename\\\\:" }
         {
-            gsub("\\\\", ""); sub("^[[]|]|,$", "");
+            gsub("\\\\", ""); sub("^[[]|]|,$", ""); sub("\n", "");
             sub(",current:true", ""); sub(",playing:true", "");
-            if (length($0)>0) print
+            if (length($0)>0) print $0
         }'
 }
 
@@ -772,7 +772,7 @@ main() {
                 shift
                 case "$1" in
                     0) setTrack 0 absolute;;
-                    $) setTrack "$(getPropertyString playlist-count)" absolute;;
+                    $) setTrack "$(( $(getPropertyString playlist-count) - 1 ))" absolute;;
                     *) isInt "$1" && setTrack "$1" absolute;;
                 esac
                 alwaysPlay
