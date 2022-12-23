@@ -176,9 +176,14 @@ mpvctui_iplay_clear()
 mpvctui_jumptrack()
 {
     track=$(mpvc gets playlist-pos)
-    preview='mpvc play {+1}'
     mpvc fullplaylist |
-        fzf --ansi --tac --no-sort --query="^$track\ "  --preview="$preview" --preview-window=up:15%
+        fzf --ansi --tac --no-sort --query="^$track\ " \
+            --bind 'ctrl-f:execute-silent(mpvc seek +20 &)' \
+            --bind 'ctrl-b:execute-silent(mpvc seek -20 &)' \
+            --bind 'ctrl-space:execute-silent(mpvc toggle &)' \
+            --preview='mpvc play {+1}' --preview-window=up:20%
+            #--bind 'ctrl-+:execute-silent(mpvc vol -10 &)' \
+            #--bind 'ctrl--:execute-silent(mpvc vol -10 &)' \
 }
 
 mpvctui_seektrack()
@@ -188,7 +193,7 @@ mpvctui_seektrack()
     (
         seq 0 99
         echo "$pct"
-    ) | sort -n | fzf --ansi --tac --no-sort --query="$pct" --preview="$preview" --preview-window=up:15%
+    ) | sort -n | fzf --ansi --tac --no-sort --query="$pct" --preview="$preview" --preview-window=up:20%
 }
 
 mpvctui_notify()
@@ -201,7 +206,6 @@ mpvctui_notify()
                 if (t - ot > 1)
                     system(cmd);
                 ot=systime()
-
                 print t, $0
             } '
 }
@@ -223,13 +227,14 @@ mpvctui_usage()
 optflags="d:jhstnpqx"
 mpvctui_main()
 {
-    [ $# -eq 0 ] && mpvctui_usage
     mpvctui_config
+    [ $# -eq 0 ] && mpvctui_usage
     while getopts "$optflags" flag;
     do
         case "$flag" in
         d) MPVC_DIR="$OPTARG"; cd "$MPVC_DIR" || return;;
         j) shift; mpvctui_jumptrack ;;
+        h) shift; mpvctui_usage ;;
         s) shift; mpvctui_seektrack ;;
         t) shift; mpvctui_watch "$@" ;;
         n) shift; mpvctui_notify "$@" ;;
