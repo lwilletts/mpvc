@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 #
 # @file mpvc-tui
 # @description mpvc tui, terminal user interface
@@ -168,6 +168,11 @@ mpvctui_iplay()
     mpvctui_iquery "$@" | fzf -m |  awk '{print $1}' | mpvc load
 }
 
+mpvctui_iplay_clear()
+{
+    mpvctui_iquery "$@" | fzf -m |  awk '{print $1}' | mpvc loadc
+}
+
 mpvctui_jumptrack()
 {
     track=$(mpvc gets playlist-pos)
@@ -229,6 +234,7 @@ mpvctui_main()
         t) shift; mpvctui_watch "$@" ;;
         n) shift; mpvctui_notify "$@" ;;
         p) shift; mpvctui_iplay "$@" ;;
+        P) shift; mpvctui_iplay_clear "$@" ;;
         q) shift; mpvctui_iquery "$@"; return;;
         x) shift; quiet command -v $MPVC_TERM && $MPVC_TERM -e "$0" "$@"; exit;;
         *) mpvctui_usage;;
