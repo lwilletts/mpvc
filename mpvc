@@ -297,7 +297,7 @@ loadPlaylist() {
     buffer=""
     while read -r line; do buffer="${buffer}\n${line}"; done
     [ -z "$buffer" ] && return
-    clearPlaylist
+    [ "$1" = "clear" ] && clearPlaylist
     printf "$buffer\n" | while read -r line; do appendTrack "$line"; done
 }
 
@@ -836,7 +836,8 @@ main() {
             -r|--remove|rm|remove|del)       shift; removeTrack "$1"        ;;
             -A|--playnext|playnext)          shift; playNext "$1"           ;;
             -o|--save|save)                  shift; savePlaylist "$1"       ;;
-            --load|load)                     shift; loadPlaylist "$1"       ;;
+            --load|load)                     shift; loadPlaylist            ;;
+            --loadc|loadc)                   shift; loadPlaylist "clear"    ;;
             --autosave|autosave)             shift; autoSavePlaylist "$1"; return   ;;
             --autoload|autoload)             shift; autoLoadPlaylist "$1"; return   ;;
             --lsplaylists|lsplaylists)       shift; listPlaylist "$1"; return       ;;
