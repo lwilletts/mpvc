@@ -178,13 +178,13 @@ mpvctui_jumptrack()
     mpvc fullplaylist |
         fzf --ansi --tac --reverse --no-sort \
             --query="^$(mpvc gets playlist-pos)\ " \
-            --bind='ctrl-r:toggle-preview+clear-screen' \
             --bind='ctrl-u:execute-silent(mpvc seek -20 &)' \
             --bind='ctrl-i:execute-silent(mpvc seek +20 &)' \
-            --bind='ctrl-o:execute(mpvc play {+n})' \
+            --bind='ctrl-o:execute(mpvc play {n})' \
+            --bind='ctrl-r:execute(mpvc del {n})' \
             --bind='ctrl-s:execute(mpvc-tui -d . -l)' \
             --bind='ctrl-space:execute-silent(mpvc toggle &)' \
-            --preview='mpvc' --preview-window='up:20%'
+            --preview='echo {n}; mpvc' --preview-window='up:20%'
 }
 
 mpvctui_load()
@@ -192,7 +192,8 @@ mpvctui_load()
     find . -type f,d |
         fzf -m --ansi --reverse --tac --no-sort \
             --bind='ctrl-r:toggle-preview+clear-screen' \
-            --preview="mpvc" --preview-window='up:20%' | mpvc load
+            --preview="mpvc" --preview-window='up:20%' |
+        mpvc load
 }
 
 mpvctui_notify()
