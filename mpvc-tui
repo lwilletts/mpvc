@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 #
 # @file mpvc-tui
-# @description mpvc tui, terminal user interface
+# @description mpvc tui, mpv terminal user interface
 # @author gmt4 <gmt4 at github.com> (c) Copyright 2022.
 # @url github.com/gmt4/mpvc
 #
@@ -150,7 +150,7 @@ mpvctui_watch()
 
 mpvctui_iquery()
 {
-    url_search="https://yewtu.be/search?q=$(for f in "$@"; do printf "$f+"; done)"
+    url_search="https://yewtu.be/search?q=$(for f in "$@"; do printf "%s+" "$f"; done)"
     echo "$url_search"
     curl -sL "$url_search" |
     awk '
@@ -175,25 +175,24 @@ mpvctui_iplay_clear()
 
 mpvctui_jumptrack()
 {
-    track=$(mpvc gets playlist-pos)
     mpvc fullplaylist |
-        fzf --ansi --tac --no-sort --query="^$track\ " \
-            --bind 'ctrl-f:execute-silent(mpvc seek +20 &)' \
-            --bind 'ctrl-b:execute-silent(mpvc seek -20 &)' \
-            --bind 'ctrl-space:execute-silent(mpvc toggle &)' \
-            --preview='mpvc play {+1}' --preview-window=up:20%
-            #--bind 'ctrl-+:execute-silent(mpvc vol -10 &)' \
-            #--bind 'ctrl--:execute-silent(mpvc vol -10 &)' \
+        fzf --ansi --tac --reverse --no-sort \
+            --query="^$(mpvc gets playlist-pos)\ " \
+            --bind='ctrl-r:toggle-preview+clear-screen' \
+            --bind='ctrl-u:execute-silent(mpvc seek -20 &)' \
+            --bind='ctrl-i:execute-silent(mpvc seek +20 &)' \
+            --bind='ctrl-o:execute(mpvc play {+n})' \
+            --bind='ctrl-s:execute(mpvc-tui -d . -l)' \
+            --bind='ctrl-space:execute-silent(mpvc toggle &)' \
+            --preview='mpvc' --preview-window='up:20%'
 }
 
-mpvctui_seektrack()
+mpvctui_load()
 {
-    pct=$(mpvc gets percent-pos)
-    preview='mpvc sets percent-pos {+1}; mpvc status'
-    (
-        seq 0 99
-        echo "$pct"
-    ) | sort -n | fzf --ansi --tac --no-sort --query="$pct" --preview="$preview" --preview-window=up:20%
+    find . -type f,d |
+        fzf -m --ansi --reverse --tac --no-sort \
+            --bind='ctrl-r:toggle-preview+clear-screen' \
+            --preview="mpvc" --preview-window='up:20%' | mpvc load
 }
 
 mpvctui_notify()
@@ -216,7 +215,6 @@ mpvctui_usage()
     echo "  -t : Starts the TUI $PROGNAME"
     echo "  -d : Move to the directory given as argument"
     echo "  -j : Jump to the selected media from the playlist"
-    echo "  -s : Seek time on the currently playing media"
     echo "  -q : Search for media using Invidious"
     echo "  -p : Search & play media found using Invidious"
     echo "  -n : Desktop notification using notify-send on mpvc events"
@@ -224,7 +222,7 @@ mpvctui_usage()
     exit;
 }
 
-optflags="d:jhstnpqx"
+optflags="d:jhtlnpqx"
 mpvctui_main()
 {
     mpvctui_config
@@ -235,9 +233,9 @@ mpvctui_main()
         d) MPVC_DIR="$OPTARG"; cd "$MPVC_DIR" || return;;
         j) shift; mpvctui_jumptrack ;;
         h) shift; mpvctui_usage ;;
-        s) shift; mpvctui_seektrack ;;
         t) shift; mpvctui_watch "$@" ;;
         n) shift; mpvctui_notify "$@" ;;
+        l) shift; mpvctui_load "$@";;
         p) shift; mpvctui_iplay "$@" ;;
         P) shift; mpvctui_iplay_clear "$@" ;;
         q) shift; mpvctui_iquery "$@"; return;;
