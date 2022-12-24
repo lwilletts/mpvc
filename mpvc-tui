@@ -8,6 +8,7 @@
 
 PROGNAME=$(basename "$0");
 PROGVERSION=v1.0;
+PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
 SITEURL="https://gmt4.github.io/mpvc"
 
@@ -62,6 +63,14 @@ mpvctui_config()
     fi
     if ! quiet command -v rlwrap; then
         mpvctui_warn "$PROGNAME: Warning: No rlwrap, Install to get history, filename & completion support!"
+        sleep 1
+    fi
+    if ! quiet command -v fzf; then
+        mpvctui_warn "$PROGNAME: Warning: No fzf, Install to get fuzzy media search & play support!"
+        sleep 1
+    fi
+    if ! quiet command -v notify-send; then
+        mpvctui_warn "$PROGNAME: Warning: No notify-send, Install to get mpv desktop notifications"
         sleep 1
     fi
 }
@@ -148,7 +157,7 @@ mpvctui_watch()
     done
 }
 
-mpvctui_iquery()
+mpvctui_isearch()
 {
     url_search="https://yewtu.be/search?q=$(for f in "$@"; do printf "%s+" "$f"; done)"
     echo "$url_search"
@@ -165,32 +174,28 @@ mpvctui_iquery()
 
 mpvctui_iplay()
 {
-    mpvctui_iquery "$@" | fzf -m |  awk '{print $1}' | mpvc load
+    mpvctui_isearch "$@" | fzf -m |  awk '{print $1}'
 }
 
-mpvctui_iplay_clear()
-{
-    mpvctui_iquery "$@" | fzf -m |  awk '{print $1}' | mpvc loadc
-}
-
-mpvctui_jumptrack()
+mpvctui_fzf()
 {
     mpvc fullplaylist |
-        fzf --ansi --tac --reverse --no-sort \
+        fzf --ansi --reverse --no-sort \
             --query="^$(mpvc gets playlist-pos)\ " \
+            --bind='ctrl-space:execute-silent(mpvc toggle &)' \
             --bind='ctrl-u:execute-silent(mpvc seek -20 &)' \
             --bind='ctrl-i:execute-silent(mpvc seek +20 &)' \
-            --bind='ctrl-o:execute(mpvc play {n})' \
-            --bind='ctrl-r:execute(mpvc del {n})' \
+            --bind='ctrl-o:execute-silent(mpvc play {n} &)' \
+            --bind='ctrl-r:execute-silent(mpvc del {n} &)' \
             --bind='ctrl-s:execute(mpvc-tui -d . -l)' \
-            --bind='ctrl-space:execute-silent(mpvc toggle &)' \
-            --preview='echo {n}; mpvc' --preview-window='up:20%'
+            --preview='echo '$PROGNAME' fzf help: ctrl-o:play ctrl-r:del ctrl-s:add ctrl-space:toggle; mpvc' \
+            --preview-window='up:20%'
 }
 
 mpvctui_load()
 {
     find . -type f,d |
-        fzf -m --ansi --reverse --tac --no-sort \
+        fzf -m --ansi --reverse --no-sort \
             --bind='ctrl-r:toggle-preview+clear-screen' \
             --preview="mpvc" --preview-window='up:20%' |
         mpvc load
@@ -212,18 +217,19 @@ mpvctui_notify()
 
 mpvctui_usage()
 {
-    echo "usage: $PROGNAME -[$optflags] cmd # @version $PROGVERSION $PROGURL";
-    echo "  -t : Starts the TUI $PROGNAME"
-    echo "  -d : Move to the directory given as argument"
-    echo "  -j : Jump to the selected media from the playlist"
-    echo "  -q : Search for media using Invidious"
-    echo "  -p : Search & play media found using Invidious"
-    echo "  -n : Desktop notification using notify-send on mpvc events"
+    echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL";
+    echo "  -t : Starts the $PROGNAME to monitor the mpv playlist (rlwrap*)"
+    echo "  -d : Set the WD to the media directory given as argument"
+    echo "  -f : Start fzf to manage the current mpv playist (fzf*)"
+    echo "  -q : Search for media using Invidious (fzf*)"
+    echo "  -p : Search & play media found using Invidious  (fzf*)"
+    echo "  -n : Desktop notification using notify on mpvc events (notify-send*)"
     echo "  -x : Starts $PROGNAME in a new $MPVC_TERM (config \$MPVC_TERM) [combine -x with $optflags]"
+    echo "*tips: If unsure about where to begin, start with: $PROGNAME -d /path/to/media/ -f # or -t"
     exit;
 }
 
-optflags="d:jhtlnpqx"
+optflags="d:fhstnplx"
 mpvctui_main()
 {
     mpvctui_config
@@ -232,14 +238,14 @@ mpvctui_main()
     do
         case "$flag" in
         d) MPVC_DIR="$OPTARG"; cd "$MPVC_DIR" || return;;
-        j) shift; mpvctui_jumptrack ;;
+        f) shift; mpvctui_fzf ;;
         h) shift; mpvctui_usage ;;
         t) shift; mpvctui_watch "$@" ;;
         n) shift; mpvctui_notify "$@" ;;
         l) shift; mpvctui_load "$@";;
-        p) shift; mpvctui_iplay "$@" ;;
-        P) shift; mpvctui_iplay_clear "$@" ;;
-        q) shift; mpvctui_iquery "$@"; return;;
+        p) shift; mpvctui_iplay "$@" | mpvc load ;;
+        P) shift; mpvctui_iplay "$@" | mpvc loadc ;;
+        s) shift; mpvctui_isearch "$@"; return;;
         x) shift; quiet command -v $MPVC_TERM && $MPVC_TERM -e "$0" "$@"; exit;;
         *) mpvctui_usage;;
         esac
