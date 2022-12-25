@@ -5,7 +5,9 @@ addition to GNU style arguments. [Check out the mpc manpage for details.](http:/
 
 ![TUI screenshot](https://github.com/gmt4/mpvc/blob/master/docs/mpvc-tui.png)
 
-![TUI Arch screenshot](https://github.com/gmt4/mpvc/blob/master/docs/mpvc-tui-arch.png)
+![TUI arch screenshot](https://github.com/gmt4/mpvc/blob/master/docs/mpvc-tui-arch.png)
+
+![TUI fzf screenshot](https://github.com/gmt4/mpvc/blob/master/docs/mpvc-tui-fzf.png)
 
 ## Dependencies
 
