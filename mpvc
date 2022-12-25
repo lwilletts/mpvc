@@ -503,8 +503,12 @@ togglePause() {
     quiet socketCommand "cycle-values" "pause" "yes" "no"
 }
 
-toggleVideo() {
+toggleWindow() {
     quiet socketCommand "cycle-values" "force-window" "yes" "no"
+}
+
+toggleVideo() {
+    quiet socketCommand "cycle" "video"
 }
 
 toggleMute() {
@@ -829,6 +833,7 @@ main() {
             --sets|sets|ss)                  shift; socketCommand set_property_string "$@"; return;;
             --gets|gets|gs)                  shift; socketCommand get_property_string "$@"; return;;
             --togglev|togglev)               toggleVideo                    ;;
+            --togglew|togglew)               toggleWindow                   ;;
 
             -k|--kill|kill)                  killSocket                     ;;
             -K|--killall|killall)            killAllMpv                     ;;
