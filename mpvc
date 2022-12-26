@@ -63,17 +63,15 @@ Exit codes:
     3: Socket is not currently open.
     4: Dependency error.
 EOF
-    exit "$1"
 }
 
 equiet() { "$@" 2> /dev/null; }
 oquiet() { "$@" 1> /dev/null; }
 quiet()  { "$@" > /dev/null 2>&1; }
+quietcheck(){ if [ "$QUIETFLAG" = "true" ]; then quiet "$@"; else "$@"; fi; }
+
 warn()   { echo "$@" >&2; }
 eeprintf() { e=$1; shift; warn "$@"; exit "$e"; }
-
-_sockcmd() { echo "$@" | $MPVC_SOCKETCMD; }
-sockcmd()  { oquiet _sockcmd "$@"; }
 
 mpvc_defaults()
 {
@@ -122,14 +120,14 @@ cleanFilename() {
 
 # fn args: media-title, filename, path
 getMediaProperties() {
-    socketCommand "get_property" "$1" | escapeChars '[&#]'
+    mpvc_cmd "get_property" "$1" | escapeChars '[&#]'
 }
 
 # fn args: date, genre, title, album, artist, album_artist
 getMetadata() {
     cmd="metadata/by-key/$1"
     [ "$1" = "title" ] && cmd=media-title
-    metadata=$(getProperty "$cmd")
+    metadata=$(mpvc_get "$cmd")
     case "$metadata" in
         '') result="N/A" ;;
         *)  result=$(cleanFilename "$metadata")
@@ -137,7 +135,7 @@ getMetadata() {
     echo "$result" | escapeChars '[&#]'
 }
 
-getJSONField() {
+mpvc_getjson() {
     awk -F ',"' -v jf="$1" '{
         gsub("[{}]", "");
         for (i=1; i<=NF; i++){
@@ -146,20 +144,22 @@ getJSONField() {
     }'
 }
 
-socketCommand() {
+mpvc_sockcmd_() { echo "$@" | $MPVC_SOCKETCMD; }
+mpvc_sockcmd()  { oquiet mpvc_sockcmd_ "$@"; }
+mpvc_cmd() {
     command=$(for i in "$@"; do printf "\"$i\", "; done)
-    equiet _sockcmd "{ \"command\": [ $command ] }" | getJSONField '"data":'
+    equiet mpvc_sockcmd_ "{ \"command\": [ $command ] }" | mpvc_getjson '"data":'
 }
 
 # fn args: mute, pause, loop-file, estimated-frame-number, width, height
-getProperty() {
-    socketCommand "get_property" "$1"
+mpvc_get() {
+    mpvc_cmd "get_property" "$1"
 }
 
 # fn args: filename, idle-active, playlist-count, playlist-pos, playback-time,
 #          playtime-remaining, time-remaining, percent-pos, duration, volume
-getPropertyString() {
-    result=$(socketCommand "get_property_string" "$1")
+mpvc_gets() {
+    result=$(mpvc_cmd "get_property_string" "$1")
     case "$1" in
         volume|duration|percent-pos|playtime-remaining|playback-time)
             result="${result%%%}"
@@ -171,12 +171,12 @@ getPropertyString() {
 
 # fn args: speed
 getSpeed() {
-    getPropertyString "speed" | awk '{print substr ($0, 0, 4)}'
+    mpvc_gets "speed" | awk '{print substr ($0, 0, 4)}'
 }
 
 # fn args: loop-file, loop-playlist
 getLoopStatus() {
-    status=$(getProperty "$1")
+    status=$(mpvc_get "$1")
     case "$status" in
         true|inf) loop="yes" ;;
         false)    loop="no"  ;;
@@ -186,7 +186,7 @@ getLoopStatus() {
 }
 
 getMuteStatus() {
-    muted="$(getProperty mute)"
+    muted="$(mpvc_get mute)"
     case "$muted" in
         true)  muted="yes" ;;
         false) muted="no"  ;;
@@ -196,7 +196,7 @@ getMuteStatus() {
 }
 
 getPauseStatus() {
-    status="$(getProperty pause)"
+    status="$(mpvc_get pause)"
     case "$status" in
         true)  status="paused"  ;;
         false) status="playing" ;;
@@ -206,7 +206,7 @@ getPauseStatus() {
 }
 
 getPlaylistOnce() {
-    socketCommand "get_property_string" "playlist" |
+    mpvc_cmd "get_property_string" "playlist" |
     awk '
         BEGIN { RS="filename\\\\:" }
         {
@@ -220,7 +220,7 @@ getPlaylistOnce() {
 getPlaylistFilename() {
     track="$1"
     fullPath="$2"
-    filename=$(getPropertyString "playlist/$track/filename")
+    filename=$(mpvc_gets "playlist/$track/filename")
     [  "$fullPath" != "fullpath" ] && filename=$(cleanFilename "$filename")
     echo "$filename"
 }
@@ -229,8 +229,8 @@ getPlaylistFilename() {
 getPlaylist() {
     i=0
     fullPlaylist="$1"
-    tracks=$(getPropertyString playlist-count)
-    currentTrack=$(getPropertyString playlist-pos)
+    tracks=$(mpvc_gets playlist-count)
+    currentTrack=$(mpvc_gets playlist-pos)
 
     if [ -z "$tracks" ] || [ "$tracks" -eq 0 ]; then
         eeprintf 1 "Socket ${MPVC_SOCKET##$HOME/} is currently idle."
@@ -252,6 +252,7 @@ getPlaylist() {
         fi
         i=$(( $i + 1 ))
     done
+    QUIETFLAG="true"
 }
 
 # open mpvc to retrieve all metadata from a playlist file
@@ -330,7 +331,7 @@ appendTrack() {
         startMpvd --really-quiet --idle=once
     fi
     if [ -n "$filename" ]; then
-        quiet socketCommand "loadfile" "$filename" "append-play"
+        quiet mpvc_cmd "loadfile" "$filename" "append-play"
         echo "Adding: $(cleanFilename "$filename")"
     fi
 }
@@ -348,21 +349,21 @@ appendTracks() {
 }
 
 playNext() {
+    QUIETFLAG="true"
     # add track to the playlist
     appendTrack "$1"
     # find position of track to move
-    trackToMove="$(getPropertyString playlist-count)"
+    trackToMove="$(( $(mpvc_gets playlist-count) - 1 ))"
     # find position of current track
-    newTrackPosition="$(getPropertyString playlist-pos)"
-    QUIETFLAG="true"
+    newTrackPosition="$(( $(mpvc_gets playlist-pos) + 1 ))"
     # set position of next track
-    moveTrack "$trackToMove" "$((newTrackPosition + 1))"
+    moveTrack "$trackToMove" "$newTrackPosition"
 }
 
 setTimeRelative() {
-    time=$(getPropertyString playback-time)
+    time=$(mpvc_gets playback-time)
     case "$1" in
-        *%*) sockcmd '{ "command": ["set_property", "percent-pos", '"${1%%%}"' ] }'; return ;;
+        *%*) mpvc_cmd "set_property_string" "percent-pos" "${1%%%}"; return ;;
         -*) timeArg=${1##-}; minusFlag=true ;;
         +*) timeArg=${1##+}; minusFlag=false ;;
         *)  timeArg=$1 ;;
@@ -372,23 +373,23 @@ setTimeRelative() {
         true) time=$((time - timeSec)) ;;
         *)    time=$((time + timeSec)) ;;
     esac
-    sockcmd '{ "command": ["set_property", "playback-time", '$time' ] }'
+    mpvc_cmd "set_property_string" "percent-pos" "$time"
 }
 
 setTimeAbsolute() {
     timeSec=$(parseTimeString "$1") || exit $?
-    trackTime=$(getPropertyString duration)
+    trackTime=$(mpvc_gets duration)
     if [ "$timeSec" -ge "$trackTime" ]; then
         echo "Given time is greater than track length! ($(getTrackLength))"
         QUIETFLAG="true"
         return 1
     fi
-    sockcmd '{ "command": [ "set_property", "playback-time", '"$timeSec"' ] }'
+    mpvc_cmd "set_property_string" "playback-time" "$timeSec"
 }
 
 setVolume () {
     isInt "$1" || exit 1
-    volume=$(getPropertyString volume)
+    volume=$(mpvc_gets volume)
     [ "$volume" = "error" ] && eeprintf 1 "Currently playing media does not have sound."
     case "$2" in
         relative) volume=$((volume + $1)) ;;
@@ -396,7 +397,7 @@ setVolume () {
     esac
     [ "$volume" -lt 0 ] && eeprintf 1 "Volume cannot be set lower than 0%"
     [ "$volume" -gt 130 ] && eeprintf 1 "Volume cannot be set great than 130%"
-    sockcmd '{ "command": ["set_property", "volume", '"$volume"' ] }'
+    mpvc_cmd "set_property_string" "volume" "$volume"
 }
 
 setSpeed() {
@@ -406,13 +407,13 @@ setSpeed() {
         absolute) speed=$1 ;;
         relative) speed=$(echo "$speed $1" | awk '{print $1 + $2}') ;;
     esac
-    sockcmd '{ "command": ["set_property_string", "speed", "'"$speed"'" ] }'
+    mpvc_cmd "set_property_string" "speed" "$speed"
 }
 
 setTrack() {
     isInt "$1" || exit 1
-    currentTrack=$(getPropertyString playlist-pos)
-    trackCount=$(getPropertyString playlist-count)
+    currentTrack=$(mpvc_gets playlist-pos)
+    trackCount=$(mpvc_gets playlist-count)
     [ "$currentTrack" = "null" ] && currentTrack=0
     case "$2" in
         absolute) newTrack=$1 ;;
@@ -420,38 +421,34 @@ setTrack() {
             newTrack=$((currentTrack + $1))
             # if time is greater than 10 seconds, set time to 0
             if [ "$newTrack" -lt "$currentTrack" ]; then
-                seconds=$(getPropertyString playback-time)
+                seconds=$(mpvc_gets playback-time)
                 [ "$seconds" -ge 10 ] && setTimeAbsolute 0 && return
             fi
             if [ "$newTrack" -ge "$trackCount" ]; then
-                repeat=$(getLoopStatus loop-playlist)
-                [ "$repeat" = "yes" ] && newTrack=0
+                [ "$(getLoopStatus loop-playlist)" = "yes" ] && newTrack=0
             fi
             if [ "$newTrack" -lt 0 ]; then
-                repeat=$(getLoopStatus loop-file)
-                if [ "$repeat" = "yes" ]; then
-                    newTrack=$trackCount
-                else
-                    newTrack=0
-                fi
+                newTrack=0
+                [ "$(getLoopStatus loop-file)" = "yes" ] && newTrack=$trackCount
             fi
         ;;
     esac
     if [ "$newTrack" -lt 0 ] || [ "$newTrack" -ge "$trackCount" ]; then
         eeprintf 1 "Item $newTrack is out of range of playlist."
     fi
-    equiet socketCommand "set_property" "playlist-pos" "$newTrack"
+    quiet mpvc_cmd "set_property" "playlist-pos" "$newTrack"
 }
 
 moveTrack() {
     isInt "$1" || exit 1
+    QUIETFLAG="true"
     if [ -z "$2" ]; then
-        trackToMove=$(getPropertyString playlist-pos)
+        trackToMove=$(mpvc_gets playlist-pos)
         newTrackPosition=$1
     else
         trackToMove=$1
         newTrackPosition=$2
-        trackCount=$(getPropertyString playlist-count)
+        trackCount=$(mpvc_gets playlist-count)
         if [ "$trackToMove" -lt 0 ] || [ "$trackToMove" -ge "$trackCount" ]; then
             eeprintf 1 "Item $trackToMove is out of range of playlist."
         fi
@@ -460,91 +457,81 @@ moveTrack() {
     [ "$newTrackPosition" -lt 0 ] &&
         eeprintf 1 "Position $newTrackPosition is out of range of playlist."
     [ "$newTrackPosition" -eq 1 ] && newTrackPosition=0
-    equiet socketCommand "playlist-move" "$trackToMove" "$newTrackPosition"
+    quiet mpvc_cmd "playlist-move" "$trackToMove" "$newTrackPosition"
 
-    if [ "$QUIETFLAG" != "true" ]; then
-        getPlaylist
-        QUIETFLAG="true"
-    fi
+    quietcheck getPlaylist
 }
 
 removeTrack() {
     trackId=$1
     if [ "$trackId" = "current" ]; then
-        oquiet socketCommand "playlist-remove" "$trackId"
-    else
-        isInt "$trackId" || return 1
-        trackCount=$(getPropertyString playlist-count)
-        if [ -z "$trackCount" ] || [ "$trackId" -lt 0 ] || [ "$trackId" -ge "$trackCount" ]; then
-            warn "Item $trackId is out of range of playlist."
-        fi
-        filename="$(getPlaylistFilename $trackId)"
-        oquiet socketCommand "playlist-remove" "$trackId"
+        oquiet mpvc_cmd "playlist-remove" "$trackId"
+        return;
     fi
 
-    if [ "$QUIETFLAG" != "true" ]; then
-        warn "$filename has been removed from the playlist."
+    isInt "$trackId" || return 1
+    trackCount=$(mpvc_gets playlist-count)
+    if [ -z "$trackCount" ] || [ "$trackId" -lt 0 ] || [ "$trackId" -ge "$trackCount" ]; then
+        warn "Item $trackId is out of range of playlist."
     fi
+    filename="$(getPlaylistFilename $trackId)"
+    oquiet mpvc_cmd "playlist-remove" "$trackId"
+    quietcheck warn "$filename has been removed from the playlist."
 }
 
 alwaysPlay() {
-    currentTrack=$(getPropertyString playlist-pos)
+    currentTrack=$(mpvc_gets playlist-pos)
     if [ "$currentTrack" = "null" ]; then
         setTrack 0 absolute; return
     fi
-    equiet socketCommand "set_property_string" "pause" "no"
+    quiet mpvc_cmd "set_property_string" "pause" "no"
 }
 
 setPause() {
-    sockcmd '{ "command": ["set_property", "pause", '"$1"' ] }'
+    mpvc_sockcmd '{ "command": ["set_property", "pause", '"$1"' ] }'
 }
 
 togglePause() {
-    quiet socketCommand "cycle-values" "pause" "yes" "no"
+    quiet mpvc_cmd "cycle-values" "pause" "yes" "no"
 }
 
 toggleWindow() {
-    quiet socketCommand "cycle-values" "force-window" "yes" "no"
+    quiet mpvc_cmd "cycle-values" "force-window" "yes" "no"
 }
 
 toggleVideo() {
-    quiet socketCommand "cycle" "video"
+    quiet mpvc_cmd "cycle" "video"
 }
 
 toggleMute() {
-    if [ -n "$1" ]; then quiet socketCommand "set_property_string" "mute" "$1";
-    else quiet socketCommand "cycle-values" "mute" "yes" "no"; fi
+    [ -n "$1" ] && quiet mpvc_cmd "set_property_string" "mute" "$1" && return
+    quiet mpvc_cmd "cycle-values" "mute" "yes" "no"
 }
 
 toggleLoopFile() {
-    if [ -n "$1" ]; then quiet socketCommand "set_property_string" "loop-file" "$1";
-    else quiet socketCommand "cycle-values" "loop-file" "yes" "no"; fi
+    [ -n "$1" ] && quiet mpvc_cmd "set_property_string" "loop-file" "$1" && return
+    quiet mpvc_cmd "cycle-values" "loop-file" "yes" "no"
 }
 
 toggleLoopPlaylist() {
-    if [ -n "$1" ]; then quiet socketCommand "set_property_string" "loop-playlist" "$1";
-    else quiet socketCommand "cycle-values" "loop-playlist" "yes" "no"; fi
+    [ -n "$1" ] && quiet mpvc_cmd "set_property_string" "loop-playlist" "$1" && return
+    quiet mpvc_cmd "cycle-values" "loop-playlist" "yes" "no"
 }
 
 shufflePlaylist() {
-    quiet socketCommand "playlist-shuffle"
-    if [ "$QUIETFLAG" != "true" ]; then
-        echo "Playlist shuffled."
-        QUIETFLAG="true"
-    fi
+    QUIETFLAG="true"
+    quiet mpvc_cmd "playlist-shuffle"
+    echo "Playlist shuffled."
     [ "$(getLoopStatus loop-playlist)" != "yes" ] && toggleLoopPlaylist inf
 }
 
 cropPlaylist() {
-    quiet socketCommand "playlist-clear"
-    if [ "$QUIETFLAG" != "true" ]; then
-        getPlaylist
-        QUIETFLAG="true"
-    fi
+    QUIETFLAG="true"
+    quiet mpvc_cmd "playlist-clear"
+    quietcheck getPlaylist
 }
 
 clearPlaylist() {
-    QUIETFLAG="true"
     # kill any running process of mpvc add
     quiet pgrep -f "mpvc add" && pkill -f "mpvc add"
     cropPlaylist
@@ -554,7 +541,7 @@ clearPlaylist() {
 
 # quit mpv process on given socket
 killSocket() {
-    quiet socketCommand "quit"
+    quiet mpvc_cmd "quit"
     exit
 }
 
@@ -567,24 +554,24 @@ killAllMpv() {
 ## Time Functions #############################################################
 
 getElapsedTime() {
-    time=$(getPropertyString playback-time)
+    time=$(mpvc_gets playback-time)
     formatTime "$time"
 }
 
 getElapsedTimePrecise() {
-    time=$(getPropertyString playback-time 0.0)
+    time=$(mpvc_gets playback-time 0.0)
     bigTime=${time%%.*}
     tinyTime=${time#*.}
     formatTime "$bigTime" "$tinyTime"
 }
 
 getTrackLength() {
-    duration=$(getPropertyString duration)
+    duration=$(mpvc_gets duration)
     formatTime "$duration"
 }
 
 playtimeRemaining() {
-    playtime=$(getPropertyString playtime-remaining)
+    playtime=$(mpvc_gets playtime-remaining)
     formatTime "$playtime"
 }
 
@@ -625,37 +612,36 @@ formatPrint() {
         (*%speed%*) F=$(echo "$F" | sed "s#%speed%#$(getSpeed)#g") ;;
         (*%time%*) F=$(echo "$F" | sed "s#%time%#$(getElapsedTime)#g") ;;
         (*%precisetime%*) F=$(echo "$F" | sed "s#%precisetime%#$(getElapsedTimePrecise)#g") ;;
-        (*%playback-time%*) F=$(echo "$F" | sed "s#%playback-time%#$(getProperty playback-time)#g") ;;
-        (*%volume%*) F=$(echo "$F" | sed "s#%volume%#$(getPropertyString volume)#g") ;;
+        (*%playback-time%*) F=$(echo "$F" | sed "s#%playback-time%#$(mpvc_get playback-time)#g") ;;
+        (*%volume%*) F=$(echo "$F" | sed "s#%volume%#$(mpvc_gets volume)#g") ;;
         (*%length%*) F=$(echo "$F" | sed "s#%length%#$(getTrackLength)#g") ;;
         (*%remaining%*) F=$(echo "$F" | sed "s#%remaining%#$(playtimeRemaining)#g") ;;
         (*%muted%*) F=$(echo "$F" | sed "s#%muted%#$(getMuteStatus)#g") ;;
-        (*%percentage%*) F=$(echo "$F" | sed "s#%percentage%#$(getPropertyString percent-pos)#g") ;;
+        (*%percentage%*) F=$(echo "$F" | sed "s#%percentage%#$(mpvc_gets percent-pos)#g") ;;
         (*%name%*) F=$(echo "$F" | sed "s#%name%#$(getMediaProperties filename)#g") ;;
         (*%path%*) F=$(echo "$F" | sed "s#%path%#$(getMediaProperties path)#g") ;;
-        (*%dir%*) F=$(echo "$F" | sed "s#%dir%#$(getPropertyString working-directory)#g") ;;
+        (*%dir%*) F=$(echo "$F" | sed "s#%dir%#$(mpvc_gets working-directory)#g") ;;
         (*%repeat%*) F=$(echo "$F" | sed "s#%repeat%#$(getLoopStatus loop-playlist)#g") ;;
         (*%single%*) F=$(echo "$F" | sed "s#%single%#$(getLoopStatus loop-file)#g") ;;
-        (*%playlistlength%*) F=$(echo "$F" | sed "s#%playlistlength%#$(getPropertyString playlist-count)#g") ;;
-        (*%position%*) F=$(echo "$F" | sed "s#%position%#$(($(getPropertyString playlist-pos) + 1))#g") ;;
-        (*%frame%*) F=$(echo "$F" | sed "s#%frame%#$(getProperty estimated-frame-number)#g") ;;
-        (*%width%*) F=$(echo "$F" | sed "s#%width%#$(getProperty width)#g") ;;
-        (*%height%*) F=$(echo "$F" | sed "s#%height%#$(getProperty height)#g") ;;
-        (*%ab-loop-a%*) F=$(echo "$F" | sed "s#%ab-loop-a%#$(getPropertyString ab-loop-a)#g") ;;
-        (*%ab-loop-b%*) F=$(echo "$F" | sed "s#%ab-loop-b%#$(getPropertyString ab-loop-b)#g") ;;
+        (*%playlistlength%*) F=$(echo "$F" | sed "s#%playlistlength%#$(mpvc_gets playlist-count)#g") ;;
+        (*%position%*) F=$(echo "$F" | sed "s#%position%#$(($(mpvc_gets playlist-pos) + 1))#g") ;;
+        (*%frame%*) F=$(echo "$F" | sed "s#%frame%#$(mpvc_get estimated-frame-number)#g") ;;
+        (*%width%*) F=$(echo "$F" | sed "s#%width%#$(mpvc_get width)#g") ;;
+        (*%height%*) F=$(echo "$F" | sed "s#%height%#$(mpvc_get height)#g") ;;
+        (*%ab-loop-a%*) F=$(echo "$F" | sed "s#%ab-loop-a%#$(mpvc_gets ab-loop-a)#g") ;;
+        (*%ab-loop-b%*) F=$(echo "$F" | sed "s#%ab-loop-b%#$(mpvc_gets ab-loop-b)#g") ;;
         esac
     done
     echo "${F}"
 }
 
-# catches if mpv is idle or not
 printFinalOutput() {
-    if [ "$QUIETFLAG" != "true" ] && [ "$(getPropertyString idle-active)" = "yes" ]; then
-        warn "MPV on ${MPVC_SOCKET##$HOME/} is currently idle."
-    else
-        formatPrint
-        exit
+    [ "$QUIETFLAG" = "true" ] && return
+    # catches if mpv is idle or not
+    if [ "$(mpvc_gets idle-active)" = "yes" ]; then
+        warn "MPV on ${MPVC_SOCKET##$HOME/} is currently idle."; return
     fi
+    formatPrint
 }
 
 ## Misc Functions #############################################################
@@ -724,25 +710,24 @@ validateSocket() {
 getVersion() {
     mpv --version
     echo "MPVC Release $PROGVERSION (c) Laurence Willetts MIT"
-    exit
 }
 
-do_idleloop() {
-    socketCommand "unobserve_property" 1
-    socketCommand "observe_property" 1 "$@"
+mpvc_idleloop() {
+    mpvc_cmd "unobserve_property" 1
+    mpvc_cmd "observe_property" 1 "$@"
     socat -t0 -,ignoreeof "$MPVC_SOCKET"
 }
 
 startMpvd() {
     exec mpv --input-ipc-server="$MPVC_SOCKET" $MPVOPTIONS "$@" &
     # wait until mpv starts up
-    until [ -n "$(getPropertyString idle-active)" ]; do sleep 0.1; done
+    until [ -n "$(mpvc_gets idle-active)" ]; do sleep 0.1; done
 }
 
 main() {
     mpvc_config
     case "$1" in
-        -a|add|append|mpv|--mpv|cmd|sockcmd) ;;
+        -a|add|append|-A|playnext|--playnext|mpv|--mpv|cmd|sockcmd|-q|--quiet) ;;
         load|--load|autoload|--autoload|lsplaylists|--lsplaylists|dbinit|--dbinit|dblist|--dblist) ;;
         version|--version|help|--help|-h|--list-options|-Q|--vid=no|-S) ;;
         *) validateSocket;; # otherwise, validate socket
@@ -757,11 +742,10 @@ main() {
                 shift
                 case "$1" in
                     0) setTrack 0 absolute;;
-                    $) setTrack "$(( $(getPropertyString playlist-count) - 1 ))" absolute;;
+                    $) setTrack "$(( $(mpvc_gets playlist-count) - 1 ))" absolute;;
                     *) isInt "$1" && setTrack "$1" absolute;;
                 esac
                 alwaysPlay
-                printFinalOutput
             ;;
             vol|volume)
                 shift
@@ -771,7 +755,6 @@ main() {
                     -*) setVolume "$1" relative ;;
                     *)  setVolume "$1" absolute ;;
                 esac
-                printFinalOutput
             ;;
             repeat)
                 shift
@@ -780,7 +763,6 @@ main() {
                     off) toggleLoopPlaylist no  ;;
                     *)   toggleLoopPlaylist     ;;
                 esac
-                printFinalOutput
             ;;
             single)
                 shift
@@ -789,7 +771,6 @@ main() {
                     off) toggleLoopFile no  ;;
                     *)   toggleLoopFile     ;;
                 esac
-                printFinalOutput
             ;;
             metadata) shift; getFilenameMetadata "$1" ;;
             pause)    setPause true       ; printFinalOutput ;;
@@ -800,9 +781,6 @@ main() {
             unmute)   toggleMute no      ; printFinalOutput ;;
             pretty)   eeprintf 1 "$PROGNAME: $* not implemented" ;;
             find)     eeprintf 1 "$PROGNAME: $* not implemented" ;;
-            idleloop) do_idleloop "$@"; return ;;
-            cmd)      shift; socketCommand "$@"; return ;;
-            sockcmd)  shift; _sockcmd "$1"; return ;;
 
             add|-a|--append) appendTracks "$@"; shift "$((shiftcount+1))" ;;
             mpv|--mpv)       startMpvd --idle=yes --input-terminal; return;;
@@ -820,20 +798,24 @@ main() {
             -J|--tracknum)                   shift; setTrack "$1" absolute  ;;
             -r|--remove|rm|remove|del)       shift; removeTrack "$1"        ;;
             -A|--playnext|playnext)          shift; playNext "$1"           ;;
-            -o|--save|save)                  shift; savePlaylist "$1"       ;;
-            --load|load)                     shift; loadPlaylist            ;;
-            --loadc|loadc)                   shift; loadPlaylist "clear"    ;;
+            -o|--save|save)                  shift; quietcheck savePlaylist "$1"       ;;
+            --load|load)                     shift; quietcheck loadPlaylist            ;;
+            --loadc|loadc)                   shift; quietcheck loadPlaylist "clear"    ;;
+
             --autosave|autosave)             shift; autoSavePlaylist "$1"; return   ;;
             --autoload|autoload)             shift; autoLoadPlaylist "$1"; return   ;;
             --lsplaylists|lsplaylists)       shift; listPlaylist "$1"; return       ;;
             --dblist|dblist)                 shift; mpvc_dblist; return          ;;
             --dbinit|dbinit)                 shift; mpvc_dbinit; return          ;;
-            --get|get|g)                     shift; socketCommand get_property "$@"; return;;
-            --set|set|s)                     shift; socketCommand set_property "$@"; return;;
-            --sets|sets|ss)                  shift; socketCommand set_property_string "$@"; return;;
-            --gets|gets|gs)                  shift; socketCommand get_property_string "$@"; return;;
-            --togglev|togglev)               toggleVideo                    ;;
-            --togglew|togglew)               toggleWindow                   ;;
+            --cycle|cycle)                   shift; mpvc_cmd cycle "$@"; return;;
+            --set|set|s)                     shift; mpvc_cmd set_property "$@"; return;;
+            --sets|sets|ss)                  shift; mpvc_cmd set_property_string "$@"; return;;
+            --gets|gets|gs)                  shift; mpvc_cmd get_property_string "$@"; return;;
+            --togglev|togglev)               shift; toggleVideo             ;;
+            --togglew|togglew)               shift; toggleWindow            ;;
+            --idleloop|idleloop)             shift; mpvc_idleloop "$@"; return ;;
+            --cmd|cmd)                       shift; mpvc_cmd "$@"; return ;;
+            --sockcmd|sockcmd)               shift; mpvc_sockcmd "$1"; return ;;
 
             -k|--kill|kill)                  killSocket                     ;;
             -K|--killall|killall)            killAllMpv                     ;;
@@ -841,13 +823,13 @@ main() {
             -P|--play)                       alwaysPlay                     ;;
             -p|--toggle|toggle)              togglePause                    ;;
             -m|--mute)                       toggleMute                     ;;
-            -i|--playlist|playlist)          getPlaylist ""; exit;;
-            -I|--fullplaylist|fullplaylist)  getPlaylist "full"; exit;;
+            -i|--playlist|playlist)          getPlaylist "";                ;;
+            -I|--fullplaylist|fullplaylist)  getPlaylist "full";            ;;
             -L|--loop|loop)                  toggleLoopPlaylist             ;;
             -l|--loopfile|loopfile)          toggleLoopFile                 ;;
-            -z|--shuffle|shuffle)            shufflePlaylist                ;;
-            -c|--crop|crop)                  cropPlaylist                   ;;
-            -C|--clear|clear)                clearPlaylist                  ;;
+            -z|--shuffle|shuffle)            quietcheck shufflePlaylist     ;;
+            -c|--crop|crop)                  quietcheck cropPlaylist        ;;
+            -C|--clear|clear)                quietcheck clearPlaylist       ;;
 
             # global argument parsing
             -f|--format)                     shift; FORMATSTRING="$1"       ;;
@@ -858,14 +840,14 @@ main() {
             --mono|mono)                     COLOURFLAG=nocolour;           ;;
             --colour|colour)                 COLOURFLAG=colour;             ;;
             --version|version)               getVersion;                    ;;
-            --list-options)                  usage 0;                       ;;
-            -h|--help|h|help)                usage 0;                       ;;
-            -?)                              usage 1;                       ;;
+            --list-options)                  usage; exit 0;                 ;;
+            -h|--help|h|help)                usage; exit 0;                 ;;
+            -?)                              usage; exit 1;                 ;;
         esac
         [ -n "$1" ] && shift
     done
     # produce format strings last
-    [ "$QUIETFLAG" != "true" ] && printFinalOutput
+    quietcheck printFinalOutput
 }
 
-if [ "$QUIETFLAG" = "true" ]; then quiet main "$@"; else main "$@"; fi
+quietcheck main "$@";
