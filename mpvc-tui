@@ -139,7 +139,7 @@ mpvctui_input()
         'mpvc '*) QUIETFLAG=true $cmd;;
         'mpvc-tui '*) $cmd;;
         exit|quit|q) exit;;
-        *) echo 'mpvc: Type commands at "mpvc:" prompt, "q" to quit, also edit & reload';;
+        *) echo 'mpvc: Type commands at "mpvc:" prompt, "q" to quit';;
     esac
 }
 
@@ -192,17 +192,21 @@ mpvctui_fzf_preview()
         \
         --preview-window='up:20%' \
         --preview="echo $PROGNAME fzf help: \
-ctrl-o:play ctrl-x:fzf ctrl-\\\\:add ctrl-[rs]:seek-+ ctrl-v:yt ctrl-space:toggle; mpvc" \
+ctrl-o:play ctrl-x:fzf ctrl-\\\\:add ctrl-[rs]:seek-+ ctrl-v:yt ctrl-spc:toggle; \
+mpvc" \
         "$@"
-        #--bind='ctrl-r:execute-silent(mpvc del {n} &)' \
+        #--bind='ctrl-r:execute-silent(mpvc del {n} &)'
 }
 
 mpvctui_fzf()
 {
-    mpvc fullplaylist |
-        mpvctui_fzf_preview \
-            --query="^$(mpvc gets playlist-pos)\ " \
-
+    pos=$(mpvc gets playlist-pos)
+    len=$(mpvc gets playlist-count)
+    if [ -z "$len" ]; then
+        (echo ; mpvc fullplaylist) | mpvctui_fzf_preview
+    else
+        mpvc fullplaylist | mpvctui_fzf_preview --query="^$pos\ "
+    fi
 }
 
 mpvctui_notify()
@@ -233,7 +237,7 @@ mpvctui_usage()
     exit;
 }
 
-optflags="d:fhstnplx"
+optflags="d:fhstnpqlx"
 mpvctui_main()
 {
     mpvctui_config
@@ -249,6 +253,7 @@ mpvctui_main()
         l) shift; find -type f,d | mpvctui_fzf_preview -m | mpvc load ;;
         p) shift; mpvctui_iplay "$@" | mpvc load ;;
         P) shift; mpvctui_iplay "$@" | mpvc loadc ;;
+        q) shift; QUIETFLAG=true ;;
         s) shift; mpvctui_isearch "$@"; return;;
         x) shift; quiet command -v $MPVC_TERM && $MPVC_TERM -e "$0" "$@"; exit;;
         *) mpvctui_usage;;
