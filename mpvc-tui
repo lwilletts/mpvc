@@ -53,9 +53,11 @@ mpvctui_config()
     XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}
     MPVC_CONFIG="${MPVC_CONFIG:-$XDG_CONFIG_HOME/mpvc/mpvc-tui.conf}"
     MPVC_HISTORY="${MPVC_HISTORY:-$XDG_CONFIG_HOME/mpvc/mpvc-tui.history}"
+    MPVC_HISTORY_FZF="${MPVC_HISTORY_FZF:-$XDG_CONFIG_HOME/mpvc/mpvc-fzf.history}"
     # if not present, create config dir
     mkdir -p "$(dirname "$MPVC_CONFIG")"
     touch "$MPVC_HISTORY"
+    touch "$MPVC_HISTORY_FZF"
     # if present load user config
     if [ -r "$MPVC_CONFIG" ];
     then
@@ -194,11 +196,12 @@ mpvctui_fzf_playlist()
     ) | mpvctui_fzf_preview
 }
 
-mpvctui_fzf_help="C-x:list C-v:yt-add C-\\:add C-o:play C-d:del C-r:reload C-[st]:seek-+ C-spc:toggle"
+mpvctui_fzf_help="C-x:list C-v:yt-add C-\\:add C-o:play C-r:del C-r:reload C-[st]:seek-+ C-spc:toggle"
 mpvctui_fzf_preview()
 {
     # fzf keys: ctrl + [odstr\xv]
-    fzf --ansi --reverse --no-sort \
+    fzf \
+        --ansi --reverse --no-sort \
         --multi \
         --bind='ctrl-space:execute-silent(mpvc toggle &)' \
         --bind='ctrl-o:execute-silent(mpvc play {n} &)' \
@@ -213,6 +216,7 @@ mpvctui_fzf_preview()
         --preview-window='up:3' \
         --preview="mpvc" \
         --header="$PROGNAME fzf help: $mpvctui_fzf_help" \
+        --history=$MPVC_HISTORY_FZF \
         "$@"
         #--bind='ctrl-d:execute-silent(mpvc seek -20 &)' \
 }
