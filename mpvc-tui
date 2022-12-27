@@ -190,8 +190,8 @@ mpvctui_fzf_local()
 
 mpvctui_fzf_playlist()
 {
+    len=$(mpvc gets playlist-count)
     (
-        len=$(mpvc gets playlist-count)
         [ -z "$len" ] && echo || mpvc fullplaylist
     ) | mpvctui_fzf_preview
 }
@@ -216,8 +216,8 @@ mpvctui_fzf_preview()
         --preview-window='up:3' \
         --preview="mpvc" \
         --header="$PROGNAME fzf help: $mpvctui_fzf_help" \
-        --history=$MPVC_HISTORY_FZF \
         "$@"
+        #--history=$MPVC_HISTORY_FZF \
         #--bind='ctrl-d:execute-silent(mpvc seek -20 &)' \
 }
 
