@@ -741,6 +741,7 @@ main() {
             play|start|resume)
                 shift
                 case "$1" in
+                    '') ;;
                     0) setTrack 0 absolute;;
                     $) setTrack "$(( $(mpvc_gets playlist-count) - 1 ))" absolute;;
                     *) isInt "$1" && setTrack "$1" absolute;;
