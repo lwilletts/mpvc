@@ -181,7 +181,7 @@ mpvctui_fzf_iplay()
 
 mpvctui_fzf_local()
 {
-    find . -type f,d |
+    find . -type f,d | sort |
         mpvctui_fzf_preview --header="$PROGNAME file-fzf help: $mpvctui_fzf_help" |
             mpvc load
 }
@@ -202,9 +202,8 @@ mpvctui_fzf_preview()
         --multi \
         --bind='ctrl-space:execute-silent(mpvc toggle &)' \
         --bind='ctrl-o:execute-silent(mpvc play {n} &)' \
-        --bind='ctrl-d:execute-silent(mpvc del {n} &)' \
+        --bind='ctrl-r:execute-silent(mpvc del {n} &)' \
         --bind='ctrl-s:execute-silent(mpvc seek +20 &)' \
-        --bind='ctrl-t:execute-silent(mpvc seek -20 &)' \
         --bind='ctrl-r:reload(mpvc fullplaylist)' \
         \
         --bind='ctrl-\:execute(mpvc-tui -l)' \
@@ -215,6 +214,7 @@ mpvctui_fzf_preview()
         --preview="mpvc" \
         --header="$PROGNAME fzf help: $mpvctui_fzf_help" \
         "$@"
+        #--bind='ctrl-d:execute-silent(mpvc seek -20 &)' \
 }
 
 mpvctui_notify()
