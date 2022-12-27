@@ -157,7 +157,7 @@ mpvctui_watch()
     done
 }
 
-mpvctui_isearch()
+mpvctui_fzf_isearch()
 {
     url_search="https://yewtu.be/search?q=$(for f in $@; do printf "%s+" "$f"; done)"
     echo "$url_search"
@@ -172,41 +172,49 @@ mpvctui_isearch()
         }'
 }
 
-mpvctui_iplay()
+mpvctui_fzf_iplay()
 {
-    mpvctui_isearch "$@" | mpvctui_fzf_preview | awk '{print $1}'
+    mpvctui_fzf_isearch "$@" |
+        mpvctui_fzf_preview --header="$PROGNAME yt-fzf help: $mpvctui_fzf_help" |
+            awk '{print $1}'
 }
 
+mpvctui_fzf_local()
+{
+    find . -type f,d |
+        mpvctui_fzf_preview --multi --header="$PROGNAME file-fzf help: $mpvctui_fzf_help" |
+            mpvc load
+}
+
+mpvctui_fzf_playlist()
+{
+    (
+        len=$(mpvc gets playlist-count)
+        [ -z "$len" ] && echo || mpvc fullplaylist
+    ) | mpvctui_fzf_preview
+}
+
+mpvctui_fzf_help="C-x:list C-v:yt-add C-\\:add C-o:play C-d:del C-r:reload C-[st]:seek-+ C-spc:toggle"
 mpvctui_fzf_preview()
 {
     # fzf keys: ctrl + [/rsxvto]
     fzf --ansi --reverse --no-sort \
         --bind='ctrl-space:execute-silent(mpvc toggle &)' \
         --bind='ctrl-o:execute-silent(mpvc play {n} &)' \
+        --bind='ctrl-d:execute-silent(mpvc del {n} &)' \
         --bind='ctrl-s:execute-silent(mpvc seek +20 &)' \
-        --bind='ctrl-r:execute-silent(mpvc seek -20 &)' \
+        --bind='ctrl-t:execute-silent(mpvc seek -20 &)' \
+        --bind='ctrl-r:reload(mpvc fullplaylist)' \
         \
         --bind='ctrl-\:execute(mpvc-tui -l)' \
         --bind='ctrl-x:execute(mpvc-tui -f {q})' \
         --bind='ctrl-v:execute(mpvc-tui -p {q})' \
         \
-        --preview-window='up:20%' \
-        --preview="echo $PROGNAME fzf help: \
-ctrl-o:play ctrl-x:fzf ctrl-\\\\:add ctrl-[rs]:seek-+ ctrl-v:yt ctrl-spc:toggle; \
-mpvc" \
+        --preview-window='up:3' \
+        --preview="mpvc" \
+        --header="$PROGNAME fzf help: $mpvctui_fzf_help" \
         "$@"
         #--bind='ctrl-r:execute-silent(mpvc del {n} &)'
-}
-
-mpvctui_fzf()
-{
-    pos=$(mpvc gets playlist-pos)
-    len=$(mpvc gets playlist-count)
-    if [ -z "$len" ]; then
-        (echo ; mpvc fullplaylist) | mpvctui_fzf_preview
-    else
-        mpvc fullplaylist | mpvctui_fzf_preview --query="^$pos\ "
-    fi
 }
 
 mpvctui_notify()
@@ -230,7 +238,7 @@ mpvctui_usage()
     echo "  -d : Set the WD to the media directory given as argument"
     echo "  -f : Start fzf to manage the current mpv playist (fzf*)"
     echo "  -s : Search for media using Invidious (fzf*)"
-    echo "  -p : Search & play media found using Invidious  (fzf*)"
+    echo "  -p : Search & play media found using Invidious (fzf*)"
     echo "  -n : Desktop notification using notify on mpvc events (notify-send*)"
     echo "  -x : Starts $PROGNAME in a new $MPVC_TERM (config \$MPVC_TERM) [combine -x with $optflags]"
     echo "*tips: If unsure about where to begin, start with: $PROGNAME -d /path/to/media/ -f # or -t"
@@ -246,15 +254,15 @@ mpvctui_main()
     do
         case "$flag" in
         d) MPVC_DIR="$OPTARG"; cd "$MPVC_DIR" || return;;
-        f) shift; mpvctui_fzf ;;
+        f) shift; mpvctui_fzf_playlist ;;
         h) shift; mpvctui_usage ;;
         t) shift; mpvctui_watch "$@" ;;
-        n) shift; mpvctui_notify "$@" ;;
-        l) shift; find -type f,d | mpvctui_fzf_preview -m | mpvc load ;;
-        p) shift; mpvctui_iplay "$@" | mpvc load ;;
-        P) shift; mpvctui_iplay "$@" | mpvc loadc ;;
+        n) shift; mpvctui_notify ;;
+        l) shift; mpvctui_fzf_local;;
+        p) shift; mpvctui_fzf_iplay "$@" | mpvc load ;;
+        P) shift; mpvctui_fzf_iplay "$@" | mpvc loadc ;;
         q) shift; QUIETFLAG=true ;;
-        s) shift; mpvctui_isearch "$@"; return;;
+        s) shift; mpvctui_fzf_isearch "$@"; return;;
         x) shift; quiet command -v $MPVC_TERM && $MPVC_TERM -e "$0" "$@"; exit;;
         *) mpvctui_usage;;
         esac
