@@ -115,7 +115,7 @@ cleanFilename() {
         *youtu*|watch*) result="$(curl -sL "https://youtube.com/oembed?url=$filename" | mpvc_getjson '"title":')" ;;
         *) [ -e "$filename" ] && result=${filename##*/} ;;
     esac
-    echo "$result"
+    printf "$result"
 }
 
 # fn args: media-title, filename, path
