@@ -289,7 +289,7 @@ autoLoadPlaylist() {
 }
 
 listPlaylist() {
-    ls -1d "$MPVC_PLAYLIST"/*
+    ls -1d "$@" "$MPVC_PLAYLIST"/*
 }
 
 # loads a playlist from stdin. Note the buffer trick to avoid clear wiping the playlist.
