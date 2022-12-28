@@ -150,7 +150,7 @@ mpvctui_watch()
     trap mpvctui_input INT
     while :
     do
-        output=$(mpvctui_watcher "$@" 2>&1)
+        output=$(mpvctui_watcher 2>&1)
         [ $(( count % MPVC_CLEARC )) -eq 0 ] && tput clear
         tput cup 0 0
         echo "$output"
@@ -176,7 +176,7 @@ mpvctui_fzf_isearch()
 
 mpvctui_fzf_iplay()
 {
-    mpvctui_fzf_isearch "$@" |
+    mpvctui_fzf_isearch "$1" |
         mpvctui_fzf_preview --header="$PROGNAME yt-fzf help: $mpvctui_fzf_help" |
             awk '{print $1}'
 }
@@ -199,19 +199,19 @@ mpvctui_fzf_playlist()
 mpvctui_fzf_help="C-x:list C-v:yt-add C-\\:add C-o:play C-r:del C-t:reload C-s:seek C-spc:toggle"
 mpvctui_fzf_preview()
 {
-    # fzf keys: ctrl + [odstr\xv]
+    # fzf keys: ctrl + [dorstxv\]
     fzf \
         --ansi --reverse --no-sort \
         --multi \
         --bind='ctrl-space:execute-silent(mpvc toggle &)' \
         --bind='ctrl-o:execute-silent(mpvc play {n} &)' \
-        --bind='ctrl-r:execute-silent(mpvc remove {n} &)' \
+        --bind='ctrl-r:reload(mpvc fullplaylist)' \
         --bind='ctrl-s:execute-silent(mpvc seek +20 &)' \
-        --bind='ctrl-t:reload(mpvc fullplaylist)' \
+        --bind='ctrl-t:execute-silent(mpvc remove {n} &)' \
         \
-        --bind='ctrl-\:execute(mpvc-tui -l)' \
         --bind='ctrl-x:execute(mpvc-tui -f {q})' \
         --bind='ctrl-v:execute(mpvc-tui -p {q})' \
+        --bind='ctrl-\:execute(mpvc-tui -l)' \
         \
         --preview-window='up:3' \
         --preview="mpvc" \
@@ -223,14 +223,14 @@ mpvctui_fzf_preview()
 
 mpvctui_notify()
 {
+    cmd="${1:-"notify-send -u normal -i dialog-information \"$(mpvc)\""}"
     mpvc idleloop |
-        awk '
+        awk -v cmd="$cmd" '
             /playback-restart/ {
                 t=systime()
-                cmd="notify-send -u normal -i dialog-information \"$(mpvc)\""
                 if (t - ot > 1)
                     system(cmd);
-                ot=systime()
+                ot=t
                 print t, $0
             } '
 }
@@ -249,7 +249,7 @@ mpvctui_usage()
     exit;
 }
 
-optflags="d:fhstnpqlx"
+optflags="d:fhs:tn:p:P:qlx"
 mpvctui_main()
 {
     mpvctui_config
@@ -260,13 +260,13 @@ mpvctui_main()
         d) MPVC_DIR="$OPTARG"; cd "$MPVC_DIR" || return;;
         f) shift; mpvctui_fzf_playlist ;;
         h) shift; mpvctui_usage ;;
-        t) shift; mpvctui_watch "$@" ;;
-        n) shift; mpvctui_notify ;;
+        t) shift; mpvctui_watch ;;
+        n) shift; mpvctui_notify "$OPTARG" ;;
         l) shift; mpvctui_fzf_local;;
-        p) shift; mpvctui_fzf_iplay "$@" | mpvc load ;;
-        P) shift; mpvctui_fzf_iplay "$@" | mpvc loadc ;;
+        p) shift; mpvctui_fzf_iplay "$OPTARG" | mpvc load ;;
+        P) shift; mpvctui_fzf_iplay "$OPTARG" | mpvc loadc ;;
         q) shift; QUIETFLAG=true ;;
-        s) shift; mpvctui_fzf_isearch "$@"; return;;
+        s) shift; mpvctui_fzf_isearch "$OPTARG"; return;;
         x) shift; quiet command -v $MPVC_TERM && $MPVC_TERM -e "$0" "$@"; exit;;
         *) mpvctui_usage;;
         esac
