@@ -225,7 +225,7 @@ mpvctui_notify()
 {
     mpvc idleloop |
         awk '
-            /tracks-changed/ {
+            /playback-restart/ {
                 t=systime()
                 cmd="notify-send -u normal -i dialog-information \"$(mpvc)\""
                 if (t - ot > 1)
