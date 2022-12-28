@@ -179,8 +179,8 @@ make -C mpvc link BINDIR=$HOME/bin
     Some usage examples of the above are:
     <ul>
         <li> mpvc idleloop: send the mpv events to stdout.
-        <li> mpvc idleloop | awk '/tracks-changed/ {print}': select only the "tracks-changed" mpv events.
-        <li> mpvc idleloop | awk '/tracks-changed/ {system("notify-send -u normal -i dialog-warning \"$(mpvc)\"");print}': Send a notification when the track changes.
+        <li> mpvc idleloop | awk '/playback-restart/ {print}': select only the "playback-restart" mpv events.
+        <li> mpvc idleloop | awk '/playback-restart/ {system("notify-send -u normal -i dialog-warning \"$(mpvc)\"");print}': Send a notification when the track changes.
     </ul>
     </p>
 
