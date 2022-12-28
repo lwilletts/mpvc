@@ -138,8 +138,9 @@ getMetadata() {
 mpvc_getjson() {
     awk -F ',"' -v jf="$1" '{
         gsub("[{}]", "");
-        for (i=1; i<=NF; i++){
-            if ($i ~ jf){ r=$i; sub(jf, "", r); gsub("[\"]", "", r); print r; }
+        gsub("\\\\u00", "\\x");
+        for (i=1; i<=NF; i++) {
+            if ($i ~ jf){ r=$i; sub(jf, "", r); gsub("[\"]", "", r); printf(r); }
         }
     }'
 }
