@@ -490,16 +490,20 @@ setPause() {
     mpvc_sockcmd '{ "command": ["set_property", "pause", '"$1"' ] }'
 }
 
-togglePause() {
+mpvc_toggle_pause() {
     quiet mpvc_cmd "cycle-values" "pause" "yes" "no"
 }
 
-mpvc_toggle_window() {
-    quiet mpvc_cmd "cycle-values" "force-window" "yes" "no"
+mpvc_toggle_cache() {
+    quiet mpvc_cmd "cycle-values" "cache" "yes" "no"
 }
 
 mpvc_toggle_video() {
     quiet mpvc_cmd "cycle" "video"
+}
+
+mpvc_toggle_window() {
+    quiet mpvc_cmd "cycle-values" "force-window" "yes" "no"
 }
 
 toggleMute() {
@@ -800,6 +804,7 @@ main() {
             --set|set|s)                     shift; mpvc_cmd set_property "$@"; return;;
             --sets|sets|ss)                  shift; mpvc_cmd set_property_string "$@"; return;;
             --gets|gets|gs)                  shift; mpvc_cmd get_property_string "$@"; return;;
+            --togglec|togglec)               shift; mpvc_toggle_cache ;;
             --togglev|togglev)               shift; mpvc_toggle_video ;;
             --togglew|togglew)               shift; mpvc_toggle_window ;;
             --idleloop|idleloop)             shift; mpvc_idleloop "$@"; return ;;
@@ -810,7 +815,7 @@ main() {
             -K|--killall|killall)            quiet pkill -f "mpv "; return  ;;
             -s|--stop|stop)                  setPause true; setTimeAbsolute 0 ;;
             -P|--play)                       alwaysPlay                     ;;
-            -p|--toggle|toggle)              togglePause                    ;;
+            -p|--toggle|toggle)              mpvc_toggle_pause;;
             -m|--mute)                       toggleMute                     ;;
             -i|--playlist|playlist)          getPlaylist "";                ;;
             -I|--fullplaylist|fullplaylist)  getPlaylist "full";            ;;
