@@ -170,6 +170,10 @@ mpvc_gets() {
     echo "$result"
 }
 
+mpvc_getsb() {
+    for p in "$@"; do mpvc_cmd "get_property_string" "$p"; done
+}
+
 # fn args: speed
 getSpeed() {
     mpvc_gets "speed" | awk '{print substr ($0, 0, 4)}'
@@ -589,7 +593,7 @@ formatPrint() {
     # modified format string
     F="$FORMATSTRING"
     # not that nice, in fact, way more ugly, but too way faster
-    for f in $(echo "$F" | sed 's#/# #g')
+    for f in $(echo "$F" | sed 's#[;/]# #g')
     do
         case $f in
         (*%status%*) F=$(echo "$F" | sed "s#%status%#$(getPauseStatus)#g") ;;
@@ -804,6 +808,7 @@ main() {
             --set|set|s)                     shift; mpvc_cmd set_property "$@"; return;;
             --sets|sets|ss)                  shift; mpvc_cmd set_property_string "$@"; return;;
             --gets|gets|gs)                  shift; mpvc_cmd get_property_string "$@"; return;;
+            --getsb|getsb|gsb)               shift; mpvc_getsb "$@"; return;;
             --togglec|togglec)               shift; mpvc_toggle_cache ;;
             --togglev|togglev)               shift; mpvc_toggle_video ;;
             --togglew|togglew)               shift; mpvc_toggle_window ;;
