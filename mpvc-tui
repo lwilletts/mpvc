@@ -53,11 +53,10 @@ mpvctui_config()
     XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}
     MPVC_CONFIG="${MPVC_CONFIG:-$XDG_CONFIG_HOME/mpvc/mpvc-tui.conf}"
     MPVC_HISTORY="${MPVC_HISTORY:-$XDG_CONFIG_HOME/mpvc/mpvc-tui.history}"
-    MPVC_HISTORY_FZF="${MPVC_HISTORY_FZF:-$XDG_CONFIG_HOME/mpvc/mpvc-fzf.history}"
+    MPVC_SCROBBLER="${MPVC_SCROBBLER:-$XDG_CONFIG_HOME/mpvc/mpvc-tui.scb}"
     # if not present, create config dir
     mkdir -p "$(dirname "$MPVC_CONFIG")"
     touch "$MPVC_HISTORY"
-    touch "$MPVC_HISTORY_FZF"
     # if present load user config
     if [ -r "$MPVC_CONFIG" ];
     then
@@ -217,13 +216,16 @@ mpvctui_fzf_preview()
         --preview="mpvc" \
         --header="$PROGNAME fzf help: $mpvctui_fzf_help" \
         "$@"
-        #--history=$MPVC_HISTORY_FZF \
         #--bind='ctrl-d:execute-silent(mpvc seek -20 &)' \
 }
 
 mpvctui_notify()
 {
-    cmd="${1:-"notify-send -u normal -i dialog-information \"\$(mpvc)\""}"
+    cmd_default='
+        notify-send -u normal -i dialog-information "$(mpvc)";
+        echo $(date +%s) $(mpvc getsb duration path media-title) >> '"$MPVC_SCROBBLER"
+
+    cmd="${1:-$cmd_default}"
     mpvc idleloop |
         awk -v cmd="$cmd" '
             /playback-restart/ {
