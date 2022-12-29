@@ -223,7 +223,7 @@ mpvctui_fzf_preview()
 
 mpvctui_notify()
 {
-    cmd="${1:-"notify-send -u normal -i dialog-information \"$(mpvc)\""}"
+    cmd="${1:-"notify-send -u normal -i dialog-information \"\$(mpvc)\""}"
     mpvc idleloop |
         awk -v cmd="$cmd" '
             /playback-restart/ {
