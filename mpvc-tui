@@ -249,7 +249,7 @@ mpvctui_usage()
     exit;
 }
 
-optflags="d:fhs:tn:p:P:qlx"
+optflags="d:fhs:tnN:p:P:qlx"
 mpvctui_main()
 {
     mpvctui_config
@@ -261,7 +261,8 @@ mpvctui_main()
         f) shift; mpvctui_fzf_playlist ;;
         h) shift; mpvctui_usage ;;
         t) shift; mpvctui_watch ;;
-        n) shift; mpvctui_notify "$OPTARG" ;;
+        n) shift; mpvctui_notify ;;
+        N) shift; mpvctui_notify "$OPTARG" ;;
         l) shift; mpvctui_fzf_local;;
         p) shift; mpvctui_fzf_iplay "$OPTARG" | mpvc load ;;
         P) shift; mpvctui_fzf_iplay "$OPTARG" | mpvc loadc ;;
