@@ -140,7 +140,7 @@ mpvc_getjson() {
         gsub("[{}]", "");
         gsub("\\\\u00", "\\x");
         for (i=1; i<=NF; i++) {
-            if ($i ~ jf){ r=$i; sub(jf, "", r); gsub("[\"]", "", r); printf(r); }
+            if ($i ~ jf){ r=$i; sub(jf, "", r); gsub("[\"]", "", r); print r; }
         }
     }'
 }
