@@ -491,11 +491,11 @@ setPause() {
 }
 
 mpvc_toggle_pause() {
-    quiet mpvc_cmd "cycle-values" "pause" "yes" "no"
+    quiet mpvc_cmd "cycle" "pause"
 }
 
 mpvc_toggle_cache() {
-    quiet mpvc_cmd "cycle-values" "cache" "yes" "no"
+    quiet mpvc_cmd "cycle" "cache"
 }
 
 mpvc_toggle_video() {
@@ -503,22 +503,22 @@ mpvc_toggle_video() {
 }
 
 mpvc_toggle_window() {
-    quiet mpvc_cmd "cycle-values" "force-window" "yes" "no"
+    quiet mpvc_cmd "cycle" "force-window"
 }
 
 toggleMute() {
     [ -n "$1" ] && quiet mpvc_cmd "set_property_string" "mute" "$1" && return
-    quiet mpvc_cmd "cycle-values" "mute" "yes" "no"
+    quiet mpvc_cmd "cycle" "mute"
 }
 
 toggleLoopFile() {
     [ -n "$1" ] && quiet mpvc_cmd "set_property_string" "loop-file" "$1" && return
-    quiet mpvc_cmd "cycle-values" "loop-file" "yes" "no"
+    quiet mpvc_cmd "cycle" "loop-file"
 }
 
 toggleLoopPlaylist() {
     [ -n "$1" ] && quiet mpvc_cmd "set_property_string" "loop-playlist" "$1" && return
-    quiet mpvc_cmd "cycle-values" "loop-playlist" "yes" "no"
+    quiet mpvc_cmd "cycle" "loop-playlist"
 }
 
 shufflePlaylist() {
