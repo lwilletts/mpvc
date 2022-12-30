@@ -237,6 +237,23 @@ mpvctui_notify()
             } '
 }
 
+mpvctui_get_media()
+{
+    DOWN_DIR=$HOME/Downloads/mpvc/
+    [ -z "$format" ] && format=mkv
+
+    [ ! -d "$DOWN_DIR" ] && mkdir "$DOWN_DIR"
+    file=$(echo "${1##http*://}.$format" | sed 's|/|-|')
+    file="$DOWN_DIR/$file"
+
+    # can't find a better solution at the moment
+    if [ ! -e "$file" ]; then
+        mpv --video=no "--stream-record=$file" "$@"
+    else
+        mpvc add "$file"
+    fi
+}
+
 mpvctui_usage()
 {
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL";
@@ -251,7 +268,7 @@ mpvctui_usage()
     exit;
 }
 
-optflags="d:fhs:tnN:p:P:qlx"
+optflags="d:fg:hs:tnN:p:P:qlx"
 mpvctui_main()
 {
     mpvctui_config
@@ -261,6 +278,7 @@ mpvctui_main()
         case "$flag" in
         d) MPVC_DIR="$OPTARG"; cd "$MPVC_DIR" || return;;
         f) shift; mpvctui_fzf_playlist ;;
+        g) shift; mpvctui_get_media "$OPTARG" ;;
         h) shift; mpvctui_usage ;;
         t) shift; mpvctui_watch ;;
         n) shift; mpvctui_notify ;;
