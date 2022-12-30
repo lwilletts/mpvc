@@ -722,8 +722,7 @@ mpvc_startmpv() {
 main() {
     mpvc_config
     case "$1" in
-        -c|--crop|crop) ;;
-        -C|--clear|clear) ;;
+        -c|--crop|crop|-C|--clear|clear) ;;
         -a|add|append|-A|playnext|--playnext|mpv|--mpv|cmd|sockcmd|-q|--quiet) ;;
         load|--load|autoload|--autoload|lsplaylists|--lsplaylists|dbinit|--dbinit|dblist|--dblist) ;;
         version|--version|help|--help|-h|--list-options|-Q|--vid=no|-S) ;;
