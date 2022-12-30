@@ -75,8 +75,12 @@ eeprintf() { e=$1; shift; warn "$@"; exit "$e"; }
 
 mpvc_defaults()
 {
+    XDG_CACHE_HOME=${XDG_CACHE_HOME:-"$HOME/.cache"}
+    MPVC_CACHE_DIR="${MPVC_CACHE_DIR:-$XDG_CACHE_HOME/mpvc}"
+
     XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}
-    MPVC_CONFIG_DIR="${MPVC_HISTORY:-$XDG_CONFIG_HOME/mpvc}"
+    MPVC_CONFIG_DIR="${MPVC_CONFIG_DIR:-$XDG_CONFIG_HOME/mpvc}"
+
     MPVC_DATABASE="${MPVC_DATABASE:-$MPVC_CONFIG_DIR/db.m3u}"
     MPVC_PLAYLIST="${MPVC_PLAYLIST:-$MPVC_CONFIG_DIR/playlist}"
     MPVC_SOCKET="${MPVC_SOCKET:-$MPVC_CONFIG_DIR/mpvsocket}"
@@ -100,10 +104,24 @@ mpvc_config()
     mpvc_defaults
     # if not present, create config dir
     [ ! -d "$MPVC_CONFIG_DIR" ] && mkdir -p "$MPVC_CONFIG_DIR"
+    [ ! -d "$MPVC_CACHE_DIR" ] && mkdir -p "$MPVC_CACHE_DIR"
     [ ! -d "$MPVC_PLAYLIST" ] && mkdir -p "$MPVC_PLAYLIST"
 }
 
 ## Retrieval Functions ########################################################
+
+curl_cache()
+{
+    k=$2
+    curl_cache=$MPVC_CACHE_DIR/curl-cache.txt
+    v="$(awk -F'\t' -v k="$k" '{ if ($1 == k) {print $2;exit} }' $curl_cache)"
+    if [ -z "$v" ];
+    then
+        v=$(curl "$@")
+        echo "$k\t$v" >> "$curl_cache"
+    fi
+    echo "$v"
+}
 
 # match given filename string to appropriate output
 # fn args: filename
@@ -112,7 +130,7 @@ cleanFilename() {
     result="$1"
     case "$filename" in
         *.googlevideo.com/*) filename="mps-yt stream" ;;
-        *youtu*|watch*) result="$(curl -sL "https://youtube.com/oembed?url=$filename" | mpvc_getjson '"title":')" ;;
+        http*youtu*|http*watch*) result="$(curl_cache -sL "https://youtube.com/oembed?url=$filename" | mpvc_getjson '"title":')" ;;
         *) [ -e "$filename" ] && result=${filename##*/} ;;
     esac
     printf "$result"
