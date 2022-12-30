@@ -211,14 +211,24 @@ getPauseStatus() {
 }
 
 mpvc_get_playlist_once() {
+    ctrack=$(mpvc_gets playlist-pos)
     mpvc_cmd "get_property_string" "playlist" |
-    awk '
+        awk '
         BEGIN { RS="filename\\\\:" }
         {
             gsub("\\\\", ""); sub("^[[]|]|,$", ""); sub("\n", "");
             sub(",current:true", ""); sub(",playing:true", "");
             if (length($0)>0) print $0
-        }'
+        }' |
+        awk -v ctrack=$ctrack -v numbered="$1" '
+        {
+            mark=(NR-1 == ctrack)? "*" : " "
+            if (length(numbered)>0)
+                printf "%2d%s %s\n", NR-1, mark, $0
+            else
+                print
+        }
+    '
 }
 
 # fn args: $1: filename $2: full path flag to skip basename
@@ -798,6 +808,7 @@ main() {
             --load|load)                     shift; quietcheck loadPlaylist            ;;
             --loadc|loadc)                   shift; quietcheck loadPlaylist "clear"    ;;
 
+            --saven|saven)                   shift; mpvc_get_playlist_once "numbered"; return ;;
             --autosave|autosave)             shift; mpvc_autosave_playlist "$1"; return   ;;
             --autoload|autoload)             shift; mpvc_autoload_playlist "$1"; return   ;;
             --lsplaylists|lsplaylists)       shift; mpvc_lsplaylists "$1"; return       ;;
