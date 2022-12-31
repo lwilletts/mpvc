@@ -113,7 +113,7 @@ mpvc_config()
 curl_cache()
 {
     k=$2
-    curl_cache=$MPVC_CACHE_DIR/curl-cache.txt
+    curl_cache="$MPVC_CACHE_DIR/curl-cache.txt"
     v="$(awk -F'\t' -v k="$k" '{ if ($1 == k) {print $2;exit} }' $curl_cache)"
     if [ -z "$v" ];
     then
@@ -130,7 +130,7 @@ cleanFilename() {
     result="$1"
     case "$filename" in
         *.googlevideo.com/*) filename="mps-yt stream" ;;
-        http*youtu*|http*watch*) result="$(curl_cache -sL "https://youtube.com/oembed?url=$filename" | mpvc_getjson '"title":')" ;;
+        http*youtu*watch*) result="$(curl_cache -sL "https://youtube.com/oembed?url=$filename" | mpvc_getjson '"title":')" ;;
         *) [ -e "$filename" ] && result=${filename##*/} ;;
     esac
     printf "$result"
