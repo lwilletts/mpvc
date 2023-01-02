@@ -129,8 +129,8 @@ cleanFilename() {
     filename="$1"
     result="$1"
     case "$filename" in
-        *.googlevideo.com/*) filename="mps-yt stream" ;;
-        http*youtu*watch*) result="$(curl_cache -sL "https://youtube.com/oembed?url=$filename" | mpvc_getjson '"title":')" ;;
+        http*.googlevideo.com/*) filename="mps-yt stream" ;;
+        http*youtu*|http*watch*) result="$(curl_cache -sL "https://youtube.com/oembed?url=$filename" | mpvc_getjson '"title":')" ;;
         *) [ -e "$filename" ] && result=${filename##*/} ;;
     esac
     printf "$result"
