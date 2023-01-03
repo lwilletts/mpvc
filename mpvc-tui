@@ -251,7 +251,9 @@ mpvctui_get_media()
     # can't find a better solution at the moment
     if [ ! -e "$file" ]; then
         mpv --video=no "--stream-record=$file" "$@"
-        mkvpropedit "$file" --set title="$(youtube-dl --get-title "$@")"
+        if [ "${file##*.}" = "mkv" ]; then
+            mkvpropedit "$file" --set title="$(youtube-dl --get-title "$@")"
+        fi
     else
         mpvc add "$file"
     fi
