@@ -45,13 +45,13 @@
     <h2 id="gmt4-mpvc-shots">mpvc screenshots</h2>
     <p>
         <a href="https://github.com/gmt4/mpvc/">
-            <img src="https://github.com/gmt4/mpvc/raw/master/docs/mpvc-tui.png" alt="mpvc-tui screenshot" />
+            <img src="assets/mpvc-tui.png" alt="mpvc-tui screenshot" />
         </a>
         <a href="https://github.com/gmt4/mpvc/">
-            <img src="https://github.com/gmt4/mpvc/raw/master/docs/mpvc-tui-arch.png" alt="mpvc-tui arch screenshot" />
+            <img src="assets/mpvc-tui-arch.png" alt="mpvc-tui arch screenshot" />
         </a>
         <a href="https://github.com/gmt4/mpvc/">
-            <img src="https://github.com/gmt4/mpvc/raw/master/docs/mpvc-tui-fzf.png" alt="mpvc-tui fzf screenshot" />
+            <img src="assets/mpvc-tui-fzf.png" alt="mpvc-tui fzf screenshot" />
         </a>
     </p>
 
@@ -123,11 +123,11 @@ make -C mpvc link BINDIR=$HOME/bin
 
     In addition to load/save, mpvc adds the autoload/autosave commands:
     <ul>
-    <li> mpvc autosave: save the current playlist to $XDG_CONFIG_HOME/mpvc/playlist/.
+    <li> <code>mpvc autosave</code>: save the current playlist to $XDG_CONFIG_HOME/mpvc/playlist/.
          If no arguments are provided the current playlist is named "$(date -Imin)".
          Otherwise, if a name is given "mpvc autosave ambient.m3u", then the file is saved as "ambient.m3u"
-    <li> mpvc autoload: loads the named playlist from $XDG_CONFIG_HOME/mpvc/playlist/.
-    <li> mpvc lsplaylists: list the playlists under $XDG_CONFIG_HOME/mpvc/playlist/.
+    <li> <code>mpvc autoload</code>: loads the named playlist from $XDG_CONFIG_HOME/mpvc/playlist/.
+    <li> <code>mpvc lsplaylists</code>: list the playlists under $XDG_CONFIG_HOME/mpvc/playlist/.
     </ul>
 
     The above enables to arrange a playlist, and once we are happy with it, save it with `mpvc autosave playlist.m3u`, later, we can replay it again with: `mpvc autoload playlist.m3u`.
@@ -147,9 +147,9 @@ make -C mpvc link BINDIR=$HOME/bin
     <p>
     That one is easy, for that purpose "mpvc cmd args" sends the "command": args to the JSON IPC. Some usage examples to test are:
     <ul>
-        <li> mpvc cmd show-text "hello-world" 2000
-        <li> mpvc cmd af toggle lavfi=[loudnorm=I=-16:TP=-3:LRA=4]
-        <li> mpvc cmd af toggle lavfi=[dynaudnorm=g=5:f=250:r=0.9:p=0.5]
+        <li> <code>mpvc cmd show-text "hello-world" 2000</code>
+        <li> <code>mpvc cmd af toggle lavfi=[loudnorm=I=-16:TP=-3:LRA=4]</code>
+        <li> <code>mpvc cmd af toggle lavfi=[dynaudnorm=g=5:f=250:r=0.9:p=0.5]</code>
     </ul>
     Note, audio filter commands above are lifted from https://github.com/mpv-player/mpv/issues/6210.
     </p>
@@ -164,10 +164,10 @@ make -C mpvc link BINDIR=$HOME/bin
     </ol>
     Some usage examples of the above are:
     <ul>
-        <li> mpvc-tui -s rolling stones: <b>Search</b> and return the list of URLs found.
-        <li> mpvc-tui -s rolling stones | fzf -m: <b>Search, Select</b> and return the list of URLs selected.
-        <li> mpvc-tui -s rolling stones | fzf -m | awk '{print $1}' | mpvc load: <b>Search, Select, Enqueue</b> and play the list of URLs selected.
-        <li> mpvc-tui -p rolling stones: Is a shortcut of the last command that does the whole thing.
+        <li> <code>mpvc-tui -s rolling stones</code>: <b>Search</b> and return the list of URLs found.
+        <li> <code>mpvc-tui -s rolling stones | fzf -m</code>: <b>Search, Select</b> and return the list of URLs selected.
+        <li> <code>mpvc-tui -s rolling stones | fzf -m | awk '{print $1}' | mpvc load</code>: <b>Search, Select, Enqueue</b> and play the list of URLs selected.
+        <li> <code>mpvc-tui -p rolling stones</code>: Is a shortcut of the last command that does the whole thing.
     </ul>
     Note, that you can use this command from inside mpvc-tui too, by hitting Control+C and then typing "!mpvc-tui -p rolling stones"
     </p>
@@ -178,18 +178,18 @@ make -C mpvc link BINDIR=$HOME/bin
     Subscribing to the mpv events can be done using the command: mpvc idleloop, by default events appear on standard output for a separate program to consume and react them.
     Some usage examples of the above are:
     <ul>
-        <li> mpvc idleloop: send the mpv events to stdout.
-        <li> mpvc idleloop | awk '/playback-restart/ {print}': select only the "playback-restart" mpv events.
-        <li> mpvc idleloop | awk '/playback-restart/ {system("notify-send -u normal -i dialog-warning \"$(mpvc)\"");print}': Send a notification when the track changes.
+        <li> <code>mpvc idleloop</code>: send the mpv events to stdout.
+        <li> <code>mpvc idleloop | awk '/playback-restart/ {print}'</code>: select only the "playback-restart" mpv events.
+        <li> <code>mpvc idleloop | awk '/playback-restart/ {system("notify-send -u normal -i dialog-warning \"$(mpvc)\"");print}'</code>: Send a notification when the track changes.
     </ul>
     </p>
 
     <h3 id="logbook-20221227">On using mpv together with the fzf fuzzy finder, Tuesday 27 Dec 2022 ✓</h3>
     I discovered fzf while adding support for selecting and playing YT videos <a href="#logbook-20221219">#logbook-20221219</a>, so I'm quite a newbie on fzf. Still I've been playing with fzf+mpvc to get them working together. So far I've focused on 3 points:
     <ul>
-        <li>mpvc-tui -p: For searching/playing Internet media from YouTube.
-        <li>mpvc-tui -l: For searching/playing Local media from your filesystem.
-        <li>mpvc-tui -f: For managing the mpv status & playlist: say mpvc play, pause, seek etc.
+        <li> <code>mpvc-tui -p</code>: For searching/playing Internet media from YouTube.
+        <li> <code>mpvc-tui -l</code>: For searching/playing Local media from your filesystem.
+        <li> <code>mpvc-tui -f</code>: For managing the mpv status & playlist: say mpvc play, pause, seek etc.
     </ul>
     This is still on a very preliminar state, but it's amazing what fzf can do, and so far, seems to fit very well with mpvc.
 </body>
