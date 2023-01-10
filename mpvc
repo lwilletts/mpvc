@@ -113,12 +113,12 @@ mpvc_config()
 curl_cache()
 {
     k=$2
-    curl_cache="$MPVC_CACHE_DIR/curl-cache.txt"
-    v="$(awk -F'\t' -v k="$k" '{ if ($1 == k) {print $2;exit} }' $curl_cache)"
+    curl_cache="$MPVC_CONFIG_DIR/curl-cache.txt"
+    v="$(awk -F'\t' -v k="$k" '{ if ($1 == k) {print $2;exit} }' "$curl_cache")"
     if [ -z "$v" ];
     then
         v=$(curl "$@")
-        echo "$k\t$v" >> "$curl_cache"
+        echo "$k	$v" >> "$curl_cache"
     fi
     echo "$v"
 }
@@ -238,7 +238,7 @@ mpvc_get_playlist_once() {
             sub(",current:true", ""); sub(",playing:true", "");
             if (length($0)>0) print $0
         }' |
-        awk -v ctrack=$ctrack -v numbered="$1" '
+        awk -v ctrack="$ctrack" -v numbered="$1" '
         {
             mark=(NR-1 == ctrack)? "*" : " "
             if (length(numbered)>0)
@@ -274,7 +274,7 @@ getPlaylist() {
     [ "$fullPlaylist" != "full" ] && calculateTerminalHeight "$currentTrack" "$tracks"
 
     mpvc_get_playlist_once |
-    while read filename;
+    while read -r filename;
     do
         if [ $i -ge $FIRST -a $i -lt $LAST ]; then
             filename=$(cleanFilename "$filename")
