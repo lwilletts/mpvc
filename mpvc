@@ -809,7 +809,7 @@ main() {
             find)     eeprintf 1 "$PROGNAME: $* not implemented" ;;
 
             add|-a|--append) appendTracks "$@"; shift "$((shiftcount+1))" ;;
-            mpv|--mpv)       mpvc_startmpv --idle=yes --input-terminal; return;;
+            mpv|--mpv)       mpvc_startmpv --really-quiet --idle=yes; QUIETFLAG=true;;
             # consume) to implement # add on|off toggle
             # random) MPV doesn't have this control option!
 
