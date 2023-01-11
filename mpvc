@@ -396,16 +396,10 @@ setTimeRelative() {
     time=$(mpvc_gets playback-time)
     case "$1" in
         *%*) mpvc_cmd "set_property_string" "percent-pos" "${1%%%}"; return ;;
-        -*) timeArg=${1##-}; minusFlag=true ;;
-        +*) timeArg=${1##+}; minusFlag=false ;;
-        *)  timeArg=$1 ;;
+        -*)  mpvc_cmd "set_property_string" "playback-time" "$((time - $(parseTimeString "${1##-}")))" ;;
+        +*)  mpvc_cmd "set_property_string" "playback-time" "$((time + $(parseTimeString "${1##+}")))" ;;
+        *)   mpvc_cmd "set_property_string" "playback-time" "$((time + $(parseTimeString "${1}")))" ;;
     esac
-    timeSec=$(parseTimeString "$timeArg") || exit $?
-    case "$minusFlag" in
-        true) time=$((time - timeSec)) ;;
-        *)    time=$((time + timeSec)) ;;
-    esac
-    mpvc_cmd "set_property_string" "percent-pos" "$time"
 }
 
 setTimeAbsolute() {
