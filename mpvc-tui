@@ -269,11 +269,11 @@ mpvctui_usage()
     echo "  -p : Search & play media found using Invidious (fzf*)"
     echo "  -n : Desktop notification using notify on mpvc events (notify-send*)"
     echo "  -x : Starts $PROGNAME in a new $MPVC_TERM (config \$MPVC_TERM) [combine -x with $optflags]"
-    echo "*tips: If unsure about where to begin, start with: $PROGNAME -d /path/to/media/ -f # or -t"
+    echo "*tips: If unsure about where to begin, start with: $PROGNAME -d /path/to/media/ -T # or -f"
     exit;
 }
 
-optflags="d:fg:hs:tnN:p:P:qlx"
+optflags="d:fg:hs:tTnN:p:P:lx"
 mpvctui_main()
 {
     mpvctui_config
@@ -286,12 +286,17 @@ mpvctui_main()
         g) shift; mpvctui_get_media "$OPTARG" ;;
         h) shift; mpvctui_usage ;;
         t) shift; mpvctui_watch ;;
+        T) shift;
+                  mpvc --mpv &
+                  ( sleep 2 && mpvc --append "$@" )
+                  ( sleep 1 && setsid "$0" -n ) &
+                  mpvctui_watch
+                  ;;
         n) shift; mpvctui_notify ;;
         N) shift; mpvctui_notify "$OPTARG" ;;
         l) shift; mpvctui_fzf_local;;
         p) shift; mpvctui_fzf_iplay "$OPTARG" | mpvc load ;;
         P) shift; mpvctui_fzf_iplay "$OPTARG" | mpvc loadc ;;
-        q) shift; QUIETFLAG=true ;;
         s) shift; mpvctui_fzf_isearch "$OPTARG"; return;;
         x) shift; quiet command -v $MPVC_TERM && $MPVC_TERM -e "$0" "$@"; exit;;
         *) mpvctui_usage;;
