@@ -114,6 +114,7 @@ curl_cache()
 {
     k=$2
     curl_cache="$MPVC_CONFIG_DIR/curl-cache.txt"
+    touch "$curl_cache"
     v="$(awk -F'\t' -v k="$k" '{ if ($1 == k) {print $2;exit} }' "$curl_cache")"
     if [ -z "$v" ];
     then
