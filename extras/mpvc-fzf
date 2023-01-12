@@ -8,6 +8,80 @@
 
 PROGNAME=$(basename "$0");
 PROGVERSION=v1.0;
+PROGAUTHOR=gmt4
+PROGURL="https://github.com/gmt4/mpvc"
+
+quiet()  { "$@" > /dev/null 2>&1; }
+mpvctui_warn() { echo "$@" >&2; }
+
+mpvctui_config()
+{
+    if ! quiet command -v fzf; then
+        mpvctui_warn "$PROGNAME: Warning: No fzf, Install to get fuzzy media search & play support!"
+        sleep 1
+    fi
+}
+
+mpvctui_fzf_help="C-x:list C-v:yt-add C-\\:add C-o:play C-r:del C-t:reload C-s:seek C-spc:toggle"
+mpvctui_fzf_preview()
+{
+    # fzf keys: ctrl + [dorstxv\]
+    fzf \
+        --ansi --reverse --no-sort \
+        --multi \
+        --bind='ctrl-space:execute-silent(mpvc toggle &)' \
+        --bind='ctrl-o:execute-silent(mpvc play {n} &)' \
+        --bind='ctrl-r:reload(mpvc fullplaylist)' \
+        --bind='ctrl-s:execute-silent(mpvc seek +20 &)' \
+        --bind='ctrl-t:execute-silent(mpvc remove {n} &)' \
+        \
+        --bind='ctrl-x:execute(mpvc-tui -f {q})' \
+        --bind='ctrl-v:execute(mpvc-tui -p {q})' \
+        --bind='ctrl-\:execute(mpvc-tui -l)' \
+        \
+        --preview-window='up:3' \
+        --preview="mpvc" \
+        --header="$PROGNAME fzf help: $mpvctui_fzf_help" \
+        "$@"
+        #--bind='ctrl-d:execute-silent(mpvc seek -20 &)' \
+}
+
+mpvctui_fzf_isearch()
+{
+    url_search="https://yewtu.be/search?q=$(for f in $@; do printf "%s+" "$f"; done)"
+    echo "$url_search"
+    curl -sL "$url_search" |
+    awk '
+        /^ *<p dir="auto">/ {
+            gsub("^ *<p dir=\"auto\">",""); gsub("</p>",""); title=$0
+        }
+        /^ *<a title="Audio mode/ {
+            gsub("^ *<a title=\"Audio mode\" href=\"",""); gsub("\">",""); gsub("/watch", "https://youtube.com/watch");
+            print $0, title
+        }'
+}
+
+mpvctui_fzf_iplay()
+{
+    mpvctui_fzf_isearch "$1" |
+        mpvctui_fzf_preview --header="$PROGNAME yt-fzf help: $mpvctui_fzf_help" |
+            awk '{print $1}'
+}
+
+mpvctui_fzf_local()
+{
+    find . -type f,d | sort |
+        mpvctui_fzf_preview --header="$PROGNAME file-fzf help: $mpvctui_fzf_help" |
+            mpvc load
+}
+
+mpvctui_fzf_playlist()
+{
+    len=$(mpvc gets playlist-count)
+    (
+        [ -z "$len" ] && echo || mpvc fullplaylist
+    ) | mpvctui_fzf_preview
+}
 
 mpvctui_fzf_ddg()
 {
@@ -39,24 +113,42 @@ mpvctui_fzf_ddg()
 
 mpvctui_ddg_play()
 {
-    mpvctui_fzf_ddg "$@" | mpvc-tui -F |  awk '{print $1}' | mpvc load
+    mpvctui_fzf_ddg "$@" | mpvctui_fzf_preview |  awk '{print $1}' | mpvc load
 }
 
+optflags="dDfFhs::p:P:l"
 mpvctui_usage()
 {
-    echo "usage: $PROGNAME [search|play] <search query> # @version $PROGVERSION";
-    echo "example: $PROGNAME play youtube kupla # search for kupla on youtube";
+    echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
+    echo "  -d : Search & play media using DuckDuckGo (fzf*)"
+    echo "  -D : Search for media using DuckDuckGo (fzf*)"
+    echo "  -f : Start fzf to manage the current mpv playist (fzf*)"
+    echo "  -l : Search & play local media (fzf*)"
+    echo "  -s : Search for media using Invidious (fzf*)"
+    echo "  -p : Search & play media found using Invidious (fzf*)"
+    echo "*tips: If unsure about where to begin, start with: $PROGNAME -p kupla mirage"
     exit;
 }
 
 main()
 {
+    mpvctui_config
     [ $# -lt 1 ] && mpvctui_usage
 
-    case "$1" in
-    play) shift; mpvctui_ddg_play "$@";;
-    search) shift; mpvctui_fzf_ddg "$@";;
-    esac
+    while getopts "$optflags" flag;
+    do
+        case "$flag" in
+        d) shift; mpvctui_ddg_play "$@";;
+        D) shift; mpvctui_fzf_ddg "$@";;
+        f) shift; mpvctui_fzf_playlist ;;
+        F) shift; mpvctui_fzf_preview "$@" ;;
+        l) shift; mpvctui_fzf_local;;
+        p) shift; mpvctui_fzf_iplay "$OPTARG" | mpvc load ;;
+        P) shift; mpvctui_fzf_iplay "$OPTARG" | mpvc loadc ;;
+        s) shift; mpvctui_fzf_isearch "$OPTARG"; return;;
+        esac
+    done
+
 }
 
 main "$@"
