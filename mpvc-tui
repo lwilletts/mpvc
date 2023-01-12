@@ -66,10 +66,6 @@ mpvctui_config()
         mpvctui_warn "$PROGNAME: Warning: No rlwrap, Install to get history, filename & completion support!"
         sleep 1
     fi
-    if ! quiet command -v fzf; then
-        mpvctui_warn "$PROGNAME: Warning: No fzf, Install to get fuzzy media search & play support!"
-        sleep 1
-    fi
     if ! quiet command -v notify-send; then
         mpvctui_warn "$PROGNAME: Warning: No notify-send, Install to get mpv desktop notifications"
         sleep 1
@@ -139,6 +135,7 @@ mpvctui_input()
         '!'*) eval ${cmd##!};;
         'mpvc '*) QUIETFLAG=true $cmd;;
         'mpvc-tui '*) $cmd;;
+        'mpvc-fzf'*) $cmd;;
         exit|quit|q) exit;;
         *) echo 'mpvc: Type commands at "mpvc:" prompt, "q" to quit';;
     esac
@@ -156,67 +153,6 @@ mpvctui_watch()
         count=$(( count + 1 ))
         sleep $MPVC_UPDATEC
     done
-}
-
-mpvctui_fzf_isearch()
-{
-    url_search="https://yewtu.be/search?q=$(for f in $@; do printf "%s+" "$f"; done)"
-    echo "$url_search"
-    curl -sL "$url_search" |
-    awk '
-        /^ *<p dir="auto">/ {
-            gsub("^ *<p dir=\"auto\">",""); gsub("</p>",""); title=$0
-        }
-        /^ *<a title="Audio mode/ {
-            gsub("^ *<a title=\"Audio mode\" href=\"",""); gsub("\">",""); gsub("/watch", "https://youtube.com/watch");
-            print $0, title
-        }'
-}
-
-mpvctui_fzf_iplay()
-{
-    mpvctui_fzf_isearch "$1" |
-        mpvctui_fzf_preview --header="$PROGNAME yt-fzf help: $mpvctui_fzf_help" |
-            awk '{print $1}'
-}
-
-mpvctui_fzf_local()
-{
-    find . -type f,d | sort |
-        mpvctui_fzf_preview --header="$PROGNAME file-fzf help: $mpvctui_fzf_help" |
-            mpvc load
-}
-
-mpvctui_fzf_playlist()
-{
-    len=$(mpvc gets playlist-count)
-    (
-        [ -z "$len" ] && echo || mpvc fullplaylist
-    ) | mpvctui_fzf_preview
-}
-
-mpvctui_fzf_help="C-x:list C-v:yt-add C-\\:add C-o:play C-r:del C-t:reload C-s:seek C-spc:toggle"
-mpvctui_fzf_preview()
-{
-    # fzf keys: ctrl + [dorstxv\]
-    fzf \
-        --ansi --reverse --no-sort \
-        --multi \
-        --bind='ctrl-space:execute-silent(mpvc toggle &)' \
-        --bind='ctrl-o:execute-silent(mpvc play {n} &)' \
-        --bind='ctrl-r:reload(mpvc fullplaylist)' \
-        --bind='ctrl-s:execute-silent(mpvc seek +20 &)' \
-        --bind='ctrl-t:execute-silent(mpvc remove {n} &)' \
-        \
-        --bind='ctrl-x:execute(mpvc-tui -f {q})' \
-        --bind='ctrl-v:execute(mpvc-tui -p {q})' \
-        --bind='ctrl-\:execute(mpvc-tui -l)' \
-        \
-        --preview-window='up:3' \
-        --preview="mpvc" \
-        --header="$PROGNAME fzf help: $mpvctui_fzf_help" \
-        "$@"
-        #--bind='ctrl-d:execute-silent(mpvc seek -20 &)' \
 }
 
 mpvctui_notify()
@@ -261,19 +197,16 @@ mpvctui_get_media()
 
 mpvctui_usage()
 {
-    echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL";
+    echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
     echo "  -t : Starts the $PROGNAME to monitor the mpv playlist (rlwrap*)"
     echo "  -d : Set the WD to the media directory given as argument"
-    echo "  -f : Start fzf to manage the current mpv playist (fzf*)"
-    echo "  -s : Search for media using Invidious (fzf*)"
-    echo "  -p : Search & play media found using Invidious (fzf*)"
     echo "  -n : Desktop notification using notify on mpvc events (notify-send*)"
     echo "  -x : Starts $PROGNAME in a new $MPVC_TERM (config \$MPVC_TERM) [combine -x with $optflags]"
-    echo "*tips: If unsure about where to begin, start with: $PROGNAME -d /path/to/media/ -T # or -f"
+    echo "*tips: If unsure about where to begin, start with: $PROGNAME -d /path/to/media/ -T"
     exit;
 }
 
-optflags="d:fFg:hs:tTnN:p:P:lx"
+optflags="d:g:htTnN:P:x"
 mpvctui_main()
 {
     mpvctui_config
@@ -282,8 +215,6 @@ mpvctui_main()
     do
         case "$flag" in
         d) MPVC_DIR="$OPTARG"; cd "$MPVC_DIR" || return;;
-        f) shift; mpvctui_fzf_playlist ;;
-        F) shift; mpvctui_fzf_preview "$@" ;;
         g) shift; mpvctui_get_media "$OPTARG" ;;
         h) shift; mpvctui_usage ;;
         t) shift; mpvctui_watch ;;
@@ -295,10 +226,6 @@ mpvctui_main()
                   ;;
         n) shift; mpvctui_notify ;;
         N) shift; mpvctui_notify "$OPTARG" ;;
-        l) shift; mpvctui_fzf_local;;
-        p) shift; mpvctui_fzf_iplay "$OPTARG" | mpvc load ;;
-        P) shift; mpvctui_fzf_iplay "$OPTARG" | mpvc loadc ;;
-        s) shift; mpvctui_fzf_isearch "$OPTARG"; return;;
         x) shift; quiet command -v $MPVC_TERM && $MPVC_TERM -e "$0" "$@"; exit;;
         *) mpvctui_usage;;
         esac
