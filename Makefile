@@ -1,12 +1,17 @@
+# @file Makefile
+# @description mpvc Makefile
+# @author gmt4 <gmt4 at github.com> (c) Copyright 2022.
+# @url github.com/gmt4/mpvc
+
 PREFIX ?= /usr/local
 BINDIR ?= $(PREFIX)/bin
 MANDIR ?= $(PREFIX)/share/man
 
 SCRIPT = mpvc extras/mpvc-tui extras/mpvc-fzf
 
-.PHONY: all link install uninstall
-
-all: link-user
+all: help
+help:
+	@grep '^[a-z-]\+: [a-z-]\+' ${MAKEFILE_LIST}
 
 link-user: PREFIX=$(HOME)
 link-user: link
@@ -37,3 +42,6 @@ uninstall:
 	@for script in $(SCRIPT); do \
 		rm -v $(BINDIR)/`basename \$$script`; \
 	done
+
+.PHONY: help all link install uninstall
+
