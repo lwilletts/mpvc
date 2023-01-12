@@ -94,8 +94,8 @@ mpvc_defaults()
 [%status%] #%position%/%playlistlength% %time%/%length% (%percentage%%)
 speed:%speed%x volume:%volume%% muted:%muted% repeat:%repeat% single:%single%"
     # validate deps
-    quiet type mpv || eeprintf 4 "Cannot find mpv on your \$PATH."
-    quiet type socat || type nc || eeprintf 4 "Cannot find socat or nc on your \$PATH."
+    quiet type mpv || eeprintf 4 "$PROGNAME: Error: No mpv found. Install to continue."
+    quiet type socat || type nc || eeprintf 4 "$PROGNAME: Error: No socat/nc found. Install one"
     [ -z "$MPVC_SOCKETCMD" ] && MPVC_SOCKETCMD="socat - $MPVC_SOCKET"
     [ -z "$MPVC_SOCKETCMD" ] && MPVC_SOCKETCMD="nc -U -N $MPVC_SOCKET"
 }
