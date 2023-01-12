@@ -1,0 +1,62 @@
+#!/bin/sh
+#
+# @file mpvc-ddg
+# @description mpvc ddg, mpv terminal user interface
+# @author gmt4 <gmt4 at github.com> (c) Copyright 2022.
+# @url github.com/gmt4/mpvc
+#
+
+PROGNAME=$(basename "$0");
+PROGVERSION=v1.0;
+
+mpvctui_fzf_ddg()
+{
+    curl -A 'Mozilla/5.0' -sL "https://duckduckgo.com/html?q=$*&iax=videos&ia=videos" |
+        awk  '
+            function urldecode(url)
+            {
+                for (y=0; y < 127; y++)
+                {
+                    if (y != 37)
+                        gsub(sprintf("%%%02x|%%%02X", y, y), y==38 ? "\\&" : sprintf("%c", y), url);
+                    gsub(/%25/, "%", url);
+                }
+                return url
+            }
+
+            /result__a/ {
+                gsub("<a rel=\"nofollow\" class=\"result__a\" href=\"//duckduckgo.com/l/\\?uddg=", "");
+                gsub("&amp", "\\&");
+                gsub("rut=[0-9a-f]+","");
+                gsub("\">", " ");
+                gsub("</a>","");
+
+                gsub("%3A",":"); gsub("%2F","/"); gsub("%3F","?"); gsub("%3D","=");
+                #print urldecode($0)
+                print
+            }'
+}
+
+mpvctui_ddg_play()
+{
+    mpvctui_fzf_ddg "$@" | mpvc-tui -F |  awk '{print $1}' | mpvc load
+}
+
+mpvctui_usage()
+{
+    echo "usage: $PROGNAME [search|play] <search query> # @version $PROGVERSION";
+    echo "example: $PROGNAME play youtube kupla # search for kupla on youtube";
+    exit;
+}
+
+main()
+{
+    [ $# -lt 1 ] && mpvctui_usage
+
+    case "$1" in
+    play) shift; mpvctui_ddg_play "$@";;
+    search) shift; mpvctui_fzf_ddg "$@";;
+    esac
+}
+
+main "$@"
