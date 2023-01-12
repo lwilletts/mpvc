@@ -2,7 +2,7 @@ PREFIX ?= /usr/local
 BINDIR ?= $(PREFIX)/bin
 MANDIR ?= $(PREFIX)/share/man
 
-SCRIPT = mpvc mpvc-tui extras/mpvc-ddg
+SCRIPT = mpvc mpvc-tui extras/mpvc-fzf
 
 .PHONY: all link install uninstall
 
