@@ -545,12 +545,12 @@ toggleMute() {
 
 toggleLoopFile() {
     [ -n "$1" ] && quiet mpvc_sets "loop-file" "$1" && return
-    quiet mpvc_cmd "cycle" "loop-file"
+    quiet mpvc_cmd "cycle-values" "loop-file" "yes" "no"
 }
 
 toggleLoopPlaylist() {
     [ -n "$1" ] && quiet mpvc_sets "loop-playlist" "$1" && return
-    quiet mpvc_cmd "cycle" "loop-playlist"
+    quiet mpvc_cmd "cycle-values" "loop-playlist" "yes" "no"
 }
 
 shufflePlaylist() {
