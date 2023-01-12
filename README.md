@@ -24,6 +24,12 @@ Required:
 - `socat`: is recommended due to the differing implementations of `netcat` across UNIXes.
 - `awk`: a sane version of `awk` is recommended
 
+Recommended extras:
+
+- `curl`
+- `fzf`
+- `notify-send`
+
 ## Install
 
 If you have packaged mpvc for your distribution, let me know so I can add it here.
