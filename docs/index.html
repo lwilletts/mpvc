@@ -186,5 +186,19 @@ I discovered fzf while adding support for selecting and playing YT videos <a hre
     <li> <code>mpvc-tui -f</code>: For managing the mpv status & playlist: say mpvc play, pause, seek etc.
 </ul>
 This is still on a very preliminar state, but it's amazing what fzf can do, and so far, seems to fit very well with mpvc.
+
+<h3 id="logbook-20230112">On using mpv together with the fzf fuzzy finder, Thursday 12 Jan 2023 ✓</h3>
+
+<p>
+Continuing on the topic of using fzf with mpv, I’ve decided to split the code into three scripts:
+
+<ul>
+<li><code>mpvc</code>: that provides the mpvc functionality.</li>
+<li><code>extras/mpvc-tui</code>: that provides the mpvc TUI functionality.</li>
+<li><code>extras/mvpc-fzf</code>: that provides the mpvc FZF functionality.</li>
+</ul>
+
+I think it’s clear/simpler this way, as the the mpvc-tui was getting more and more fzf functionality, that was unrelated to the TUI. This breaks some things, as for example, uses of <code>mpvc-tui -[lfFspP]</code> that now have become <code>mpvc-fzf -[lfFspP]</code>.
+</p>
 </body>
 </html>
