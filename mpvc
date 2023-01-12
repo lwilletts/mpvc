@@ -86,6 +86,7 @@ mpvc_defaults()
     MPVC_CONFIG="${MPVC_CONFIG:-$XDG_CONFIG_HOME/mpvc/mpvc.conf}"
     MPVC_SOCKET="${MPVC_SOCKET:-$MPVC_CONFIG_DIR/mpvsocket}"
     MPVC_SOCKETCMD="socat - $MPVC_SOCKET"
+    MPVC_CURL_CACHE="${MPVC_CURL_CACHE:-$MPVC_CONFIG_DIR/curl-cache.txt}"
     MPVOPTIONS="${MPVOPTIONS:---no-audio-display --no-input-terminal}"
     # print default status of mpv instance
     [ -z "$FORMATSTRING" ] && FORMATSTRING="\
@@ -107,6 +108,8 @@ mpvc_config()
     [ ! -d "$MPVC_CONFIG_DIR" ] && mkdir -p "$MPVC_CONFIG_DIR"
     [ ! -d "$MPVC_CACHE_DIR" ] && mkdir -p "$MPVC_CACHE_DIR"
     [ ! -d "$MPVC_PLAYLIST" ] && mkdir -p "$MPVC_PLAYLIST"
+    # if not present, create config files
+    touch "$MPVC_CURL_CACHE"
     # if present load user config
     if [ -r "$MPVC_CONFIG" ];
     then
@@ -116,16 +119,13 @@ mpvc_config()
 
 ## Retrieval Functions ########################################################
 
-curl_cache()
+mpvc_curl_cache()
 {
     k=$2
-    curl_cache="$MPVC_CONFIG_DIR/curl-cache.txt"
-    touch "$curl_cache"
-    v="$(awk -F'\t' -v k="$k" '{ if ($1 == k) {print $2;exit} }' "$curl_cache")"
-    if [ -z "$v" ];
-    then
+    v="$(awk -F'\t' -v k="$k" '{ if ($1 == k) {print $2;exit} }' "$MPVC_CURL_CACHE")"
+    if [ -z "$v" ]; then
         v=$(curl "$@")
-        echo "$k	$v" >> "$curl_cache"
+        echo "$k	$v" >> "$MPVC_CURL_CACHE"
     fi
     echo "$v"
 }
@@ -137,7 +137,7 @@ cleanFilename() {
     result="$1"
     case "$filename" in
         http*.googlevideo.com/*) filename="mps-yt stream" ;;
-        http*youtu*|http*watch*) result="$(curl_cache -sL "https://youtube.com/oembed?url=$filename" | mpvc_getjson '"title":')" ;;
+        http*youtu*|http*watch*) result="$(mpvc_curl_cache -sL "https://youtube.com/oembed?url=$filename" | mpvc_getjson '"title":')" ;;
         *) [ -e "$filename" ] && result=${filename##*/} ;;
     esac
     printf "$result"
