@@ -10,11 +10,14 @@
 An mpc-like control interface for mpv with a nearly complete compatibility layer for mpc commands in
 addition to GNU style arguments. [Check out the mpc manpage for details.](http://linux.die.net/man/1/mpc)
 
-![TUI screenshot](https://github.com/gmt4/mpvc/blob/master/docs/assets/mpvc-tui.png)
+`mpvc-tui -T: running the mpvc TUI`
+![mpvc-tui -T screenshot](https://github.com/gmt4/mpvc/blob/master/docs/assets/mpvc-tui.png)
 
-![TUI arch screenshot](https://github.com/gmt4/mpvc/blob/master/docs/assets/mpvc-tui-arch.png)
+`mpvc-tui -f: running with fzf`
+![mpvc-tui fzf screenshot](https://github.com/gmt4/mpvc/blob/master/docs/assets/mpvc-tui-arch.png)
 
-![TUI fzf screenshot](https://github.com/gmt4/mpvc/blob/master/docs/assets/mpvc-tui-fzf.png)
+`mpvc-tui -n: running with fzf and desktop notofications on the upper-right corner`
+![mpvc-tui fzf+notify screenshot](https://github.com/gmt4/mpvc/blob/master/docs/assets/mpvc-tui-fzf.png)
 
 ## Dependencies
 
