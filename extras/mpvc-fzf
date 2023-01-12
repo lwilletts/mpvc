@@ -1,7 +1,7 @@
 #!/bin/sh
 #
-# @file mpvc-ddg
-# @description mpvc ddg, mpv terminal user interface
+# @file mpvc-fzf
+# @description mpvc fzf, mpv terminal user interface
 # @author gmt4 <gmt4 at github.com> (c) Copyright 2022.
 # @url github.com/gmt4/mpvc
 #
