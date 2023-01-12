@@ -177,10 +177,13 @@ mpvc_cmd() {
     equiet mpvc_sockcmd_ "{ \"command\": [ $command ] }" | mpvc_getjson '"data":'
 }
 
+mpvc_set()  { mpvc_cmd "set_property" "$@"; }
+mpvc_sets() { mpvc_cmd "set_property_string" "$@"; }
+
+mpvc_getsb() { for p in "$@"; do mpvc_cmd "get_property_string" "$p"; done; }
+
 # fn args: mute, pause, loop-file, estimated-frame-number, width, height
-mpvc_get() {
-    mpvc_cmd "get_property" "$1"
-}
+mpvc_get() { mpvc_cmd "get_property" "$1"; }
 
 # fn args: filename, idle-active, playlist-count, playlist-pos, playback-time,
 #          playtime-remaining, time-remaining, percent-pos, duration, volume
@@ -193,10 +196,6 @@ mpvc_gets() {
         ;;
     esac
     echo "$result"
-}
-
-mpvc_getsb() {
-    for p in "$@"; do mpvc_cmd "get_property_string" "$p"; done
 }
 
 # fn args: speed
@@ -401,10 +400,10 @@ playNext() {
 setTimeRelative() {
     time=$(mpvc_gets playback-time)
     case "$1" in
-        *%*) mpvc_cmd "set_property_string" "percent-pos" "${1%%%}"; return ;;
-        -*)  mpvc_cmd "set_property_string" "playback-time" "$((time - $(parseTimeString "${1##-}")))" ;;
-        +*)  mpvc_cmd "set_property_string" "playback-time" "$((time + $(parseTimeString "${1##+}")))" ;;
-        *)   mpvc_cmd "set_property_string" "playback-time" "$((time + $(parseTimeString "${1}")))" ;;
+        *%*) mpvc_sets "percent-pos" "${1%%%}"; return ;;
+        -*)  mpvc_sets "playback-time" "$((time - $(parseTimeString "${1##-}")))" ;;
+        +*)  mpvc_sets "playback-time" "$((time + $(parseTimeString "${1##+}")))" ;;
+        *)   mpvc_sets "playback-time" "$((time + $(parseTimeString "${1}")))" ;;
     esac
 }
 
@@ -416,7 +415,7 @@ setTimeAbsolute() {
         QUIETFLAG="true"
         return 1
     fi
-    mpvc_cmd "set_property_string" "playback-time" "$timeSec"
+    mpvc_sets "playback-time" "$timeSec"
 }
 
 setVolume () {
@@ -429,7 +428,7 @@ setVolume () {
     esac
     [ "$volume" -lt 0 ] && eeprintf 1 "Volume cannot be set lower than 0%"
     [ "$volume" -gt 130 ] && eeprintf 1 "Volume cannot be set great than 130%"
-    mpvc_cmd "set_property_string" "volume" "$volume"
+    mpvc_sets "volume" "$volume"
 }
 
 setSpeed() {
@@ -439,7 +438,7 @@ setSpeed() {
         absolute) speed=$1 ;;
         relative) speed=$(echo "$speed $1" | awk '{print $1 + $2}') ;;
     esac
-    mpvc_cmd "set_property_string" "speed" "$speed"
+    mpvc_sets "speed" "$speed"
 }
 
 setTrack() {
@@ -468,7 +467,7 @@ setTrack() {
     if [ "$newTrack" -lt 0 ] || [ "$newTrack" -ge "$trackCount" ]; then
         eeprintf 1 "Item $newTrack is out of range of playlist."
     fi
-    quiet mpvc_cmd "set_property" "playlist-pos" "$newTrack"
+    quiet mpvc_set "playlist-pos" "$newTrack"
 }
 
 moveTrack() {
@@ -516,7 +515,7 @@ alwaysPlay() {
     if [ "$currentTrack" = "null" ]; then
         setTrack 0 absolute; return
     fi
-    quiet mpvc_cmd "set_property_string" "pause" "no"
+    quiet mpvc_set "pause" "no"
 }
 
 setPause() {
@@ -540,17 +539,17 @@ mpvc_toggle_window() {
 }
 
 toggleMute() {
-    [ -n "$1" ] && quiet mpvc_cmd "set_property_string" "mute" "$1" && return
+    [ -n "$1" ] && quiet mpvc_sets "mute" "$1" && return
     quiet mpvc_cmd "cycle" "mute"
 }
 
 toggleLoopFile() {
-    [ -n "$1" ] && quiet mpvc_cmd "set_property_string" "loop-file" "$1" && return
+    [ -n "$1" ] && quiet mpvc_sets "loop-file" "$1" && return
     quiet mpvc_cmd "cycle" "loop-file"
 }
 
 toggleLoopPlaylist() {
-    [ -n "$1" ] && quiet mpvc_cmd "set_property_string" "loop-playlist" "$1" && return
+    [ -n "$1" ] && quiet mpvc_sets "loop-playlist" "$1" && return
     quiet mpvc_cmd "cycle" "loop-playlist"
 }
 
