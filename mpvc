@@ -685,7 +685,7 @@ calculateTerminalHeight() {
     ctrack="$1"
     tracks="$2"
     lines=$(tput lines)
-    crow=3
+    crow=${MPVC_CLINE:-3}
     rows=$((lines - crow))
     halfrows=$((rows / 2))
     [ "$ctrack" = "null" ] && ctrack=0
