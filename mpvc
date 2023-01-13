@@ -808,7 +808,12 @@ main() {
             find)     eeprintf 1 "$PROGNAME: $* not implemented" ;;
 
             add|-a|--append) appendTracks "$@"; shift "$((shiftcount+1))" ;;
-            mpv|--mpv)       mpvc_startmpv --really-quiet --idle=yes; QUIETFLAG=true;;
+            mpv|--mpv)
+                QUIETFLAG=true
+                if ! pgrep -f "mpv .*$MPVC_SOCKET .*--idle=yes"; then
+                    mpvc_startmpv --really-quiet --idle=yes;
+                fi
+                ;;
             # consume) to implement # add on|off toggle
             # random) MPV doesn't have this control option!
 
