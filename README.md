@@ -3,7 +3,7 @@
 ![GitHub Release Date](https://img.shields.io/github/release-date/gmt4/mpvc)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/gmt4/mpvc)
 ![GitHub top language](https://img.shields.io/github/languages/top/gmt4/mpvc)
-[![Hits-of-Code](https://hitsofcode.com/github/gmt4/mpvc?branch=master)](https://hitsofcode.com/github/gmt4/mpvc/view?branch=master)
+![GitHub lines of Code](https://sloc.xyz/github/gmt4/mpvc/?category=code)
 
 # mpvc
 
