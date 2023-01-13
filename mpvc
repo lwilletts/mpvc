@@ -240,7 +240,7 @@ mpvc_get_playlist_once() {
         awk '
         BEGIN { RS="filename\\\\:" }
         {
-            gsub("\\\\", ""); sub("^[[]|]|,$", ""); sub("\n", "");
+            gsub("\\\\", ""); sub("(^\\[|]\n|\n|,$)", "");
             sub(",current:true", ""); sub(",playing:true", "");
             if (length($0)>0) print $0
         }' |
