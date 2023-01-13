@@ -14,11 +14,25 @@ PROGURL="https://github.com/gmt4/mpvc"
 quiet()  { "$@" > /dev/null 2>&1; }
 mpvctui_warn() { echo "$@" >&2; }
 
+# Set defaults
+mpvctui_defaults()
+{
+    MPVC_TERM=xterm
+}
+
 mpvctui_config()
 {
+    mpvctui_defaults
     if ! quiet command -v fzf; then
         mpvctui_warn "$PROGNAME: Warning: No fzf, Install to get fuzzy media search & play support!"
         sleep 1
+    fi
+    XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}
+    MPVC_CONFIG="${MPVC_CONFIG:-$XDG_CONFIG_HOME/mpvc/mpvc-tui.conf}"
+    # if present load user config
+    if [ -r "$MPVC_CONFIG" ];
+    then
+        . "$MPVC_CONFIG"
     fi
 }
 
@@ -116,7 +130,7 @@ mpvctui_ddg_play()
     mpvctui_fzf_ddg "$@" | mpvctui_fzf_preview |  awk '{print $1}' | mpvc load
 }
 
-optflags="dDfFhs::p:P:l"
+optflags="dDfFhs::p:P:lx"
 mpvctui_usage()
 {
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
@@ -146,6 +160,7 @@ main()
         p) shift; mpvctui_fzf_iplay "$OPTARG" | mpvc load ;;
         P) shift; mpvctui_fzf_iplay "$OPTARG" | mpvc loadc ;;
         s) shift; mpvctui_fzf_isearch "$OPTARG"; return;;
+        x) shift; quiet command -v $MPVC_TERM && $MPVC_TERM -e "$0" "$@"; exit;;
         esac
     done
 
