@@ -85,7 +85,7 @@ mpvc_defaults()
     MPVC_PLAYLIST="${MPVC_PLAYLIST:-$MPVC_CONFIG_DIR/playlist}"
     MPVC_CONFIG="${MPVC_CONFIG:-$XDG_CONFIG_HOME/mpvc/mpvc.conf}"
     MPVC_SOCKET="${MPVC_SOCKET:-$MPVC_CONFIG_DIR/mpvsocket}"
-    MPVC_SOCKETCMD="socat - $MPVC_SOCKET"
+    MPVC_SOCKETCMD="${MPVC_SOCKETCMD:-socat - $MPVC_SOCKET}"
     MPVC_CURL_CACHE="${MPVC_CURL_CACHE:-$MPVC_CONFIG_DIR/curl-cache.txt}"
     MPVOPTIONS="${MPVOPTIONS:---no-audio-display --no-input-terminal}"
     # print default status of mpv instance
@@ -170,6 +170,7 @@ mpvc_getjson() {
     }'
 }
 
+mpvc_sockrepl() { $MPVC_SOCKETCMD; }
 mpvc_sockcmd_() { echo "$@" | $MPVC_SOCKETCMD; }
 mpvc_sockcmd()  { oquiet mpvc_sockcmd_ "$@"; }
 mpvc_cmd() {
@@ -830,8 +831,9 @@ main() {
             -A|--playnext|playnext)          shift; playNext "$1"           ;;
             -o|--save|save)                  shift; quietcheck savePlaylist "$1"       ;;
             --load|load)                     shift; quietcheck loadPlaylist            ;;
-            --loadc|loadc)                   shift; quietcheck loadPlaylist "clear"    ;;
 
+            --current|current)               ;;
+            --loadc|loadc)                   shift; quietcheck loadPlaylist "clear"    ;;
             --saven|saven)                   shift; mpvc_get_playlist_once "numbered"; return ;;
             --autosave|autosave)             shift; mpvc_autosave_playlist "$1"; return   ;;
             --autoload|autoload)             shift; mpvc_autoload_playlist "$1"; return   ;;
@@ -847,6 +849,7 @@ main() {
             --togglev|togglev)               shift; mpvc_toggle_video ;;
             --togglew|togglew)               shift; mpvc_toggle_window ;;
             --idleloop|idleloop)             shift; mpvc_idleloop "$@"; return ;;
+            --repl|repl)                     shift; mpvc_repl return ;;
             --cmd|cmd)                       shift; mpvc_cmd "$@"; return ;;
             --sockcmd|sockcmd)               shift; mpvc_sockcmd "$1"; return ;;
 
