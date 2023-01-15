@@ -162,15 +162,14 @@ mpvctui_notify()
         echo $(date +%s) $(mpvc getsb duration path media-title) >> '"$MPVC_SCROBBLER"
 
     cmd="${1:-$cmd_default}"
-    mpvc idleloop |
-        awk -v cmd="$cmd" '
-            /playback-restart/ {
-                t=systime()
-                if (t - ot > 1)
-                    system(cmd);
-                ot=t
-                print t, $0
-            } '
+    awk -v cmd="$cmd" '
+        /playback-restart/ {
+            t=systime()
+            if (t - ot > 1)
+                system(cmd);
+            ot=t
+            print t, $0
+        } '
 }
 
 mpvctui_get_media()
@@ -206,7 +205,7 @@ mpvctui_usage()
     exit;
 }
 
-optflags="d:g:htTnN:P:x"
+optflags="d:g:htTm:nN:P:x"
 mpvctui_main()
 {
     mpvctui_config
@@ -224,8 +223,9 @@ mpvctui_main()
                   ( sleep 1 && pgrep -f "$PROGNAME -n" || setsid "$0" -n ) &
                   mpvctui_watch
                   ;;
-        n) shift; mpvctui_notify ;;
-        N) shift; mpvctui_notify "$OPTARG" ;;
+        m) shift; mpvctui_notify "$OPTARG" ;;
+        n) shift; mpvc idleloop | mpvctui_notify ;;
+        N) shift; mpvc idleloop | mpvctui_notify "$OPTARG" ;;
         x) shift; quiet command -v $MPVC_TERM && $MPVC_TERM -e "$0" "$@"; exit;;
         *) mpvctui_usage;;
         esac
