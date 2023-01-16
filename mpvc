@@ -167,7 +167,7 @@ mpvc_getjson() {
     }'
 }
 
-mpvc_sockrepl() { warn "$@: $MPVC_SOCKET"; socat - $MPVC_SOCKET || nc -U -N $MPVC_SOCKET; }
+mpvc_sockrepl() { socat - $MPVC_SOCKET || nc -U -N $MPVC_SOCKET; }
 mpvc_sockcmd_() { echo "$@" | mpvc_sockrepl; }
 mpvc_sockcmd()  { oquiet mpvc_sockcmd_ "$@"; }
 mpvc_cmd() {
@@ -848,9 +848,9 @@ main() {
             --togglev|togglev)               shift; mpvc_toggle_video ;;
             --togglew|togglew)               shift; mpvc_toggle_window ;;
             --idleloop|idleloop)             shift; mpvc_idleloop "$@"; return ;;
-            --repl|repl)                     shift; mpvc_repl return ;;
             --cmd|cmd)                       shift; mpvc_cmd "$@"; return ;;
             --sockcmd|sockcmd)               shift; mpvc_sockcmd "$1"; return ;;
+            --repl|repl)                     shift; mpvc_sockrepl; ;;
 
             -k|--kill|kill)                  quiet mpvc_cmd "quit"; QUIETFLAG=true ;;
             -K|--killall|killall)            quiet pkill -f "mpv "; QUIETFLAG=true ;;
