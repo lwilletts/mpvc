@@ -167,9 +167,23 @@ mpvc_getjson() {
     }'
 }
 
+
 mpvc_sockrepl() { socat - $MPVC_SOCKET || nc -U -N $MPVC_SOCKET; }
 mpvc_sockcmd_() { echo "$@" | mpvc_sockrepl; }
 mpvc_sockcmd()  { oquiet mpvc_sockcmd_ "$@"; }
+
+mpvc_socklist() { 
+    for f in $(find "$MPVC_CONFIG_DIR" -type s); do
+        idle=$(MPVC_SOCKET=$f mpvc_gets idle-active)
+        pause=$(MPVC_SOCKET=$f mpvc_gets pause)
+        if [ -z "$idle" ]; then
+            echo "$f:	active=no";
+        else
+            echo "$f:	active=yes idle=$idle pause=$pause";
+        fi
+    done;
+}
+
 mpvc_cmd() {
     command=$(for i in "$@"; do printf "\"$i\", "; done)
     equiet mpvc_sockcmd_ "{ \"command\": [ $command ] }" | mpvc_getjson '"data":'
@@ -748,9 +762,9 @@ mpvc_startmpv() {
 main() {
     mpvc_config
     case "$1" in
-    -c|--crop|crop|-C|--clear|clear) ;;
     -k|--kill|kill|-K|--killall|killall) ;;
-    -a|add|append|-A|playnext|--playnext|mpv|--mpv|--toggle|toggle|cmd|sockcmd|-q|--quiet) ;;
+    -c|--crop|crop|-C|--clear|clear|cmd|sockcmd|socklist|--socklist) ;;
+    -a|add|append|-A|playnext|--playnext|mpv|--mpv|--toggle|toggle|-q|--quiet) ;;
     load|--load|autoload|--autoload|lsplaylists|--lsplaylists|dbinit|--dbinit|dblist|--dblist) ;;
     version|--version|help|--help|-h|--list-options|-Q|--vid=no|-S) ;;
     *) mpvc_validate_socket;; # otherwise, validate socket
@@ -850,7 +864,8 @@ main() {
             --idleloop|idleloop)             shift; mpvc_idleloop "$@"; return ;;
             --cmd|cmd)                       shift; mpvc_cmd "$@"; return ;;
             --sockcmd|sockcmd)               shift; mpvc_sockcmd "$1"; return ;;
-            --repl|repl)                     shift; mpvc_sockrepl; ;;
+            --sockrepl|sockrepl)             shift; mpvc_sockrepl; ;;
+            --socklist|socklist)             shift; mpvc_socklist "$1"; return ;;
 
             -k|--kill|kill)                  quiet mpvc_cmd "quit"; QUIETFLAG=true ;;
             -K|--killall|killall)            quiet pkill -f "mpv "; QUIETFLAG=true ;;
