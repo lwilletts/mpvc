@@ -84,8 +84,7 @@ mpvc_defaults()
     MPVC_DATABASE="${MPVC_DATABASE:-$MPVC_CONFIG_DIR/db.m3u}"
     MPVC_PLAYLIST="${MPVC_PLAYLIST:-$MPVC_CONFIG_DIR/playlist}"
     MPVC_CONFIG="${MPVC_CONFIG:-$XDG_CONFIG_HOME/mpvc/mpvc.conf}"
-    MPVC_SOCKET="${MPVC_SOCKET:-$MPVC_CONFIG_DIR/mpvsocket}"
-    MPVC_SOCKETCMD="${MPVC_SOCKETCMD:-socat - $MPVC_SOCKET}"
+    MPVC_SOCKET="${MPVC_SOCKET:-$MPVC_CONFIG_DIR/mpvsocket0}"
     MPVC_CURL_CACHE="${MPVC_CURL_CACHE:-$MPVC_CONFIG_DIR/curl-cache.txt}"
     MPVOPTIONS="${MPVOPTIONS:---no-audio-display --no-input-terminal}"
     # print default status of mpv instance
@@ -96,8 +95,6 @@ speed:%speed%x volume:%volume%% muted:%muted% repeat:%repeat% single:%single%"
     # validate deps
     quiet type mpv || eeprintf 4 "$PROGNAME: Error: No mpv found. Install to continue."
     quiet type socat || type nc || eeprintf 4 "$PROGNAME: Error: No socat/nc found. Install one"
-    [ -z "$MPVC_SOCKETCMD" ] && MPVC_SOCKETCMD="socat - $MPVC_SOCKET"
-    [ -z "$MPVC_SOCKETCMD" ] && MPVC_SOCKETCMD="nc -U -N $MPVC_SOCKET"
 }
 
 # Load user config
@@ -170,8 +167,8 @@ mpvc_getjson() {
     }'
 }
 
-mpvc_sockrepl() { $MPVC_SOCKETCMD; }
-mpvc_sockcmd_() { echo "$@" | $MPVC_SOCKETCMD; }
+mpvc_sockrepl() { warn "$@: $MPVC_SOCKET"; socat - $MPVC_SOCKET || nc -U -N $MPVC_SOCKET; }
+mpvc_sockcmd_() { echo "$@" | mpvc_sockrepl; }
 mpvc_sockcmd()  { oquiet mpvc_sockcmd_ "$@"; }
 mpvc_cmd() {
     command=$(for i in "$@"; do printf "\"$i\", "; done)
@@ -810,10 +807,12 @@ main() {
 
             add|-a|--append) appendTracks "$@"; shift "$((shiftcount+1))" ;;
             mpv|--mpv)
+                shift
                 QUIETFLAG=true
                 if ! pgrep -f "mpv .*$MPVC_SOCKET .*--idle=yes"; then
-                    mpvc_startmpv --really-quiet --idle=yes;
+                    mpvc_startmpv --really-quiet --idle=yes "$@";
                 fi
+                break
                 ;;
             # consume) to implement # add on|off toggle
             # random) MPV doesn't have this control option!
