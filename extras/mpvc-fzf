@@ -157,11 +157,13 @@ main()
         #D) shift; mpvctui_fzf_ddg "$@";;
         f) shift; mpvctui_fzf_playlist ;;
         F) shift; mpvctui_fzf_preview "$@" ;;
+        h) shift; mpvctui_usage ;;
         l) shift; mpvctui_fzf_local;;
         p) shift; mpvctui_fzf_iplay "$OPTARG" | mpvc load ;;
         P) shift; mpvctui_fzf_iplay "$OPTARG" | mpvc loadc ;;
-        s) shift; mpvctui_fzf_isearch "$OPTARG"; return;;
+        s) shift; mpvctui_fzf_isearch "$OPTARG";;
         x) shift; quiet command -v $MPVC_TERM && $MPVC_TERM -e "$0" "$@"; exit;;
+        *) mpvctui_usage;;
         esac
     done
 
