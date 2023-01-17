@@ -167,19 +167,16 @@ mpvc_getjson() {
     }'
 }
 
-
 mpvc_sockrepl() { socat - $MPVC_SOCKET || nc -U -N $MPVC_SOCKET; }
 mpvc_sockcmd_() { echo "$@" | mpvc_sockrepl; }
 mpvc_sockcmd()  { oquiet mpvc_sockcmd_ "$@"; }
-
 mpvc_socklist() { 
     for f in $(find "$MPVC_CONFIG_DIR" -type s); do
         idle=$(MPVC_SOCKET=$f mpvc_gets idle-active)
-        pause=$(MPVC_SOCKET=$f mpvc_gets pause)
         if [ -z "$idle" ]; then
             echo "$f:	active=no";
         else
-            echo "$f:	active=yes idle=$idle pause=$pause";
+            echo "$f:	active=yes idle=$idle";
         fi
     done;
 }
@@ -189,9 +186,9 @@ mpvc_cmd() {
     equiet mpvc_sockcmd_ "{ \"command\": [ $command ] }" | mpvc_getjson '"data":'
 }
 
+mpvc_add()  { mpvc_cmd "add" "$@"; }
 mpvc_set()  { mpvc_cmd "set_property" "$@"; }
 mpvc_sets() { mpvc_cmd "set_property_string" "$@"; }
-
 mpvc_getsb() { for p in "$@"; do mpvc_cmd "get_property_string" "$p"; done; }
 
 # fn args: mute, pause, loop-file, estimated-frame-number, width, height
@@ -409,48 +406,20 @@ playNext() {
     moveTrack "$trackToMove" "$newTrackPosition"
 }
 
-setTimeRelative() {
-    time=$(mpvc_gets playback-time)
+setTime() {
+    mode=$1; shift
+    if [ "$mode" = "absolute" ]; then
+        timeSec=$(parseTimeString "$1") || return $?
+        mpvc_sets "playback-time" "$timeSec"
+        return
+    fi
+    # relative
     case "$1" in
         *%*) mpvc_sets "percent-pos" "${1%%%}"; return ;;
-        -*)  mpvc_sets "playback-time" "$((time - $(parseTimeString "${1##-}")))" ;;
-        +*)  mpvc_sets "playback-time" "$((time + $(parseTimeString "${1##+}")))" ;;
-        *)   mpvc_sets "playback-time" "$((time + $(parseTimeString "${1}")))" ;;
+        -*)  mpvc_add "playback-time" "$(parseTimeString "${1##-}")" ;;
+        +*)  mpvc_add "playback-time" "$(parseTimeString "${1##+}")" ;;
+        *)   mpvc_add "playback-time" "$(parseTimeString "${1}")" ;;
     esac
-}
-
-setTimeAbsolute() {
-    timeSec=$(parseTimeString "$1") || exit $?
-    trackTime=$(mpvc_gets duration)
-    if [ "$timeSec" -ge "$trackTime" ]; then
-        echo "Given time is greater than track length! ($(getTrackLength))"
-        QUIETFLAG="true"
-        return 1
-    fi
-    mpvc_sets "playback-time" "$timeSec"
-}
-
-setVolume () {
-    isInt "$1" || return 1
-    volume=$(mpvc_gets volume)
-    [ "$volume" = "error" ] && eeprintf 1 "Currently playing media does not have sound."
-    case "$2" in
-        relative) volume=$((volume + $1)) ;;
-        absolute) volume=$1;;
-    esac
-    [ "$volume" -lt 0 ] && eeprintf 1 "Volume cannot be set lower than 0%"
-    [ "$volume" -gt 130 ] && eeprintf 1 "Volume cannot be set great than 130%"
-    mpvc_sets "volume" "$volume"
-}
-
-setSpeed() {
-    isFloat "$1" || return 1
-    speed=$(getSpeed)
-    case "$2" in
-        absolute) speed=$1 ;;
-        relative) speed=$(echo "$speed $1" | awk '{print $1 + $2}') ;;
-    esac
-    mpvc_sets "speed" "$speed"
 }
 
 setTrack() {
@@ -465,7 +434,7 @@ setTrack() {
             # if time is greater than 10 seconds, set time to 0
             if [ "$newTrack" -lt "$currentTrack" ]; then
                 seconds=$(mpvc_gets playback-time)
-                [ "$seconds" -ge 10 ] && setTimeAbsolute 0 && return
+                [ "$seconds" -ge 10 ] && setTime "absolute" 0 && return
             fi
             if [ "$newTrack" -ge "$trackCount" ]; then
                 [ "$(getLoopStatus loop-playlist)" = "yes" ] && newTrack=0
@@ -550,7 +519,7 @@ mpvc_toggle_window() {
     quiet mpvc_cmd "cycle" "force-window"
 }
 
-toggleMute() {
+mpvc_toggle_mute() {
     [ -n "$1" ] && quiet mpvc_sets "mute" "$1" && return
     quiet mpvc_cmd "cycle" "mute"
 }
@@ -788,9 +757,9 @@ main() {
                 shift
                 case "$1" in
                     '') eeprintf 1 "Specify volume in/decrease amount or absolute amount." ;;
-                    +*) setVolume "$1" relative ;;
-                    -*) setVolume "$1" relative ;;
-                    *)  setVolume "$1" absolute ;;
+                    +*) mpvc_add "volume" "$1";;
+                    -*) mpvc_add "volume" "$1";;
+                    *)  mpvc_sets "volume" "$1"
                 esac
             ;;
             repeat)
@@ -814,12 +783,13 @@ main() {
             next)     setTrack 1 relative ;;
             prev)     setTrack -1 relative;;
             move)     shift; moveTrack "$1" "$2" ;;
-            mute)     toggleMute yes     ;;
-            unmute)   toggleMute no      ;;
+            mute)     mpvc_toggle_mute yes     ;;
+            unmute)   mpvc_toggle_mute no      ;;
             pretty)   eeprintf 1 "$PROGNAME: $* not implemented" ;;
             find)     eeprintf 1 "$PROGNAME: $* not implemented" ;;
 
             add|-a|--append) appendTracks "$@"; shift "$((shiftcount+1))" ;;
+            #replace|--replace) replaceTracks "$@"; shift "$((shiftcount+1))" ;;
             mpv|--mpv)
                 shift
                 QUIETFLAG=true
@@ -832,12 +802,12 @@ main() {
             # random) MPV doesn't have this control option!
 
             # GNU-style options
-            -t|--seek|seek)                  shift; setTimeRelative "$1"    ;;
-            -T|--time|time)                  shift; setTimeAbsolute "$1"    ;;
-            -v|--vol)                        shift; setVolume "$1" relative ;;
-            -V|--volume)                     shift; setVolume "$1" absolute ;;
-            -x|--speed|speed)                shift; setSpeed "$1" relative  ;;
-            -X|--speedval)                   shift; setSpeed "$1" absolute  ;;
+            -t|--seek|seek)                  shift; setTime "relative" "$1"    ;;
+            -T|--time|time)                  shift; setTime "absolute" "$1"    ;;
+            -v|--vol)                        shift; mpvc_add "volume" "$1"  ;;
+            -V|--volume)                     shift; mpvc_set "volume" "$1"  ;;
+            -x|--speed|speed)                shift; mpvc_add  "speed" "$1"  ;;
+            -X|--speedval)                   shift; mpvc_sets "speed" "$1"  ;;
             -j|--track)                      shift; setTrack "$1" relative  ;;
             -J|--tracknum)                   shift; setTrack "$1" absolute  ;;
             -r|--remove|rm|remove|del)       shift; removeTrack "$1"        ;;
@@ -863,16 +833,16 @@ main() {
             --togglew|togglew)               shift; mpvc_toggle_window ;;
             --idleloop|idleloop)             shift; mpvc_idleloop "$@"; return ;;
             --cmd|cmd)                       shift; mpvc_cmd "$@"; return ;;
-            --sockcmd|sockcmd)               shift; mpvc_sockcmd "$1"; return ;;
-            --sockrepl|sockrepl)             shift; mpvc_sockrepl; ;;
-            --socklist|socklist)             shift; mpvc_socklist "$1"; return ;;
+            --sockcmd|sockcmd)               shift; mpvc_sockcmd "$1"; QUIETFLAG=true ;;
+            --sockrepl|sockrepl)             shift; mpvc_sockrepl; QUIETFLAG=true ;;
+            --socklist|socklist)             shift; mpvc_socklist "$1"; QUIETFLAG=true ;;
 
             -k|--kill|kill)                  quiet mpvc_cmd "quit"; QUIETFLAG=true ;;
             -K|--killall|killall)            quiet pkill -f "mpv "; QUIETFLAG=true ;;
-            -s|--stop|stop)                  setPause true; setTimeAbsolute 0 ;;
+            -s|--stop|stop)                  setPause true; setTime "absolute" 0 ;;
             -P|--play)                       alwaysPlay                     ;;
             -p|--toggle|toggle)              mpvc_toggle_pause;;
-            -m|--mute)                       toggleMute                     ;;
+            -m|--mute)                       mpvc_toggle_mute               ;;
             -i|--playlist|playlist)          getPlaylist "";                ;;
             -I|--fullplaylist|fullplaylist)  getPlaylist "full";            ;;
             -L|--loop|loop)                  toggleLoopPlaylist             ;;
