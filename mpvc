@@ -416,23 +416,23 @@ setTime() {
     # relative
     case "$1" in
         *%*) mpvc_sets "percent-pos" "${1%%%}"; return ;;
-        -*)  mpvc_add "playback-time" "$(parseTimeString "${1##-}")" ;;
-        +*)  mpvc_add "playback-time" "$(parseTimeString "${1##+}")" ;;
+        -*)  mpvc_add "playback-time" "-$(parseTimeString "${1##-}")" ;;
+        +*)  mpvc_add "playback-time" "+$(parseTimeString "${1##+}")" ;;
         *)   mpvc_add "playback-time" "$(parseTimeString "${1}")" ;;
     esac
 }
 
 setTrack() {
     isInt "$1" || return 1
-    currentTrack=$(mpvc_gets playlist-pos)
+    cTrack=$(mpvc_gets playlist-pos)
     trackCount=$(mpvc_gets playlist-count)
-    [ "$currentTrack" = "null" ] && currentTrack=0
+    [ "$cTrack" = "null" ] && cTrack=0
     case "$2" in
         absolute) newTrack=$1 ;;
         relative)
-            newTrack=$((currentTrack + $1))
+            newTrack=$((cTrack + $1))
             # if time is greater than 10 seconds, set time to 0
-            if [ "$newTrack" -lt "$currentTrack" ]; then
+            if [ "$newTrack" -lt "$cTrack" ]; then
                 seconds=$(mpvc_gets playback-time)
                 [ "$seconds" -ge 10 ] && setTime "absolute" 0 && return
             fi
@@ -480,20 +480,18 @@ removeTrack() {
         oquiet mpvc_cmd "playlist-remove" "$trackId"
         return;
     fi
-
     isInt "$trackId" || return 1
     trackCount=$(mpvc_gets playlist-count)
     if [ -z "$trackCount" ] || [ "$trackId" -lt 0 ] || [ "$trackId" -ge "$trackCount" ]; then
         warn "Item $trackId is out of range of playlist."
     fi
-    filename="$(getPlaylistFilename $trackId)"
+    filename="$(getPlaylistFilename "$trackId")"
     oquiet mpvc_cmd "playlist-remove" "$trackId"
     quietcheck warn "$filename has been removed from the playlist."
 }
 
 alwaysPlay() {
-    currentTrack=$(mpvc_gets playlist-pos)
-    if [ "$currentTrack" = "null" ]; then
+    if [ "$(mpvc_gets playlist-pos)" = "null" ]; then
         setTrack 0 absolute; return
     fi
     quiet mpvc_set "pause" "no"
@@ -757,9 +755,9 @@ main() {
                 shift
                 case "$1" in
                     '') eeprintf 1 "Specify volume in/decrease amount or absolute amount." ;;
-                    +*) mpvc_add "volume" "$1";;
-                    -*) mpvc_add "volume" "$1";;
-                    *)  mpvc_sets "volume" "$1"
+                    +*) mpvc_add "volume" "$1"  ;;
+                    -*) mpvc_add "volume" "$1"  ;;
+                    *)  mpvc_sets "volume" "$1" ;;
                 esac
             ;;
             repeat)
