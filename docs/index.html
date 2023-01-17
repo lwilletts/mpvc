@@ -44,16 +44,18 @@
 <h2 id="gmt4-mpvc-quickstart">mpvc quickstart</h2>
 
 <pre style="background: #eee;">
-<b># make a local clone of the github repo</b>
-git clone https://github.com/gmt4/mpvc/
-<b># to install just copy/link to your $HOME/bin</b>
-make -C mpvc link BINDIR=$HOME/bin
-<b># use mpvc-tui to start the tui + desktop notifications</b>
-mpvc-tui -T
-<b># use mpvc-fzf to search and play youtube media</b>
-mpvc-fzf -p kupla mirage
-<b># use mpvc to enqueue local media / online YT media</b>
-mpvc add /path/to/your/*.mp3 # or your URLs
+
+ <b># make a local clone of the github repo</b>
+ git clone https://github.com/gmt4/mpvc/
+ <b># use make to install: just copy/link to your $HOME/bin</b>
+ make -C mpvc link BINDIR=$HOME/bin
+ <b># use mpvc-tui to start the tui + desktop notifications</b>
+ mpvc-tui -T
+ <b># use mpvc-fzf to search and play youtube media</b>
+ mpvc-fzf -p kupla mirage
+ <b># use mpvc to enqueue local media / online YT media</b>
+ mpvc add /path/to/your/*.mp3 # or your URLs
+
 </pre>
 
 <hr />
@@ -220,7 +222,7 @@ I think it’s clear/simpler this way, as the mpvc-tui was getting more and more
 </p>
 
 <hr/>
-<em>Last-Modified: Monday, 16 January 2023 12:37</em> by gmt4
+<em>Last-Modified: Tuesday, 17 January 2023</em> by gmt4
 
 </p>
 </body>
