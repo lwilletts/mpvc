@@ -815,6 +815,7 @@ main() {
             --dbinit|dbinit)                 shift; mpvc_dbinit; return          ;;
             --cycle|cycle)                   shift; mpvc_cmd cycle "$@"; return;;
             --set|set|s)                     shift; mpvc_cmd set_property "$@"; return;;
+            --get|get|g)                     shift; mpvc_cmd get_property "$@"; return;;
             --sets|sets|ss)                  shift; mpvc_cmd set_property_string "$@"; return;;
             --gets|gets|gs)                  shift; mpvc_cmd get_property_string "$@"; return;;
             --getsb|getsb|gsb)               shift; mpvc_getsb "$@"; return;;
