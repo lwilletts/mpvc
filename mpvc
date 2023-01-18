@@ -490,15 +490,15 @@ removeTrack() {
     quietcheck warn "$filename has been removed from the playlist."
 }
 
-alwaysPlay() {
+mpvc_always_play() {
     if [ "$(mpvc_gets playlist-pos)" = "null" ]; then
         setTrack 0 absolute; return
     fi
-    quiet mpvc_set "pause" "no"
+    mpvc_set_pause "no"
 }
 
-setPause() {
-    mpvc_sockcmd '{ "command": ["set_property", "pause", '"$1"' ] }'
+mpvc_set_pause() {
+    quiet mpvc_set "pause" "$1"
 }
 
 mpvc_toggle_pause() {
@@ -648,17 +648,9 @@ printFinalOutput() {
 
 ## Misc Functions #############################################################
 
-escapeChars() {
-    awk -v r="$1" '{ gsub(r, "\\\\&"); print $0; }'
-}
-
-isInt() {
-    printf '%d' "$1" >/dev/null
-}
-
-isFloat() {
-    [ -z "${1##*.*}" ] && printf '%f' "$1" >/dev/null
-}
+escapeChars() { awk -v r="$1" '{ gsub(r, "\\\\&"); print $0; }'; }
+isInt() { printf '%d' "$1" >/dev/null; }
+isFloat() { [ -z "${1##*.*}" ] && printf '%f' "$1" >/dev/null; }
 
 calculateTerminalHeight() {
     ctrack="$1"
@@ -749,7 +741,7 @@ main() {
                     $) setTrack "$(( $(mpvc_gets playlist-count) - 1 ))" absolute;;
                     *) isInt "$1" && setTrack "$1" absolute;;
                 esac
-                alwaysPlay
+                mpvc_always_play
             ;;
             vol|volume)
                 shift
@@ -777,7 +769,7 @@ main() {
                 esac
             ;;
             metadata) shift; getFilenameMetadata "$1" ;;
-            pause)    setPause true       ;;
+            pause)    mpvc_set_pause "yes"       ;;
             next)     setTrack 1 relative ;;
             prev)     setTrack -1 relative;;
             move)     shift; moveTrack "$1" "$2" ;;
@@ -837,8 +829,8 @@ main() {
 
             -k|--kill|kill)                  quiet mpvc_cmd "quit"; QUIETFLAG=true ;;
             -K|--killall|killall)            quiet pkill -f "mpv "; QUIETFLAG=true ;;
-            -s|--stop|stop)                  setPause true; setTime "absolute" 0 ;;
-            -P|--play)                       alwaysPlay                     ;;
+            -s|--stop|stop)                  mpvc_set_pause "yes"; setTime "absolute" 0 ;;
+            -P|--play)                       mpvc_always_play ;;
             -p|--toggle|toggle)              mpvc_toggle_pause;;
             -m|--mute)                       mpvc_toggle_mute               ;;
             -i|--playlist|playlist)          getPlaylist "";                ;;
