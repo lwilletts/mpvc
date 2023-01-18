@@ -10,11 +10,33 @@
 An mpc-like control interface for mpv with a nearly complete compatibility layer for mpc commands in
 addition to GNU style arguments. [Check out the mpc manpage for details.](http://linux.die.net/man/1/mpc)
 
-* mpvc-tui -T: running the mpvc TUI
+## QuickStart
+
+<pre>
+ <b># make a local clone of the github repo</b>
+ git clone https://github.com/gmt4/mpvc/
+ <b># use make to install: just copy/link to your $HOME/bin</b>
+ make -C mpvc link BINDIR=$HOME/bin
+ <b># use mpvc-tui to start the tui + desktop notifications</b>
+ mpvc-tui -T
+ <b># use mpvc-fzf to search and play youtube media</b>
+ mpvc-fzf -p kupla mirage
+ <b># use mpvc to enqueue local media / online YT media</b>
+ mpvc add /path/to/your/*.mp3 # or your URLs
+</pre>
+
+## Screenshots
+
+mpvc-tui -T: running the mpvc TUI
+
 ![mpvc-tui -T screenshot](https://github.com/gmt4/mpvc/blob/master/docs/assets/mpvc-tui.png)
-* mpvc-fzf -f: running with fzf to manage the playlist
+
+mpvc-fzf -f: running with fzf to manage the playlist
+
 ![mpvc-fzf screenshot](https://github.com/gmt4/mpvc/blob/master/docs/assets/mpvc-tui-arch.png)
-* mpvc-tui -n: running with mpvc-fzf and desktop notifications on the upper-right corner
+
+mpvc-tui -n: running with mpvc-fzf and desktop notifications on the upper-right corner
+
 ![mpvc tui+fzf+notifications screenshot](https://github.com/gmt4/mpvc/blob/master/docs/assets/mpvc-tui-fzf.png)
 
 ## Dependencies
