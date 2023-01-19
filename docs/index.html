@@ -203,9 +203,9 @@ Some usage examples of the above are:
 I discovered fzf while adding support for selecting and playing YT videos <a href="#logbook-20221219">#logbook-20221219</a>, so I'm quite a newbie on fzf. Still I've been playing with fzf+mpvc to get them working together. So far I've focused on 3 points:
 </p>
 <ul>
-<li><code>mpvc-tui -p</code>: For searching/playing Internet media from YouTube.
-<li><code>mpvc-tui -l</code>: For searching/playing Local media from your filesystem.
-<li><code>mpvc-tui -f</code>: For managing the mpv status & playlist: say mpvc play, pause, seek etc.
+<li><code>mpvc-fzf -p</code>: For searching/playing Internet media from YouTube.
+<li><code>mpvc-fzf -l</code>: For searching/playing Local media from your filesystem.
+<li><code>mpvc-fzf -f</code>: For managing the mpv status & playlist: say mpvc play, pause, seek etc.
 </ul>
 <p>
 This is still on a very preliminar state, but it's amazing what fzf can do, and so far, seems to fit very well with mpvc.
@@ -232,11 +232,13 @@ A work in progress update, in no particular order, but, mostly focused on using 
     <li> <code>mpvc socklist</code>: Lists all mpv sockets, including those that are inactive: without a mpv instance running.
     <li> <code>mpvc sockclean</code>: Clean inactive mpv sockets: without a mpv instance running.
     <li> If the mpv socket resides on a separate computer, then, socat/ssh can bring the socket home:
-        <p>
+        <br>
         <code>socat EXEC:'ssh mediacenter socat $HOME/.config/mpvc/mpvsocket0 -'  UNIX-LISTEN:$HOME/.config/mpvc/mpvsocket0,fork</code>
+        <br>
+        <em>Note</em>, the above command just "works", but probably has some rough edges, and can be improved.
 
     <li> After issuing the previous command, the <code>mpvsocket0</code> is locally accesible and can be directly managed by <code>mpvc, mpvc-fzf & mpvc-tui</code>. For example, running mpvc to start a randomly choosen track from the playlist:
-        <p>
+        <br>
         <code>mpvc -q play $(( $RANDOM % $(mpvc get playlist-count) )</code>)
 </ul>
 This goes together with other related command as: <code>mpvc cmd/sockcmd/repl/get/set/cycle</code>. 
