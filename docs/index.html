@@ -78,29 +78,32 @@ The logbook below is just that, a log of notes as I use and work  on mpvc-tui.
 Entries are chronologically ordered with oldest first, and, attempt to be self-contained focused on a certain functionality/topic, to the extent that it is possible.
 </p>
 
-<h3 id="logbook-20220330">On playing URLs, Wed 30 Mar 2022 ✓</h3>
+<h3 id="logbook-20220330">On playing URLs, Wednesday 30 Mar 2022 ✓</h3>
 <p>
-What got me started on using mpvc is being able to play URLs. This is the cause to start writing what you are reading now (this repo at https://github.com/gmt4/mpvc/)
+What got me started on using mpvc is being able to play URLs. This is the cause to start writing what you are reading now (this repo at https://github.com/gmt4/mpvc/). As in
+<ul>
+    <li><code>mpvc add<></li>
+</ul>
 </p>
 
-<h3 id="logbook-20221114">On securing mpv socket location, Mon 14 Nov 2022 ✓</h3>
+<h3 id="logbook-20221114">On securing mpv socket location, Monday 14 Nov 2022 ✓</h3>
 <p>
-One thing that bothers me when using mpvc, is that most programs performing ipc on mpv socket, just leave the socket at /tmp/mpvsocket. A better default location for the mpv socket is $HOME/.config/mpvc/mpvsocket
+One thing that bothers me when using mpvc, is that most programs performing ipc on mpv socket, just leave the socket at <code>/tmp/mpvsocket</code>. A better default location for the mpv socket is <code>$HOME/.config/mpvc/mpvsocket</code>.
 </p>
 
-<h3 id="logbook-20221118">On load/save functionality, Fri 18 Nov 2022 ✓</h3>
+<h3 id="logbook-20221118">On load/save functionality, Friday 18 Nov 2022 ✓</h3>
 <p>
-A thing that I'd like to be able to do is to perform mpvc load/save of the playlist, and, be able of manipulating the playlist using standard Unix commands eg. grep. The easiest way that comes to mind, is something a la: mpvc save | grep -v artist | mpvc load. This enables to filter out an artist, and drop all the songs by this artist.
+A thing that I'd like to be able to do is to perform <code>mpvc load/save</code> of the playlist, and, be able of manipulating the playlist using standard Unix commands eg. grep. The easiest way that comes to mind, is something a la: <code>mpvc save | grep -v artist | mpvc load</code>, this enables to filter out an artist, and drop all the songs by this artist.
 </p>
 
-<h3 id="logbook-20221120">On persistent mpv startup, Sun 20 Nov 2022 ✓</h3>
+<h3 id="logbook-20221120">On persistent mpv startup, Sunday 20 Nov 2022 ✓</h3>
 <p>
 One particular feature where improvement could be done mpvc -a audio.opus, when mpv finishes playing audio.opus, mpv terminates, and, the current playlist is lost. This happens as mpv is started with --idle=once. A solution for this is to start mpv separately with --idle=yes. A shortcut for this is to run `mpvc --mpv` that does exactly this, after this the mpv instance can be manipulated with mpvc, and does not terminate once mpv finishes playing.
 </p>
 
-<h3 id="logbook-20221203">On a minimal mpvc-tui, Sat 03 Dec 2022 ✓</h3>
+<h3 id="logbook-20221203">On a minimal mpvc-tui, Saturday 03 Dec 2022 ✓</h3>
 <p>
-One thing I keep doing a lot, is typing mpvc status and mpvc -i, to check the mpv playlist and status. To this end I've quickly hacked a minimal TUI https://github.com/gmt4/mpvc/blob/master/mpvc-tui, that continuously shows the mpvc playlist & status. In addition, while in mpvc-tui you can Control+C, to get a mpvc prompt to run quick mpvc commands, like: prev, next, pause, toggle, seek, volume, etc.
+One thing I keep doing a lot, is typing mpvc status and mpvc -i, to check the mpv playlist and status. To this end I've quickly hacked a minimal TUI named <code>mpvc-tui</code>, that continuously shows the mpvc playlist & status. In addition, while in mpvc-tui you can Control+C, to get a mpvc prompt to run quick mpvc commands, like: prev, next, pause, toggle, seek, volume, etc.
 </p>
 
 <h3 id="logbook-20221213">On using the mpvc-tui prompt, Tuesday 13 Dec 2022 ✓</h3>
@@ -120,7 +123,7 @@ When using the mpvc-tui prompt for some time, one notices that there's a lot of 
 
 <h3 id="logbook-20221214">On using the mpvc-tui -x launcher, Wednesday 14 Dec 2022 ✓</h3>
 <p>
-Another nifty detail of mpvc-tui, is that it can be quickly spawn from the WM launcher by using `mpvc-tui -x`, then type a few mpvc commands to setup music, and close it. Or it can be started on the current terminal with `mpvc-tui` and left running as a long running program, and get back to it when needed.
+Another nifty detail of mpvc-tui, is that it can be quickly spawn from the WM launcher by using <code>mpvc-tui -x</code>, then type a few mpvc commands to setup music, and close it. Or it can be started on the current terminal with `mpvc-tui` and left running as a long running program, and get back to it when needed.
 </p>
 
 <h3 id="logbook-20221215">On managing playlists with mpvc autoload/autosave, Thursday 15 Dec 2022 ✓</h3>
@@ -142,7 +145,7 @@ The above enables to arrange a playlist, and once we are happy with it, save it 
 
 <h3 id="logbook-20221216">On customizing mpvc-tui look and feel, Friday 16 Dec 2022 ✓</h3>
 <p>
-While using mpvc-tui, one ends up wanting to configure the minimal look and feel that mpvc-tui provides. To this end the file mpvc-tui.conf under $XDG_CONFIG_HOME/mpvc/ provides a place to overwrite the look and feel default settings of mvpc-tui.
+While using <code>mpvc-tui</code>, one ends up wanting to configure the minimal look and feel that mpvc-tui provides. To this end the file <code>mpvc-tui.conf</code> under $XDG_CONFIG_HOME/mpvc/ provides a place to overwrite the look and feel default settings of mvpc-tui.
 </p>
 
 <h3>Show HN: mpvc-tui, A minimal mpc-like cli and tui for mpv., Friday 16 Dec 2022 ✓</h3>
@@ -152,7 +155,7 @@ We are on "Show HN"! <a href="https://news.ycombinator.com/item?id=34013149">htt
 
 <h3 id="logbook-20221217">On issuing direct JSON IPC commands to mpv, Saturday 17 Dec 2022 ✓</h3>
 <p>
-That one is easy, for that purpose "mpvc cmd args" sends the "command": args to the JSON IPC. Some usage examples to test are:
+That one is easy, for that purpose <code>mpvc cmd args</code> sends the <code>{ "command": args< }/code> to the JSON IPC. Some usage examples to test are:
 </p>
 <ul>
 <li> <code>mpvc cmd show-text "hello-world" 2000</code>
@@ -221,8 +224,25 @@ Continuing on the topic of using fzf with mpv, I’ve decided to split the code 
 I think it’s clear/simpler this way, as the mpvc-tui was getting more and more fzf functionality, that was unrelated to the TUI. This breaks some things, as for example, uses of <code>mpvc-tui -[lfFspP]</code> that now have become <code>mpvc-fzf -[lfFspP]</code>.
 </p>
 
+<h3 id="logbook-20230119">On controlling multiple remotely running mpv instances, Thursday 19 Jan 2023 ✓</h3>
+A work in progress update, in no particular order, but, mostly focused on using mpvc to control a remote box (Raspberry Pi) acting as an audio/media center:
+
+<ul>
+    <li> <code>mpvc -S ~/.config/mpvc/mpvsocket-new --mpv add /path/to/media</code>: Starts a new <code>mpv</code> instance listening on <code>mpvsocket-new</code> and adds media.
+    <li> <code>mpvc socklist</code>: Lists all mpv sockets, including those that are inactive: without a mpv instance running.
+    <li> <code>mpvc sockclean</code>: Clean inactive mpv sockets: without a mpv instance running.
+    <li> If the mpv socket resides on a separate computer, then, socat/ssh can bring the socket home:
+        <p>
+        <code>socat EXEC:'ssh mediacenter socat $HOME/.config/mpvc/mpvsocket0 -'  UNIX-LISTEN:$HOME/.config/mpvc/mpvsocket0,fork</code>
+
+    <li> After issuing the previous command, the <code>mpvsocket0</code> is locally accesible and can be directly managed by <code>mpvc, mpvc-fzf & mpvc-tui</code>. For example, running mpvc to start a randomly choosen track from the playlist:
+        <p>
+        <code>mpvc -q play $(( $RANDOM % $(mpvc get playlist-count) )</code>)
+</ul>
+This goes together with other related command as: <code>mpvc cmd/sockcmd/repl/get/set/cycle</code>. 
+
 <hr/>
-<em>Last-Modified: Tuesday, 17 January 2023</em> by gmt4
+<em>Last-Modified: Thursday, 19 January 2023</em> by gmt4
 
 </p>
 </body>
