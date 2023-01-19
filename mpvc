@@ -522,14 +522,30 @@ mpvc_toggle_mute() {
     quiet mpvc_cmd "cycle" "mute"
 }
 
-toggleLoopFile() {
-    [ -n "$1" ] && quiet mpvc_sets "loop-file" "$1" && return
-    quiet mpvc_cmd "cycle-values" "loop-file" "yes" "no"
+mpvc_set_volume() {
+    case "$1" in
+        '') eeprintf 1 "Specify volume in/decrease amount or absolute amount." ;;
+        +*) mpvc_add "volume" "$1"  ;;
+        -*) mpvc_add "volume" "$1"  ;;
+        *%) mpvc_set "volume" "$1%" ;;
+        *)  mpvc_set "volume" "$1" ;;
+    esac
 }
 
-toggleLoopPlaylist() {
-    [ -n "$1" ] && quiet mpvc_sets "loop-playlist" "$1" && return
-    quiet mpvc_cmd "cycle-values" "loop-playlist" "yes" "no"
+mpvc_toggle_loopfile() {
+    case "$1" in
+        '')      quiet mpvc_cmd "cycle-values" "loop-file" "yes" "no" ;;
+        on|yes)  quiet mpvc_sets "loop-file" yes ;;
+        off|no)  quiet mpvc_sets "loop-file" no  ;;
+    esac
+}
+
+mpvc_toggle_loopplaylist() {
+    case "$1" in
+        '')      quiet mpvc_cmd "cycle-values" "loop-playlist" "yes" "no" ;;
+        on|yes)  quiet mpvc_sets "loop-playlist" "inf" ;;
+        off|no)  quiet mpvc_sets "loop-playlist" "no"  ;;
+    esac
 }
 
 shufflePlaylist() {
@@ -743,40 +759,18 @@ main() {
                 esac
                 mpvc_always_play
             ;;
-            vol|volume)
-                shift
-                case "$1" in
-                    '') eeprintf 1 "Specify volume in/decrease amount or absolute amount." ;;
-                    +*) mpvc_add "volume" "$1"  ;;
-                    -*) mpvc_add "volume" "$1"  ;;
-                    *)  mpvc_sets "volume" "$1" ;;
-                esac
-            ;;
-            repeat)
-                shift
-                case "$1" in
-                    on)  toggleLoopPlaylist inf ;;
-                    off) toggleLoopPlaylist no  ;;
-                    *)   toggleLoopPlaylist     ;;
-                esac
-            ;;
-            single)
-                shift
-                case "$1" in
-                    on)  toggleLoopFile yes ;;
-                    off) toggleLoopFile no  ;;
-                    *)   toggleLoopFile     ;;
-                esac
-            ;;
-            metadata) shift; getFilenameMetadata "$1" ;;
-            pause)    mpvc_set_pause "yes"       ;;
-            next)     setTrack 1 relative ;;
-            prev)     setTrack -1 relative;;
-            move)     shift; moveTrack "$1" "$2" ;;
-            mute)     mpvc_toggle_mute yes     ;;
-            unmute)   mpvc_toggle_mute no      ;;
-            pretty)   eeprintf 1 "$PROGNAME: $* not implemented" ;;
-            find)     eeprintf 1 "$PROGNAME: $* not implemented" ;;
+            vol|volume) shift; mpvc_set_volume "$1" ;;
+            repeat)     shift; mpvc_toggle_loopplaylist "$1" ;;
+            single)     shift; mpvc_toggle_loopfile "$1" ;;
+            metadata)   shift; getFilenameMetadata "$1" ;;
+            pause)      mpvc_set_pause "yes"       ;;
+            next)       setTrack 1 relative ;;
+            prev)       setTrack -1 relative;;
+            move)       shift; moveTrack "$1" "$2" ;;
+            mute)       mpvc_toggle_mute yes     ;;
+            unmute)     mpvc_toggle_mute no      ;;
+            pretty)     eeprintf 1 "$PROGNAME: $* not implemented" ;;
+            find)       eeprintf 1 "$PROGNAME: $* not implemented" ;;
 
             add|-a|--append) appendTracks "$@"; shift "$((shiftcount+1))" ;;
             #replace|--replace) replaceTracks "$@"; shift "$((shiftcount+1))" ;;
@@ -792,8 +786,8 @@ main() {
             # random) MPV doesn't have this control option!
 
             # GNU-style options
-            -t|--seek|seek)                  shift; setTime "relative" "$1"    ;;
-            -T|--time|time)                  shift; setTime "absolute" "$1"    ;;
+            -t|--seek|seek)                  shift; setTime "relative" "$1" ;;
+            -T|--time|time)                  shift; setTime "absolute" "$1" ;;
             -v|--vol)                        shift; mpvc_add "volume" "$1"  ;;
             -V|--volume)                     shift; mpvc_set "volume" "$1"  ;;
             -x|--speed|speed)                shift; mpvc_add  "speed" "$1"  ;;
@@ -836,8 +830,8 @@ main() {
             -m|--mute)                       mpvc_toggle_mute               ;;
             -i|--playlist|playlist)          getPlaylist "";                ;;
             -I|--fullplaylist|fullplaylist)  getPlaylist "full";            ;;
-            -L|--loop|loop)                  toggleLoopPlaylist             ;;
-            -l|--loopfile|loopfile)          toggleLoopFile                 ;;
+            -L|--loop|loop)                  mpvc_toggle_loopplaylist       ;;
+            -l|--loopfile|loopfile)          mpvc_toggle_loopfile           ;;
             -z|--shuffle|shuffle)            quietcheck shufflePlaylist     ;;
             -c|--crop|crop)                  quietcheck cropPlaylist        ;;
             -C|--clear|clear)                quietcheck clearPlaylist       ;;
