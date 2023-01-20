@@ -25,6 +25,7 @@ Usage: $PROGNAME [-S "socket"] [-a "filenames"] [-o "path"] [-f "format string"]
     -l | --lsplaylists  : List playlist from ${MPVC_PLAYLIST##$HOME/}.
     -j | --track        : Go forwards/backwards through the playlist queue.
     -J | --tracknum     : Jump to playlist item number.
+    -c | --crop         : Clear the playlist except for the file currently playing.
     -z | --shuffle      : Shuffle the current playlist.
     -l | --loop         : Loop currently playing playlist.
     -L | --loopfile     : Loop currently playing file.
