@@ -170,7 +170,7 @@ mpvc_getjson() {
 mpvc_sockrepl() { socat - $MPVC_SOCKET || nc -U -N $MPVC_SOCKET; }
 mpvc_sockcmd_() { echo "$@" | mpvc_sockrepl; }
 mpvc_sockcmd()  { oquiet mpvc_sockcmd_ "$@"; }
-mpvc_socklist() { 
+mpvc_socklist() {
     for f in $(find "$MPVC_CONFIG_DIR" -type s); do
         idle=$(MPVC_SOCKET=$f mpvc_get idle-active)
         if [ -z "$idle" ]; then
@@ -186,10 +186,9 @@ mpvc_cmd() {
     equiet mpvc_sockcmd_ "{ \"command\": [ $command ] }" | mpvc_getjson '"data":'
 }
 
-mpvc_add()  { mpvc_cmd "add" "$@"; }
-mpvc_set()  { mpvc_cmd "set_property" "$@"; }
-mpvc_sets() { mpvc_cmd "set_property_string" "$@"; }
-mpvc_getsb() { for p in "$@"; do mpvc_cmd "get_property_string" "$p"; done; }
+mpvc_add()   { mpvc_cmd "add" "$@"; }
+mpvc_set()   { mpvc_cmd "set_property" "$@"; }
+mpvc_sets()  { mpvc_cmd "set_property_string" "$@"; }
 
 # fn args: mute, pause, loop-file, estimated-frame-number, width, height
 mpvc_get() { mpvc_cmd "get_property" "$1"; }
@@ -571,26 +570,21 @@ clearPlaylist() {
 
 ## Time Functions #############################################################
 
+getTrackLength() {
+    formatTime "$(mpvc_gets duration)"
+}
+
+playtimeRemaining() {
+    formatTime "$(mpvc_gets playtime-remaining)"
+}
+
 getElapsedTime() {
-    time=$(mpvc_gets playback-time)
-    formatTime "$time"
+    formatTime "$(mpvc_gets playback-time)"
 }
 
 getElapsedTimePrecise() {
     time=$(mpvc_gets playback-time 0.0)
-    bigTime=${time%%.*}
-    tinyTime=${time#*.}
-    formatTime "$bigTime" "$tinyTime"
-}
-
-getTrackLength() {
-    duration=$(mpvc_gets duration)
-    formatTime "$duration"
-}
-
-playtimeRemaining() {
-    playtime=$(mpvc_gets playtime-remaining)
-    formatTime "$playtime"
+    formatTime "${time%%.*}" "${time#*.}"
 }
 
 # format seconds into HH:MM:SS format
@@ -801,22 +795,21 @@ main() {
 
             --current|current)               ;;
             --loadc|loadc)                   shift; quietcheck loadPlaylist "clear"    ;;
-            --saven|saven)                   shift; mpvc_get_playlist_once "numbered"; return ;;
-            --autosave|autosave)             shift; mpvc_autosave_playlist "$1"; return   ;;
-            --autoload|autoload)             shift; mpvc_autoload_playlist "$1"; return   ;;
-            --lsplaylists|lsplaylists)       shift; mpvc_lsplaylists "$1"; return       ;;
+            --saven|saven)                   shift; mpvc_get_playlist_once "numbered"; QUIETFLAG=true;;
+            --autosave|autosave)             shift; mpvc_autosave_playlist "$1"; ;;
+            --autoload|autoload)             shift; mpvc_autoload_playlist "$1"; ;;
+            --lsplaylists|lsplaylists)       shift; mpvc_lsplaylists "$1"; QUIETFLAG=true;;
             --dblist|dblist)                 shift; mpvc_dblist; return          ;;
             --dbinit|dbinit)                 shift; mpvc_dbinit; return          ;;
-            --cycle|cycle)                   shift; mpvc_cmd cycle "$@"; return;;
+            --cycle|cycle)                   shift; mpvc_cmd cycle "$@"; QUIETFLAG=true;;
             --set|set|s)                     shift; mpvc_cmd set_property "$@"; return;;
-            --get|get|g)                     shift; mpvc_cmd get_property "$@"; return;;
+            --get|get|g)                     shift; mpvc_cmd get_property "$1"; QUIETFLAG=true;;
             --sets|sets|ss)                  shift; mpvc_cmd set_property_string "$@"; return;;
-            --gets|gets|gs)                  shift; mpvc_cmd get_property_string "$@"; return;;
-            --getsb|getsb|gsb)               shift; mpvc_getsb "$@"; return;;
+            --gets|gets|gs)                  shift; mpvc_cmd get_property_string "$1"; QUIETFLAG=true;;
             --togglec|togglec)               shift; mpvc_toggle_cache ;;
             --togglev|togglev)               shift; mpvc_toggle_video ;;
             --togglew|togglew)               shift; mpvc_toggle_window ;;
-            --idleloop|idleloop)             shift; mpvc_idleloop "$@"; return ;;
+            --idleloop|idleloop)             shift; mpvc_idleloop "$1"; QUIETFLAG=true ;;
             --cmd|cmd)                       shift; mpvc_cmd "$@"; return ;;
             --sockcmd|sockcmd)               shift; mpvc_sockcmd "$1"; QUIETFLAG=true ;;
             --sockrepl|sockrepl)             shift; mpvc_sockrepl; QUIETFLAG=true ;;
