@@ -159,7 +159,7 @@ mpvctui_notify()
 {
     cmd_default='
         notify-send -u normal -i dialog-information "$(mpvc)";
-        echo $(date +%s) $(mpvc getsb duration path media-title) >> '"$MPVC_SCROBBLER"
+        echo $(date +%s) $(mpvc g duration g path g media-title) >> '"$MPVC_SCROBBLER"
 
     cmd="${1:-$cmd_default}"
     awk -v cmd="$cmd" '
