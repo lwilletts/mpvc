@@ -168,7 +168,7 @@ Note, audio filter commands above are lifted from https://github.com/mpv-player/
 
 <h3 id="logbook-20221219">On playing music from streaming services as youtube & co., Monday 19 Dec 2022 ✓</h3>
 <p>
-Mpv already plays URLs (both video and audio) from streaming platforms as youtube & co. So the one thing missing is to be able to search, select, and enqueue music from these services. This is provided by mpvc-tui -s/-p, that does:
+Mpv already plays URLs (both video and audio) from streaming platforms as youtube & co. So the one thing missing is to be able to search, select, and enqueue music from these services. This is provided by mpvc-fzf -s/-p, that does:
 </p>
 <ol>
 <li>Query the Invidious API and return a list of URLs
@@ -177,10 +177,10 @@ Mpv already plays URLs (both video and audio) from streaming platforms as youtub
 </ol>
 Some usage examples of the above are:
 <ul>
-<li> <code>mpvc-tui -s rolling stones</code>: <b>Search</b> and return the list of URLs found.
-<li> <code>mpvc-tui -s rolling stones | fzf -m</code>: <b>Search, Select</b> and return the list of URLs selected.
-<li> <code>mpvc-tui -s rolling stones | fzf -m | awk '{print $1}' | mpvc load</code>: <b>Search, Select, Enqueue</b> and play the list of URLs selected.
-<li> <code>mpvc-tui -p rolling stones</code>: Is a shortcut of the last command that does the whole thing.
+<li> <code>mpvc-fzf -s rolling stones</code>: <b>Search</b> and return the list of URLs found.
+<li> <code>mpvc-fzf -s rolling stones | fzf -m</code>: <b>Search, Select</b> and return the list of URLs selected.
+<li> <code>mpvc-fzf -s rolling stones | fzf -m | awk '{print $1}' | mpvc load</code>: <b>Search, Select, Enqueue</b> and play the list of URLs selected.
+<li> <code>mpvc-fzf -p rolling stones</code>: Is a shortcut of the last command that does the whole thing.
 </ul>
 Note, that you can use this command from inside mpvc-tui too, by hitting Control+C and then typing "!mpvc-tui -p rolling stones"
 </p>
