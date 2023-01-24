@@ -231,9 +231,9 @@ A work in progress update, in no particular order, but, mostly focused on using 
     <li> <code>mpvc -S ~/.config/mpvc/mpvsocket-new --mpv add /path/to/media</code>: Starts a new <code>mpv</code> instance listening on <code>mpvsocket-new</code> and adds media.
     <li> <code>mpvc socklist</code>: Lists all mpv sockets, including those that are inactive: without a mpv instance running.
     <li> <code>mpvc sockclean</code>: Clean inactive mpv sockets: without a mpv instance running.
-    <li> If the mpv socket resides on a separate computer, then, socat/ssh can bring the socket home:
+    <li> If the mpv socket resides on a separate computer, then, ssh forwarding can bring the socket home:
         <br>
-        <code>socat EXEC:'ssh mediacenter socat $HOME/.config/mpvc/mpvsocket0 -'  UNIX-LISTEN:$HOME/.config/mpvc/mpvsocket0,fork</code>
+        <code>ssh -NL $HOME/.config/mpvc/mpvsocket0:$HOME/.config/mpvc/mpvsocket0 mediacenter</code>
         <br>
         <em>Note</em>, the above command just "works", but probably has some rough edges, and can be improved.
 
