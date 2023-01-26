@@ -19,8 +19,11 @@ addition to GNU style arguments. [Check out the mpc manpage for details.](http:/
  make -C mpvc link BINDIR=$HOME/bin
  <b># use mpvc-tui to start the tui + desktop notifications</b>
  mpvc-tui -T
+
  <b># use mpvc-fzf to search and play youtube media</b>
  mpvc-fzf -p kupla mirage
+ <b># use mpvc-fzf to manage the playlist</b>
+ mpvc-fzf -f
  <b># use mpvc to enqueue local media / online YT media</b>
  mpvc add /path/to/your/*.mp3 # or your URLs
 </pre>
