@@ -549,14 +549,12 @@ mpvc_toggle_loopplaylist() {
 }
 
 shufflePlaylist() {
-    QUIETFLAG="true"
     quiet mpvc_cmd "playlist-shuffle"
     echo "Playlist shuffled."
     [ "$(getLoopStatus loop-playlist)" != "yes" ] && toggleLoopPlaylist inf
 }
 
 cropPlaylist() {
-    QUIETFLAG="true"
     quiet mpvc_cmd "playlist-clear"
     quietcheck getPlaylist
 }
@@ -789,13 +787,13 @@ main() {
             -X|--speedval)                   shift; mpvc_sets "speed" "$1"  ;;
             -j|--track)                      shift; setTrack "$1" relative  ;;
             -J|--tracknum)                   shift; setTrack "$1" absolute  ;;
-            -r|--remove|rm|remove|del)       shift; removeTrack "$1"        ;;
+            -r|--remove|rm|remove|del)       shift; removeTrack "$1"; QUIETFLAG=true;;
             -A|--playnext|playnext)          shift; playNext "$1"           ;;
-            -o|--save|save)                  shift; quietcheck savePlaylist "$1"       ;;
-            --load|load)                     shift; quietcheck loadPlaylist            ;;
+            -o|--save|save)                  shift; savePlaylist "$1"       ;;
+            --load|load)                     shift; loadPlaylist            ;;
 
             --current|current)               ;;
-            --loadc|loadc)                   shift; quietcheck loadPlaylist "clear"    ;;
+            --loadc|loadc)                   shift; loadPlaylist "clear"    ;;
             --saven|saven)                   shift; mpvc_get_playlist_once "numbered"; QUIETFLAG=true;;
             --autosave|autosave)             shift; mpvc_autosave_playlist "$1"; ;;
             --autoload|autoload)             shift; mpvc_autoload_playlist "$1"; ;;
@@ -826,9 +824,9 @@ main() {
             -I|--fullplaylist|fullplaylist)  getPlaylist "full";            ;;
             -L|--loop|loop)                  mpvc_toggle_loopplaylist       ;;
             -l|--loopfile|loopfile)          mpvc_toggle_loopfile           ;;
-            -z|--shuffle|shuffle)            quietcheck shufflePlaylist     ;;
-            -c|--crop|crop)                  quietcheck cropPlaylist        ;;
-            -C|--clear|clear)                quietcheck clearPlaylist       ;;
+            -z|--shuffle|shuffle)            shufflePlaylist; QUIETFLAG=true;;
+            -c|--crop|crop)                  cropPlaylist; QUIETFLAG=true;;
+            -C|--clear|clear)                clearPlaylist; QUIETFLAG=true;;
 
             # global argument parsing
             -f|--format)                     shift; FORMATSTRING="$1"       ;;
