@@ -821,6 +821,7 @@ main() {
             --sockcmd|sockcmd)               shift; mpvc_sockcmd "$1"; QUIETFLAG=true ;;
             --sockrepl|sockrepl)             shift; mpvc_sockrepl; QUIETFLAG=true ;;
             --socklist|socklist)             shift; mpvc_socklist "$1"; QUIETFLAG=true ;;
+            --search|search)                 shift; mpvc saven | awk '/'"$@"'/'; QUIETFLAG=true ;;
             -N|--searchplay|searchplay)      shift; mpvc_search_play "$1" ;;
 
             -k|--kill|kill)                  quiet mpvc_cmd "quit"; QUIETFLAG=true ;;
