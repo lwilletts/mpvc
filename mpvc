@@ -548,6 +548,14 @@ mpvc_toggle_loopplaylist() {
     esac
 }
 
+mpvc_search_play() {
+    track=$(
+        mpvc_get_playlist_once "numbered" |
+            awk '/^[0-9]+\\*/{cur=1} /'"$@"'/ && cur { sub("\\*",""); print $1; exit; }'
+    )
+    setTrack $track absolute
+}
+
 shufflePlaylist() {
     quiet mpvc_cmd "playlist-shuffle"
     echo "Playlist shuffled."
@@ -813,6 +821,7 @@ main() {
             --sockcmd|sockcmd)               shift; mpvc_sockcmd "$1"; QUIETFLAG=true ;;
             --sockrepl|sockrepl)             shift; mpvc_sockrepl; QUIETFLAG=true ;;
             --socklist|socklist)             shift; mpvc_socklist "$1"; QUIETFLAG=true ;;
+            -N|--searchplay|searchplay)      shift; mpvc_search_play "$1" ;;
 
             -k|--kill|kill)                  quiet mpvc_cmd "quit"; QUIETFLAG=true ;;
             -K|--killall|killall)            quiet pkill -f "mpv "; QUIETFLAG=true ;;
