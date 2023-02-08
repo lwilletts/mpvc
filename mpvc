@@ -551,9 +551,9 @@ mpvc_toggle_loopplaylist() {
 mpvc_search_play() {
     track=$(
         mpvc_get_playlist_once "numbered" |
-            awk '/^[0-9]+\\*/{cur=1} /'"$@"'/ && cur { sub("\\*",""); print $1; exit; }'
+            awk '/'"$@"'/ { sub("\\*",""); print $1; exit; }'
     )
-    setTrack $track absolute
+    setTrack "$track" absolute
 }
 
 shufflePlaylist() {
