@@ -265,7 +265,7 @@ mpvc_get_playlist_once() {
 }
 
 # fn args: $1: filename $2: full path flag to skip basename
-getPlaylistFilename() {
+mpvc_get_playlist_filename() {
     track="$1"
     fullPath="$2"
     filename=$(mpvc_get "playlist/$track/filename")
@@ -274,7 +274,7 @@ getPlaylistFilename() {
 }
 
 # print filenames in current playlist
-getPlaylist() {
+mpvc_get_playlist() {
     i=0
     fullPlaylist="$1"
     tracks=$(mpvc_get playlist-count)
@@ -307,7 +307,7 @@ getPlaylist() {
 getFilenameMetadata() {
     trackId="$1"
     isInt "$trackId" || exit 1
-    getPlaylistFilename "$trackId" fullpath
+    mpvc_get_playlist_filename "$trackId" fullpath
 }
 
 # saves playlist to file but with no path checking. we live dangerously
@@ -471,7 +471,7 @@ moveTrack() {
     [ "$newTrackPosition" -eq 1 ] && newTrackPosition=0
     quiet mpvc_cmd "playlist-move" "$trackToMove" "$newTrackPosition"
 
-    quietcheck getPlaylist
+    quietcheck mpvc_get_playlist
 }
 
 removeTrack() {
@@ -485,7 +485,7 @@ removeTrack() {
     if [ -z "$trackCount" ] || [ "$trackId" -lt 0 ] || [ "$trackId" -ge "$trackCount" ]; then
         warn "Item $trackId is out of range of playlist."
     fi
-    filename="$(getPlaylistFilename "$trackId")"
+    filename="$(mpvc_get_playlist_filename "$trackId")"
     oquiet mpvc_cmd "playlist-remove" "$trackId"
     quietcheck warn "$filename has been removed from the playlist."
 }
@@ -549,8 +549,10 @@ mpvc_toggle_loopplaylist() {
 }
 
 mpvc_search_play() {
+    mode=$1; shift
+    [ -z "$1" ] && return
     track=$(
-        mpvc_get_playlist_once "numbered" |
+        if [ "$mode" = "title" ]; then mpvc_get_playlist "full"; else mpvc_get_playlist_once "numbered"; fi |
             awk '/'"$@"'/ { sub("\\*",""); print $1; exit; }'
     )
     if [ -z "$track" ]
@@ -568,7 +570,7 @@ shufflePlaylist() {
 
 cropPlaylist() {
     quiet mpvc_cmd "playlist-clear"
-    quietcheck getPlaylist
+    quietcheck mpvc_get_playlist
 }
 
 clearPlaylist() {
@@ -826,7 +828,8 @@ main() {
             --sockrepl|sockrepl)             shift; mpvc_sockrepl; QUIETFLAG=true ;;
             --socklist|socklist)             shift; mpvc_socklist "$1"; QUIETFLAG=true ;;
             --search|search)                 shift; mpvc saven | awk '/'"$@"'/'; QUIETFLAG=true ;;
-            -N|--searchplay|searchplay)      shift; mpvc_search_play "$1" ;;
+            -n|--searchplay|searchplay)      shift; mpvc_search_play "file" "$1" ;;
+            -N|--searchPlay|searchPlay)      shift; mpvc_search_play "title" "$1" ;;
 
             -k|--kill|kill)                  quiet mpvc_cmd "quit"; QUIETFLAG=true ;;
             -K|--killall|killall)            quiet pkill -f "mpv "; QUIETFLAG=true ;;
@@ -834,8 +837,8 @@ main() {
             -P|--play)                       mpvc_always_play ;;
             -p|--toggle|toggle)              mpvc_toggle_pause;;
             -m|--mute)                       mpvc_toggle_mute               ;;
-            -i|--playlist|playlist)          getPlaylist "";                ;;
-            -I|--fullplaylist|fullplaylist)  getPlaylist "full";            ;;
+            -i|--playlist|playlist)          mpvc_get_playlist "";          ;;
+            -I|--fullplaylist|fullplaylist)  mpvc_get_playlist "full";      ;;
             -L|--loop|loop)                  mpvc_toggle_loopplaylist       ;;
             -l|--loopfile|loopfile)          mpvc_toggle_loopfile           ;;
             -z|--shuffle|shuffle)            shufflePlaylist; QUIETFLAG=true;;
