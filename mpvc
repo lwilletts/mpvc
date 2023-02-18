@@ -366,7 +366,7 @@ mpvc_stash() {
                 echo "mpvc cmd set_property pause yes"
                 echo "mpvc cmd playlist-clear"
                 echo "mpvc cmd playlist-remove 0"
-                mpvc_get_playlist_once | sed 's|^|mpvc add "|; s|$|"|'
+                mpvc_get_playlist_once | awk '{ print "mpvc add \""$0"\"" }'
                 echo "mpvc sets playlist-pos $(mpvc_gets "playlist-pos")"
                 echo "mpvc sets playback-time $(mpvc_gets "playback-time")"
                 echo "mpvc sets loop-file $(mpvc_gets "loop-file")"
