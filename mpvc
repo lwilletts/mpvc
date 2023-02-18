@@ -369,7 +369,12 @@ mpvc_stash() {
                 mpvc_get_playlist_once | sed 's|^|mpvc add "|; s|$|"|'
                 echo "mpvc sets playlist-pos $(mpvc_gets "playlist-pos")"
                 echo "mpvc sets playback-time $(mpvc_gets "playback-time")"
-                echo "mpvc cmd set_property pause no"
+                echo "mpvc sets loop-file $(mpvc_gets "loop-file")"
+                echo "mpvc sets loop-playlist $(mpvc_gets "loop-playlist")"
+                echo "mpvc sets pause $(mpvc_gets pause)"
+                echo "mpvc sets mute $(mpvc_gets mute)"
+                echo "mpvc sets speed $(mpvc_gets speed)"
+                echo "mpvc sets volume $(mpvc_gets volume)"
             ) | tee "$MPVC_STASH_DIR/$1"
             ;;
         apply)
