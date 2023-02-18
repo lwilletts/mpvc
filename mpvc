@@ -363,7 +363,7 @@ mpvc_stash() {
             [ -e "$MPVC_STASH_DIR/$1" ] && exit
             (
                 echo "# $PROGNAME stash $MPVC_STASH_DIR/$1 @version $PROGVERSION"
-                echo "mpvc cmd set_property pause yes"
+                echo "mpvc sets pause yes"
                 echo "mpvc cmd playlist-clear"
                 echo "mpvc cmd playlist-remove 0"
                 mpvc_get_playlist_once | awk '{ print "mpvc add \""$0"\"" }'
@@ -375,7 +375,7 @@ mpvc_stash() {
                 echo "mpvc sets mute $(mpvc_gets mute)"
                 echo "mpvc sets speed $(mpvc_gets speed)"
                 echo "mpvc sets volume $(mpvc_gets volume)"
-            ) | tee "$MPVC_STASH_DIR/$1"
+            ) > "$MPVC_STASH_DIR/$1"
             ;;
         apply)
             while read line
@@ -384,9 +384,9 @@ mpvc_stash() {
                     "#"*) echo "$line";;
                     "mpvc cmd "*) $line;;
                     "mpvc sets "*) $line;;
-                    "mpvc add "*) $line;;
+                    "mpvc add "*) eval "$line";;
                 esac
-            done
+            done < "$MPVC_STASH_DIR/$1"
             ;;
     esac
 }
