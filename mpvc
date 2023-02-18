@@ -459,16 +459,18 @@ moveTrack() {
         newTrackPosition=$1
     else
         trackToMove=$1
-        newTrackPosition=$2
         trackCount=$(mpvc_get playlist-count)
-        if [ "$trackToMove" -lt 0 ] || [ "$trackToMove" -ge "$trackCount" ]; then
+        [ "$1" = "$" ] && trackToMove="$trackCount"
+        newTrackPosition=$2
+        [ "$2" = "$" ] && newTrackPosition="$trackCount"
+        if [ "$trackToMove" -lt 0 ] || [ "$trackToMove" -gt "$trackCount" ]; then
             eeprintf 1 "Item $trackToMove is out of range of playlist."
         fi
     fi
 
     [ "$newTrackPosition" -lt 0 ] &&
         eeprintf 1 "Position $newTrackPosition is out of range of playlist."
-    [ "$newTrackPosition" -eq 1 ] && newTrackPosition=0
+    #[ "$newTrackPosition" -eq 1 ] && newTrackPosition=0
     quiet mpvc_cmd "playlist-move" "$trackToMove" "$newTrackPosition"
 
     quietcheck mpvc_get_playlist
@@ -773,7 +775,7 @@ main() {
             pause)      mpvc_set_pause "yes"       ;;
             next)       setTrack 1 relative ;;
             prev)       setTrack -1 relative;;
-            move)       shift; moveTrack "$1" "$2" ;;
+            move|mv)    shift; moveTrack "$1" "$2" ;;
             mute)       mpvc_toggle_mute yes     ;;
             unmute)     mpvc_toggle_mute no      ;;
             pretty)     eeprintf 1 "$PROGNAME: $* not implemented" ;;
