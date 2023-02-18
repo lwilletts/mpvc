@@ -348,6 +348,44 @@ loadPlaylist() {
     printf "$buffer\n" | while read -r line; do appendTracks "$line"; done
 }
 
+# mpvc stash [list|show|push|drop|apply]
+mpvc_stash() {
+    cmd="$1"; shift
+
+    QUIETFLAG="true"
+    MPVC_STASH_DIR="${MPVC_STASH_DIR:-$MPVC_CONFIG_DIR/stash}"
+    mkdir -p $MPVC_STASH_DIR
+    case "$cmd" in
+        list) ls -ltr $MPVC_STASH_DIR ;;
+        show) cat "$MPVC_STASH_DIR/$1" ;;
+        drop) rm -i "$MPVC_STASH_DIR/$1" ;;
+        push)
+            [ -e "$MPVC_STASH_DIR/$1" ] && exit
+            (
+                echo "# $PROGNAME stash $MPVC_STASH_DIR/$1 @version $PROGVERSION"
+                echo "mpvc cmd set_property pause yes"
+                echo "mpvc cmd playlist-clear"
+                echo "mpvc cmd playlist-remove 0"
+                mpvc_get_playlist_once | sed 's|^|mpvc add "|; s|$|"|'
+                echo "mpvc sets playlist-pos $(mpvc_gets "playlist-pos")"
+                echo "mpvc sets playback-time $(mpvc_gets "playback-time")"
+                echo "mpvc cmd set_property pause no"
+            ) | tee "$MPVC_STASH_DIR/$1"
+            ;;
+        apply)
+            while read line
+            do
+                case "$line" in
+                    "#"*) echo "$line";;
+                    "mpvc cmd "*) $line;;
+                    "mpvc sets "*) $line;;
+                    "mpvc add "*) $line;;
+                esac
+            done
+            ;;
+    esac
+}
+
 mpvc_dbinit() {
     locate -b '*.mp3' '*.mp4' '*.ogg' '*.opus' |
         sed 's|^\(/.*/\).*|\1|' | sort | uniq |
@@ -832,6 +870,7 @@ main() {
             --search|search)                 shift; mpvc saven | awk '/'"$@"'/'; QUIETFLAG=true ;;
             -n|--searchplay|searchplay)      shift; mpvc_search_play "file" "$1" ;;
             -N|--searchPlay|searchPlay)      shift; mpvc_search_play "title" "$1" ;;
+            --stash|stash)                   shift; mpvc_stash "$1" "$2";;
 
             -k|--kill|kill)                  quiet mpvc_cmd "quit"; QUIETFLAG=true ;;
             -K|--killall|killall)            quiet pkill -f "mpv "; QUIETFLAG=true ;;
