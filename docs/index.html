@@ -17,6 +17,12 @@
     <meta property="og:image" content="https://raw.githubusercontent.com/gmt4/mpvc/master/docs/mpvc-tui.png"/>
 
     <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <style type="text/css" media="all">
+    @media (prefers-color-scheme: dark) {
+       :root { --body-bg: #111; --body-color: #eee; } /* Dark mode */
+    }
+    body { background: var(--body-bg); color: var(--body-color); }
+    </style>
 </head>
 
 <html>
@@ -43,7 +49,7 @@
 <hr />
 <h2 id="gmt4-mpvc-quickstart">mpvc quickstart</h2>
 
-<pre style="background: #eee;">
+<pre>
 
  <b># make a local clone of the github repo</b>
  git clone https://github.com/gmt4/mpvc/
