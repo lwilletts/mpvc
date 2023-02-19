@@ -7,6 +7,7 @@
 
 PROGNAME=$(basename "$0")
 PROGVERSION="1.3"
+PROGURL="https://github.com/gmt4/mpvc"
 
 usage() {
     cat >&2 << EOF
@@ -55,7 +56,7 @@ Formatting:
 
 MPC compatibility layer:
     mpvc features a nearly complete compatibility layer for mpc commands in
-    addition to GNU style arguments. http://linux.die.net/man/1/mpc
+    addition to GNU style arguments. https://linux.die.net/man/1/mpc
 
 Exit codes:
     0: Program ran succesfully.
@@ -362,19 +363,23 @@ mpvc_stash() {
         push)
             [ -e "$MPVC_STASH_DIR/$1" ] && exit
             (
-                echo "# $PROGNAME stash $MPVC_STASH_DIR/$1 @version $PROGVERSION"
+                echo "# $PROGNAME stash $MPVC_STASH_DIR/$1 # $PROGURL @version $PROGVERSION"
                 echo "mpvc sets pause yes"
                 echo "mpvc cmd playlist-clear"
                 echo "mpvc cmd playlist-remove 0"
                 mpvc_get_playlist_once | awk '{ print "mpvc add \""$0"\"" }'
-                echo "mpvc sets playlist-pos $(mpvc_gets "playlist-pos")"
-                echo "mpvc sets playback-time $(mpvc_gets "playback-time")"
-                echo "mpvc sets loop-file $(mpvc_gets "loop-file")"
-                echo "mpvc sets loop-playlist $(mpvc_gets "loop-playlist")"
-                echo "mpvc sets pause $(mpvc_gets pause)"
+                echo "mpvc sets playlist-pos $(mpvc_gets playlist-pos)"
+                echo "mpvc sets playback-time $(mpvc_gets playback-time)"
+                echo "mpvc sets loop-file $(mpvc_gets loop-file)"
+                echo "mpvc sets loop-playlist $(mpvc_gets loop-playlist)"
+                echo "mpvc sets ab-loop-a $(mpvc_get ab-loop-a)"
+                echo "mpvc sets ab-loop-b $(mpvc_get ab-loop-b)"
                 echo "mpvc sets mute $(mpvc_gets mute)"
                 echo "mpvc sets speed $(mpvc_gets speed)"
                 echo "mpvc sets volume $(mpvc_gets volume)"
+                echo "mpvc sets volume $(mpvc_gets volume)"
+                echo "mpvc sets pause $(mpvc_gets pause)"
+                #echo "mpvc sets working-directory $(mpvc_gets working-directory)"
             ) > "$MPVC_STASH_DIR/$1"
             ;;
         apply)
