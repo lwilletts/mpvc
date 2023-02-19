@@ -151,7 +151,7 @@ The above enables to arrange a playlist, and once we are happy with it, save it 
 While using <code>mpvc-tui</code>, one ends up wanting to configure the minimal look and feel that mpvc-tui provides. To this end the file <code>mpvc-tui.conf</code> under $XDG_CONFIG_HOME/mpvc/ provides a place to overwrite the look and feel default settings of mvpc-tui.
 </p>
 
-<h3>Show HN: mpvc-tui, A minimal mpc-like cli and tui for mpv., Friday 16 Dec 2022 ✓</h3>
+<h3>Show HN: mpvc-tui – A minimal mpc-like CLI and TUI for controlling mpv, Friday 16 Dec 2022 ✓</h3>
 <p>
 We are on "Show HN"! <a href="https://news.ycombinator.com/item?id=34013149">https://news.ycombinator.com/item?id=34013149</a>
 </p>
@@ -180,12 +180,12 @@ Mpv already plays URLs (both video and audio) from streaming platforms as youtub
 </ol>
 Some usage examples of the above are:
 <ul>
-<li> <code>mpvc-fzf -s rolling stones</code>: <b>Search</b> and return the list of URLs found.
-<li> <code>mpvc-fzf -s rolling stones | fzf -m</code>: <b>Search, Select</b> and return the list of URLs selected.
-<li> <code>mpvc-fzf -s rolling stones | fzf -m | awk '{print $1}' | mpvc load</code>: <b>Search, Select, Enqueue</b> and play the list of URLs selected.
+<li> <code>mpvc-fzf -s rolling stones</code>: Search and return the list of URLs found.
+<li> <code>mpvc-fzf -s rolling stones | fzf -m</code>: Search, Select and return the list of URLs selected.
+<li> <code>mpvc-fzf -s rolling stones | fzf -m | awk '{print $1}' | mpvc load</code>: Search, Select, Enqueue and play the list of URLs selected.
 <li> <code>mpvc-fzf -p rolling stones</code>: Is a shortcut of the last command that does the whole thing.
 </ul>
-Note, that you can use this command from inside mpvc-tui too, by hitting Control+C and then typing "!mpvc-tui -p rolling stones"
+Note, that you can use this command from inside mpvc-tui too, by hitting Control+C and then typing "!mpvc-fzf -p rolling stones"
 </p>
 
 <h3 id="logbook-20221221">On subscribing and receiving mpv events, Wednesday 21 Dec 2022 ✓</h3>
@@ -246,8 +246,23 @@ A work in progress update, in no particular order, but, mostly focused on using 
 </ul>
 This goes together with other related command as: <code>mpvc cmd/sockcmd/repl/get/set/cycle</code>. 
 
+<h3 id="logbook-20230219">On stashing mpv media player state to restore later, Sunday 19 February 2023 ✓</h3>
+<p>
+Something experimental I've been testing lately is using: <code>mpvc stash</code> command to save the currently playing state, to be restored later. The commands implemented by <code>mpvc stash [list|show|push|drop|apply]</code> are inspired in git-stash(1):
+
+<ul>
+<li><code>mpvc stash list</code>: Lists the currently mpvc stashes.
+<li><code>mpvc stash show [name]</code>: Shows the contents of the mpvc stash named [name].
+<li><code>mpvc stash push [name]</code>: Stashes the current mpvc state to [name].
+<li><code>mpvc stash drop [name]</code>: Removes the mpvc stash named [name].
+<li><code>mpvc stash apply [name]</code>: Applies the mpvc stash named [name].
+</ul>
+</p>
+
+This is different from <code>mpvc load/save</code> that only loads/saves the playlist, as <code>mpvc stash</code> saves the current playing settings including: <code>playlist-pos, playback-time, volume, mute, pause, etc.</code> together with the playlist. 
+
 <hr/>
-<em>Last-Modified: Thursday, 19 January 2023</em> by gmt4
+<em>Last-Modified: Sunday, 19 February 2023</em> by gmt4
 
 </p>
 </body>
