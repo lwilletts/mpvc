@@ -430,7 +430,9 @@ mpvc_appendtrack() {
 mpvc_appendtracks() {
     shiftcount=0
     QUIETFLAG="true"
-    if ! quiet pgrep -f "mpv .*$MPVC_SOCKET"; then
+    if [ -z "$(mpvc_get idle-active)" ];
+    then
+        echo "$PROGNAME: No running mpv found, starting mpv now"
         mpvc_startmpv --really-quiet --idle=once
     fi
     for arg in "$@"; do
