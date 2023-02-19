@@ -346,7 +346,7 @@ loadPlaylist() {
     while read -r line; do buffer="${buffer}\n${line}"; done
     [ -z "$buffer" ] && return
     [ "$1" = "clear" ] && clearPlaylist
-    printf "$buffer\n" | while read -r line; do appendTracks "$line"; done
+    printf "$buffer\n" | while read -r line; do mpvc_appendtracks "$line"; done
 }
 
 # mpvc stash [list|show|push|drop|apply]
@@ -367,7 +367,7 @@ mpvc_stash() {
                 echo "mpvc sets pause yes"
                 echo "mpvc cmd playlist-clear"
                 echo "mpvc cmd playlist-remove 0"
-                mpvc_get_playlist_once | awk '{ print "mpvc add \""$0"\"" }'
+                mpvc_get_playlist_once | awk '{ print "mpvc add "$0 }'
                 echo "mpvc sets playlist-pos $(mpvc_gets playlist-pos)"
                 echo "mpvc sets playback-time $(mpvc_gets playback-time)"
                 echo "mpvc sets loop-file $(mpvc_gets loop-file)"
@@ -389,7 +389,7 @@ mpvc_stash() {
                     "# $PROGNAME "*) echo "$line";;
                     "mpvc cmd "*) $line;;
                     "mpvc sets "*) $line;;
-                    "mpvc add "*) $line;;
+                    "mpvc add "*) mpvc add "${line##mpvc add }";;
                 esac
             done < "$MPVC_STASH_DIR/$1"
             ;;
@@ -409,7 +409,7 @@ mpvc_dblist() {
 
 ## Control Functions ##########################################################
 
-appendTrack() {
+mpvc_appendtrack() {
     filename="$*"
     # require absolute paths
     case "$filename" in
@@ -427,7 +427,7 @@ appendTrack() {
     fi
 }
 
-appendTracks() {
+mpvc_appendtracks() {
     shiftcount=0
     QUIETFLAG="true"
     if ! quiet pgrep -f "mpv .*$MPVC_SOCKET"; then
@@ -435,8 +435,8 @@ appendTracks() {
     fi
     for arg in "$@"; do
         case "$arg" in
-        http*) appendTrack "$arg"; _=$((shiftcount+=1)) ;;
-        *)     if [ -e "$arg" ]; then appendTrack "$arg"; _=$((shiftcount+=1)); fi
+        http*) mpvc_appendtrack "$arg"; _=$((shiftcount+=1)) ;;
+        *)     if [ -e "$arg" ]; then mpvc_appendtrack "$arg"; _=$((shiftcount+=1)); fi
         esac
     done
     return $shiftcount
@@ -445,7 +445,7 @@ appendTracks() {
 playNext() {
     QUIETFLAG="true"
     # add track to the playlist
-    appendTracks "$1"
+    mpvc_appendtracks "$1"
     # find position of track to move
     trackToMove="$(( $(mpvc_get playlist-count) - 1 ))"
     # find position of current track
@@ -829,7 +829,7 @@ main() {
             pretty)     eeprintf 1 "$PROGNAME: $* not implemented" ;;
             find)       eeprintf 1 "$PROGNAME: $* not implemented" ;;
 
-            add|-a|--append) appendTracks "$@"; shift "$((shiftcount+1))" ;;
+            add|-a|--append) mpvc_appendtracks "$@"; shift "$((shiftcount+1))" ;;
             #replace|--replace) replaceTracks "$@"; shift "$((shiftcount+1))" ;;
             mpv|--mpv)
                 shift
