@@ -605,7 +605,7 @@ mpvc_search_play() {
         if [ "$mode" = "title" ]; then mpvc_get_playlist "full"; else mpvc_get_playlist_once "numbered"; fi |
             awk '/'"$@"'/ { sub("\\*",""); print $1; exit; }'
     )
-    [ -z "$track" ]; then
+    if [ -z "$track" ]; then
         eeprintf 1 "$PROGNAME: Searching for $*, nothing found."
     fi
     setTrack "$track" absolute
