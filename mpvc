@@ -376,6 +376,7 @@ mpvc_stash() {
                 echo "mpvc sets idle $(mpvc_gets idle)"
                 echo "mpvc sets mute $(mpvc_gets mute)"
                 echo "mpvc sets video $(mpvc_gets video)"
+                echo "mpvc sets cache $(mpvc_gets cache)"
                 echo "mpvc sets speed $(mpvc_gets speed)"
                 echo "mpvc sets volume $(mpvc_gets volume)"
                 echo "mpvc sets pause $(mpvc_gets pause)"
