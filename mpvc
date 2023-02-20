@@ -46,6 +46,21 @@ Usage: $PROGNAME [-S "socket"] [-a "filenames"] [-o "path"] [-f "format string"]
     -- |                : After adding files options after -- are passed to mpv.
     -h | --help         : Print this help.
 
+    get                 : Get MPV property from $PROGNAME socket.
+    set                 : Set MPV property from $PROGNAME socket.
+    cmd                 : Send command to $PROGNAME socket.
+    sockcmd             : Send MPV JSON IPC command to $PROGNAME socket.
+    socklist            : List $PROGNAME sockets.
+    togglec             : Toggle MPV cache property.
+    togglev             : Toggle MPV video property.
+    togglew             : Toggle MPV window property.
+    cycle               : Toggle/Cycle through MPV property values.
+    idleloop            : Listen to MPV player events on $PROGNAME socket.
+    search              : Search the playlist by filename/url.
+    searchplay          : Search the playlist by filename and play the first match.
+    searchPlay          : Search the playlist by title and play the first match.
+    stash               : $PROGNAME stash [list|show|push|drop|apply]
+
 Formatting:
     \`$PROGNAME --format\` will interpret the following delimiters if they are found:
 
@@ -393,6 +408,9 @@ mpvc_stash() {
                     "mpvc add "*) mpvc add "${line##mpvc add }";;
                 esac
             done < "$MPVC_STASH_DIR/$1"
+            ;;
+        *)
+            warn "$PROGNAME stash: error: unknown subcommand $cmd."
             ;;
     esac
 }
