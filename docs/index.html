@@ -18,14 +18,14 @@
     <!-- GH stuff -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <style type="text/css" media="all">
-    :root { --body-bg: #fff; --body-color: #111; --pre-bg:#eee; } /* Light mode */
+    :root { --body-bg: #fff; --body-color: #111; --pre-bg:#eee; --link-color:#00f; } /* Light mode */
     @media (prefers-color-scheme: dark) {
-       :root { --body-bg: #222; --body-color: #eee; --pre-bg:#333; } /* Dark mode */
+       :root { --body-bg: #222; --body-color: #eee; --pre-bg:#333; --link-color:#07f; } /* Dark mode */
     }
     body { background: var(--body-bg); color: var(--body-color); }
     code { background: var(--pre-bg); }
     pre  { background: var(--pre-bg); }
-    a    { color: var(--body-color); }
+    a    { color: var(--link-color); }
     </style>
 </head>
 
@@ -35,7 +35,7 @@
 <ul>
     <li><strong>about</strong> A minimal mpc-like CLI and TUI for controlling mpv from the shell.</li>
     <li><strong>tags</strong> cli music-player terminal minimal mpv tui media-player mplayer posix-sh mpv-player mpvc mpvc-tui</li>
-    <li><strong>goodies</strong> Support for TUI, CLI, manage/play URLs to youtube and other music streaming services (<a href="#logbook-20221219">See #20221219</a>)</li>
+    <li><strong>goodies</strong> Support TUI, FZF, CLI, play URLs to youtube &amp; streaming services (<a href="#logbook-20221219">See #20221219</a>)</li>
     <li><strong>github</strong> <a href="https://github.com/gmt4/mpvc/" class="uri">https://github.com/gmt4/mpvc/</a></li>
     <li><strong>wiki</strong> <a href="https://github.com/gmt4/mpvc/wiki">https://github.com/gmt4/mpvc/wiki/</a></li>
     <li><strong>issues</strong> <a href="https://github.com/gmt4/mpvc/issues">https://github.com/gmt4/mpvc/issues/</a></li>
@@ -58,7 +58,9 @@
 <li> <a href="#gmt4-mpvc-quickstart">Quickstart</a>
 <li> <a href="#gmt4-mpvc-shots">Screenshots</a>
 <li> <a href="#gmt4-mpvc-logbook">Logbook</a>
-    <ul>
+</ul>
+
+<ul>
     <li> <a href="#logbook-20220330">On playing URLs</a>
     <li> <a href="#logbook-20221114">On securing mpv socket location</a>
     <li> <a href="#logbook-20221118">On load/save functionality</a>
@@ -76,7 +78,6 @@
     <li> <a href="#logbook-20230112">On using mpv together with the fzf fuzzy finder</a>
     <li> <a href="#logbook-20230119">On controlling multiple remotely running mpv instances</a>
     <li> <a href="#logbook-20230219">On stashing mpv media player state to restore later</a>
-    </ul>
 </ul>
 
 <hr />
