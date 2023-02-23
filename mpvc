@@ -376,28 +376,7 @@ mpvc_stash() {
         drop) rm -i "$MPVC_STASH_DIR/$1" ;;
         push)
             [ -e "$MPVC_STASH_DIR/$1" ] && exit
-            (
-                echo "# $PROGNAME stash $MPVC_STASH_DIR/$1 # $PROGURL @version $PROGVERSION"
-                echo "mpvc sets pause yes"
-                echo "mpvc cmd playlist-clear"
-                echo "mpvc cmd playlist-remove 0"
-                mpvc_get_playlist_once | awk '{ print "mpvc add "$0 }'
-                echo "mpvc sets playlist-pos $(mpvc_gets playlist-pos)"
-                echo "mpvc sets playback-time $(mpvc_gets playback-time)"
-                echo "mpvc sets loop-file $(mpvc_gets loop-file)"
-                echo "mpvc sets loop-playlist $(mpvc_gets loop-playlist)"
-                echo "mpvc sets ab-loop-a $(mpvc_get ab-loop-a)"
-                echo "mpvc sets ab-loop-b $(mpvc_get ab-loop-b)"
-                echo "mpvc sets idle $(mpvc_gets idle)"
-                echo "mpvc sets mute $(mpvc_gets mute)"
-                echo "mpvc sets video $(mpvc_gets video)"
-                echo "mpvc sets cache $(mpvc_gets cache)"
-                echo "mpvc sets speed $(mpvc_gets speed)"
-                echo "mpvc sets volume $(mpvc_gets volume)"
-                echo "mpvc sets volume-max $(mpvc_gets volume-max)"
-                echo "mpvc sets pause $(mpvc_gets pause)"
-                #echo "mpvc sets working-directory $(mpvc_gets working-directory)"
-            ) > "$MPVC_STASH_DIR/$1"
+            mpvc_stash current > "$MPVC_STASH_DIR/$1"
             ;;
         apply)
             while read -r line
@@ -409,6 +388,28 @@ mpvc_stash() {
                     "mpvc add "*) mpvc add "${line##mpvc add }";;
                 esac
             done < "$MPVC_STASH_DIR/$1"
+            ;;
+        current)
+            echo "# $PROGNAME stash $MPVC_STASH_DIR/$1 # $PROGURL @version $PROGVERSION"
+            echo "mpvc sets pause yes"
+            echo "mpvc cmd playlist-clear"
+            echo "mpvc cmd playlist-remove 0"
+            mpvc_get_playlist_once | awk '{ print "mpvc add "$0 }'
+            echo "mpvc sets playlist-pos $(mpvc_gets playlist-pos)"
+            echo "mpvc sets playback-time $(mpvc_gets playback-time)"
+            echo "mpvc sets loop-file $(mpvc_gets loop-file)"
+            echo "mpvc sets loop-playlist $(mpvc_gets loop-playlist)"
+            echo "mpvc sets ab-loop-a $(mpvc_get ab-loop-a)"
+            echo "mpvc sets ab-loop-b $(mpvc_get ab-loop-b)"
+            echo "mpvc sets idle $(mpvc_gets idle)"
+            echo "mpvc sets mute $(mpvc_gets mute)"
+            echo "mpvc sets video $(mpvc_gets video)"
+            echo "mpvc sets cache $(mpvc_gets cache)"
+            echo "mpvc sets speed $(mpvc_gets speed)"
+            echo "mpvc sets volume $(mpvc_gets volume)"
+            echo "mpvc sets volume-max $(mpvc_gets volume-max)"
+            echo "mpvc sets pause $(mpvc_gets pause)"
+            #echo "mpvc sets working-directory $(mpvc_gets working-directory)"
             ;;
         *)
             warn "$PROGNAME stash: error: unknown subcommand $cmd."
