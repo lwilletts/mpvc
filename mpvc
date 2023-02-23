@@ -820,7 +820,7 @@ main() {
     case "$1" in
     -k|--kill|kill|-K|--killall|killall) ;;
     -c|--crop|crop|-C|--clear|clear|cmd|sockcmd|socklist|--socklist) ;;
-    -a|add|append|-A|playnext|--playnext|mpv|--mpv|--toggle|toggle|-q|--quiet) ;;
+    -a|add|append|-A|playnext|--playnext|mpv|--mpv|stash|--stash|--toggle|toggle|-q|--quiet) ;;
     load|--load|autoload|--autoload|lsplaylists|--lsplaylists|dbinit|--dbinit|dblist|--dblist) ;;
     version|--version|help|--help|-h|--list-options|-Q|--vid=no|-S) ;;
     *) mpvc_validate_socket;; # otherwise, validate socket
