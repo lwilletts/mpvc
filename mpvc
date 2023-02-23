@@ -394,6 +394,7 @@ mpvc_stash() {
                 echo "mpvc sets cache $(mpvc_gets cache)"
                 echo "mpvc sets speed $(mpvc_gets speed)"
                 echo "mpvc sets volume $(mpvc_gets volume)"
+                echo "mpvc sets volume-max $(mpvc_gets volume-max)"
                 echo "mpvc sets pause $(mpvc_gets pause)"
                 #echo "mpvc sets working-directory $(mpvc_gets working-directory)"
             ) > "$MPVC_STASH_DIR/$1"
