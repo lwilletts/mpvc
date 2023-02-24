@@ -636,6 +636,15 @@ mpvc_search_play() {
     setTrack "$track" absolute
 }
 
+mpvc_search_remove() {
+    rmlist=$(mpvc_get_playlist_once "numbered" | tac | awk '/'"$1"'/ { print $1 } ')
+    for i in $rmlist;
+    do
+        removeTrack "$i";
+    done
+    QUIETFLAG=true
+}
+
 shufflePlaylist() {
     quiet mpvc_cmd "playlist-shuffle"
     echo "Playlist shuffled."
@@ -901,6 +910,7 @@ main() {
             --sockrepl|sockrepl)             shift; mpvc_sockrepl; QUIETFLAG=true ;;
             --socklist|socklist)             shift; mpvc_socklist "$1"; QUIETFLAG=true ;;
             --search|search)                 shift; mpvc saven | awk '/'"$@"'/'; QUIETFLAG=true ;;
+            -R|--searchrm|searchrm)          shift; mpvc_search_remove "$1";;
             -n|--searchplay|searchplay)      shift; mpvc_search_play "file" "$1" ;;
             -N|--searchPlay|searchPlay)      shift; mpvc_search_play "title" "$1" ;;
             --stash|stash)                   shift; mpvc_stash "$1" "$2";;
