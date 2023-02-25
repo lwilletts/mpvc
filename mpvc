@@ -645,9 +645,13 @@ mpvc_search_remove() {
     QUIETFLAG=true
 }
 
-shufflePlaylist() {
-    quiet mpvc_cmd "playlist-shuffle"
-    echo "Playlist shuffled."
+mpvc_shuffle_playlist() {
+    case "$1" in
+        shuffle) quiet mpvc_cmd "playlist-shuffle";;
+        unshuffle) quiet mpvc_cmd "playlist-shuffle";;
+        *) return;;
+    esac
+    echo "Playlist $1."
     [ "$(getLoopStatus loop-playlist)" != "yes" ] && toggleLoopPlaylist inf
 }
 
@@ -925,7 +929,8 @@ main() {
             -I|--fullplaylist|fullplaylist)  mpvc_get_playlist "full";      ;;
             -L|--loop|loop)                  mpvc_toggle_loopplaylist       ;;
             -l|--loopfile|loopfile)          mpvc_toggle_loopfile           ;;
-            -z|--shuffle|shuffle)            shufflePlaylist; QUIETFLAG=true;;
+            -z|--shuffle|shuffle)            mpvc_shuffle_playlist shuffle; QUIETFLAG=true;;
+            -Z|--unshuffle|unshuffle)        mpvc_shuffle_playlist unshuffle; QUIETFLAG=true;;
             -c|--crop|crop)                  cropPlaylist; QUIETFLAG=true;;
             -C|--clear|clear)                clearPlaylist; QUIETFLAG=true;;
 
