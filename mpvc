@@ -291,17 +291,18 @@ mpvc_get_playlist_filename() {
 # print filenames in current playlist
 mpvc_get_playlist() {
     i=0
-    fullPlaylist="$1"
+    mode="$1"
     tracks=$(mpvc_get playlist-count)
     cTrack=$(mpvc_get playlist-pos)
 
+    [ "$mode" = "numbered" ] && mpvc_get_playlist_once $mode && return
     if [ -z "$cTrack" ] || [ -z "$tracks" ] || [ "$tracks" -eq 0 ]; then
         eeprintf 1 "Socket ${MPVC_SOCKET##$HOME/} is currently idle."
     fi
     # by default, display only tracks fitting terminal, otherwise, display all
     FIRST=0
     LAST=$tracks
-    [ "$fullPlaylist" != "full" ] && calculateTerminalHeight "$cTrack" "$tracks"
+    [ "$mode" != "full" ] && calculateTerminalHeight "$cTrack" "$tracks"
 
     mpvc_get_playlist_once |
     while read -r filename;
@@ -627,23 +628,21 @@ mpvc_search_play() {
     mode=$1; shift
     [ -z "$1" ] && return
     track=$(
-        if [ "$mode" = "title" ]; then mpvc_get_playlist "full"; else mpvc_get_playlist_once "numbered"; fi |
+        mpvc_get_playlist "$mode" |
             awk '/'"$@"'/ { sub("\\*",""); print $1; exit; }'
     )
-    if [ -z "$track" ]; then
-        eeprintf 1 "$PROGNAME: Searching for $*, nothing found."
-    fi
+    [ -z "$track" ] && eeprintf 1 "$PROGNAME: Searching for $*, nothing found."
     setTrack "$track" absolute
 }
 
 mpvc_search_remove() {
-    tracks=$(mpvc_get_playlist_once "numbered" | tac | awk '/'"$1"'/ { print $1 } ')
+    tracks=$(mpvc_get_playlist_once "numbered" |tac| awk '/'"$1"'/ { sub("\\*",""); print $1 } ')
     for i in $tracks; do removeTrack "$i"; done
     QUIETFLAG=true
 }
 
 mpvc_search_move() {
-    tracks=$(mpvc_get_playlist_once "numbered" | tac | awk '/'"$1"'/ { print $1 } ')
+    tracks=$(mpvc_get_playlist_once "numbered" |tac| awk '/'"$1"'/ { sub("\\*",""); print $1 } ')
     for i in $tracks; do moveTrack "$i" "$2"; done
     QUIETFLAG=true
 }
@@ -673,17 +672,9 @@ clearPlaylist() {
 
 ## Time Functions #############################################################
 
-getTrackLength() {
-    formatTime "$(mpvc_gets duration)"
-}
-
-playtimeRemaining() {
-    formatTime "$(mpvc_gets playtime-remaining)"
-}
-
-getElapsedTime() {
-    formatTime "$(mpvc_gets playback-time)"
-}
+getTrackLength() { formatTime "$(mpvc_gets duration)"; }
+playtimeRemaining() { formatTime "$(mpvc_gets playtime-remaining)"; }
+getElapsedTime() { formatTime "$(mpvc_gets playback-time)"; }
 
 getElapsedTimePrecise() {
     time=$(mpvc_gets playback-time 0.0)
@@ -919,8 +910,8 @@ main() {
             --search|search)                 shift; mpvc saven | awk '/'"$@"'/'; QUIETFLAG=true ;;
             -R|--searchrm|searchrm)          shift; mpvc_search_remove "$1";;
             -M|--searchmv|searchmv)          shift; mpvc_search_move "$1" "$2";;
-            -n|--searchplay|searchplay)      shift; mpvc_search_play "file" "$1" ;;
-            -N|--searchPlay|searchPlay)      shift; mpvc_search_play "title" "$1" ;;
+            -n|--searchplay|searchplay)      shift; mpvc_search_play "numbered" "$1" ;;
+            -N|--searchPlay|searchPlay)      shift; mpvc_search_play "full" "$1" ;;
             --stash|stash)                   shift; mpvc_stash "$1" "$2";;
 
             -k|--kill|kill)                  quiet mpvc_cmd "quit"; QUIETFLAG=true ;;
