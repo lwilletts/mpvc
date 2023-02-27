@@ -60,6 +60,7 @@ Usage: $PROGNAME [-S "socket"] [-a "filenames"] [-o "path"] [-f "format string"]
     searchplay          : Search the playlist by filename and play the first match.
     searchPlay          : Search the playlist by title and play the first match.
     stash               : $PROGNAME stash [list|show|push|drop|apply]
+    delay               : Sleep between commands, as in: $PROGNAME play 0 delay seek 20% vol 60
 
 Formatting:
     \`$PROGNAME --format\` will interpret the following delimiters if they are found:
@@ -641,7 +642,7 @@ mpvc_search_remove() {
 }
 
 mpvc_search_move() {
-    tracks=$(mpvc_get_playlist "numbered" | awk '/'"$1"'/ { sub("\\*",""); print $1 } ')
+    tracks=$(mpvc_get_playlist "numbered" |tac| awk '/'"$1"'/ { sub("\\*",""); print $1 } ')
     for i in $tracks; do moveTrack "$i" "$2"; done
     QUIETFLAG=true
 }
