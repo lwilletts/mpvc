@@ -815,10 +815,11 @@ mpvc_idleloop() {
     socat -t0 -,ignoreeof "$MPVC_SOCKET"
 }
 
+mpvc_delay() { sleep ${1:-0.1}; }
 # mpvc_startmpv: exec & wait until mpv starts up
 mpvc_startmpv() {
     exec mpv --input-ipc-server="$MPVC_SOCKET" $MPVOPTIONS "$@" &
-    until [ -n "$(mpvc_get idle-active)" ]; do sleep 0.1; done
+    until [ -n "$(mpvc_get idle-active)" ]; do mpvc_delay 0.1; done
 }
 
 main() {
@@ -927,6 +928,7 @@ main() {
             -Z|--unshuffle|unshuffle)        mpvc_shuffle_playlist unshuffle; QUIETFLAG=true;;
             -c|--crop|crop)                  cropPlaylist; QUIETFLAG=true;;
             -C|--clear|clear)                clearPlaylist; QUIETFLAG=true;;
+            --delay|delay)                   mpvc_delay;;
 
             # global argument parsing
             -f|--format)                     shift; FORMATSTRING="$1"       ;;
