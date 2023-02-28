@@ -226,17 +226,6 @@ mpvc_gets() {
 # fn args: speed
 getSpeed() { mpvc_gets "speed" | awk '{print substr ($0, 0, 4)}'; }
 
-# fn args: loop-file, loop-playlist
-getLoopStatus() {
-    status=$(mpvc_get "$1")
-    case "$status" in
-        true|inf) loop="yes" ;;
-        false)    loop="no"  ;;
-        *)        loop="N/A" ;;
-    esac
-    echo "$loop"
-}
-
 getPauseStatus() {
     status="$(mpvc_get pause)"
     case "$status" in
@@ -500,11 +489,11 @@ setTrack() {
                 [ "$seconds" -ge 10 ] && setTime "absolute" 0 && return
             fi
             if [ "$newTrack" -ge "$trackCount" ]; then
-                [ "$(getLoopStatus loop-playlist)" = "yes" ] && newTrack=0
+                [ "$(mpvc_gets loop-playlist)" != "no" ] && newTrack=0
             fi
             if [ "$newTrack" -lt 0 ]; then
                 newTrack=0
-                [ "$(getLoopStatus loop-file)" = "yes" ] && newTrack=$trackCount
+                [ "$(mpvc_gets loop-file)" != "no" ] && newTrack=$trackCount
             fi
         ;;
     esac
@@ -642,7 +631,7 @@ mpvc_shuffle_playlist() {
         *) return;;
     esac
     echo "Playlist $1."
-    [ "$(getLoopStatus loop-playlist)" != "yes" ] && toggleLoopPlaylist inf
+    [ "$(mpvc_gets loop-playlist)" = "no" ] && mpvc_toggle_loopplaylist yes
 }
 
 cropPlaylist() {
