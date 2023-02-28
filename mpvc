@@ -224,9 +224,7 @@ mpvc_gets() {
 }
 
 # fn args: speed
-getSpeed() {
-    mpvc_gets "speed" | awk '{print substr ($0, 0, 4)}'
-}
+getSpeed() { mpvc_gets "speed" | awk '{print substr ($0, 0, 4)}'; }
 
 # fn args: loop-file, loop-playlist
 getLoopStatus() {
@@ -237,16 +235,6 @@ getLoopStatus() {
         *)        loop="N/A" ;;
     esac
     echo "$loop"
-}
-
-getMuteStatus() {
-    muted="$(mpvc_get mute)"
-    case "$muted" in
-        true)  muted="yes" ;;
-        false) muted="no"  ;;
-        *)     muted="N/A" ;;
-    esac
-    echo "$muted"
 }
 
 getPauseStatus() {
@@ -722,13 +710,13 @@ formatPrint() {
         (*%volume%*) F=$(echo "$F" | sed "s#%volume%#$(mpvc_gets volume)#g") ;;
         (*%length%*) F=$(echo "$F" | sed "s#%length%#$(getTrackLength)#g") ;;
         (*%remaining%*) F=$(echo "$F" | sed "s#%remaining%#$(playtimeRemaining)#g") ;;
-        (*%muted%*) F=$(echo "$F" | sed "s#%muted%#$(getMuteStatus)#g") ;;
+        (*%muted%*) F=$(echo "$F" | sed "s#%muted%#$(mpvc_gets mute)#g") ;;
         (*%percentage%*) F=$(echo "$F" | sed "s#%percentage%#$(mpvc_gets percent-pos)#g") ;;
         (*%name%*) F=$(echo "$F" | sed "s#%name%#$(getMediaProperties filename)#g") ;;
         (*%path%*) F=$(echo "$F" | sed "s#%path%#$(getMediaProperties path)#g") ;;
         (*%dir%*) F=$(echo "$F" | sed "s#%dir%#$(mpvc_gets working-directory)#g") ;;
-        (*%repeat%*) F=$(echo "$F" | sed "s#%repeat%#$(getLoopStatus loop-playlist)#g") ;;
-        (*%single%*) F=$(echo "$F" | sed "s#%single%#$(getLoopStatus loop-file)#g") ;;
+        (*%repeat%*) F=$(echo "$F" | sed "s#%repeat%#$(mpvc_gets loop-playlist)#g") ;;
+        (*%single%*) F=$(echo "$F" | sed "s#%single%#$(mpvc_gets loop-file)#g") ;;
         (*%playlistlength%*) F=$(echo "$F" | sed "s#%playlistlength%#$(mpvc_get playlist-count)#g") ;;
         (*%position%*) F=$(echo "$F" | sed "s#%position%#$(($(mpvc_get playlist-pos) + 1))#g") ;;
         (*%frame%*) F=$(echo "$F" | sed "s#%frame%#$(mpvc_get estimated-frame-number)#g") ;;
