@@ -224,16 +224,12 @@ mpvc_gets() {
 }
 
 # fn args: speed
-getSpeed() { mpvc_gets "speed" | awk '{print substr ($0, 0, 4)}'; }
+getSpeed() { speed=$(mpvc_gets "speed"); echo "${speed%%????}"; }
 
 getPauseStatus() {
-    status="$(mpvc_get pause)"
-    case "$status" in
-        true)  status="paused"  ;;
-        false) status="playing" ;;
-        *)     status="N/A"     ;;
+    case "$(mpvc_get pause)" in
+        true) echo "paused";; false) echo "playing" ;; *) echo "N/A";;
     esac
-    echo "$status"
 }
 
 mpvc_get_playlist_once() {
@@ -779,7 +775,7 @@ mpvc_validate_socket() {
     # test if socket exists
     [ ! -S "$MPVC_SOCKET" ] && eeprintf 2 "Socket ${MPVC_SOCKET##$HOME/} does not exist. Use mpvc --mpv to start one."
     # test if socket is open
-    [ "$(getPauseStatus)" = "N/A" ] && eeprintf 3 "No files added to ${MPVC_SOCKET##$HOME/}."
+    [ "$(mpvc_gets pause)" = "" ] && eeprintf 3 "No files added to ${MPVC_SOCKET##$HOME/}."
 }
 
 mpvc_get_version() {
