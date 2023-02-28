@@ -800,7 +800,7 @@ parseTimeString() {
 
 mpvc_validate_socket() {
     # test if socket exists
-    [ ! -S "$MPVC_SOCKET" ] && eeprintf 2 "Socket ${MPVC_SOCKET##$HOME/} does not exist. Use mpv --input-ipc-server to start one."
+    [ ! -S "$MPVC_SOCKET" ] && eeprintf 2 "Socket ${MPVC_SOCKET##$HOME/} does not exist. Use mpvc --mpv to start one."
     # test if socket is open
     [ "$(getPauseStatus)" = "N/A" ] && eeprintf 3 "No files added to ${MPVC_SOCKET##$HOME/}."
 }
