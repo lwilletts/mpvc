@@ -158,9 +158,7 @@ cleanFilename() {
 }
 
 # fn args: media-title, filename, path
-getMediaProperties() {
-    mpvc_cmd "get_property" "$1" | escapeChars '[&#]'
-}
+getMediaProperties() { mpvc_cmd "get_property" "$1" | escapeChars; }
 
 # fn args: date, genre, title, album, artist, album_artist
 getMetadata() {
@@ -171,7 +169,7 @@ getMetadata() {
         '') result="N/A" ;;
         *)  result=$(cleanFilename "$metadata")
     esac
-    echo "$result" | escapeChars '[&#]'
+    echo "$result" | escapeChars
 }
 
 mpvc_getjson() {
@@ -725,7 +723,16 @@ printFinalOutput() {
 
 ## Misc Functions #############################################################
 
-escapeChars() { awk -v r="$1" '{ gsub(r, "\\\\&"); print $0; }'; }
+escapeChars() {
+    r='[&#]'
+    [ -n "$1" ] && r="$1"
+    lines=""
+    while read line; do lines="$lines$line"; done
+    case "$lines" in
+        *\&*|*#*) echo "$lines" | awk -v r="$r" '{ gsub(r, "\\\\&"); print $0; }';;
+        *) echo "$lines";;
+    esac
+}
 isInt() { printf '%d' "$1" >/dev/null; }
 isFloat() { [ -z "${1##*.*}" ] && printf '%f' "$1" >/dev/null; }
 
