@@ -5,15 +5,15 @@
     <link rel="canonical" href="https://gmt4.github.io/mpvc">
 
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="author" content="gmt4" />
     <meta name="description" content="gmt4 mpvc fork" />
     <!-- Open Graph tags -->
     <meta property="og:site_name" content="gmt4.github.io/mpvc" />
     <meta property="og:type" content="website"/>
-    <meta property="og:title" content="gmt4.github.io/mpvc"/>
+    <meta property="og:title" content="gmt4 mpvc fork"/>
     <meta property="og:url" content="https://gmt4.github.io/mpvc"/>
-    <meta property="og:description" content="gmt4 mpvc fork"/>
+    <meta property="og:description" content="A minimal mpc-like CLI and TUI for controlling mpv from the shell"/>
     <meta property="og:image" content="https://raw.githubusercontent.com/gmt4/mpvc/master/docs/mpvc-tui.png"/>
     <!-- GH stuff -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
@@ -22,7 +22,7 @@
     @media (prefers-color-scheme: dark) {
        :root { --body-bg: #222; --body-color: #eee; --pre-bg:#333; --link-color:#07f; } /* Dark mode */
     }
-    body { background: var(--body-bg); color: var(--body-color); }
+    body { background: var(--body-bg); color: var(--body-color); font-family: sans-serif; }
     code { background: var(--pre-bg); }
     pre  { background: var(--pre-bg); }
     a    { color: var(--link-color); }
@@ -60,24 +60,25 @@
 <li> <a href="#gmt4-mpvc-logbook">Logbook</a>
 </ul>
 
+Logbook Entries
 <ul>
-    <li> <a href="#logbook-20220330">On playing URLs</a>
-    <li> <a href="#logbook-20221114">On securing mpv socket location</a>
-    <li> <a href="#logbook-20221118">On load/save functionality</a>
-    <li> <a href="#logbook-20221120">On persistent mpv startup</a>
-    <li> <a href="#logbook-20221203">On a minimal mpvc-tui</a>
-    <li> <a href="#logbook-20221213">On using the mpvc-tui prompt</a>
-    <li> <a href="#logbook-20221214">On using the mpvc-tui -x launcher</a>
-    <li> <a href="#logbook-20221215">On managing playlists with mpvc autoload/autosave</a>
-    <li> <a href="#logbook-20221216">On customizing mpvc-tui look and feel</a>
-    <li> <a href="#logbook-20221216">Show HN: mpvc-tui – A minimal mpc-like CLI and TUI for controlling mpv</a>
-    <li> <a href="#logbook-20221217">On issuing direct JSON IPC commands to mpv</a>
-    <li> <a href="#logbook-20221219">On playing music from streaming services as youtube & co.</a>
-    <li> <a href="#logbook-20221221">On subscribing and receiving mpv events</a>
-    <li> <a href="#logbook-20221227">On using mpv together with the fzf fuzzy finder</a>
-    <li> <a href="#logbook-20230112">On using mpv together with the fzf fuzzy finder</a>
-    <li> <a href="#logbook-20230119">On controlling multiple remotely running mpv instances</a>
-    <li> <a href="#logbook-20230219">On stashing mpv media player state to restore later</a>
+    <li> <a href="#logbook-20220330">#20220330 On playing URLs</a>
+    <li> <a href="#logbook-20221114">#20221114 On securing mpv socket location</a>
+    <li> <a href="#logbook-20221118">#20221118 On load/save functionality</a>
+    <li> <a href="#logbook-20221120">#20221120 On persistent mpv startup</a>
+    <li> <a href="#logbook-20221203">#20221203 On a minimal mpvc-tui</a>
+    <li> <a href="#logbook-20221213">#20221213 On using the mpvc-tui prompt</a>
+    <li> <a href="#logbook-20221214">#20221214 On using the mpvc-tui -x launcher</a>
+    <li> <a href="#logbook-20221215">#20221215 On managing playlists with mpvc autoload/autosave</a>
+    <li> <a href="#logbook-20221216">#20221216 On customizing mpvc-tui look and feel</a>
+    <li> <a href="#logbook-20221216">#20221216 Show HN: mpvc-tui – A minimal mpc-like CLI and TUI for controlling mpv</a>
+    <li> <a href="#logbook-20221217">#20221217 On issuing direct JSON IPC commands to mpv</a>
+    <li> <a href="#logbook-20221219">#20221219 On playing music from streaming services as youtube & co.</a>
+    <li> <a href="#logbook-20221221">#20221221 On subscribing and receiving mpv events</a>
+    <li> <a href="#logbook-20221227">#20221227 On using mpv together with the fzf fuzzy finder</a>
+    <li> <a href="#logbook-20230112">#20230112 On using mpv together with the fzf fuzzy finder</a>
+    <li> <a href="#logbook-20230119">#20230119 On controlling multiple remotely running mpv instances</a>
+    <li> <a href="#logbook-20230219">#20230219 On stashing mpv media player state to restore later</a>
 </ul>
 
 <hr />
@@ -106,12 +107,12 @@
 
 <ul>
     <li> <p><code>mpvc-tui -T: running the mpvc TUI</code><br/>
-        <img src="assets/mpvc-tui.png" alt="mpvc-tui -T screenshot" />
+        <img src="assets/mpvc-tui.png" alt="mpvc-tui -T screenshot" width="95%" />
         </p>
     <li> <p><code>mpvc-tui -f: running with fzf</code><br/>
-        <img src="assets/mpvc-tui-arch.png" alt="mpvc-tui fzf screenshot" /></p>
-    <li> <p><code>mpvc-tui: running with fzf and desktop notofications on the upper-right corner</code><br/>
-        <img src="assets/mpvc-tui-fzf.png" alt="mpvc-tui fzf+notify screenshot" /></p>
+        <img src="assets/mpvc-tui-arch.png" alt="mpvc-tui fzf screenshot" width="95%" /></p>
+    <li> <p><code>mpvc-tui: running with fzf and desktop notifications on the upper-right corner</code><br/>
+        <img src="assets/mpvc-tui-fzf.png" alt="mpvc-tui fzf+notify screenshot" width="95%" /></p>
 </ul>
 
 <hr />
@@ -302,8 +303,14 @@ Something experimental I've been testing lately is using: <code>mpvc stash</code
 This is different from <code>mpvc load/save</code> that only loads/saves the playlist, as <code>mpvc stash</code> saves the current playing settings including: <code>playlist-pos, playback-time, volume, mute, pause, etc.</code> together with the playlist. 
 
 <hr/>
-<em>Last-Modified: Sunday, 19 February 2023</em> by gmt4
-
+<p>
+<span>
+    <em>Last-Modified: Friday, 03 March 2023 by gmt4</em>
+</span>
+<span style="float: right;">
+    <em>Powered by #WriteYourOwnHTML 🧡 💚 💙 </em>
+</span>
 </p>
+
 </body>
 </html>
