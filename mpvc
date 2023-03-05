@@ -231,7 +231,6 @@ getPauseStatus() {
 }
 
 mpvc_get_playlist_once() {
-    ctrack=$(mpvc_get playlist-pos)
     mpvc_cmd "get_property_string" "playlist" |
         awk '
         BEGIN { RS="filename\\\\:" }
@@ -240,9 +239,8 @@ mpvc_get_playlist_once() {
             sub(",current:true", ""); sub(",playing:true", "");
             if (length($0)>0) print $0
         }' |
-        awk -v ctrack="$ctrack" -v numbered="$1" '
+        awk -v numbered="$1" '
         {
-            #mark=(NR-1 == ctrack)? "*" : " "
             if (length(numbered)>0)
                 printf "%2d%s %s\n", NR-1, mark, $0
             else
