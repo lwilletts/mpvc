@@ -621,8 +621,7 @@ mpvc_search_move() {
 
 mpvc_shuffle_playlist() {
     case "$1" in
-        shuffle) quiet mpvc_cmd "playlist-shuffle";;
-        unshuffle) quiet mpvc_cmd "playlist-shuffle";;
+        shuffle|unshuffle) quiet mpvc_cmd "playlist-$1";;
         *) return;;
     esac
     echo "Playlist $1."
