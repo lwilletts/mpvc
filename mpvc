@@ -585,6 +585,7 @@ mpvc_toggle_loopfile() {
         '')      quiet mpvc_cmd "cycle-values" "loop-file" "yes" "no" ;;
         on|yes)  quiet mpvc_sets "loop-file" yes ;;
         off|no)  quiet mpvc_sets "loop-file" no  ;;
+        *)       quiet mpvc_sets "loop-file" "$1";;
     esac
 }
 
