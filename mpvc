@@ -592,8 +592,9 @@ mpvc_toggle_loopfile() {
 mpvc_toggle_loopplaylist() {
     case "$1" in
         '')      quiet mpvc_cmd "cycle-values" "loop-playlist" "yes" "no" ;;
-        on|yes)  quiet mpvc_sets "loop-playlist" "inf" ;;
-        off|no)  quiet mpvc_sets "loop-playlist" "no"  ;;
+        on|yes)  quiet mpvc_sets "loop-playlist" inf ;;
+        off|no)  quiet mpvc_sets "loop-playlist" no  ;;
+        *)       quiet mpvc_sets "loop-playlist" "$1";;
     esac
 }
 
