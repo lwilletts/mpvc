@@ -8,7 +8,9 @@
 # mpvc
 
 An mpc-like control interface for mpv with a nearly complete compatibility layer for mpc commands in
-addition to GNU style arguments. [Check out the mpc manpage for details.](http://linux.die.net/man/1/mpc)
+addition to GNU style arguments.
+This forks [lwillets/mpvc](https://github.com/lwilletts/mpvc) providing some extra goodies such as: improved CLI, TUI, FZF & playing media from youtube & streaming services.
+Check the [Wiki](https://github.com/gmt4/mpvc/wiki) for a more detailed view of the functionality.
 
 ## QuickStart
 
@@ -137,5 +139,4 @@ Like any piece of software, mpvc is not perfect:
   unusual variants of basic unix tools, mpvc is not guaranteed to work. However,
   all effort has been made to make mpvc as POSIX compliant as possible.
 
-Check out the [Issue Tracker](https://github.com/wildefyr/mpvc/issues) for
-further improvements to be made.
+Check out the Issue Tracker for further improvements to be made.
