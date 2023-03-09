@@ -125,8 +125,8 @@ loop-playlist
 - mpvc executes faster ~4x faster when using dash syslinked to /bin/sh instead
 of bash. Another faster alternative is mksh.
 - mpvc should be fully POSIX compliant, meaning it should run on any unix-like
-variant. [Please report an issue if you experience
-trouble.](https://github.com/lwilletts/mpvc/issues)
+variant. Please report an issue if you experience
+trouble.
 
 ## Limitations
 
