@@ -49,9 +49,9 @@ mpvctui_fzf_preview()
         --bind='ctrl-s:execute-silent(mpvc seek +20 &)' \
         --bind='ctrl-t:execute-silent(mpvc remove {n} &)' \
         \
-        --bind='ctrl-x:execute(mpvc-tui -f {q})' \
-        --bind='ctrl-v:execute(mpvc-tui -p {q})' \
-        --bind='ctrl-\:execute(mpvc-tui -l)' \
+        --bind='ctrl-x:execute(mpvc-fzf -f {q})' \
+        --bind='ctrl-v:execute(mpvc-fzf -p {q})' \
+        --bind='ctrl-\:execute(mpvc-fzf -l)' \
         \
         --preview-window='up:3' \
         --preview="mpvc" \
@@ -130,7 +130,7 @@ mpvctui_ddg_play()
     mpvctui_fzf_ddg "$@" | mpvctui_fzf_preview |  awk '{print $1}' | mpvc load
 }
 
-optflags="d:DfFhs::p:P:lx"
+optflags="d:DfFhs:p:P:lx"
 mpvctui_usage()
 {
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
