@@ -880,6 +880,7 @@ main() {
             --cycle|cycle)                   shift; mpvc_cmd cycle "$@"; QUIETFLAG=true;;
             --set|set|s)                     shift; mpvc_cmd set_property "$@"; return;;
             --get|get|g)                     shift; mpvc_cmd get_property "$1"; QUIETFLAG=true;;
+            --setr|setr|sr)                  shift; mpvc_cmdr set_property "$@"; return;;
             --getr|getr|gr)                  shift; mpvc_cmdr get_property "$1"; QUIETFLAG=true;;
             --sets|sets|ss)                  shift; mpvc_cmd set_property_string "$@"; return;;
             --gets|gets|gs)                  shift; mpvc_cmd get_property_string "$1"; QUIETFLAG=true;;
