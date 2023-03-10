@@ -124,9 +124,8 @@ loop-playlist
 ```
 - mpvc executes faster ~4x faster when using dash syslinked to /bin/sh instead
 of bash. Another faster alternative is mksh.
-- mpvc should be fully POSIX compliant, meaning it should run on any unix-like
-variant. Please report an issue if you experience
-trouble.
+- mpvc should be fully POSIX compliant, meaning it should run on any UNIX-like
+variant. Please report an issue if you experience trouble.
 
 ## Limitations
 
@@ -136,7 +135,7 @@ Like any piece of software, mpvc is not perfect:
   currently in or has been inside that directory, giving misleading results about
   the total number of files in the current playlist. This is a limitation of mpv.
 - mpvc depends on shell tools. If your shell is misconfigured or you are using
-  unusual variants of basic unix tools, mpvc is not guaranteed to work. However,
+  unusual variants of basic UNIX tools, mpvc is not guaranteed to work. However,
   all effort has been made to make mpvc as POSIX compliant as possible.
 
 Check out the Issue Tracker for further improvements to be made.
