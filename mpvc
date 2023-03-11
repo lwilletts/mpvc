@@ -60,7 +60,9 @@ Usage: $PROGNAME [-S "socket"] [-a "filenames"] [-o "path"] [-f "format string"]
     search              : Search the playlist by filename/url.
     searchplay          : Search the playlist by filename and play the first match.
     searchPlay          : Search the playlist by title and play the first match.
-    stash               : $PROGNAME stash [list|show|push|drop|apply]
+    searchrm            : Search the playlist and remove matching entries.
+    searchmv            : Search the playlist and move matching entries.
+    stash               : Manage mpv playing state as in git-stash(1)
     delay               : Sleep between commands, as in: $PROGNAME play 0 delay seek 20% vol 60
 
 Formatting:
@@ -379,6 +381,7 @@ mpvc_stash() {
             echo "mpvc sets video $(mpvc_gets video)"
             echo "mpvc sets video-zoom $(mpvc_gets video-zoom)"
             echo "mpvc sets fullscreen $(mpvc_gets fullscreen)"
+            echo "mpvc sets aspect $(mpvc_gets aspect)"
             echo "mpvc sets cache $(mpvc_gets cache)"
             echo "mpvc sets speed $(mpvc_gets speed)"
             echo "mpvc sets volume $(mpvc_gets volume)"
@@ -387,8 +390,11 @@ mpvc_stash() {
             #echo "mpvc sets af $(mpvc_gets af)"
             #echo "mpvc sets working-directory $(mpvc_gets working-directory)"
             ;;
+        help)
+            echo "usage: $PROGNAME stash [list|current|show|push|drop|apply]"
+            ;;
         *)
-            warn "$PROGNAME stash: error: unknown subcommand $cmd."
+            warn "$PROGNAME stash: error: unknown subcommand $cmd (see $PROGNAME stash help)."
             ;;
     esac
 }
