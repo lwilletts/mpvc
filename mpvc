@@ -581,7 +581,7 @@ mpvc_set_volume() {
         '') eeprintf 1 "Specify volume in/decrease amount or absolute amount." ;;
         +*) mpvc_add "volume" "$1"  ;;
         -*) mpvc_add "volume" "$1"  ;;
-        *%) mpvc_set "volume" "$1%" ;;
+        *%) mpvc_set "volume" "${1%%%}";;
         *)  mpvc_set "volume" "$1" ;;
     esac
 }
