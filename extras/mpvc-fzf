@@ -78,14 +78,14 @@ mpvctui_fzf_isearch()
 mpvctui_fzf_iplay()
 {
     mpvctui_fzf_isearch "$1" |
-        mpvctui_fzf_preview --header="$PROGNAME yt-fzf help: $mpvctui_fzf_help" |
+        mpvctui_fzf_preview --prompt="(youtube) " --header="$PROGNAME fzf-yt help: $mpvctui_fzf_help" |
             awk '{print $1}'
 }
 
 mpvctui_fzf_local()
 {
     find . -type f,d | sort |
-        mpvctui_fzf_preview --header="$PROGNAME file-fzf help: $mpvctui_fzf_help" |
+        mpvctui_fzf_preview --prompt="(local) " --header="$PROGNAME fzf-file help: $mpvctui_fzf_help" |
             mpvc load
 }
 
@@ -94,7 +94,7 @@ mpvctui_fzf_playlist()
     len=$(mpvc gets playlist-count)
     (
         [ -z "$len" ] && echo || mpvc fullplaylist
-    ) | mpvctui_fzf_preview
+    ) | mpvctui_fzf_preview --prompt="(playlist) " --header="$PROGNAME fzf-pl help: $mpvctui_fzf_help"
 }
 
 mpvctui_fzf_ddg()
@@ -127,7 +127,9 @@ mpvctui_fzf_ddg()
 
 mpvctui_ddg_play()
 {
-    mpvctui_fzf_ddg "$@" | mpvctui_fzf_preview |  awk '{print $1}' | mpvc load
+    mpvctui_fzf_ddg "$@" |
+        mpvctui_fzf_preview |
+            awk '{print $1}' | mpvc load
 }
 
 optflags="d:DfFhs:p:P:lx"
