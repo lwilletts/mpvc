@@ -212,7 +212,7 @@ mpvc_gets() {
 
 getPauseStatus() {
     case "$(mpvc_get pause)" in
-        true) echo "paused";; false) echo "playing" ;; *) echo "N/A";;
+        true) echo "paused";; false) echo "playing" ;; *) echo "NA";;
     esac
 }
 
