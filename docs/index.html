@@ -55,9 +55,9 @@
 
 <ul>
 <li> <a href="#gmt4-mpvc-fork">Fork</a>
+<li> <a href="#gmt4-mpvc-overview">Overview</a>
 <li> <a href="#gmt4-mpvc-quickstart">Quickstart</a>
 <li> <a href="#gmt4-mpvc-shots">Screenshots</a>
-<li> <a href="#gmt4-mpvc-overview">Overview</a>
 <li> <a href="#gmt4-mpvc-logbook">Logbook</a>
 </ul>
 
@@ -80,6 +80,17 @@ Logbook Entries
     <li> <a href="#logbook-20230112">#20230112 On using mpv together with the fzf fuzzy finder</a>
     <li> <a href="#logbook-20230119">#20230119 On controlling multiple remotely running mpv instances</a>
     <li> <a href="#logbook-20230219">#20230219 On stashing mpv media player state to restore later</a>
+</ul>
+
+<hr />
+<h2 id="gmt4-mpvc-overview">mpvc overview</h2>
+
+<a href="https://github.com/gmt4/mpvc/">mpvc</a> functionality is split in three pieces/files:
+
+<ul>
+    <li> <a href="https://github.com/gmt4/mpvc/blob/master/mpvc">mpvc</a>: the CLI providing mpc commands
+    <li> <a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-tui">extras/mpvc-tui</a>: a TUI that uses mpvc underneath
+    <li> <a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-fzf">extras/mpvc-fzf</a>: a script that uses fzf to perform fuzzy search on mpvc.
 </ul>
 
 <hr />
@@ -118,17 +129,6 @@ Logbook Entries
     <code>mpvc-tui: running with fzf and desktop notifications on the upper-right corner</code><br/>
     <img src="assets/mpvc-tui-fzf.png" alt="mpvc-tui fzf+notify screenshot" width="95%" />
     </p>
-</ul>
-
-<hr />
-<h2 id="gmt4-mpvc-overview">mpvc overview</h2>
-
-<a href="https://github.com/gmt4/mpvc/">mpvc</a> functionality is split in three pieces/files:
-
-<ul>
-    <li> <a href="https://github.com/gmt4/mpvc/blob/master/mpvc">mpvc</a>: the core cli providing mpc commands
-    <li> <a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-tui">extras/mpvc-tui</a>: a TUI that uses mpvc underneath
-    <li> <a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-fzf">extras/mpvc-fzf</a>: a script that uses fzf to perform fuzzy search on mpvc.
 </ul>
 
 <hr />
