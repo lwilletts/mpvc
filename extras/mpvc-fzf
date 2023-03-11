@@ -53,7 +53,7 @@ mpvctui_fzf_preview()
         --bind='ctrl-v:execute(mpvc-fzf -p {q})' \
         --bind='ctrl-\:execute(mpvc-fzf -l)' \
         \
-        --preview-window='up:3' \
+        --preview-window='up:4' \
         --preview="mpvc" \
         --header="$PROGNAME fzf help: $mpvctui_fzf_help" \
         "$@"
