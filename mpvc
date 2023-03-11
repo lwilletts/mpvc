@@ -225,9 +225,6 @@ mpvc_gets() {
     echo "$result"
 }
 
-# fn args: speed
-getSpeed() { speed=$(mpvc_gets "speed"); echo "${speed%%????}"; }
-
 getPauseStatus() {
     case "$(mpvc_get pause)" in
         true) echo "paused";; false) echo "playing" ;; *) echo "N/A";;
@@ -701,8 +698,8 @@ mpvc_print_status() {
             -e 's/%precisetime%/${playback-time}/g' \
             -e 's/%playlistlength%/${playlist-count}/g' \
             -e 's/%position%/${playlist-pos}/g' \
+            -e 's/%speed%/${speed}/g' \
             -e "s/%status%/$(getPauseStatus)/g" \
-            -e "s/%speed%/$(getSpeed)/g" \
             -e ''
     ) 
     #echo "${F}"
