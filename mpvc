@@ -111,8 +111,8 @@ mpvc_defaults()
     # print default status of mpv instance
     [ -z "$FORMATSTRING" ] && FORMATSTRING="\
 %artist% - %title% NL\
-[%status%] #%position%/%playlistlength% %time%/%length% (%percentage%%%%%) NL\
-speed:%speed%x volume:%volume%%%%% muted:%muted% repeat:%repeat% single:%single%"
+[%status%] #%position%/%playlistlength% %time%/%length% (%percentage%%%) NL\
+speed:%speed%x volume:%volume%%% muted:%muted% repeat:%repeat% single:%single%"
     # validate deps
     quiet type mpv || eeprintf 4 "$PROGNAME: Error: No mpv found. Install to continue."
     quiet type socat || type nc || eeprintf 4 "$PROGNAME: Error: No socat/nc found. Install one"
