@@ -110,9 +110,9 @@ mpvc_defaults()
     MPVOPTIONS="${MPVOPTIONS:---no-audio-display --no-input-terminal}"
     # print default status of mpv instance
     [ -z "$FORMATSTRING" ] && FORMATSTRING="\
-%artist% - %title%
-[%status%] #%position%/%playlistlength% %time%/%length% (%percentage%%)
-speed:%speed%x volume:%volume%% muted:%muted% repeat:%repeat% single:%single%"
+%artist% - %title% NL\
+[%status%] #%position%/%playlistlength% %time%/%length% (%percentage%%%%%) NL\
+speed:%speed%x volume:%volume%%%%% muted:%muted% repeat:%repeat% single:%single%"
     # validate deps
     quiet type mpv || eeprintf 4 "$PROGNAME: Error: No mpv found. Install to continue."
     quiet type socat || type nc || eeprintf 4 "$PROGNAME: Error: No socat/nc found. Install one"
@@ -651,15 +651,6 @@ clearPlaylist() {
 
 ## Time Functions #############################################################
 
-getTrackLength() { formatTime "$(mpvc_gets duration)"; }
-playtimeRemaining() { formatTime "$(mpvc_gets playtime-remaining)"; }
-getElapsedTime() { formatTime "$(mpvc_gets playback-time)"; }
-
-getElapsedTimePrecise() {
-    time=$(mpvc_gets playback-time 0.0)
-    formatTime "${time%%.*}" "${time#*.}"
-}
-
 # format seconds into HH:MM:SS format
 formatTime() {
     [  "$1" = "null" ] && return 1
@@ -679,45 +670,43 @@ formatTime() {
 ## Formatting and Printing Functions ##########################################
 
 # formats and prints according to $FORMATSTRING
-formatPrint() {
-    # modified format string
-    F="$FORMATSTRING"
-    # not that nice, in fact, way more ugly, but too way faster
-    for f in $(echo "$F" | sed 's#[;/]# #g')
-    do
-        case $f in
-        (*%status%*) F=$(echo "$F" | sed "s#%status%#$(getPauseStatus)#g") ;;
-        (*%year%*) F=$(echo "$F" | sed "s#%year%#$(getMetadata date)#g") ;;
-        (*%genre%*) F=$(echo "$F" | sed "s#%genre%#$(getMetadata genre)#g") ;;
-        (*%title%*) F=$(echo "$F" | sed "s#%title%#$(getMetadata title)#g") ;;
-        (*%album%*) F=$(echo "$F" | sed "s#%album%#$(getMetadata album)#g") ;;
-        (*%artist%*) F=$(echo "$F" | sed "s#%artist%#$(getMetadata artist)#g") ;;
-        (*%comment%*) F=$(echo "$F" | sed "s#%comment%#$(getMetadata comment)#g") ;;
-        (*%albumartist%*) F=$(echo "$F" | sed "s#%albumartist%#$(getMetadata album_artist)#g") ;;
-        (*%speed%*) F=$(echo "$F" | sed "s#%speed%#$(getSpeed)#g") ;;
-        (*%time%*) F=$(echo "$F" | sed "s#%time%#$(getElapsedTime)#g") ;;
-        (*%precisetime%*) F=$(echo "$F" | sed "s#%precisetime%#$(getElapsedTimePrecise)#g") ;;
-        (*%playback-time%*) F=$(echo "$F" | sed "s#%playback-time%#$(mpvc_get playback-time)#g") ;;
-        (*%volume%*) F=$(echo "$F" | sed "s#%volume%#$(mpvc_gets volume)#g") ;;
-        (*%length%*) F=$(echo "$F" | sed "s#%length%#$(getTrackLength)#g") ;;
-        (*%remaining%*) F=$(echo "$F" | sed "s#%remaining%#$(playtimeRemaining)#g") ;;
-        (*%muted%*) F=$(echo "$F" | sed "s#%muted%#$(mpvc_gets mute)#g") ;;
-        (*%percentage%*) F=$(echo "$F" | sed "s#%percentage%#$(mpvc_gets percent-pos)#g") ;;
-        (*%name%*) F=$(echo "$F" | sed "s#%name%#$(getMediaProperties filename)#g") ;;
-        (*%path%*) F=$(echo "$F" | sed "s#%path%#$(getMediaProperties path)#g") ;;
-        (*%dir%*) F=$(echo "$F" | sed "s#%dir%#$(mpvc_gets working-directory)#g") ;;
-        (*%repeat%*) F=$(echo "$F" | sed "s#%repeat%#$(mpvc_gets loop-playlist)#g") ;;
-        (*%single%*) F=$(echo "$F" | sed "s#%single%#$(mpvc_gets loop-file)#g") ;;
-        (*%playlistlength%*) F=$(echo "$F" | sed "s#%playlistlength%#$(mpvc_get playlist-count)#g") ;;
-        (*%position%*) F=$(echo "$F" | sed "s#%position%#$(($(mpvc_get playlist-pos) + 1))#g") ;;
-        (*%frame%*) F=$(echo "$F" | sed "s#%frame%#$(mpvc_get estimated-frame-number)#g") ;;
-        (*%width%*) F=$(echo "$F" | sed "s#%width%#$(mpvc_get width)#g") ;;
-        (*%height%*) F=$(echo "$F" | sed "s#%height%#$(mpvc_get height)#g") ;;
-        (*%ab-loop-a%*) F=$(echo "$F" | sed "s#%ab-loop-a%#$(mpvc_get ab-loop-a)#g") ;;
-        (*%ab-loop-b%*) F=$(echo "$F" | sed "s#%ab-loop-b%#$(mpvc_get ab-loop-b)#g") ;;
-        esac
-    done
-    echo "${F}"
+mpvc_print_status() {
+    # not that nice, in fact way more ugly, but also way faster
+    F=$(echo "$FORMATSTRING" |
+        sed \
+            -e 's/%year%/${year}/g' \
+            -e 's/%genre%/${genre}/g' \
+            -e 's/%title%/${media-title}/g' \
+            -e 's/%album%/${album}/g' \
+            -e 's/%artist%/${artist:NA}/g' \
+            -e 's/%comment%/${comment}/g' \
+            -e 's/%albumartist%/${album_artist}/g' \
+            -e 's/%playback-time%/${playback-time}/g' \
+            -e 's/%volume%/${volume}/g' \
+            -e 's/%muted%/${mute}/g' \
+            -e 's/%percentage%/${percent-pos}/g' \
+            -e 's/%name%/${filename}/g' \
+            -e 's/%path%/${path}/g' \
+            -e 's/%repeat%/${loop-playlist}/g' \
+            -e 's/%single%/${loop-file}/g' \
+            -e 's/%frame%/${estimated-frame-number}/g' \
+            -e 's/%width%/${width}/g' \
+            -e 's/%height%/${height}/g' \
+            -e 's/%ab-loop-a%/${ab-loop-a}/g' \
+            -e 's/%ab-loop-b%/${ab-loop-b}/g' \
+            -e 's/%dir%/${working-directory}/g' \
+            -e 's/%remaining%/${playtime-remaining}/g' \
+            -e 's/%length%/${duration}/g' \
+            -e 's/%time%/${playback-time}/g' \
+            -e 's/%precisetime%/${playback-time}/g' \
+            -e 's/%playlistlength%/${playlist-count}/g' \
+            -e 's/%position%/${playlist-pos}/g' \
+            -e "s/%status%/$(getPauseStatus)/g" \
+            -e "s/%speed%/$(getSpeed)/g" \
+            -e ''
+    ) 
+    #echo "${F}"
+    mpvc_cmd "expand-text" "${F}" | sed 's/NL/\n/g'
 }
 
 printFinalOutput() {
@@ -726,7 +715,7 @@ printFinalOutput() {
     if [ "$(mpvc_get idle-active)" = "yes" ]; then
         warn "MPV on ${MPVC_SOCKET##$HOME/} is currently idle."; return
     fi
-    formatPrint
+    mpvc_print_status
 }
 
 ## Misc Functions #############################################################
