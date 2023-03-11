@@ -9,13 +9,13 @@
 
 An mpc-like control interface for mpv with a nearly complete compatibility layer for mpc commands in
 addition to GNU style arguments.
-This forks [lwillets/mpvc](https://github.com/lwilletts/mpvc) providing some extra goodies such as: improved CLI, TUI, FZF & playing media from youtube & streaming services.
+This forks [lwillets/mpvc](https://github.com/lwilletts/mpvc) providing some extra goodies such as: improved CLI, TUI, FZF & playing media from YouTube & streaming services.
 Check the [Wiki](https://github.com/gmt4/mpvc/wiki) for a detailed view of the extra features of this fork.
 
 ## QuickStart
 
 <pre>
- <b># make a local clone of the github repo</b>
+ <b># make a local copy of the github repo</b>
  git clone https://github.com/gmt4/mpvc/
  <b># use make to install: just copy/link to your $HOME/bin</b>
  make -C mpvc link BINDIR=$HOME/bin
@@ -81,7 +81,7 @@ To keep the ipc-server open permanently, use:
 $ mpv --input-ipc-server=/tmp/mpvsocket
 ```
 
-You can also specify the default ipc server in your $XDG_CONFIG_HOME/mpv.conf
+You can also specify the default ipc server in your `$XDG_CONFIG_HOME/mpv.conf`
 which will make the most recent mpv instance you start be controllable via mpvc:
 ```
 input-ipc-server=/tmp/mpvsocket
@@ -122,7 +122,7 @@ Adding files to myPlaylist.m3u...
 volume=70
 loop-playlist
 ```
-- mpvc executes faster ~4x faster when using dash syslinked to /bin/sh instead
+- mpvc executes faster ~4x faster when using dash symlinked to /bin/sh instead
 of bash. Another faster alternative is mksh.
 - mpvc should be fully POSIX compliant, meaning it should run on any UNIX-like
 variant. Please report an issue if you experience trouble.
