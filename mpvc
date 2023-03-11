@@ -601,25 +601,27 @@ mpvc_toggle_loopplaylist() {
     esac
 }
 
-mpvc_search() { mpvc_get_playlist "numbered" | awk '/'"$@"'/ { print $0 }'; }
+mpvc_search() {
+    mode=$1; shift;
+    mpvc_get_playlist "$mode" | awk '/'"$*"'/ { print $0 }';
+}
+
 mpvc_search_play() {
     mode=$1; shift
     [ -z "$1" ] && return
-    track=$(
-        mpvc_get_playlist "$mode" | awk '/'"$@"'/ { sub("\\*",""); print $1; exit; }'
-    )
+    track=$(mpvc_search "$mode" "$1" | awk '{print $1; exit}')
     [ -z "$track" ] && eeprintf 1 "$PROGNAME: Searching for $*, nothing found."
     setTrack "$track" absolute
 }
 
 mpvc_search_remove() {
-    tracks=$(mpvc_search "$1" | cut -d ' ' -f1 | tac )
+    tracks=$(mpvc_search "numbered" "$1" | cut -d ' ' -f1 | tac )
     for i in $tracks; do removeTrack "$i"; done
     QUIETFLAG=true
 }
 
 mpvc_search_move() {
-    tracks=$(mpvc_search "$1" | cut -d ' ' -f1 | tac )
+    tracks=$(mpvc_search "numbered" "$1" | cut -d ' ' -f1 | tac )
     for i in $tracks; do moveTrack "$i" "$2"; done
     QUIETFLAG=true
 }
@@ -701,7 +703,7 @@ mpvc_print_status() {
             -e 's/%speed%/${speed}/g' \
             -e "s/%status%/$(getPauseStatus)/g" \
             -e ''
-    ) 
+    )
     #echo "${F}"
     mpvc_cmd "expand-text" "${F}" | sed 's/NL/\n/g'
 }
@@ -885,7 +887,7 @@ main() {
             --sockcmd|sockcmd)               shift; mpvc_sockcmd "$1"; QUIETFLAG=true ;;
             --sockrepl|sockrepl)             shift; mpvc_sockrepl; QUIETFLAG=true ;;
             --socklist|socklist)             shift; mpvc_socklist "$1"; QUIETFLAG=true ;;
-            --search|search)                 shift; mpvc_search "$@"; QUIETFLAG=true ;;
+            --search|search)                 shift; mpvc_search "numbered" "$@"; QUIETFLAG=true ;;
 
             -R|--searchrm|searchrm)          shift; mpvc_search_remove "$1";;
             -M|--searchmv|searchmv)          shift; mpvc_search_move "$1" "$2";;
