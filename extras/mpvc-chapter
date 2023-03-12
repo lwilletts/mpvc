@@ -88,7 +88,8 @@ chapter_info()
 chapter_list()
 {
      mpvc getr chapter-list |
-         sed 's|{"title"|\n\t{"title"|g; s/,"request_id"/\n,"request_id"/'
+         grep -o '"data":\[.*\]' |
+         sed 's/^"data"://; s|{"title"|\n\t{"title"|g;  /^\[\]$/ !s/]$/\n]/'
 }
 
 chapter_next()
