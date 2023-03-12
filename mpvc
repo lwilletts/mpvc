@@ -220,15 +220,16 @@ getPauseStatus() {
     esac
 }
 
+mpvc_get_playlist_json() {
+    mpvc_cmdr "get_property" "playlist" |
+        grep -o '"data":\[.*\]' |
+        sed 's/^"data"://; s|{"filename":|\n\t{"filename":|g; /^\[\]$/ !s/]$/\n]/'
+    QUIETFLAG=true
+}
+
 mpvc_get_playlist_once() {
-    mpvc_cmd "get_property_string" "playlist" |
-        awk '
-        BEGIN { RS="filename\\\\:" }
-        {
-            gsub("\\\\", ""); sub("(^\\[|]\n|\n|,$)", "");
-            sub(",current:true", ""); sub(",playing:true", "");
-            if (length($0)>0) print $0
-        }' |
+    mpvc_get_playlist_json |
+        sed 's|,"current":true||; s|,"playing":true||; s|{"filename":"\(.*\)"}|\1|; s/,$//; /^\[$/d; /\]$/d' |
         awk -v numbered="$1" '
         {
             if (length(numbered)>0)
@@ -881,6 +882,7 @@ main() {
             -m|--mute)                       mpvc_toggle_mute               ;;
             -i|--playlist|playlist)          mpvc_get_playlist "";          ;;
             -I|--fullplaylist|fullplaylist)  mpvc_get_playlist "full";      ;;
+            -i|--playlistjson|playlistjson)  mpvc_get_playlist_json ""      ;;
             -L|--loop|loop)                  mpvc_toggle_loopplaylist       ;;
             -l|--loopfile|loopfile)          mpvc_toggle_loopfile           ;;
             -z|--shuffle|shuffle)            mpvc_shuffle_playlist shuffle; QUIETFLAG=true;;
