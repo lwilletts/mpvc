@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="asciinema-player.css" />
+</head>
+<body>
+    <a href="https://gmt4.github.io/mpvc/">gmt4 mpvc</a>
+    demo session (asciinema):
+    <div id="demo" style="width:700px" ></div>
+    <script src="asciinema-player.min.js"></script>
+    <script>
+        AsciinemaPlayer.create('demo.cast', document.getElementById('demo'),
+            {
+                poster: 'npt:0:13',
+                speed: 2,
+            }
+        );
+    </script>
+</body>
+</html>
