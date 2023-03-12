@@ -1,0 +1,137 @@
+#!/bin/sh
+#
+# @file mpvc-chapter
+# @description mpvc chapter
+# @author gmt4 <gmt4 at github.com> (c) Copyright 2022 MIT 
+# @url github.com/gmt4/mpvc
+#
+
+PROGNAME=$(basename "$0");
+PROGVERSION="v1.0 (status:experimental)";
+PROGAUTHOR=gmt4
+PROGURL="https://github.com/gmt4/mpvc"
+
+# See https://ffmpeg.org/ffmpeg-formats.html#Metadata-1
+chapter_file()
+{
+    chaptersdir="$HOME/.config/mpvc/chapters/"
+    chaptersfile="$chaptersdir/$(mpvc get path | sed 's/\//-/g;s/ /_/g')"
+    mkdir -p "$chaptersdir"
+    echo "$chaptersfile"
+}
+
+# generate a ffmpeg metadata file with chapters
+# loadable with: mpvc sets chapters-file chapters.txt
+chapter_add()
+{
+    chaptersfile=$(chapter_file)
+    
+    path=$(mpvc get path)
+    timepos=$(mpvc get time-pos)
+    percentpos=$(mpvc get percent-pos)
+    mediatitle=$(mpvc get media-title)
+
+    if [ ! -s "$chaptersfile" ]
+    then
+        cat > "$chaptersfile" <<EOF
+;FFMETADATA1
+title=$mediatitle
+;path=$path
+
+#percent-pos=0
+[CHAPTER]
+TIMEBASE=1/1
+START=0
+END=$timepos
+title=chapter_0
+EOF
+
+    fi
+
+    start_time=$(awk -F'=' 'BEGIN{s=0} /^END=[0-9]+/ {s=$2} END{print s}' "$chaptersfile")
+    end_time=$timepos
+    last_chapter=$(awk -F'=' 'BEGIN{s=0} /^title=chapter_[0-9]+/ {s=$2} END{print s}' "$chaptersfile")
+
+    if [ -n "$1" ]
+    then
+        cat >>"$chaptersfile" <<EOF
+
+#percent-pos=$percentpos
+[CHAPTER]
+TIMEBASE=1/1
+START=$start_time
+END=$end_time
+title=$last_chapter $@
+EOF
+    fi
+
+    cat "$chaptersfile"
+}
+
+chapter_load()
+{
+    track=$(mpvc gets playlist-pos)
+    timepos=$(mpvc gets time-pos)
+    mpvc sets chapters-file "$(chapter_file)"
+    mpvc play "$track" delay sets time-pos "$timepos"
+}
+
+chapter_info()
+{
+    echo "mpvc sets chapter $(mpvc gets chapter)"
+    echo "mpvc sets chapters $(mpvc gets chapters)"
+    echo "mpvc sets ordered-chapters $(mpvc gets ordered-chapters)"
+    echo "mpvc sets ordered-chapters-files $(mpvc gets ordered-chapters-files)"
+    echo "mpvc sets chapters-file $(mpvc gets chapters-file)"
+}
+
+chapter_list()
+{
+     mpvc getr chapter-list |
+         sed 's|{"title"|\n\t{"title"|g; s/,"request_id"/\n,"request_id"/'
+}
+
+chapter_next()
+{
+    chapter=$(mpvc get chapter)
+    chapters=$(mpvc get chapters)
+    mpvc sets "chapter" $(( ( chapter + 1 ) % chapters ))
+}
+
+chapter_prev()
+{
+    chapter=$(mpvc get chapter)
+    chapters=$(mpvc get chapters)
+    mpvc sets "chapter" $(( ( chapter - 1 )  % chapters ))
+}
+
+usage()
+{
+    echo "usage: $PROGNAME args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
+    echo "  file : Show current ffmetadata chapter file"
+    echo "  load : Load current ffmetadata chapter file"
+    echo "  add  : Add new chapter to current ffmetadata chapter file"
+    echo "  info : Show chapters info"
+    echo "  list : List chapters (property chapter-file)"
+    echo "  next : Jump to next chapter (property chapter)"
+    echo "  prev : Jump to prev chapter (property chapter)"
+    exit;
+}
+
+main()
+{
+    [ $# -lt 1 ] && usage
+
+    case "$1" in
+    file) shift; chapter_file "$@";;
+    load) shift; chapter_load "$@";;
+    add)  shift; chapter_add "$@";;
+    info) shift; chapter_info "$@";;
+    list) shift; chapter_list "$@";;
+    next) shift; chapter_next "$@";;
+    prev) shift; chapter_prev "$@";;
+    *) usage;;
+    esac
+}
+
+main "$@"
