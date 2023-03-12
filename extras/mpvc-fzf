@@ -132,7 +132,12 @@ mpvctui_ddg_play()
             awk '{print $1}' | mpvc load
 }
 
-optflags="d:DfFhs:p:P:lx"
+mpvctui_version()
+{
+    echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
+}
+
+optflags="d:DfFhs:p:P:lxv"
 mpvctui_usage()
 {
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
@@ -166,6 +171,7 @@ main()
         P) shift; mpvctui_fzf_iplay "$OPTARG" | mpvc loadc ;;
         s) shift; mpvctui_fzf_isearch "$OPTARG";;
         x) shift; quiet command -v $MPVC_TERM && $MPVC_TERM -e "$0" "$@"; exit;;
+        v) shift; mpvctui_version;;
         *) mpvctui_usage;;
         esac
     done
