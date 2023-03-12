@@ -105,6 +105,11 @@ chapter_prev()
     mpvc sets "chapter" $(( ( chapter - 1 )  % chapters ))
 }
 
+chapter_play()
+{
+    mpvc sets "chapter" "$1"
+}
+
 usage()
 {
     echo "usage: $PROGNAME args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
@@ -113,6 +118,7 @@ usage()
     echo "  add  : Add new chapter to current ffmetadata chapter file"
     echo "  info : Show chapters info"
     echo "  list : List chapters (property chapter-file)"
+    echo "  play : Play the given chapter number (property chapter)"
     echo "  next : Jump to next chapter (property chapter)"
     echo "  prev : Jump to prev chapter (property chapter)"
     exit;
@@ -130,6 +136,7 @@ main()
     list) shift; chapter_list "$@";;
     next) shift; chapter_next "$@";;
     prev) shift; chapter_prev "$@";;
+    play) shift; chapter_play "$@";;
     *) usage;;
     esac
 }
