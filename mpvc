@@ -72,6 +72,7 @@ Formatting:
     %genre%, %year%, %percentage%, %playlistlength%, %position%, %repeat%,
     %single, %status%, %time%, %precisetime%, %speed%, %length%, %remaining%,
     %volume%, %muted%, %frame%, %width%, %height%, %ab-loop-a%, %ab-loop-b%
+    %video%, %aspect%, %window%, %fullscreen%, %chapter%, %chapters%
 
 MPC compatibility layer:
     mpvc features a nearly complete compatibility layer for mpc commands in
@@ -113,7 +114,8 @@ mpvc_defaults()
 %artist% - %title% NL\
 [%status%] #%position%/%playlistlength% %time%/%length% (%percentage%%%) NL\
 speed:%speed%x volume:%volume%%% muted:%muted% repeat:%repeat% single:%single% NL\
-video:%video% aspect:%aspect% window:%window% fullscreen:%fullscreen%"
+video:%video% aspect:%aspect% window:%window% fullscreen:%fullscreen% NL\
+chapter:%chapter% %=chapter%/%chapters%"
 
     # validate deps
     quiet type mpv || eeprintf 4 "$PROGNAME: Error: No mpv found. Install to continue."
@@ -684,6 +686,9 @@ mpvc_print_status() {
             -e "s/%video%/\${video}/g" \
             -e "s/%aspect%/\${aspect}/g" \
             -e "s/%window%/\${force-window}/g" \
+            -e "s/%chapter%/\${chapter:NA}/g" \
+            -e "s/%=chapter%/\${=chapter:NA}/g" \
+            -e "s/%chapters%/\${chapters:NA}/g" \
             -e "s/%fullscreen%/\${fullscreen}/g" \
             -e "s/%status%/$(getPauseStatus)/g" \
             -e ''
