@@ -414,10 +414,7 @@ mpvc_appendtrack() {
 mpvc_appendtracks() {
     shiftcount=0
     QUIETFLAG="true"
-    if [ -z "$(mpvc_get idle-active)" ]; then
-        echo "$PROGNAME: No running mpv found, starting mpv now"
-        mpvc_startmpv --really-quiet --idle=once
-    fi
+    mpvc_startmpv --really-quiet --idle=once
     for arg in "$@"; do
         case "$arg" in
         http*) mpvc_appendtrack "$arg"; _=$((shiftcount+=1)) ;;
@@ -780,8 +777,11 @@ mpvc_idleloop() {
 mpvc_delay() { sleep "${1:-0.1}"; }
 # mpvc_startmpv: exec & wait until mpv starts up
 mpvc_startmpv() {
-    exec mpv --input-ipc-server="$MPVC_SOCKET" $MPVOPTIONS "$@" &
-    until [ -n "$(mpvc_get idle-active)" ]; do mpvc_delay 0.1; done
+    if [ -z "$(mpvc_get idle-active)" ]; then
+        echo "$PROGNAME: No running mpv found, starting mpv now"
+        exec mpv --input-ipc-server="$MPVC_SOCKET" $MPVOPTIONS "$@" &
+        until [ -n "$(mpvc_get idle-active)" ]; do mpvc_delay 0.1; done
+    fi
 }
 
 main() {
@@ -823,13 +823,7 @@ main() {
 
             add|-a|--append) mpvc_appendtracks "$@"; shift "$((shiftcount+1))" ;;
             #replace|--replace) replaceTracks "$@"; shift "$((shiftcount+1))" ;;
-            mpv|--mpv)
-                shift; QUIETFLAG=true
-                if ! pgrep -f "mpv .*$MPVC_SOCKET .*--idle=yes"; then
-                    mpvc_startmpv --really-quiet --idle=yes "$@";
-                fi
-                break
-                ;;
+
             # consume) to implement # add on|off toggle
             # random) MPV doesn't have this control option!
 
@@ -847,6 +841,7 @@ main() {
             -o|--save|save)                  shift; savePlaylist "$1"       ;;
             --load|load)                     shift; loadPlaylist            ;;
 
+            mpv|--mpv)                       mpvc_startmpv --really-quiet --idle=yes;;
             --current|current)               ;;
             --loadc|loadc)                   shift; loadPlaylist "clear"    ;;
             --saven|saven)                   shift; mpvc_get_playlist_once "numbered"; QUIETFLAG=true;;
