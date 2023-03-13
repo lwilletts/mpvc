@@ -97,6 +97,17 @@ mpvctui_header0() { mpvctui_headerc '═' '[' ']' "$MPVC_COLOR0" " * $* "; }
 mpvctui_header1() { mpvctui_headerc '─' '[' ']' "$MPVC_COLOR1" " + $* "; }
 mpvctui_header2() { mpvctui_headerc '─' '[' ']' "$MPVC_COLOR2" " + $* "; }
 
+mpvctui_progress() {
+    pct=$(mpvc gets percent-pos | sed 's|\.[0-9]\+||')
+    cols=$(tput cols)
+    mininc=2
+    inc=$(( ( $mininc * $cols ) / 100 ))
+
+    text="$@($pct%)"
+    fill="$text$(for i in $(seq ${#text} $pct); do echo -n " "; done)"
+    printf '[7m%s[0m\n' "$fill"
+}
+
 mpvctui_tips()
 {
     [ "$MPVC_TIPS" = "false" ] && return
@@ -117,6 +128,7 @@ mpvctui_watcher()
     mpvctui_header0 "Running ${PROGNAME%%.sh}$(mpvctui_tips)"
     mpvctui_header1 "Status"
     mpvc status
+    #mpvctui_progress "Progress "
     mpvctui_header1 "Playlist"
     mpvc playlist
     mpvctui_header1 "Prompt"
@@ -135,7 +147,8 @@ mpvctui_input()
         '!'*) eval ${cmd##!};;
         'mpvc '*) QUIETFLAG=true $cmd;;
         'mpvc-tui '*) $cmd;;
-        'mpvc-fzf'*) $cmd;;
+        'mpvc-fzf '*) $cmd;;
+        'mpvc-chapter '*) $cmd;;
         exit|quit|q) exit;;
         *) echo 'mpvc: Type commands at "mpvc:" prompt, "q" to quit';;
     esac
