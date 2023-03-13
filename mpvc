@@ -598,13 +598,17 @@ mpvc_search_play() {
 }
 
 mpvc_search_remove() {
-    tracks=$(mpvc_search "numbered" "$1" | cut -d ' ' -f1 | tac )
+    mode=$1; shift
+    [ -z "$1" ] && return
+    tracks=$(mpvc_search "$mode" "$1" | cut -d ' ' -f1 | tac )
     for i in $tracks; do removeTrack "$i"; done
     QUIETFLAG=true
 }
 
 mpvc_search_move() {
-    tracks=$(mpvc_search "numbered" "$1" | cut -d ' ' -f1 | tac )
+    mode=$1; shift
+    [ -z "$1" ] && return
+    tracks=$(mpvc_search "$mode" "$1" | cut -d ' ' -f1 | tac )
     for i in $tracks; do moveTrack "$i" "$2"; done
     QUIETFLAG=true
 }
@@ -866,12 +870,15 @@ main() {
             --sockcmd|sockcmd)               shift; mpvc_sockcmd "$1"; QUIETFLAG=true ;;
             --sockrepl|sockrepl)             shift; mpvc_sockrepl; QUIETFLAG=true ;;
             --socklist|socklist)             shift; mpvc_socklist "$1"; QUIETFLAG=true ;;
-            --search|search)                 shift; mpvc_search "numbered" "$@"; QUIETFLAG=true ;;
 
-            -R|--searchrm|searchrm)          shift; mpvc_search_remove "$1";;
-            -M|--searchmv|searchmv)          shift; mpvc_search_move "$1" "$2";;
-            -n|--searchplay|searchplay)      shift; mpvc_search_play "numbered" "$1" ;;
-            -N|--searchPlay|searchPlay)      shift; mpvc_search_play "full" "$1" ;;
+            --search|search)                 shift; mpvc_search "full" "$@"; QUIETFLAG=true ;;
+            --Search|Search)                 shift; mpvc_search "numbered" "$@"; QUIETFLAG=true ;;
+            -R|--searchrm|searchrm)          shift; mpvc_search_remove "full" "$1";;
+               --searchRm|searchRm)          shift; mpvc_search_remove "numbered" "$1";;
+            -M|--searchmv|searchmv)          shift; mpvc_search_move "full" "$1" "$2";;
+               --searchMv|searchMv)          shift; mpvc_search_move "numbered" "$1" "$2";;
+            -n|--searchplay|searchplay)      shift; mpvc_search_play "full" "$1" ;;
+            -N|--searchPlay|searchPlay)      shift; mpvc_search_play "numbered" "$1" ;;
             --stash|stash)                   shift; mpvc_stash "$1" "$2";;
 
             -k|--kill|kill)                  quiet mpvc_cmd "quit"; QUIETFLAG=true ;;
