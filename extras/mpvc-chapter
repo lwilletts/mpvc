@@ -15,7 +15,7 @@ PROGURL="https://github.com/gmt4/mpvc"
 chapter_file()
 {
     chaptersdir="$HOME/.config/mpvc/chapters/"
-    chaptersfile="$chaptersdir/$(mpvc get path | sed 's/\//-/g;s/ /_/g')"
+    chaptersfile="$chaptersdir/$(mpvc get path | sed 's/\//-/g; s/ /_/g; s/[&]//')"
     mkdir -p "$chaptersdir"
     echo "$chaptersfile"
 }
@@ -96,32 +96,40 @@ chapter_next()
 {
     chapter=$(mpvc get chapter)
     chapters=$(mpvc get chapters)
-    mpvc sets "chapter" $(( ( chapter + 1 ) % chapters ))
+    chapter_set $(( ( chapter + 1 )  % chapters ))
 }
 
 chapter_prev()
 {
     chapter=$(mpvc get chapter)
     chapters=$(mpvc get chapters)
-    mpvc sets "chapter" $(( ( chapter - 1 )  % chapters ))
+    chapter_set $(( ( chapter - 1 )  % chapters ))
 }
 
-chapter_play()
+chapter_set()
 {
+    chapters=$(mpvc get chapters)
+    [ "$chapters" -eq 0 ] && return
     mpvc sets "chapter" "$1"
+}
+
+chapter_status()
+{
+    mpvc cmd expand-text '${chapter} (${=chapter:NA}/${chapters:NA})'
 }
 
 usage()
 {
     echo "usage: $PROGNAME args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
-    echo "  file : Show current ffmetadata chapter file"
-    echo "  load : Load current ffmetadata chapter file"
-    echo "  add  : Add new chapter to current ffmetadata chapter file"
-    echo "  info : Show chapters info"
-    echo "  list : List chapters (property chapter-file)"
-    echo "  play : Play the given chapter number (property chapter)"
-    echo "  next : Jump to next chapter (property chapter)"
-    echo "  prev : Jump to prev chapter (property chapter)"
+    echo "  status: Show chapters status"
+    echo "  list  : List chapters (property chapter-file)"
+    echo "  info  : Show chapters info"
+    echo "  file  : Show current ffmetadata chapter-file"
+    echo "  load  : Load current ffmetadata chapter-file"
+    echo "  add   : Add new chapter to current ffmetadata chapter-file"
+    echo "  play  : Play the given chapter number (property chapter)"
+    echo "  next  : Jump to next chapter (property chapter)"
+    echo "  prev  : Jump to prev chapter (property chapter)"
     exit;
 }
 
@@ -130,14 +138,16 @@ main()
     [ $# -lt 1 ] && usage
 
     case "$1" in
-    file) shift; chapter_file "$@";;
-    load) shift; chapter_load "$@";;
-    add)  shift; chapter_add "$@";;
-    info) shift; chapter_info "$@";;
-    list) shift; chapter_list "$@";;
-    next) shift; chapter_next "$@";;
-    prev) shift; chapter_prev "$@";;
-    play) shift; chapter_play "$@";;
+    file)   shift; chapter_file "$@";;
+    load)   shift; chapter_load "$@";;
+    add)    shift; chapter_add "$@";;
+    info)   shift; chapter_info "$@";;
+    list)   shift; chapter_list "$@";;
+    next)   shift; chapter_next "$@";;
+    prev)   shift; chapter_prev "$@";;
+    play)   shift; chapter_set "$@";;
+    status) shift; chapter_status "$@";;
+    help) usage;;
     *) usage;;
     esac
 }
