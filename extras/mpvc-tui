@@ -99,6 +99,7 @@ mpvctui_header2() { mpvctui_headerc '─' '[' ']' "$MPVC_COLOR2" " + $* "; }
 
 mpvctui_progress() {
     pct=$(mpvc gets percent-pos | sed 's|\.[0-9]\+||')
+    [ -z "$pct" -o "$pct" = "null" ] && pct=0
     cols=$(tput cols)
     mininc=2
     inc=$(( ( $mininc * $cols ) / 100 ))
