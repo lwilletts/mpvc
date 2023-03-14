@@ -231,8 +231,8 @@ mpvctui_main()
         h) shift; mpvctui_usage ;;
         t) shift; mpvctui_watch ;;
         T) shift;
-                  pgrep -f "mpvc --mpv" || mpvc --mpv &
-                  ( sleep 2 && mpvc --append "$@" )
+                  mpvc -q --mpv &
+                  ( sleep 2 && [ -n "$1" ] && mpvc --append "$@" )
                   ( sleep 1 && pgrep -f "$PROGNAME -n" || setsid "$0" -n ) &
                   mpvctui_watch
                   ;;
