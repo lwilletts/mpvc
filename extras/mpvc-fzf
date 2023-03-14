@@ -71,6 +71,7 @@ mpvctui_fzf_isearch()
         }
         /^ *<a title="Audio mode/ {
             gsub("^ *<a title=\"Audio mode\" href=\"",""); gsub("\">",""); gsub("/watch", "https://youtube.com/watch");
+            gsub("listen=1",""); 
             print $0, title
         }'
 }
