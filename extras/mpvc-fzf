@@ -67,12 +67,18 @@ mpvctui_fzf_isearch()
     curl -sL "$url_search" |
     awk '
         /^ *<p dir="auto">/ {
-            gsub("^ *<p dir=\"auto\">",""); gsub("</p>",""); title=$0
+            gsub("^ *<p dir=\"auto\">",""); gsub("</p>",""); vtitle=$0
+        }
+        /<p class="video-data" dir="auto">/ {
+            gsub("^ *<p class=\"video-data\" dir=\"auto\">",""); gsub(" views",""); gsub("</p>",""); shared=$0
+        }
+        /^ *<p class="length">/ {
+            gsub("^ *<p class=\"length\">",""); gsub("</p>",""); vlength=$0
         }
         /^ *<a title="Audio mode/ {
-            gsub("^ *<a title=\"Audio mode\" href=\"",""); gsub("\">",""); gsub("/watch", "https://youtube.com/watch");
-            gsub("listen=1",""); 
-            print $0, title
+            gsub("^ *<a title=\"Audio mode\" href=\"",""); gsub("\">","");
+            gsub("/watch\\?v=", "https://youtu.be/"); gsub("listen=1","");
+            printf "%s %4s %7s %s\n", $0, shared, vlength, vtitle
         }'
 }
 
