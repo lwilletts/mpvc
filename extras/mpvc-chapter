@@ -85,11 +85,25 @@ chapter_info()
     echo "mpvc sets chapters-file $(mpvc gets chapters-file)"
 }
 
-chapter_list()
+chapter_list_json()
 {
      mpvc getr chapter-list |
          grep -o '"data":\[.*\]' |
          sed 's/^"data"://; s|{"title"|\n\t{"title"|g;  /^\[\]$/ !s/]$/\n]/'
+}
+
+chapter_list()
+{
+    numbered="$1"
+    chapter_list_json |
+        grep -o '"title":"[^"]*' | sed 's/"title":"//;' |
+        awk -v numbered=$numbered '
+        {
+            if (numbered)
+                printf "%2d %s\n", NR-1, $0
+            else
+                print
+        }'
 }
 
 chapter_next()
@@ -138,11 +152,15 @@ main()
     [ $# -lt 1 ] && usage
 
     case "$1" in
+    -i)     shift; chapter_list "";;
+    -I)     shift; chapter_list "numbered";;
+
+    json)   shift; chapter_list_json "$@";;
+    list)   shift; chapter_list "$@";;
     file)   shift; chapter_file "$@";;
     load)   shift; chapter_load "$@";;
     add)    shift; chapter_add "$@";;
     info)   shift; chapter_info "$@";;
-    list)   shift; chapter_list "$@";;
     next)   shift; chapter_next "$@";;
     prev)   shift; chapter_prev "$@";;
     play)   shift; chapter_set "$@";;
