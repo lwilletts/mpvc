@@ -255,11 +255,9 @@ mpvc_get_playlist() {
     mode="$1"
     tracks=$(mpvc_get playlist-count)
     cTrack=$(mpvc_get playlist-pos)
+    [ -z "$cTrack" ] && cTrack=0
 
     [ "$mode" = "numbered" ] && mpvc_get_playlist_once $mode && return
-    if [ -z "$cTrack" ] || [ -z "$tracks" ] || [ "$tracks" -eq 0 ]; then
-        eeprintf 1 "Socket ${MPVC_SOCKET##$HOME/} is currently idle."
-    fi
     # by default, display only tracks fitting terminal, otherwise, display all
     FIRST=0
     LAST=$tracks
@@ -702,7 +700,7 @@ mpvc_print_status() {
 printFinalOutput() {
     [ "$QUIETFLAG" = "true" ] && return
     # catches if mpv is idle or not
-    if [ "$(mpvc_get idle-active)" = "yes" ]; then
+    if [ "$(mpvc_get idle-active)" = "true" ]; then
         warn "MPV on ${MPVC_SOCKET##$HOME/} is currently idle."; return
     fi
     mpvc_print_status
