@@ -138,7 +138,7 @@ mpvctui_version()
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
 }
 
-optflags="d:DfFhs:p:P:lxv"
+optflags="1d:DfFhs:p:P:lxv"
 mpvctui_usage()
 {
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
@@ -161,6 +161,7 @@ main()
     while getopts "$optflags" flag;
     do
         case "$flag" in
+        1) shift; awk '{print $1}';;
         d) MPVC_DIR="$OPTARG"; cd "$MPVC_DIR" || return;;
         D) shift; mpvctui_ddg_play "$@";;
         #D) shift; mpvctui_fzf_ddg "$@";;
