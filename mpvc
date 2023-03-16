@@ -151,6 +151,11 @@ mpvc_curl_cache()
     echo "$v"
 }
 
+mpvc_curl_cache_title()
+{
+    mpvc_curl_cache -sL "https://youtube.com/oembed?url=$1" | mpvc_getjson '"title":'
+}
+
 # match given filename string to appropriate output
 # fn args: filename
 cleanFilename() {
@@ -158,8 +163,22 @@ cleanFilename() {
     result="$1"
     case "$filename" in
         http*.googlevideo.com/*) filename="mps-yt stream" ;;
-        http*youtu*|http*watch*) result="$(mpvc_curl_cache -sL "https://youtube.com/oembed?url=$filename" | mpvc_getjson '"title":')" ;;
-        *) [ -e "$filename" ] && result=${filename##*/} ;;
+        http*://youtu.be/watch*)
+            filename="$(echo "$filename" | sed 's|/watch?v=|/|')"
+            result="$(mpvc_curl_cache_title "$filename")"
+            ;;
+        http*://youtu.be/*|http*://youtube.com/*)
+            result="$(mpvc_curl_cache_title "$filename")"
+            ;;
+        http*://yewtu.be/watch*)
+            filename="$(echo "$filename" | sed 's|://yewtu.be|://youtu.be|; s|/watch?v=|/|')"
+            result="$(mpvc_curl_cache_title "$filename")"
+            ;;
+        http*://yewtu.be/*)
+            filename="$(echo "$filename" | sed 's|://yewtu.be|://youtu.be|')"
+            result="$(mpvc_curl_cache_title "$filename")"
+            ;;
+        *) [ -e "$filename" ] && result=${filename##*/} || result=${filename##*/};;
     esac
     printf "$result"
 }
