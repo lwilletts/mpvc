@@ -65,7 +65,7 @@ mpvctui_fzf_isearch()
     url_search="https://yewtu.be/search?q=$(for f in $@; do printf "%s+" "$f"; done)"
 
     echo "$url_search"
-    curl -sL "$url_search?page=1" "$url_search?page=2" |
+    curl -sL "$url_search&page=1" "$url_search&page=2" |
     awk '
         /^ *<p dir="auto">/ {
             gsub("^ *<p dir=\"auto\">",""); gsub("</p>",""); vtitle=$0
