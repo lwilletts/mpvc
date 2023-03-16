@@ -55,7 +55,7 @@ mpvctui_fzf_preview()
         \
         --preview-window='up:5' \
         --preview="mpvc" \
-        --header="$PROGNAME fzf help: $mpvctui_fzf_help" \
+        --header="$PROGNAME mpvc-fzf help: $mpvctui_fzf_help" \
         "$@"
         #--bind='ctrl-d:execute-silent(mpvc seek -20 &)' \
 }
@@ -86,23 +86,22 @@ mpvctui_fzf_isearch()
 mpvctui_fzf_iplay()
 {
     mpvctui_fzf_isearch "$1" |
-        mpvctui_fzf_preview --prompt="(youtube) " --header="$PROGNAME fzf-yt help: $mpvctui_fzf_help" |
+        mpvctui_fzf_preview --prompt="(youtube) " |
             awk '{print $1}'
 }
 
 mpvctui_fzf_local()
 {
     find . -type f,d | sort |
-        mpvctui_fzf_preview --prompt="(local) " --header="$PROGNAME fzf-file help: $mpvctui_fzf_help" |
+        mpvctui_fzf_preview --prompt="(local) " |
             mpvc load
 }
 
 mpvctui_fzf_playlist()
 {
     len=$(mpvc gets playlist-count)
-    (
-        [ -z "$len" ] && echo || mpvc fullplaylist
-    ) | mpvctui_fzf_preview --prompt="(playlist) " --header="$PROGNAME fzf-pl help: $mpvctui_fzf_help"
+    ( [ -z "$len" ] && echo || mpvc fullplaylist) |
+        mpvctui_fzf_preview --prompt="(playlist) "
 }
 
 mpvctui_fzf_ddg()
