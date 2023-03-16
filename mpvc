@@ -662,24 +662,6 @@ clearPlaylist() {
     echo "Playlist cleared."
 }
 
-## Time Functions #############################################################
-
-# format seconds into HH:MM:SS format
-formatTime() {
-    [  "$1" = "null" ] && return 1
-    rawSeconds=$1
-    milleSeconds=$2
-    seconds=$((rawSeconds % 60))
-    minutes=$((rawSeconds / 60))
-    hours=$((minutes / 60))
-    minutes=$((minutes - hours*60))
-    if [ -z "$milleSeconds" ]; then
-        printf "%02d:%02d:%02d" "$hours" "$minutes" "$seconds"
-    else
-        printf "%02d:%02d:%02d.%d" "$hours" "$minutes" "$seconds" "$milleSeconds"
-    fi
-}
-
 ## Formatting and Printing Functions ##########################################
 
 # formats and prints according to $FORMATSTRING
@@ -729,7 +711,7 @@ mpvc_print_status() {
     mpvc_cmd "expand-text" "${F}" | sed 's/NL/\n/g'
 }
 
-printFinalOutput() {
+mpvc_print_status_final() {
     [ "$QUIETFLAG" = "true" ] && return
     # catches if mpv is idle or not
     if [ "$(mpvc_get idle-active)" = "true" ]; then
@@ -939,7 +921,7 @@ main() {
         [ -n "$1" ] && shift
     done
     # produce format strings last
-    quietcheck printFinalOutput
+    quietcheck mpvc_print_status_final
 }
 
 quietcheck main "$@";
