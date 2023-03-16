@@ -63,8 +63,9 @@ mpvctui_fzf_preview()
 mpvctui_fzf_isearch()
 {
     url_search="https://yewtu.be/search?q=$(for f in $@; do printf "%s+" "$f"; done)"
+
     echo "$url_search"
-    curl -sL "$url_search" |
+    curl -sL "$url_search?page=1" "$url_search?page=2" |
     awk '
         /^ *<p dir="auto">/ {
             gsub("^ *<p dir=\"auto\">",""); gsub("</p>",""); vtitle=$0
@@ -77,7 +78,7 @@ mpvctui_fzf_isearch()
         }
         /^ *<a title="Audio mode/ {
             gsub("^ *<a title=\"Audio mode\" href=\"",""); gsub("\">","");
-            gsub("/watch\\?v=", "https://youtu.be/"); gsub("listen=1","");
+            gsub("/watch\\?v=", "https://youtu.be/"); gsub("&listen=1","");
             printf "%s %4s %7s %s\n", $0, shared, vlength, vtitle
         }'
 }
