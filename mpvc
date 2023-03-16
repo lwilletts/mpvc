@@ -143,7 +143,7 @@ mpvc_config()
 mpvc_curl_cache()
 {
     k=$2
-    v="$(awk -F'\t' -v k="$k" '{ if ($1 == k) {print $2;exit} }' "$MPVC_CURL_CACHE")"
+    v="$(awk -F'\t' -v k="$k" '{ if ($1 == k) {print $2; exit} }' "$MPVC_CURL_CACHE")"
     if [ -z "$v" ]; then
         v=$(curl "$@")
         echo "$k	$v" >> "$MPVC_CURL_CACHE"
@@ -223,14 +223,7 @@ mpvc_get()   { mpvc_cmd "get_property" "$1"; }
 # fn args: filename, idle-active, playlist-count, playlist-pos, playback-time,
 #          playtime-remaining, time-remaining, percent-pos, duration, volume
 mpvc_gets() {
-    result=$(mpvc_cmd "get_property_string" "$1")
-    case "$1" in
-        volume|duration|percent-pos|playtime-remaining|playback-time)
-            result="${result%%%}"
-            result="${result%%.[0-9]*}"
-        ;;
-    esac
-    echo "$result"
+    mpvc_cmd "get_property_string" "$1"
 }
 
 getPauseStatus() {
