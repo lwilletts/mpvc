@@ -244,8 +244,9 @@ mpvc_get_playlist_once() {
         sed 's|,"current":true||; s|,"playing":true||; s|{"filename":"\(.*\)"}|\1|; s/,$//; /^\[$/d; /\]$/d' |
         awk -v numbered="$1" '
         {
+            gsub("^[ \t]*", " ")
             if (length(numbered)>0)
-                printf "%2d%s %s\n", NR-1, mark, $0
+                printf "%2d %s\n", NR-1, $0
             else
                 print
         }
