@@ -305,27 +305,27 @@ mpvc_get_playlist() {
 }
 
 # saves playlist to file but with no path checking. we live dangerously
-savePlaylist() {
-    savePlaylist="$1"
-    if [ -z "$savePlaylist" ]; then
-        savePlaylist="/dev/stdout"
+mpvc_save_playlist() {
+    output="$1"
+    if [ -z "$output" ]; then
+        output="/dev/stdout"
     else
-        if [ -e "$savePlaylist" ]; then
-            echo "Playlist $savePlaylist exists! Overwrite? [Y/n] "; read -r key
+        if [ -e "$output" ]; then
+            echo "Playlist $output exists! Overwrite? [Y/n] "; read -r key
             [ "$key" != "Y" ] && return
         fi
-        echo "Adding files to $savePlaylist ..."
+        echo "Adding files to $output ..."
     fi
-    mpvc_get_playlist_once > "$savePlaylist"
+    mpvc_get_playlist_once > "$output"
     QUIETFLAG="true"
 }
 
 mpvc_autosave_playlist() {
-    savePlaylist "$MPVC_PLAYLIST/${1:-$(date -Imin)}"
+    mpvc_save_playlist "$MPVC_PLAYLIST/${1:-$(date -Imin)}"
 }
 
 mpvc_autoload_playlist() {
-    loadPlaylist < "$MPVC_PLAYLIST/${1:-$(date -Imin)}"
+    mpvc_load_playlist < "$MPVC_PLAYLIST/${1:-$(date -Imin)}"
 }
 
 mpvc_lsplaylists() {
@@ -333,12 +333,12 @@ mpvc_lsplaylists() {
 }
 
 # loads a playlist from stdin. Note the buffer trick to avoid clear wiping the playlist.
-loadPlaylist() {
+mpvc_load_playlist() {
     QUIETFLAG="true"
     buffer=""
     while read -r line; do buffer="${buffer}\n${line}"; done
     [ -z "$buffer" ] && return
-    [ "$1" = "clear" ] && clearPlaylist
+    [ "$1" = "clear" ] && mpvc_clear_playlist
     printf "$buffer\n" | while read -r line; do mpvc_appendtracks "$line"; done
 }
 
@@ -447,7 +447,7 @@ mpvc_appendtracks() {
     return $shiftcount
 }
 
-playNext() {
+mpvc_play_next() {
     QUIETFLAG="true"
     # add track to the playlist
     mpvc_appendtracks "$1"
@@ -459,7 +459,7 @@ playNext() {
     moveTrack "$trackToMove" "$newTrackPosition"
 }
 
-setTime() {
+mpvc_set_time() {
     mode=$1; shift
     if [ "$mode" = "absolute" ]; then
         timeSec=$(parseTimeString "$1") || return $?
@@ -487,7 +487,7 @@ setTrack() {
             # if time is greater than 10 seconds, set time to 0
             if [ "$newTrack" -lt "$cTrack" ]; then
                 seconds=$(mpvc_gets playback-time)
-                [ "$seconds" -ge 10 ] && setTime "absolute" 0 && return
+                [ "$seconds" -ge 10 ] && mpvc_set_time "absolute" 0 && return
             fi
             if [ "$newTrack" -ge "$trackCount" ]; then
                 [ "$(mpvc_gets loop-playlist)" != "no" ] && newTrack=0
@@ -643,15 +643,15 @@ mpvc_shuffle_playlist() {
     [ "$(mpvc_gets loop-playlist)" = "no" ] && mpvc_toggle_loopplaylist yes
 }
 
-cropPlaylist() {
+mpvc_crop_playlist() {
     quiet mpvc_cmd "playlist-clear"
     quietcheck mpvc_get_playlist
 }
 
-clearPlaylist() {
+mpvc_clear_playlist() {
     # kill any running process of mpvc add
     #quiet pgrep -f "mpvc add" && pkill -f "mpvc add"
-    cropPlaylist
+    mpvc_crop_playlist 
     removeTrack 0
     echo "Playlist cleared."
 }
@@ -833,8 +833,8 @@ main() {
             # random) MPV doesn't have this control option!
 
             # GNU-style options
-            -t|--seek|seek)                  shift; setTime "relative" "$1" ;;
-            -T|--time|time)                  shift; setTime "absolute" "$1" ;;
+            -t|--seek|seek)                  shift; mpvc_set_time "relative" "$1" ;;
+            -T|--time|time)                  shift; mpvc_set_time "absolute" "$1" ;;
             -v|--vol)                        shift; mpvc_add "volume" "$1"  ;;
             -V|--volume)                     shift; mpvc_set "volume" "$1"  ;;
             -x|--speed|speed)                shift; mpvc_add  "speed" "$1"  ;;
@@ -842,13 +842,13 @@ main() {
             -j|--track)                      shift; setTrack "$1" relative  ;;
             -J|--tracknum)                   shift; setTrack "$1" absolute  ;;
             -r|--remove|rm|remove|del)       shift; removeTrack "$1"; QUIETFLAG=true;;
-            -A|--playnext|playnext)          shift; playNext "$1"           ;;
-            -o|--save|save)                  shift; savePlaylist "$1"       ;;
-            --load|load)                     shift; loadPlaylist            ;;
+            -A|--playnext|playnext)          shift; mpvc_play_next "$1"           ;;
+            -o|--save|save)                  shift; mpvc_save_playlist "$1" ;;
+            --load|load)                     shift; mpvc_load_playlist      ;;
 
             mpv|--mpv)                       mpvc_startmpv --really-quiet --idle=yes;;
             --current|current)               ;;
-            --loadc|loadc)                   shift; loadPlaylist "clear"    ;;
+            --loadc|loadc)                   shift; mpvc_load_playlist "clear"    ;;
             --saven|saven)                   shift; mpvc_get_playlist_once "numbered"; QUIETFLAG=true;;
             --autosave|autosave)             shift; mpvc_autosave_playlist "$1"; ;;
             --autoload|autoload)             shift; mpvc_autoload_playlist "$1"; ;;
@@ -884,7 +884,7 @@ main() {
 
             -k|--kill|kill)                  quiet mpvc_cmd "quit"; QUIETFLAG=true ;;
             -K|--killall|killall)            quiet pkill -f "mpv "; QUIETFLAG=true ;;
-            -s|--stop|stop)                  mpvc_set_pause "yes"; setTime "absolute" 0 ;;
+            -s|--stop|stop)                  mpvc_set_pause "yes"; mpvc_set_time "absolute" 0 ;;
             -P|--play)                       mpvc_always_play ;;
             -p|--toggle|toggle)              mpvc_toggle_pause;;
             -m|--mute)                       mpvc_toggle_mute               ;;
@@ -895,8 +895,8 @@ main() {
             -l|--loopfile|loopfile)          mpvc_toggle_loopfile           ;;
             -z|--shuffle|shuffle)            mpvc_shuffle_playlist shuffle; QUIETFLAG=true;;
             -Z|--unshuffle|unshuffle)        mpvc_shuffle_playlist unshuffle; QUIETFLAG=true;;
-            -c|--crop|crop)                  cropPlaylist; QUIETFLAG=true;;
-            -C|--clear|clear)                clearPlaylist; QUIETFLAG=true;;
+            -c|--crop|crop)                  mpvc_crop_playlist; QUIETFLAG=true;;
+            -C|--clear|clear)                mpvc_clear_playlist; QUIETFLAG=true;;
             --delay|delay)                   mpvc_delay;;
 
             # global argument parsing
