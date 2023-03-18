@@ -95,14 +95,31 @@ chapter_list_json()
 chapter_list()
 {
     numbered="$1"
+    cchapter=$(mpvc get chapter)
+
     chapter_list_json |
         grep -o '"title":"[^"]*' | sed 's/"title":"//;' |
-        awk -v numbered=$numbered '
+        awk -v colour="colour" -v numbered="$numbered" -v cchapter="$cchapter" '
         {
-            if (numbered)
-                printf "%2d %s\n", NR-1, $0
+            chapternr = NR-1
+            if (cchapter == chapternr)
+            {
+                if (colour == "nocolour")
+                {
+                    if (numbered) printf("%2d  %s\n", chapternr, $0);
+                    else printf("%s\n", $0);
+                }
+                else
+                {
+                    if (numbered) printf("%2d  [7m%s[0m\n", chapternr, $0);
+                    else printf("[7m%s[0m\n", $0);
+                }
+            }
             else
-                print
+            {
+                if (numbered) printf("%2d  %s\n", chapternr, $0);
+                else printf("%s\n", $0);
+            }
         }'
 }
 
@@ -152,7 +169,7 @@ main()
     [ $# -lt 1 ] && usage
 
     case "$1" in
-    -i)     shift; chapter_list "";;
+    -i)     shift; chapter_list "numbered";;
     -I)     shift; chapter_list "numbered";;
 
     json)   shift; chapter_list_json "$@";;
