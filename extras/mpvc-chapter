@@ -144,6 +144,13 @@ chapter_set()
     mpvc sets "chapter" "$1"
 }
 
+chapter_search_play()
+{
+    chapter=$(chapter_list | awk '/'$@'/ {print NR-1; exit}')
+    [ -z "$chapter" ] && return
+    mpvc sets "chapter" "$chapter"
+}
+
 chapter_status()
 {
     mpvc cmd expand-text '${chapter} (${=chapter:NA}/${chapters:NA})'
@@ -171,6 +178,7 @@ main()
     case "$1" in
     -i)     shift; chapter_list "numbered";;
     -I)     shift; chapter_list "numbered";;
+    -C)     shift; chapter_search_play "$@";;
 
     json)   shift; chapter_list_json "$@";;
     list)   shift; chapter_list "$@";;
