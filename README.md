@@ -10,9 +10,7 @@
 An mpc-like control interface for mpv with a nearly complete compatibility layer for mpc commands in
 addition to GNU style arguments.
 This forks [lwillets/mpvc](https://github.com/lwilletts/mpvc) providing some extra goodies such as: improved CLI, TUI, FZF & playing media from YouTube & streaming services.
-Check the [Wiki](https://github.com/gmt4/mpvc/wiki) for a detailed view of the extra features of this fork.
-
-Have a look at the <a href="https://gmt4.github.io/mpvc/casts/">casts/</a> directory to watch screencasts of mpvc in action.
+Check the [Wiki](https://github.com/gmt4/mpvc/wiki) & [Casts](https://gmt4.github.io/mpvc/casts/) for a detailed view of the extra features of this fork.
 
 ## QuickStart
 
