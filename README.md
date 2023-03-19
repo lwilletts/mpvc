@@ -19,15 +19,15 @@ Check the [Wiki](https://github.com/gmt4/mpvc/wiki) & [Casts](https://gmt4.githu
  git clone https://github.com/gmt4/mpvc/
  <b># use make to install: just copy/link to your $HOME/bin</b>
  make -C mpvc link BINDIR=$HOME/bin
- <b># use mpvc-tui to start the tui + desktop notifications</b>
- mpvc-tui -T
 
  <b># use mpvc-fzf to search and play youtube media</b>
  mpvc-fzf -p kupla mirage
- <b># use mpvc-fzf to manage the playlist</b>
- mpvc-fzf -f
  <b># use mpvc to enqueue local media / online YT media</b>
  mpvc add /path/to/your/*.mp3 # or your URLs
+ <b># use mpvc-fzf to manage the playlist</b>
+ mpvc-fzf -f
+ <b># use mpvc-tui to start the tui + desktop notifications</b>
+ mpvc-tui -T
 </pre>
 
 ## Screenshots
