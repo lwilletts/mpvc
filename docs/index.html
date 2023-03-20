@@ -1,13 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>gmt4.github.io/mpvc</title>
-    <link rel="canonical" href="https://gmt4.github.io/mpvc">
 
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes" />
+    <meta name="generator" content="#write-your-own-html" />
     <meta name="author" content="gmt4" />
     <meta name="description" content="gmt4 mpvc fork" />
+    <title>gmt4.github.io/mpvc</title>
+    <!-- SOH -->
+    <link rel="canonical" href="https://gmt4.github.io/mpvc" />
     <!-- Open Graph tags -->
     <meta property="og:site_name" content="gmt4.github.io/mpvc" />
     <meta property="og:type" content="website"/>
@@ -16,7 +19,7 @@
     <meta property="og:description" content="A minimal mpc-like CLI and TUI for controlling mpv from the shell"/>
     <meta property="og:image" content="https://raw.githubusercontent.com/gmt4/mpvc/master/docs/mpvc-tui.png"/>
     <!-- GH stuff -->
-    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <script async="true" defer="true" src="https://buttons.github.io/buttons.js"></script>
     <style type="text/css" media="all">
     :root { --body-bg: #fff; --body-color: #111; --pre-bg:#eee; --link-color:#00f; } /* Light mode */
     @media (prefers-color-scheme: dark) {
@@ -27,9 +30,8 @@
     pre  { background: var(--pre-bg); }
     a    { color: var(--link-color); }
     </style>
+    <!-- SOB -->
 </head>
-
-<html>
 <body>
 <h1 id="gmt4-mpvc-fork"><a href="/">@gmt4</a> mpvc fork</h1>
 <ul>
@@ -54,32 +56,32 @@
 <h2 id="gmt4-mpvc-contents">Contents</h2>
 
 <ul>
-<li> <a href="#gmt4-mpvc-fork">Fork</a>
-<li> <a href="#gmt4-mpvc-overview">Overview</a>
-<li> <a href="#gmt4-mpvc-quickstart">Quickstart</a>
-<li> <a href="#gmt4-mpvc-shots">Screenshots</a>
-<li> <a href="#gmt4-mpvc-logbook">Logbook</a>
+<li> <a href="#gmt4-mpvc-fork">Fork</a> </li>
+<li> <a href="#gmt4-mpvc-overview">Overview</a> </li>
+<li> <a href="#gmt4-mpvc-quickstart">Quickstart</a> </li>
+<li> <a href="#gmt4-mpvc-shots">Screenshots</a> </li>
+<li> <a href="#gmt4-mpvc-logbook">Logbook</a> </li>
 </ul>
 
 Logbook Entries
 <ul>
-    <li> <a href="#logbook-20220330">#20220330 On playing URLs</a>
-    <li> <a href="#logbook-20221114">#20221114 On securing mpv socket location</a>
-    <li> <a href="#logbook-20221118">#20221118 On load/save functionality</a>
-    <li> <a href="#logbook-20221120">#20221120 On persistent mpv startup</a>
-    <li> <a href="#logbook-20221203">#20221203 On a minimal mpvc-tui</a>
-    <li> <a href="#logbook-20221213">#20221213 On using the mpvc-tui prompt</a>
-    <li> <a href="#logbook-20221214">#20221214 On using the mpvc-tui -x launcher</a>
-    <li> <a href="#logbook-20221215">#20221215 On managing playlists with mpvc autoload/autosave</a>
-    <li> <a href="#logbook-20221216">#20221216 On customizing mpvc-tui look and feel</a>
-    <li> <a href="#logbook-20221216">#20221216 Show HN: mpvc-tui – A minimal mpc-like CLI and TUI for controlling mpv</a>
-    <li> <a href="#logbook-20221217">#20221217 On issuing direct JSON IPC commands to mpv</a>
-    <li> <a href="#logbook-20221219">#20221219 On playing music from streaming services as youtube & co.</a>
-    <li> <a href="#logbook-20221221">#20221221 On subscribing and receiving mpv events</a>
-    <li> <a href="#logbook-20221227">#20221227 On using mpv together with the fzf fuzzy finder</a>
-    <li> <a href="#logbook-20230112">#20230112 On using mpv together with the fzf fuzzy finder</a>
-    <li> <a href="#logbook-20230119">#20230119 On controlling multiple remotely running mpv instances</a>
-    <li> <a href="#logbook-20230219">#20230219 On stashing mpv media player state to restore later</a>
+    <li> <a href="#logbook-20220330">#20220330 On playing URLs</a> </li>
+    <li> <a href="#logbook-20221114">#20221114 On securing mpv socket location</a> </li>
+    <li> <a href="#logbook-20221118">#20221118 On load/save functionality</a> </li>
+    <li> <a href="#logbook-20221120">#20221120 On persistent mpv startup</a> </li>
+    <li> <a href="#logbook-20221203">#20221203 On a minimal mpvc-tui</a> </li>
+    <li> <a href="#logbook-20221213">#20221213 On using the mpvc-tui prompt</a> </li>
+    <li> <a href="#logbook-20221214">#20221214 On using the mpvc-tui -x launcher</a> </li>
+    <li> <a href="#logbook-20221215">#20221215 On managing playlists with mpvc autoload/autosave</a> </li>
+    <li> <a href="#logbook-20221216">#20221216 On customizing mpvc-tui look and feel</a> </li>
+    <li> <a href="#logbook-20221216">#20221216 Show HN: mpvc-tui – A minimal mpc-like CLI and TUI for controlling mpv</a> </li>
+    <li> <a href="#logbook-20221217">#20221217 On issuing direct JSON IPC commands to mpv</a> </li>
+    <li> <a href="#logbook-20221219">#20221219 On playing music from streaming services as youtube &amp; co.</a> </li>
+    <li> <a href="#logbook-20221221">#20221221 On subscribing and receiving mpv events</a> </li>
+    <li> <a href="#logbook-20221227">#20221227 On using mpv together with the fzf fuzzy finder</a> </li>
+    <li> <a href="#logbook-20230112">#20230112 On using mpv together with the fzf fuzzy finder</a> </li>
+    <li> <a href="#logbook-20230119">#20230119 On controlling multiple remotely running mpv instances</a> </li>
+    <li> <a href="#logbook-20230219">#20230219 On stashing mpv media player state to restore later</a> </li>
 </ul>
 
 <hr />
@@ -104,15 +106,15 @@ Have a look at the <a href="casts/">casts/</a> directory to watch screencasts of
  git clone https://github.com/gmt4/mpvc/
  <b># use make to install: just copy/link to your $HOME/bin</b>
  make -C mpvc link BINDIR=$HOME/bin
- <b># use mpvc-tui to start the tui + desktop notifications</b>
- mpvc-tui -T
 
  <b># use mpvc-fzf to search and play youtube media</b>
- mpvc-fzf -p kupla mirage
+ mpvc-fzf -p 'kupla mirage'
  <b># use mpvc-fzf to manage the playlist</b>
  mpvc-fzf -f
  <b># use mpvc to enqueue local media / online YT media</b>
  mpvc add /path/to/your/*.mp3 # or your URLs
+ <b># use mpvc-tui to start the tui + desktop notifications</b>
+ mpvc-tui -T
 
 </pre>
 
