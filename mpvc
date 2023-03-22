@@ -72,7 +72,7 @@ Formatting:
     %genre%, %year%, %percentage%, %playlistlength%, %position%, %repeat%,
     %single, %status%, %time%, %precisetime%, %speed%, %length%, %remaining%,
     %volume%, %muted%, %frame%, %width%, %height%, %ab-loop-a%, %ab-loop-b%
-    %video%, %aspect%, %window%, %fullscreen%, %chapter%, %chapters%
+    %video%, %aspect%, %window%, %fullscreen%, %idle%, %chapter%, %chapters%
 
 MPC compatibility layer:
     mpvc features a nearly complete compatibility layer for mpc commands in
@@ -114,7 +114,7 @@ mpvc_defaults()
 %artist% - %title% NL\
 [%status%] #%position%/%playlistlength% %time%/%length% (%percentage%%%) NL\
 speed:%speed%x volume:%volume%%% muted:%muted% repeat:%repeat% single:%single% NL\
-video:%video% aspect:%aspect% window:%window% fullscreen:%fullscreen% NL\
+video:%video% aspect:%aspect% window:%window% fullscreen:%fullscreen% idle:%idle% NL\
 chapter:%chapter% %=chapter%/%chapters%"
 
     # validate deps
@@ -697,6 +697,7 @@ mpvc_print_status() {
             -e "s/%chapter%/\${chapter:NA}/g" \
             -e "s/%=chapter%/\${=chapter:NA}/g" \
             -e "s/%chapters%/\${chapters:NA}/g" \
+            -e "s/%idle%/\${idle}/g" \
             -e "s/%fullscreen%/\${fullscreen}/g" \
             -e "s/%status%/$(getPauseStatus)/g" \
             -e ''
