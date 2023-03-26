@@ -106,6 +106,7 @@ mpvctui_fzf_playlist()
 
 mpvctui_fzf_fetch()
 {
+    [ $# -lt 1 ] && mpvctui_usage
     cmd_options=""
     json_options=$(mpvc getr ytdl-raw-options)
     for option in $(echo "$json_options" | jq -r ".data | keys | .[]")
@@ -113,7 +114,7 @@ mpvctui_fzf_fetch()
         value=$(echo "$json_options" | jq -r ".data.\"$option\"")
         if [ -n "$value" ]
         then
-            cmd_options="$cmd_options --$option=\"$value\""
+            cmd_options="$cmd_options --$option=$value"
         else
             cmd_options="$cmd_options --$option"
         fi
@@ -190,7 +191,7 @@ main()
         #D) shift; mpvctui_fzf_ddg "$@";;
         f) shift; mpvctui_fzf_playlist ;;
         F) shift; mpvctui_fzf_preview "$@" ;;
-        g) shift; mpvctui_fzf_fetch $(mpvctui_fzf_isearch "$OPTARG");;
+        g) shift; mpvctui_fzf_fetch $(mpvctui_fzf_iplay "$OPTARG");;
         h) shift; mpvctui_usage ;;
         l) shift; mpvctui_fzf_local;;
         p) shift; mpvctui_fzf_iplay "$OPTARG" | mpvc load ;;
