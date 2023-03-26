@@ -104,6 +104,23 @@ mpvctui_fzf_playlist()
         mpvctui_fzf_preview --prompt="(playlist) "
 }
 
+mpvctui_fzf_fetch()
+{
+    cmd_options=""
+    json_options=$(mpvc getr ytdl-raw-options)
+    for option in $(echo "$json_options" | jq -r ".data | keys | .[]")
+    do
+        value=$(echo "$json_options" | jq -r ".data.\"$option\"")
+        if [ -n "$value" ]
+        then
+            cmd_options="$cmd_options --$option=\"$value\""
+        else
+            cmd_options="$cmd_options --$option"
+        fi
+    done
+    youtube-dl $cmd_options "$@"
+}
+
 mpvctui_fzf_ddg()
 {
     curl -A 'Mozilla/5.0' -sL "https://duckduckgo.com/html?q=$*&iax=videos&ia=videos" |
@@ -144,7 +161,7 @@ mpvctui_version()
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
 }
 
-optflags="1d:DfFhs:p:P:lxv"
+optflags="1d:DfFg:hs:p:P:lxv"
 mpvctui_usage()
 {
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
@@ -173,6 +190,7 @@ main()
         #D) shift; mpvctui_fzf_ddg "$@";;
         f) shift; mpvctui_fzf_playlist ;;
         F) shift; mpvctui_fzf_preview "$@" ;;
+        g) shift; mpvctui_fzf_fetch $(mpvctui_fzf_isearch "$OPTARG");;
         h) shift; mpvctui_usage ;;
         l) shift; mpvctui_fzf_local;;
         p) shift; mpvctui_fzf_iplay "$OPTARG" | mpvc load ;;
