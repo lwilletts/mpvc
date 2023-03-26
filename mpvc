@@ -4,10 +4,12 @@
 # gmt4 - 2022 | fork & contributions
 # control mpv remotely using JSON ipc
 # https://mpv.io/manual/master/#json-ipc
+#
 
-PROGNAME=$(basename "$0")
-PROGVERSION="1.3"
+PROGNAME=$(basename "$0");
+PROGVERSION="v1.3-add-stash";
 PROGURL="https://github.com/gmt4/mpvc"
+PROGAUTHOR=gmt4
 
 usage() {
     cat >&2 << EOF
@@ -44,7 +46,8 @@ Usage: $PROGNAME [-S "socket"] [-a "filenames"] [-o "path"] [-f "format string"]
     -q | --quiet        : Surpress all text output.
     -Q | --vid=no       : Start mpv with video output disabled.
     -- |                : After adding files options after -- are passed to mpv.
-    -h | --help         : Print this help.
+    -h | --help         : Prints this help.
+       | --version      : Prints the $PROGNAME version.
 
     get                 : Get MPV property from $PROGNAME socket.
     set                 : Set MPV property from $PROGNAME socket.
@@ -790,8 +793,10 @@ mpvc_validate_socket() {
 }
 
 mpvc_get_version() {
+    echo "version: $PROGNAME # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
+    echo "originally forked from lwillets/mpvc"
+    echo
     mpv --version
-    echo "MPVC Release $PROGVERSION (c) Laurence Willetts MIT"
 }
 
 mpvc_idleloop() {
@@ -928,7 +933,7 @@ main() {
             -q|--quiet)                      QUIETFLAG=true;                ;;
             --mono|mono)                     COLOURFLAG=nocolour;           ;;
             --colour|colour)                 COLOURFLAG=colour;             ;;
-            --version|version)               mpvc_get_version;              ;;
+            --version|version)               mpvc_get_version; exit 0;      ;;
             --list-options)                  usage; exit 0;                 ;;
             -h|--help|h|help)                usage; exit 0;                 ;;
             -?)                              usage; exit 1;                 ;;
