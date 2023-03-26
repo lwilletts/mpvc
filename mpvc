@@ -281,7 +281,6 @@ mpvc_get_playlist() {
 
     mpvc_get_playlist_once |
         while read -r line; do cleanFilename "$line"; echo; done |
-
         awk -v colour="$COLOURFLAG" \
             -v ctrack=$cTrack -v first=$FIRST -v last="$LAST" \
         '
@@ -313,18 +312,6 @@ mpvc_get_playlist() {
         }
     '
     QUIETFLAG="true"
-}
-
-mpvc_progress() {
-    [ -z "$pct" -o "$pct" = "null" ] && pct=0
-    pct=$(mpvc cmd expand-text '${percent-pos}')
-    cols=$(tput cols)
-    text="$@(${pct}%%)"
-    count=$(
-        awk -v pct=$pct -v cols=$cols -v text=${#text} \
-        'BEGIN {count=(cols-text) / (100/pct)}' /dev/null
-    )
-    printf "\e[7m${text}%${count}s\e[0m\n" ""
 }
 
 # saves playlist to file but with no path checking. we live dangerously
@@ -637,14 +624,15 @@ mpvc_search_play() {
     mode=$1; shift
     [ -z "$1" ] && return
     track=$(mpvc_search "$mode" "$1" | awk '{print $1; exit}')
-    [ -z "$track" ] && eeprintf 1 "$PROGNAME: Searching for $*, nothing found."
+    [ -z "$track" ] && warn "$PROGNAME: Searching for $*, nothing found."
     setTrack "$track" absolute
 }
 
 mpvc_search_remove() {
     mode=$1; shift
     [ -z "$1" ] && return
-    tracks=$(mpvc_search "$mode" "$1" | cut -d ' ' -f1 | tac )
+    tracks=$(mpvc_search "$mode" "$1" | awk '{print $1}' | tac )
+    [ -z "$tracks" ] && warn "$PROGNAME: Searching for $*, nothing found."
     for i in $tracks; do removeTrack "$i"; done
     QUIETFLAG=true
 }
@@ -652,7 +640,8 @@ mpvc_search_remove() {
 mpvc_search_move() {
     mode=$1; shift
     [ -z "$1" ] && return
-    tracks=$(mpvc_search "$mode" "$1" | cut -d ' ' -f1 | tac )
+    tracks=$(mpvc_search "$mode" "$1" | awk '{print $1}' | tac )
+    [ -z "$tracks" ] && warn "$PROGNAME: Searching for $*, nothing found."
     for i in $tracks; do moveTrack "$i" "$2"; done
     QUIETFLAG=true
 }
