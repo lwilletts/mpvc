@@ -43,7 +43,7 @@ mpvctui_defaults()
     MPVC_TERM=xterm
     MPVC_TIPS=true
     MPVC_SHELL=$(readlink -f /proc/$$/exe)
-    export MPVC_CLINE=12
+    export MPVC_CLINE=11
 }
 
 # Load user config
@@ -97,18 +97,6 @@ mpvctui_header0() { mpvctui_headerc '═' '[' ']' "$MPVC_COLOR0" " * $* "; }
 mpvctui_header1() { mpvctui_headerc '─' '[' ']' "$MPVC_COLOR1" " + $* "; }
 mpvctui_header2() { mpvctui_headerc '─' '[' ']' "$MPVC_COLOR2" " + $* "; }
 
-mpvctui_progress() {
-    pct=$(mpvc cmd expand-text '${percent-pos}')
-    [ -z "$pct" -o "$pct" = "null" ] && pct=0
-    cols=$(tput cols)
-    text="$@(${pct}%%)"
-    count=$(
-        awk -v pct=$pct -v cols=$cols -v text=${#text} \
-        'BEGIN {print (cols-text) / (100/pct)}' /dev/null
-    )
-    printf "\e[7m${text}%${count}s\e[0m\n" ""
-}
-
 mpvctui_tips()
 {
     [ "$MPVC_TIPS" = "false" ] && return
@@ -129,7 +117,6 @@ mpvctui_watcher()
     mpvctui_header0 "Running ${PROGNAME%%.sh}$(mpvctui_tips)"
     mpvctui_header1 "Status"
     mpvc status
-    mpvctui_progress "Progress "
     mpvctui_header1 "Playlist"
     mpvc playlist
     mpvctui_header1 "Prompt"
