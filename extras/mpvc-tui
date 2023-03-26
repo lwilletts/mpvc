@@ -173,28 +173,6 @@ mpvctui_notify()
         } '
 }
 
-mpvctui_get_media()
-{
-    DOWN_DIR=$HOME/Downloads/mpvc/
-    url=$1
-
-    [ -z "$url" ] && usage
-    [ -z "$format" ] && format=mkv
-    [ ! -d "$DOWN_DIR" ] && mkdir "$DOWN_DIR"
-    file=$(echo "${url##http*://}.$format" | sed 's|/|-|')
-    file="$DOWN_DIR/$file"
-
-    # can't find a better solution at the moment
-    if [ ! -e "$file" ]; then
-        mpv --video=no "--stream-record=$file" "$@"
-        if [ "${file##*.}" = "mkv" ]; then
-            mkvpropedit "$file" --set title="$(youtube-dl --get-title "$@")"
-        fi
-    else
-        mpvc add "$file"
-    fi
-}
-
 mpvctui_usage()
 {
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
@@ -206,7 +184,7 @@ mpvctui_usage()
     exit;
 }
 
-optflags="d:g:htTm:nN:P:x"
+optflags="d:htTm:nN:P:x"
 mpvctui_main()
 {
     mpvctui_config
@@ -215,7 +193,6 @@ mpvctui_main()
     do
         case "$flag" in
         d) MPVC_DIR="$OPTARG"; cd "$MPVC_DIR" || return;;
-        g) shift; mpvctui_get_media "$OPTARG" ;;
         h) shift; mpvctui_usage ;;
         t) shift; mpvctui_watch ;;
         T) shift;
