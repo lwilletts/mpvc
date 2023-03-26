@@ -281,7 +281,7 @@ mpvc_get_playlist() {
 
         awk -v colour="$COLOURFLAG" \
             -v ctrack=$cTrack -v first=$FIRST -v last="$LAST" \
-            -v pct=$(mpvc cmd expand-text '${percent-pos}') '
+        '
         {
             tracknr = NR-1
             if (first <= tracknr && tracknr <= last)
@@ -295,9 +295,11 @@ mpvc_get_playlist() {
                     else
                     {
                         "tput cols" | getline cols
-                        count=int((cols-3) * (pct/100))
-                        fmtstr="\033[7m%2d  %-"count"s\033[0m\n"
-                        printf(fmtstr, tracknr, $0)
+                        "mpvc cmd expand-text \\${percent-pos}" | getline pct
+                        count=int((cols) * (pct/100))
+                        line=sprintf("%2d  %s", tracknr, $0)
+                        fmtstr="\033[7m%-"count"s\033[0m\n"
+                        printf(fmtstr, line)
                     }
                 }
                 else
