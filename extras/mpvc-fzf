@@ -162,7 +162,7 @@ mpvctui_version()
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
 }
 
-optflags="1d:DfFg:hs:p:P:lxv"
+optflags="1d:DfFg:G:hs:p:P:lxv"
 mpvctui_usage()
 {
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
@@ -191,7 +191,8 @@ main()
         #D) shift; mpvctui_fzf_ddg "$@";;
         f) shift; mpvctui_fzf_playlist ;;
         F) shift; mpvctui_fzf_preview "$@" ;;
-        g) shift; mpvctui_fzf_fetch $(mpvctui_fzf_iplay "$OPTARG");;
+        g) shift; mpvctui_fzf_fetch "$OPTARG";;
+        G) shift; mpvctui_fzf_fetch $(mpvctui_fzf_iplay "$OPTARG");;
         h) shift; mpvctui_usage ;;
         l) shift; mpvctui_fzf_local;;
         p) shift; mpvctui_fzf_iplay "$OPTARG" | mpvc load ;;
