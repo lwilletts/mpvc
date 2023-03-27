@@ -83,10 +83,39 @@ mpvctui_fzf_isearch()
         }'
 }
 
+mpvctui_fzf_icache()
+{
+    # check for media present in local cache
+    ytdl_json=$(mpvc getr ytdl-raw-options)
+    ytdl_archive=$(echo $ytdl_json | jq -r '.data."download-archive"')
+    ytdl_output=$(echo $ytdl_json | jq -r ".data.output")
+    ytdl_archive=$(eval echo $ytdl_archive)
+    ytdl_dir=$(dirname $ytdl_output)
+    ytdl_dir=$(eval echo $ytdl_dir)
+    if [ -z "$ytdl_json" -o ! -r "$ytdl_archive" -o ! -d "$ytdl_dir" ]
+    then
+        mpvctui_warn "$PROGNAME: Error not using cache"
+        cat && return
+    fi
+
+    while read -r line
+    do
+        url=$(echo "$line" | awk '{print $1}')
+        vid=$(basename "$url")
+        file=$(ls $ytdl_dir/*$vid*)
+        if grep -q "$vid" $ytdl_archive && [ -e "$file" ]; then
+            echo "$line" | sed "s|^$url|$file|"
+        else
+            echo "$line"
+        fi
+    done
+}
+
 mpvctui_fzf_iplay()
 {
     mpvctui_fzf_isearch "$1" |
         mpvctui_fzf_preview --prompt="(youtube) " |
+            mpvctui_fzf_icache |
             awk '{print $1}'
 }
 
@@ -171,7 +200,7 @@ mpvctui_version()
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
 }
 
-optflags="1d:DfFg:G:hs:p:P:lxv"
+optflags="1cCd:DfFg:G:hs:p:P:lxv"
 mpvctui_usage()
 {
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
@@ -195,6 +224,8 @@ main()
     do
         case "$flag" in
         1) shift; awk '{print $1}';;
+        c) shift; mpvctui_fzf_icache;;
+        C) shift; mpvctui_fzf_icache;;
         d) MPVC_DIR="$OPTARG"; cd "$MPVC_DIR" || return;;
         D) shift; mpvctui_ddg_play "$@";;
         #D) shift; mpvctui_fzf_ddg "$@";;
