@@ -111,28 +111,6 @@ mpvctui_fzf_icache()
     done
 }
 
-mpvctui_fzf_iplay()
-{
-    mpvctui_fzf_isearch "$1" |
-        mpvctui_fzf_preview --prompt="(youtube) " |
-            mpvctui_fzf_icache |
-            awk '{print $1}'
-}
-
-mpvctui_fzf_local()
-{
-    find . -type f,d | sort |
-        mpvctui_fzf_preview --prompt="(local) " |
-            mpvc load
-}
-
-mpvctui_fzf_playlist()
-{
-    len=$(mpvc gets playlist-count)
-    ( [ -z "$len" ] && echo || mpvc fullplaylist) |
-        mpvctui_fzf_preview --prompt="(playlist) "
-}
-
 mpvctui_fzf_fetch()
 {
     [ $# -lt 1 ] && mpvctui_usage
@@ -158,6 +136,28 @@ mpvctui_fzf_fetch()
         fi
     done
     "$ytdlp" $ytdl_opts "$@"
+}
+
+mpvctui_fzf_iplay()
+{
+    mpvctui_fzf_isearch "$1" |
+        mpvctui_fzf_preview --prompt="(youtube) " |
+            mpvctui_fzf_icache |
+            awk '{print $1}'
+}
+
+mpvctui_fzf_local()
+{
+    find . -type f,d | sort |
+        mpvctui_fzf_preview --prompt="(local) " |
+            mpvc load
+}
+
+mpvctui_fzf_playlist()
+{
+    len=$(mpvc gets playlist-count)
+    ( [ -z "$len" ] && echo || mpvc fullplaylist) |
+        mpvctui_fzf_preview --prompt="(playlist) "
 }
 
 mpvctui_fzf_ddg()
