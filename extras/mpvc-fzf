@@ -107,19 +107,28 @@ mpvctui_fzf_playlist()
 mpvctui_fzf_fetch()
 {
     [ $# -lt 1 ] && mpvctui_usage
-    cmd_options=""
-    json_options=$(mpvc getr ytdl-raw-options)
-    for option in $(echo "$json_options" | jq -r ".data | keys | .[]")
+    ytdl_opts=""
+    ytdlp=$(command -v youtube-dl || command -v yt-dlp)
+    if [ ! -x "$ytdlp" ]; then
+        mpvctui_warn "$PROGNAME: Warning: No yt-dlp, Install to get support!"
+        return
+    fi
+
+    ytdl_json=$(mpvc getr ytdl-raw-options)
+    if [ -z "$ytdl_json" ]; then
+        mpvctui_warn "$PROGNAME: Check docs/mpv.conf for setting ytdl-raw-options"
+    fi
+    for option in $(echo "$ytdl_json" | jq -r ".data | keys | .[]")
     do
-        value=$(echo "$json_options" | jq -r ".data.\"$option\"")
+        value=$(echo "$ytdl_json" | jq -r ".data.\"$option\"")
         if [ -n "$value" ]
         then
-            cmd_options="$cmd_options --$option=$value"
+            ytdl_opts="$ytdl_opts --$option=$value"
         else
-            cmd_options="$cmd_options --$option"
+            ytdl_opts="$ytdl_opts --$option"
         fi
     done
-    youtube-dl $cmd_options "$@"
+    "$ytdlp" $ytdl_opts "$@"
 }
 
 mpvctui_fzf_ddg()
