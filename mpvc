@@ -112,6 +112,7 @@ mpvc_defaults()
     MPVC_SOCKET="${MPVC_SOCKET:-$MPVC_CONFIG_DIR/mpvsocket0}"
     MPVC_CURL_CACHE="${MPVC_CURL_CACHE:-$MPVC_CONFIG_DIR/curl-cache.txt}"
     MPVOPTIONS="${MPVOPTIONS:---no-audio-display --no-input-terminal}"
+    MPVC_MPV="${MPVC_MPV:-mpv}"
     # print default status of mpv instance
     [ -z "$FORMATSTRING" ] && FORMATSTRING="\
 %artist% - %title% NL\
@@ -121,7 +122,7 @@ video:%video% aspect:%aspect% window:%window% fullscreen:%fullscreen% idle:%idle
 chapter:%chapter% %=chapter%/%chapters%"
 
     # validate deps
-    quiet type mpv || eeprintf 4 "$PROGNAME: Error: No mpv found. Install to continue."
+    quiet type $MPVC_MPV || eeprintf 4 "$PROGNAME: Error: No mpv found. Install to continue."
     quiet type socat || type nc || eeprintf 4 "$PROGNAME: Error: No socat/nc found. Install one"
 }
 
@@ -368,6 +369,9 @@ mpvc_stash() {
             mpvc_stash current > "$MPVC_STASH_DIR/$1"
             ;;
         apply)
+            mpvc_stash applyc < "$MPVC_STASH_DIR/$1"
+            ;;
+        applyc)
             while read -r line
             do
                 case "$line" in
@@ -376,7 +380,7 @@ mpvc_stash() {
                     "mpvc sets "*) $line;;
                     "mpvc add "*) mpvc add "${line##mpvc add }";;
                 esac
-            done < "$MPVC_STASH_DIR/$1"
+            done
             ;;
         current)
             echo "# $PROGNAME stash $MPVC_STASH_DIR/$1 # $PROGURL @version $PROGVERSION"
@@ -663,7 +667,7 @@ mpvc_crop_playlist() {
 mpvc_clear_playlist() {
     # kill any running process of mpvc add
     #quiet pgrep -f "mpvc add" && pkill -f "mpvc add"
-    mpvc_crop_playlist 
+    mpvc_crop_playlist
     mpvc_remove_track 0
     echo "Playlist cleared."
 }
@@ -785,7 +789,7 @@ mpvc_get_version() {
     echo "version: $PROGNAME # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
     echo "originally forked from lwillets/mpvc"
     echo
-    mpv --version
+    $MPVC_MPV --version
 }
 
 mpvc_idleloop() {
@@ -799,7 +803,7 @@ mpvc_delay() { sleep "${1:-0.1}"; }
 mpvc_startmpv() {
     if [ -z "$(mpvc_get idle-active)" ]; then
         echo "$PROGNAME: No running mpv found, starting mpv now"
-        exec mpv --input-ipc-server="$MPVC_SOCKET" $MPVOPTIONS "$@" &
+        exec $MPVC_MPV --input-ipc-server="$MPVC_SOCKET" $MPVOPTIONS "$@" &
         until [ -n "$(mpvc_get idle-active)" ]; do mpvc_delay 0.1; done
     fi
 }
@@ -898,7 +902,7 @@ main() {
             --stash|stash)                   shift; mpvc_stash "$1" "$2";;
 
             -k|--kill|kill)                  quiet mpvc_cmd "quit"; QUIETFLAG=true ;;
-            -K|--killall|killall)            quiet pkill -f "mpv "; QUIETFLAG=true ;;
+            -K|--killall|killall)            quiet pkill -f "$MPVC_MPV "; QUIETFLAG=true ;;
             -s|--stop|stop)                  mpvc_set_pause "yes"; mpvc_set_time "absolute" 0 ;;
             -P|--play)                       mpvc_always_play ;;
             -p|--toggle|toggle)              mpvc_toggle_pause;;
