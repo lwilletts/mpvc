@@ -466,7 +466,7 @@ mpvc_play_next() {
     # find position of current track
     newTrackPosition="$(( $(mpvc_get playlist-pos) + 1 ))"
     # set position of next track
-    moveTrack "$trackToMove" "$newTrackPosition"
+    mpvc_move_track "$trackToMove" "$newTrackPosition"
 }
 
 mpvc_set_time() {
@@ -514,7 +514,7 @@ setTrack() {
     quiet mpvc_set "playlist-pos" "$newTrack"
 }
 
-moveTrack() {
+mpvc_move_track() {
     isInt "$1" || exit 1
     QUIETFLAG="true"
     if [ -z "$2" ]; then
@@ -539,7 +539,7 @@ moveTrack() {
     quietcheck mpvc_get_playlist
 }
 
-removeTrack() {
+mpvc_remove_track() {
     trackId=$1
     if [ "$trackId" = "current" ]; then
         oquiet mpvc_cmd "playlist-remove" "$trackId"
@@ -633,7 +633,7 @@ mpvc_search_remove() {
     [ -z "$1" ] && return
     tracks=$(mpvc_search "$mode" "$1" | awk '{print $1}' | tac )
     [ -z "$tracks" ] && warn "$PROGNAME: Searching for $*, nothing found."
-    for i in $tracks; do removeTrack "$i"; done
+    for i in $tracks; do mpvc_remove_track "$i"; done
     QUIETFLAG=true
 }
 
@@ -642,7 +642,7 @@ mpvc_search_move() {
     [ -z "$1" ] && return
     tracks=$(mpvc_search "$mode" "$1" | awk '{print $1}' | tac )
     [ -z "$tracks" ] && warn "$PROGNAME: Searching for $*, nothing found."
-    for i in $tracks; do moveTrack "$i" "$2"; done
+    for i in $tracks; do mpvc_move_track "$i" "$2"; done
     QUIETFLAG=true
 }
 
@@ -664,7 +664,7 @@ mpvc_clear_playlist() {
     # kill any running process of mpvc add
     #quiet pgrep -f "mpvc add" && pkill -f "mpvc add"
     mpvc_crop_playlist 
-    removeTrack 0
+    mpvc_remove_track 0
     echo "Playlist cleared."
 }
 
@@ -835,7 +835,7 @@ main() {
             pause)      mpvc_set_pause "yes"       ;;
             next)       setTrack 1 relative ;;
             prev)       setTrack -1 relative;;
-            move|mv)    shift; moveTrack "$1" "$2" ;;
+            move|mv)    shift; mpvc_move_track "$1" "$2" ;;
             mute)       mpvc_toggle_mute yes     ;;
             unmute)     mpvc_toggle_mute no      ;;
             pretty)     eeprintf 1 "$PROGNAME: $* not implemented" ;;
@@ -856,7 +856,7 @@ main() {
             -X|--speedval)                   shift; mpvc_sets "speed" "$1"  ;;
             -j|--track)                      shift; setTrack "$1" relative  ;;
             -J|--tracknum)                   shift; setTrack "$1" absolute  ;;
-            -r|--remove|rm|remove|del)       shift; removeTrack "$1"; QUIETFLAG=true;;
+            -r|--remove|rm|remove|del)       shift; mpvc_remove_track "$1"; QUIETFLAG=true;;
             -A|--playnext|playnext)          shift; mpvc_play_next "$1"           ;;
             -o|--save|save)                  shift; mpvc_save_playlist "$1" ;;
             --load|load)                     shift; mpvc_load_playlist      ;;
