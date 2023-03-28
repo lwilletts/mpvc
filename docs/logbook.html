@@ -245,14 +245,11 @@ A work in progress update, in no particular order, but, mostly focused on using 
     <li> <code>mpvc socklist</code>: Lists all mpv sockets, including those that are inactive: without a mpv instance running.</li>
     <li> <code>mpvc sockclean</code>: Clean inactive mpv sockets: without a mpv instance running.</li>
     <li> If the mpv socket resides on a separate computer, then, ssh forwarding can bring the socket home:
-        <br>
         <code>ssh -NL $HOME/.config/mpvc/mpvsocket0:$HOME/.config/mpvc/mpvsocket0 mediacenter</code>
-        <br>
         <em>Note</em>, the above command just "works", but probably has some rough edges, and can be improved.
     </li>
 
     <li> After issuing the previous command, the <code>mpvsocket0</code> is locally accesible and can be directly managed by <code>mpvc, mpvc-fzf, mpvc-tui</code>. For example, running mpvc to start a randomly choosen track from the playlist:
-        <br>
         <code>mpvc -q play $(( $RANDOM % $(mpvc get playlist-count) )</code>)
     </li>
 </ul>
