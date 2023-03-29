@@ -197,7 +197,7 @@ mpvc_getjson() {
     }'
 }
 
-mpvc_sockrepl() { socat - $MPVC_SOCKET || nc -U -N $MPVC_SOCKET; }
+mpvc_sockrepl() { socat - "$MPVC_SOCKET" || nc -U -N "$MPVC_SOCKET"; }
 mpvc_sockcmd_() { echo "$@" | mpvc_sockrepl; }
 mpvc_sockcmd()  { oquiet mpvc_sockcmd_ "$@"; }
 mpvc_socklist() {
@@ -274,7 +274,7 @@ mpvc_get_playlist() {
     cTrack=$(mpvc_get playlist-pos)
     [ -z "$cTrack" ] && cTrack=0
 
-    [ "$mode" = "numbered" ] && mpvc_get_playlist_once $mode && return
+    [ "$mode" = "numbered" ] && mpvc_get_playlist_once "$mode" && return
     # by default, display only tracks fitting terminal, otherwise, display all
     FIRST=0
     LAST=$tracks
@@ -359,19 +359,26 @@ mpvc_stash() {
 
     QUIETFLAG="true"
     MPVC_STASH_DIR="${MPVC_STASH_DIR:-$MPVC_CONFIG_DIR/stash}"
-    mkdir -p $MPVC_STASH_DIR
+    mkdir -p "$MPVC_STASH_DIR"
     case "$cmd" in
-        list) ls -ltr $MPVC_STASH_DIR ;;
+        list) ls -ltr "$MPVC_STASH_DIR" ;;
         show) cat "$MPVC_STASH_DIR/$1" ;;
         drop) rm -i "$MPVC_STASH_DIR/$1" ;;
         push)
-            [ -e "$MPVC_STASH_DIR/$1" ] && exit
+            if [ -e "$MPVC_STASH_DIR/$1" ]; then
+                warn "$PROGNAME: Warn Existing $1 stash found, drop it first. Quitting"
+                return
+            fi
             mpvc_stash current > "$MPVC_STASH_DIR/$1"
             ;;
-        apply)
-            mpvc_stash applyc < "$MPVC_STASH_DIR/$1"
+        apply) # if no stash given, default to stdin
+            if [ -z "$1" ]; then
+                mpvc_stash current_apply
+            else
+                mpvc_stash current_apply < "$MPVC_STASH_DIR/$1"
+            fi
             ;;
-        applyc)
+        current_apply)
             while read -r line
             do
                 case "$line" in
@@ -425,7 +432,7 @@ mpvc_dbinit() {
 
 mpvc_dblist() {
     cat "$MPVC_DATABASE"
-    for playlist in $(printf "%s\n" $MPVC_PLAYLIST/*); do echo $playlist; done
+    for playlist in $(printf "%s\n" "$MPVC_PLAYLIST"/*); do echo "$playlist"; done
 }
 
 ## Control Functions ##########################################################
