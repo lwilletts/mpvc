@@ -1,0 +1,95 @@
+#!/bin/sh
+#
+# @file mpvc-equalizer
+# @description mpvc equalizer
+# @author gmt4 <gmt4 at github.com> (c) Copyright 2022 MIT 
+# @url github.com/gmt4/mpvc
+#
+
+PROGNAME=$(basename "$0");
+PROGVERSION="v1.0 (status:experimental)";
+PROGAUTHOR=gmt4
+PROGURL="https://github.com/gmt4/mpvc"
+
+mpvc_gen_filter()
+{
+    awk \
+        -v quote="'" -v gain_curr="$(echo $@)" \
+    '
+    BEGIN {
+      num_entry=15
+      min_val = -360
+      max_val = 120
+ 
+      n=split("0  65 157 288 472 733 1k1 1k6 2k4 3k4 4k9 7k0 10k 14k 20k", freq_table)
+      n=split("0   0   0   0   0   0   0   0   0   0   0   0   0   0   0", gain_table)
+      if (gain_curr)
+          n=split(gain_curr, gain_table)
+    }
+
+    function min(a,b) {return (a<b)?a:b;}
+    function max(a,b) {return (a>b)?a:b;}
+    function gen_gain_entry(gain_table)
+    {
+        str = ""
+        for (x=1; x<=num_entry; x++)
+        {
+            v = gain_table[x]
+            v = max(v, min_val)
+            v = min(v, max_val)
+            str = str sprintf("entry(%d,%.1f);", x-1, v)
+        }
+        return str
+    }
+ 
+    function gen_filter(gain)
+    {
+
+        filter=\
+        "firequalizer = "\
+        "wfunc      = tukey:"\
+        "delay      = 0.028:"\
+        "scale      = linlog:"\
+        "zero_phase = on:"\
+        "gain_entry = gain:"quote gain quote" "\
+        "gain       = " quote "cubic_interpolate(2.8853900817779269*log(f/157.48+1))" quote
+        return filter
+    }
+ 
+    END {
+        gain_entry = gen_gain_entry(gain_table)
+        gain_filter = gen_filter(gain_entry)
+        print gain_filter
+    }
+  ' /dev/null
+}
+
+values()
+{
+    mpvc getr af |
+        jq '.data | .[] | .params.graph' |
+        grep -o "gain:'.*' " |
+        sed -n 's/gain:.//; s/. $//; s|entry([0-9]\{1,2\},\([-.0-9]\+\));|\n\1 |gp'
+}
+
+change()
+{
+    values=$(values)
+    values=$(echo "$values" | sed "$@")
+    filter=$(mpvc_gen_filter "$values")
+    mpvc cmdr af set "lavfi=[$filter]"
+}
+
+reset()
+{
+    values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+    filter=$(mpvc_gen_filter "$values")
+    mpvc cmdr af set "lavfi=[$filter]"
+}
+
+main()
+{
+    "$@"
+}
+
+main "$@"
