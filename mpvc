@@ -512,12 +512,12 @@ mpvc_set_track() {
 mpvc_move_track() {
     isInt "$1" || exit 1
     QUIETFLAG="true"
+    trackCount=$(mpvc_get playlist-count)
     if [ -z "$2" ]; then
         trackToMove=$(mpvc_get playlist-pos)
         newTrackPosition=$1
     else
         trackToMove=$1
-        trackCount=$(mpvc_get playlist-count)
         [ "$1" = "$" ] && trackToMove="$trackCount"
         newTrackPosition=$2
         [ "$2" = "$" ] && newTrackPosition="$trackCount"
@@ -893,7 +893,7 @@ main() {
             --stash|stash)                   shift; mpvc_stash "$1" "$2";;
 
             -k|--kill|kill)                  quiet mpvc_cmd "quit"; QUIETFLAG=true ;;
-            -K|--killall|killall)            quiet pkill -f "$MPVC_MPV "; QUIETFLAG=true ;;
+            -K|--killall|killall)            quiet pkill -9 -f "$MPVC_MPV "; QUIETFLAG=true ;;
             -s|--stop|stop)                  mpvc_set_pause "yes"; mpvc_set_time "absolute" 0 ;;
             -P|--play)                       mpvc_always_play ;;
             -p|--toggle|toggle)              mpvc_toggle_pause;;
