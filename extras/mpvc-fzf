@@ -102,7 +102,7 @@ mpvctui_fzf_icache()
     do
         url=$(echo "$line" | awk '{print $1}')
         vid=$(basename "$url")
-        file=$(ls $ytdl_dir/*$vid*)
+        file=$(ls $ytdl_dir/*$vid* 2>/dev/null)
         if grep -q "$vid" $ytdl_archive && [ -e "$file" ]; then
             echo "$line" | sed "s|^$url|$file|"
         else
