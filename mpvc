@@ -508,8 +508,7 @@ setTrack() {
             # if time is greater than 10 seconds, set time to 0
             if [ "$newTrack" -lt "$cTrack" ]; then
                 seconds=$(mpvc_gets playback-time)
-                seconds=${seconds%%.*}
-                [ "$seconds" -ge 10 ] && mpvc_set_time "absolute" 0 && return
+                [ "${seconds%%.*}" -ge 10 ] && mpvc_set_time "absolute" 0 && return
             fi
             if [ "$newTrack" -ge "$trackCount" ]; then
                 [ "$(mpvc_gets loop-playlist)" != "no" ] && newTrack=0
