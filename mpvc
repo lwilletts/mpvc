@@ -496,32 +496,16 @@ mpvc_set_time() {
     esac
 }
 
-setTrack() {
+mpvc_set_track() {
     isInt "$1" || return 1
     cTrack=$(mpvc_get playlist-pos)
     trackCount=$(mpvc_get playlist-count)
     [ "$cTrack" = "null" ] && cTrack=0
     case "$2" in
-        absolute) newTrack=$1 ;;
-        relative)
-            newTrack=$((cTrack + $1))
-            # if time is greater than 10 seconds, set time to 0
-            if [ "$newTrack" -lt "$cTrack" ]; then
-                seconds=$(mpvc_gets playback-time)
-                [ "${seconds%%.*}" -ge 10 ] && mpvc_set_time "absolute" 0 && return
-            fi
-            if [ "$newTrack" -ge "$trackCount" ]; then
-                [ "$(mpvc_gets loop-playlist)" != "no" ] && newTrack=0
-            fi
-            if [ "$newTrack" -lt 0 ]; then
-                newTrack=0
-                [ "$(mpvc_gets loop-file)" != "no" ] && newTrack=$trackCount
-            fi
+        absolute) newTrack=$(( $1 % trackCount ));;
+        relative) newTrack=$(( (cTrack + $1) % trackCount ))
         ;;
     esac
-    if [ "$newTrack" -lt 0 ] || [ "$newTrack" -ge "$trackCount" ]; then
-        eeprintf 1 "Item $newTrack is out of range of playlist."
-    fi
     quiet mpvc_set "playlist-pos" "$newTrack"
 }
 
@@ -568,7 +552,7 @@ mpvc_remove_track() {
 
 mpvc_always_play() {
     if [ "$(mpvc_get playlist-pos)" = "null" ]; then
-        setTrack 0 absolute; return
+        mpvc_set_track 0 absolute; return
     fi
     mpvc_set_pause "no"
 }
@@ -636,7 +620,7 @@ mpvc_search_play() {
     [ -z "$1" ] && return
     track=$(mpvc_search "$mode" "$1" | awk '{print $1; exit}')
     [ -z "$track" ] && warn "$PROGNAME: Searching for $*, nothing found."
-    setTrack "$track" absolute
+    mpvc_set_track "$track" absolute
 }
 
 mpvc_search_remove() {
@@ -835,8 +819,8 @@ main() {
                 shift
                 case "$1" in
                     '') ;;
-                    $) setTrack "$(( $(mpvc_get playlist-count) - 1 ))" absolute;;
-                    *) isInt "$1" && setTrack "$1" absolute;;
+                    $) mpvc_set_track "$(( $(mpvc_get playlist-count) - 1 ))" absolute;;
+                    *) isInt "$1" && mpvc_set_track "$1" absolute;;
                 esac
                 mpvc_always_play
             ;;
@@ -844,8 +828,8 @@ main() {
             repeat)     shift; mpvc_toggle_loopplaylist "$1" ;;
             single)     shift; mpvc_toggle_loopfile "$1" ;;
             pause)      mpvc_set_pause "yes"       ;;
-            next)       setTrack 1 relative ;;
-            prev)       setTrack -1 relative;;
+            next)       mpvc_set_track 1 relative ;;
+            prev)       mpvc_set_track -1 relative;;
             move|mv)    shift; mpvc_move_track "$1" "$2" ;;
             mute)       mpvc_toggle_mute yes     ;;
             unmute)     mpvc_toggle_mute no      ;;
@@ -865,8 +849,8 @@ main() {
             -V|--volume)                     shift; mpvc_set "volume" "$1"  ;;
             -x|--speed|speed)                shift; mpvc_add  "speed" "$1"  ;;
             -X|--speedval)                   shift; mpvc_sets "speed" "$1"  ;;
-            -j|--track)                      shift; setTrack "$1" relative  ;;
-            -J|--tracknum)                   shift; setTrack "$1" absolute  ;;
+            -j|--track)                      shift; mpvc_set_track "$1" relative  ;;
+            -J|--tracknum)                   shift; mpvc_set_track "$1" absolute  ;;
             -r|--remove|rm|remove|del)       shift; mpvc_remove_track "$1"; QUIETFLAG=true;;
             -A|--playnext|playnext)          shift; mpvc_play_next "$1"           ;;
             -o|--save|save)                  shift; mpvc_save_playlist "$1" ;;
