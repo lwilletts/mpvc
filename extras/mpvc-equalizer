@@ -1,8 +1,8 @@
 #!/bin/sh
 #
 # @file mpvc-equalizer
-# @description mpvc equalizer
-# @author gmt4 <gmt4 at github.com> (c) Copyright 2022 MIT 
+# @description mpvc equalizer based on firequalizer15.lua
+# @author gmt4 <gmt4 at github.com> (c) Copyright 2022 MIT
 # @url github.com/gmt4/mpvc
 #
 
@@ -34,10 +34,9 @@ mpvc_gen_filter()
         str = ""
         for (x=1; x<=num_entry; x++)
         {
-            v = gain_table[x]
-            v = max(v, min_val)
-            v = min(v, max_val)
-            str = str sprintf("entry(%d,%.1f);", x-1, v)
+            v = min(max(gain_table[x], min_val), max_val)
+            str = str sprintf("entry(%d,%.1f)", x-1, v)
+            if (x < num_entry) str = str ";"
         }
         return str
     }
@@ -51,7 +50,7 @@ mpvc_gen_filter()
         "delay      = 0.028:"\
         "scale      = linlog:"\
         "zero_phase = on:"\
-        "gain_entry = gain:"quote gain quote" "\
+        "gain_entry = "quote gain quote":"\
         "gain       = " quote "cubic_interpolate(2.8853900817779269*log(f/157.48+1))" quote
         return filter
     }
@@ -68,27 +67,37 @@ values()
 {
     mpvc getr af |
         jq '.data | .[] | .params.graph' |
-        grep -o "gain:'.*' " |
-        sed -n 's/gain:.//; s/. $//; s|entry([0-9]\{1,2\},\([-.0-9]\+\));|\n\1 |gp'
+        grep -o "gain_entry = '.*':" |
+        sed -n 's/gain_entry = .//; s/.:$//; s|entry([0-9]\{1,2\},\([-.0-9]\+\));\?|\n\1 |gp'
 }
 
 change()
 {
+    label="${label:-mpvc-equalizer}"
     values=$(values)
     values=$(echo "$values" | sed "$@")
     filter=$(mpvc_gen_filter "$values")
-    mpvc cmdr af set "lavfi=[$filter]"
+    mpvc cmdr af add "@$label:lavfi=[$filter]"
 }
 
 reset()
 {
+    label="${label:-mpvc-equalizer}"
     values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
     filter=$(mpvc_gen_filter "$values")
-    mpvc cmdr af set "lavfi=[$filter]"
+    mpvc cmdr af add "@$label:lavfi=[$filter]"
+}
+
+usage()
+{
+    echo "usage: $PROGNAME [values|reset|change] # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
+    exit;
 }
 
 main()
 {
+    [ $# -lt 1 ] && usage
+
     "$@"
 }
 
