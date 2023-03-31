@@ -7,7 +7,7 @@ PREFIX ?= /usr/local
 BINDIR ?= $(PREFIX)/bin
 MANDIR ?= $(PREFIX)/share/man
 
-SCRIPT = mpvc extras/mpvc-tui extras/mpvc-fzf extras/mpvc-chapter
+SCRIPT = mpvc extras/mpvc-tui extras/mpvc-fzf extras/mpvc-chapter extras/mpvc-equalizer
 
 all: help
 help:
