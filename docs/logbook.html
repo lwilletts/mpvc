@@ -11,6 +11,7 @@
     <title>gmt4.github.io/mpvc/logbook.html</title>
     <!-- SOH -->
     <link rel="canonical" href="https://gmt4.github.io/mpvc" />
+    <link href="atom.xml" type="application/atom+xml" rel="alternate" title="gmt4.github.io/mpvc"/>
     <!-- Open Graph tags -->
     <meta property="og:site_name" content="gmt4.github.io/mpvc/logbook.html" />
     <meta property="og:type" content="website"/>
@@ -78,6 +79,7 @@ Logbook Entries
     <li> <a href="#logbook-20230112">#20230112 On using mpv together with the fzf fuzzy finder</a> </li>
     <li> <a href="#logbook-20230119">#20230119 On controlling multiple remotely running mpv instances</a> </li>
     <li> <a href="#logbook-20230219">#20230219 On stashing mpv media player state to restore later</a> </li>
+    <li> <a href="#logbook-20230331">CSS, RSS &amp; casts updates on the gmt4.github.io/mpvc site, 31 Mar 2023</a></li>
 </ul>
 
 <hr />
@@ -156,7 +158,7 @@ The above enables to arrange a playlist, and once we are happy with it, save it 
 
 <h3 id="logbook-20221216">On customizing mpvc-tui look and feel, 16 Dec 2022</h3>
 <p>
-While using <code>mpvc-tui</code>, one ends up wanting to configure the minimal look and feel that mpvc-tui provides. To this end the file <code>mpvc-tui.conf</code> under $XDG_CONFIG_HOME/mpvc/ provides a place to overwrite the look and feel default settings of mvpc-tui.
+While using <code>mpvc-tui</code>, one ends up wanting to configure the minimal look and feel that mpvc-tui provides. To this end the file <code>mpvc-tui.conf</code> under $XDG_CONFIG_HOME/mpvc/ provides a place to overwrite the look and feel default settings of mpvc-tui.
 </p>
 
 <h3 id="logbook-20221216">Show HN: mpvc-tui – A minimal mpc-like CLI and TUI for controlling mpv, 16 Dec 2022</h3>
@@ -231,7 +233,7 @@ Continuing on the topic of using fzf with mpv, I’ve decided to split the code 
 <ul>
 <li><code>mpvc</code>: that provides the mpvc functionality.</li>
 <li><code>extras/mpvc-tui</code>: that provides the mpvc TUI functionality.</li>
-<li><code>extras/mvpc-fzf</code>: that provides the mpvc FZF functionality.</li>
+<li><code>extras/mpvc-fzf</code>: that provides the mpvc FZF functionality.</li>
 </ul>
 <p>
 I think it’s clear/simpler this way, as the mpvc-tui was getting more and more fzf functionality, that was unrelated to the TUI. This breaks some things, as for example, uses of <code>mpvc-tui -[lfFspP]</code> that now have become <code>mpvc-fzf -[lfFspP]</code>.
@@ -270,10 +272,24 @@ Something experimental I've been testing lately is using: <code>mpvc stash</code
 
 This is different from <code>mpvc load/save</code> that only loads/saves the playlist, as <code>mpvc stash</code> saves the current playing settings including: <code>playlist-pos, playback-time, volume, mute, pause, etc.</code> together with the playlist. 
 
+<h3 id="logbook-20230331">CSS, RSS &amp; casts updates on the gmt4.github.io/mpvc site, 31 Mar 2023</h3>
+<p>
+A few things have been going on since last entry, some effort focused on getting a “decent” site (this HTML thing you’re reading right now @ <a href="https://gmt4.github.io/mpvc">gmt4.github.io/mpvc</a> ) where its easy keep track of whats going on. This effort has :
+</p>
+<ul>
+<li>First, a minimal CSS to get a nice look and feel.</li>
+<li>Second, structure content, and, setup <a href="atom.xml">atom.xml</a> RSS feed now to keep track.</li>
+<li>Third, a <a href="casts/">casts/</a> page provides now some mpvc asciinerama screencasts.</li>
+</ul>
+<p>
+Keep posted.
+</p>
+<!-- SOF -->
+
 <hr/>
 <p>
 <span>
-    <em>Last-Modified: Monday, 27 March 2023 by <a href="https://gmt4.github.io">gmt4</a></em>
+    <em>Last-Modified: Friday, 31 March 2023 by <a href="https://gmt4.github.io">gmt4</a></em>
 </span>
 <span style="float: right;">
     <em>Powered by #OwnYourHTML 🧡 💚 💙 </em>
