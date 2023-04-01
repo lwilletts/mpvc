@@ -63,6 +63,8 @@ mpvc_gen_filter()
   ' /dev/null
 }
 
+vals() { echo $(values); }
+
 values()
 {
     mpvc getr af |
@@ -86,6 +88,11 @@ reset()
     values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
     filter=$(mpvc_gen_filter "$values")
     mpvc cmdr af add "@$label:lavfi=[$filter]"
+}
+
+json()
+{
+    mpvc getr af | jq -C .data | sed '/graph/ s/:/:\n\t/g'
 }
 
 usage()
