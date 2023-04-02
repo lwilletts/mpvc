@@ -160,8 +160,7 @@ mpvc_curl_cache_title()
     mpvc_curl_cache -sL "https://youtube.com/oembed?url=$1" | mpvc_getjson '"title":'
 }
 
-# match given filename string to appropriate output
-# fn args: filename
+# fn args: filename, match given filename string to appropriate output
 cleanFilename() {
     filename="$1"
     result="$1"
