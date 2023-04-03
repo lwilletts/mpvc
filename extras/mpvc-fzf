@@ -103,7 +103,7 @@ mpvctui_fzf_icache()
         url=$(echo "$line" | awk '{print $1}')
         vid=$(basename "$url")
         file=$(ls $ytdl_dir/*$vid* 2>/dev/null)
-        if grep -q "$vid" $ytdl_archive && [ -e "$file" ]; then
+        if quiet grep -q "$vid" $ytdl_archive && [ -e "$file" ]; then
             echo "$line" | sed "s|^$url|$file|"
         else
             echo "$line"
@@ -135,14 +135,13 @@ mpvctui_fzf_fetch()
             ytdl_opts="$ytdl_opts --$option"
         fi
     done
-    "$ytdlp" $ytdl_opts "$@"
+    "$ytdlp" $ytdl_opts $YTDL_OPTS "$@"
 }
 
 mpvctui_fzf_iplay()
 {
     mpvctui_fzf_isearch "$1" |
         mpvctui_fzf_preview --prompt="(youtube) " |
-            mpvctui_fzf_icache |
             awk '{print $1}'
 }
 
