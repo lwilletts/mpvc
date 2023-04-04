@@ -110,7 +110,7 @@ mpvc_bars()
 mpvc_save()   { mpvc_vals; }
 mpvc_load()   { mpvc_setvals "$(cat)"; }
 mpvc_reset()  { mpvc_setvals "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"; }
-mpvc_change() { mpvc_setvals $(mpvc_vals | sed "$@"); }
+mpvc_change() { mpvc_setvals $(mpvc_values | sed "$@"); }
 mpvc_vals()   { echo $(mpvc_values); }
 mpvc_json()   { mpvc getr af | jq -C .data | sed '/graph/ s/:/:\n\t/g'; }
 
@@ -128,7 +128,7 @@ main()
     save)  mpvc_save;;
     load)  mpvc_load;;
     reset) mpvc_reset;;
-    change) mpvc_change "$@";;
+    change) shift; mpvc_change "$@";;
     values) mpvc_values;;
     vals)  mpvc_vals;;
     bars)  mpvc_bars;;
