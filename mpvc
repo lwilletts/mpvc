@@ -170,7 +170,7 @@ cleanFilename() {
             filename="$(echo "$filename" | sed 's|/watch?v=|/|')"
             result="$(mpvc_curl_cache_title "$filename")"
             ;;
-        http*://youtu.be/*|http*://youtube.com/*)
+        http*://youtu.be/*|http*://youtube.com/*|http*://www.youtube.com/*)
             result="$(mpvc_curl_cache_title "$filename")"
             ;;
         http*://yewtu.be/watch*)
