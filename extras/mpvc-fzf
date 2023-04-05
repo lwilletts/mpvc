@@ -55,7 +55,7 @@ mpvctui_fzf_preview()
         \
         --preview-window='up:5' \
         --preview="mpvc" \
-        --header="$PROGNAME mpvc-fzf help: $mpvctui_fzf_help" \
+        --header="$PROGNAME help: $mpvctui_fzf_help" \
         "$@"
         #--bind='ctrl-d:execute-silent(mpvc seek -20 &)' \
 }
