@@ -19,7 +19,7 @@ mpvc_genfilter()
       num_entry=15
       min_val = -360
       max_val = 120
- 
+
       n=split("0  65 157 288 472 733 1k1 1k6 2k4 3k4 4k9 7k0 10k 14k 20k", freq_table)
       n=split("0   0   0   0   0   0   0   0   0   0   0   0   0   0   0", gain_table)
       if (gain_curr)
@@ -39,7 +39,7 @@ mpvc_genfilter()
         }
         return str
     }
- 
+
     function gen_filter(gain)
     {
 
@@ -53,13 +53,39 @@ mpvc_genfilter()
         "gain       = " quote "cubic_interpolate(2.8853900817779269*log(f/157.48+1))" quote
         return filter
     }
- 
+
     END {
         gain_entry = gen_gain_entry(gain_table)
         gain_filter = gen_filter(gain_entry)
         print gain_filter
     }
   ' /dev/null
+}
+
+mpvc_presets()
+{
+    case "$1" in
+    reset)      echo "0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0";;       # preset: Flat (Default)
+    fullbass)   echo "4.8 5.7 5.7 3.3 1.0 -2.4 -4.8 -6.3 -6.7 -6.7";;  # preset: Full Bass
+    fulltreble) echo "5.8 -5.8 -5.8 -2.4 1.4 6.7 9.6 9.6 9.6 10.1";;   # preset: Full Treble
+    fullbastre) echo "4.3 3.3 0.0 -4.4 -2.9 1.0 4.8 6.7 7.2 7.2";;     # preset: Full Bass & Treble
+    headphones) echo "2.8 6.7 3.3 -2.0 -1.4 1.0 2.8 5.7 7.7 8.6";;     # preset: Headphones
+    largehall)  echo "6.2 6.2 3.3 3.3 0.0 -2.9 -2.9 -2.9 0.0 0.0";;    # preset: Large Hall
+    live)       echo "2.9 0.0 2.4 3.3 3.3 3.3 2.4 1.4 1.4 1.4";;       # preset: Live
+    party)      echo "4.3 4.3 0.0 0.0 0.0 0.0 0.0 0.0 4.3 4.3";;       # preset: Party
+    soft)       echo "2.8 1.0 0.0 -1.4 0.0 2.4 4.8 5.7 6.7 7.2";;      # preset: Soft
+    classical)  echo "0.0 0.0 0.0 0.0 0.0 -4.4 -4.4 -4.4 -5.8";;       # preset: Classical
+    club)       echo "0.0 0.0 4.8 3.3 3.3 3.3 1.9 0.0 0.0";;           # preset: Club
+    dance)      echo "5.7 4.3 1.4 0.0 0.0 -3.4 -4.4 -4.3 0.0 0.0";;    # preset: Dance
+    pop)        echo "1.0 2.8 4.3 4.8 3.3 0.0 -1.4 -1.4 -1.0 -1.0";;   # preset: Pop
+    reggae)     echo "0.0 0.0 0.0 -3.4 0.0 3.8 3.8 0.0 0.0 0.0";;      # preset: Reggae
+    ska)        echo "1.4 -2.9 -2.4 0.0 2.4 3.3 5.3 5.7 6.7 5.8";;     # preset: Ska
+    softrock)   echo "2.4 2.4 1.4 0.0 -2.4 -3.4 -2.0 0.0 1.4 5.3";;    # preset: Soft Rock
+    rock)       echo "4.8 2.8 -3.4 -4.8 -2.0 2.4 5.3 6.7 6.7 6.7";;    # preset: Rock
+    techno)     echo "4.8 3.3 0.0 -3.4 -2.9 0.0 4.8 5.7 5.8 5.3";;     # preset: Techno
+
+    list) grep '# preset: ' $0;;
+    esac
 }
 
 mpvc_values()
@@ -110,6 +136,7 @@ mpvc_bars()
 mpvc_save()   { mpvc_vals; }
 mpvc_load()   { mpvc_setvals "$(cat)"; }
 mpvc_reset()  { mpvc_setvals "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"; }
+mpvc_clear()  { mpvc set af ''; }
 mpvc_change() { mpvc_setvals $(mpvc_values | sed "$@"); }
 mpvc_vals()   { echo $(mpvc_values); }
 mpvc_json()   { mpvc getr af | jq -C .data | sed '/graph/ s/:/:\n\t/g'; }
@@ -128,7 +155,9 @@ main()
     save)  mpvc_save;;
     load)  mpvc_load;;
     reset) mpvc_reset;;
+    clear) mpvc_clear;;
     change) shift; mpvc_change "$@";;
+    preset) shift; mpvc_presets "$@";;
     values) mpvc_values;;
     vals)  mpvc_vals;;
     bars)  mpvc_bars;;
