@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes" />
+    <meta name="generator" content="#write-your-own-html" />
+    <meta name="author" content="gmt4" />
+    <meta name="description" content="gmt4 mpvc now" />
+    <title>gmt4.github.io/mpvc</title>
+    <!-- SOH -->
+    <link rel="canonical" href="https://gmt4.github.io/mpvc" />
+    <link href="atom.xml" type="application/atom+xml" rel="alternate" title="gmt4.github.io/mpvc"/>
+    <!-- Open Graph tags -->
+    <meta property="og:site_name" content="gmt4.github.io/mpvc" />
+    <meta property="og:type" content="website"/>
+    <meta property="og:title" content="gmt4 mpvc now"/>
+    <meta property="og:url" content="https://gmt4.github.io/mpvc/now"/>
+    <meta property="og:description" content="A minimal mpc-like CLI and TUI for controlling mpv from the shell"/>
+    <meta property="og:image" content="https://raw.githubusercontent.com/gmt4/mpvc/master/docs/mpvc-tui.png"/>
+    <!-- GH stuff -->
+    <script async="true" defer="true" src="https://buttons.github.io/buttons.js"></script>
+    <style type="text/css" media="all">
+    :root { --body-bg: #fff; --body-color: #111; --pre-bg:#eee; --link-color:#00f; } /* Light mode */
+    @media (prefers-color-scheme: dark) {
+       :root { --body-bg: #222; --body-color: #eee; --pre-bg:#333; --link-color:#07f; } /* Dark mode */
+    }
+    body { background: var(--body-bg); color: var(--body-color); font-family: sans-serif; }
+    code { background: var(--pre-bg); }
+    pre  { background: var(--pre-bg); }
+    a    { color: var(--link-color); }
+    </style>
+    <!-- SOB -->
+</head>
+<body>
+    <style type="text/css">
+    @charset "UTF-8";
+    .container {
+      display: grid;
+      text-align: center;
+      grid-template-columns: 12em 12em 12em;
+      grid-template-rows: 12em 12em 12em;
+      grid-gap: 10px;
+      padding-left: 10px;
+    }
+    .item {
+      color: white;
+      background: #333;
+      padding: 0em 0em;
+      font-size: 2em;
+    }
+    .item iframe {
+      border-radius: 8px;
+      border-color: gray;
+      border-width: 1px;
+      box-shadow: 0px 0px 9px 9px rgba(0, 0, 0, 0.5);
+      height: 100%;
+      width: 100%;
+    }
+    </style>
+    <h1 id="mpvc-fork">
+        <a href="https://gmt4.github.io/mpvc/">gmt4</a> mpvc fork
+    </h1>
+
+    <h2>Now Listening</h2>
+    <div class="container">
+        <div class="item"> <iframe src="https://www.youtube.com/embed/667dtK7O89k" frameborder="0" allowfullscreen></iframe> </div>
+        <div class="item"> <iframe src="https://www.youtube.com/embed/Hwg7hJrDiRg" frameborder="0" allowfullscreen></iframe> </div>
+        <div class="item"> <iframe src="https://www.youtube.com/embed/UzRFQ6pDqhk" frameborder="0" allowfullscreen></iframe> </div>
+
+        <div class="item"> <iframe src="https://www.youtube.com/embed/slK10_5aFAs" frameborder="0" allowfullscreen></iframe> </div>
+        <div class="item"> <iframe src="https://www.youtube.com/embed/ypAIWyH13aM" frameborder="0" allowfullscreen></iframe> </div>
+        <div class="item"> <iframe src="https://www.youtube.com/embed/Jls9wXOSjl4" frameborder="0" allowfullscreen></iframe> </div>
+
+        <div class="item"> <iframe src="https://www.youtube.com/embed/RbEN0c6bO9M" frameborder="0" allowfullscreen></iframe> </div>
+        <div class="item"> <iframe src="https://www.youtube.com/embed/9DR1MqA0an8" frameborder="0" allowfullscreen></iframe> </div>
+        <div class="item"> <iframe src="https://www.youtube.com/embed/cHLwEkds7NE" frameborder="0" allowfullscreen></iframe> </div>
+    </div>
+
+    <h2>Scrobbling Code</h2>
+    <pre>
+
+# <b>Using mpvc-tui -n "now playing" notifications also populates mpvc-tui.scb scrobling file.</b>
+# <b>The command below generates the "now listening" list shown above this code:</b>
+
+awk '/https:/ { gsub($1,""); gsub($1,""); print }' ~/.config/mpvc/mpvc-tui.scb |
+    tac | tail -n 10 | awk '{print $1}' | tee now-listening.csv
+https://www.youtube.com/embed/667dtK7O89k
+https://www.youtube.com/embed/Hwg7hJrDiRg
+https://www.youtube.com/embed/UzRFQ6pDqhk
+https://www.youtube.com/embed/slK10_5aFAs
+https://www.youtube.com/embed/ypAIWyH13aM
+https://www.youtube.com/embed/Jls9wXOSjl4
+https://www.youtube.com/embed/RbEN0c6bO9M
+https://www.youtube.com/embed/9DR1MqA0an8
+https://www.youtube.com/embed/cHLwEkds7NE
+    </pre>
+</body>
+
