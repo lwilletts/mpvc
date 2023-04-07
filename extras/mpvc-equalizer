@@ -11,6 +11,8 @@ PROGVERSION="v1.0";
 PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
 
+MPVC_LABEL="${MPVC_LABEL:-mpvc-equalizer}"
+
 mpvc_genfilter()
 {
     awk -v quote="'" -v gain_curr="$*" \
@@ -98,9 +100,8 @@ mpvc_values()
 
 mpvc_setvals()
 {
-    label="${label:-mpvc-equalizer}"
     filter=$(mpvc_genfilter "$*")
-    mpvc cmdr af add "@$label:lavfi=[$filter]"
+    mpvc cmdr af add "@$MPVC_LABEL:lavfi=[$filter]"
 }
 
 mpvc_bar_line()
@@ -121,6 +122,7 @@ mpvc_bar_line()
 
 mpvc_bars()
 {
+    [ -z "$(mpvc_values)" ] && usage
     printf "# Linear Phase 15-Bands Equalizer\n"
     freq_table="0\n65\n157\n288\n472\n733\n1k1\n1k6\n2k4\n3k4\n4k9\n7k0\n10k\n14k\n20k\n"
     gain_table="$(mpvc_values | sed '/^$/d')"
@@ -136,7 +138,7 @@ mpvc_bars()
 mpvc_save()   { mpvc_vals; }
 mpvc_load()   { mpvc_setvals "$(cat)"; }
 mpvc_reset()  { mpvc_setvals "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"; }
-mpvc_clear()  { mpvc set af ''; }
+mpvc_clear()  { mpvc set af ""; }
 mpvc_change() { mpvc_setvals $(mpvc_values | sed "$@"); }
 mpvc_vals()   { echo $(mpvc_values); }
 mpvc_json()   { mpvc getr af | jq -C .data | sed '/graph/ s/:/:\n\t/g'; }
