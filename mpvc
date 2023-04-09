@@ -226,9 +226,7 @@ mpvc_get()   { mpvc_cmd "get_property" "$1"; }
 
 # fn args: filename, idle-active, playlist-count, playlist-pos, playback-time,
 #          playtime-remaining, time-remaining, percent-pos, duration, volume
-mpvc_gets() {
-    mpvc_cmd "get_property_string" "$1"
-}
+mpvc_gets() { mpvc_cmd "get_property_string" "$1"; }
 
 getPauseStatus() {
     case "$(mpvc_get pause)" in
