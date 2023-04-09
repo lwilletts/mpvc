@@ -581,6 +581,17 @@ mpvc_toggle_mute() {
     quiet mpvc_cmd "cycle" "mute"
 }
 
+mpvc_toggle_loop() {
+    property=$1
+    value=$2
+    case "$value" in
+        '')      quiet mpvc_cmd "cycle-values" "$property" "yes" "no" ;;
+        on|yes)  quiet mpvc_sets "$property" yes ;;
+        off|no)  quiet mpvc_sets "$property" no  ;;
+        *)       quiet mpvc_sets "$property" "$value";;
+    esac
+}
+
 mpvc_set_volume() {
     case "$1" in
         '') eeprintf 1 "Specify volume in/decrease amount or absolute amount." ;;
@@ -588,24 +599,6 @@ mpvc_set_volume() {
         -*) mpvc_add "volume" "$1"  ;;
         *%) mpvc_set "volume" "${1%%%}";;
         *)  mpvc_set "volume" "$1" ;;
-    esac
-}
-
-mpvc_toggle_loopfile() {
-    case "$1" in
-        '')      quiet mpvc_cmd "cycle-values" "loop-file" "yes" "no" ;;
-        on|yes)  quiet mpvc_sets "loop-file" yes ;;
-        off|no)  quiet mpvc_sets "loop-file" no  ;;
-        *)       quiet mpvc_sets "loop-file" "$1";;
-    esac
-}
-
-mpvc_toggle_loopplaylist() {
-    case "$1" in
-        '')      quiet mpvc_cmd "cycle-values" "loop-playlist" "yes" "no" ;;
-        on|yes)  quiet mpvc_sets "loop-playlist" inf ;;
-        off|no)  quiet mpvc_sets "loop-playlist" no  ;;
-        *)       quiet mpvc_sets "loop-playlist" "$1";;
     esac
 }
 
@@ -646,7 +639,7 @@ mpvc_shuffle_playlist() {
         *) return;;
     esac
     echo "Playlist $1."
-    [ "$(mpvc_gets loop-playlist)" = "no" ] && mpvc_toggle_loopplaylist yes
+    [ "$(mpvc_gets loop-playlist)" = "no" ] && mpvc_toggle_loop "loop-playlist" yes
 }
 
 mpvc_crop_playlist() {
@@ -806,8 +799,8 @@ main() {
                 mpvc_always_play
             ;;
             vol|volume) shift; mpvc_set_volume "$1" ;;
-            repeat)     shift; mpvc_toggle_loopplaylist "$1" ;;
-            single)     shift; mpvc_toggle_loopfile "$1" ;;
+            repeat)     shift; mpvc_toggle_loop "loop-playlist" "$1" ;;
+            single)     shift; mpvc_toggle_loop "loop-file" "$1" ;;
             pause)      mpvc_set_pause "yes"       ;;
             next)       mpvc_set_track 1 relative ;;
             prev)       mpvc_set_track -1 relative;;
@@ -878,12 +871,12 @@ main() {
             -s|--stop|stop)                  mpvc_set_pause "yes"; mpvc_set_time "absolute" 0 ;;
             -P|--play)                       mpvc_always_play ;;
             -p|--toggle|toggle)              mpvc_toggle_pause;;
-            -m|--mute)                       mpvc_toggle_mute               ;;
-            -i|--playlist|playlist)          mpvc_get_playlist "";          ;;
-            -I|--fullplaylist|fullplaylist)  mpvc_get_playlist "full";      ;;
-               --playlistjson|playlistjson)  mpvc_get_playlist_json ""      ;;
-            -L|--loop|loop)                  mpvc_toggle_loopplaylist       ;;
-            -l|--loopfile|loopfile)          mpvc_toggle_loopfile           ;;
+            -m|--mute)                       mpvc_toggle_mute                 ;;
+            -i|--playlist|playlist)          mpvc_get_playlist "";            ;;
+            -I|--fullplaylist|fullplaylist)  mpvc_get_playlist "full";        ;;
+               --playlistjson|playlistjson)  mpvc_get_playlist_json ""        ;;
+            -L|--loop|loop)                  mpvc_toggle_loop "loop-playlist" ;;
+            -l|--loopfile|loopfile)          mpvc_toggle_loop "loop-file"     ;;
             -z|--shuffle|shuffle)            mpvc_shuffle_playlist shuffle; QUIETFLAG=true;;
             -Z|--unshuffle|unshuffle)        mpvc_shuffle_playlist unshuffle; QUIETFLAG=true;;
             -c|--crop|crop)                  mpvc_crop_playlist; QUIETFLAG=true;;
