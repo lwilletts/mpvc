@@ -707,7 +707,6 @@ mpvc_print_status_final() {
 ## Misc Functions #############################################################
 
 isInt() { printf '%d' "$1" >/dev/null; }
-isFloat() { [ -z "${1##*.*}" ] && printf '%f' "$1" >/dev/null; }
 
 calculateTerminalHeight() {
     ctrack="$1"
@@ -882,7 +881,7 @@ main() {
             -m|--mute)                       mpvc_toggle_mute               ;;
             -i|--playlist|playlist)          mpvc_get_playlist "";          ;;
             -I|--fullplaylist|fullplaylist)  mpvc_get_playlist "full";      ;;
-            -i|--playlistjson|playlistjson)  mpvc_get_playlist_json ""      ;;
+               --playlistjson|playlistjson)  mpvc_get_playlist_json ""      ;;
             -L|--loop|loop)                  mpvc_toggle_loopplaylist       ;;
             -l|--loopfile|loopfile)          mpvc_toggle_loopfile           ;;
             -z|--shuffle|shuffle)            mpvc_shuffle_playlist shuffle; QUIETFLAG=true;;
