@@ -221,12 +221,8 @@ mpvc_set()   { mpvc_cmd "set_property" "$@"; }
 mpvc_sets()  { mpvc_cmd "set_property_string" "$@"; }
 mpvc_cycle() { quiet mpvc_cmd "cycle" "$1"; }
 
-# fn args: mute, pause, loop-file, estimated-frame-number, width, height
 mpvc_get()   { mpvc_cmd "get_property" "$1"; }
-
-# fn args: filename, idle-active, playlist-count, playlist-pos, playback-time,
-#          playtime-remaining, time-remaining, percent-pos, duration, volume
-mpvc_gets() { mpvc_cmd "get_property_string" "$1"; }
+mpvc_gets()  { mpvc_cmd "get_property_string" "$1"; }
 
 getPauseStatus() {
     case "$(mpvc_get pause)" in
