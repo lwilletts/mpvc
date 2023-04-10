@@ -253,9 +253,9 @@ mpvc_get_playlist_once() {
 
 # fn args: $1: filename $2: full path flag to skip basename
 mpvc_get_playlist_filename() {
-    track="$1"
+    lid="$1"
     fullPath="$2"
-    filename=$(mpvc_get "playlist/$track/filename")
+    filename=$(mpvc_get "playlist/$lid/filename")
     [  "$fullPath" != "fullpath" ] && filename=$(cleanFilename "$filename")
     echo "$filename"
 }
@@ -264,44 +264,44 @@ mpvc_get_playlist_filename() {
 mpvc_get_playlist() {
     i=0
     mode="$1"
-    tracks=$(mpvc_get playlist-count)
-    cTrack=$(mpvc_get playlist-pos)
-    [ -z "$cTrack" ] && cTrack=0
+    lcount=$(mpvc_get playlist-count)
+    lpos=$(mpvc_get playlist-pos)
+    [ -z "$lpos" ] && lpos=0
 
     [ "$mode" = "numbered" ] && mpvc_get_playlist_once "$mode" && return
-    # by default, display only tracks fitting terminal, otherwise, display all
+    # by default, display only items fitting terminal, otherwise, display all
     FIRST=0
-    LAST=$tracks
-    [ "$mode" != "full" ] && calculateTerminalHeight "$cTrack" "$tracks"
+    LAST=$lcount
+    [ "$mode" != "full" ] && calculateTerminalHeight "$lpos" "$lcount"
 
     mpvc_get_playlist_once |
         while read -r line; do cleanFilename "$line"; echo; done |
         awk -v colour="$COLOURFLAG" \
-            -v ctrack=$cTrack -v first=$FIRST -v last="$LAST" \
+            -v lpos=$lpos -v first=$FIRST -v last="$LAST" \
         '
         {
-            tracknr = NR-1
-            if (first <= tracknr && tracknr <= last)
+            lid = NR-1
+            if (first <= lid && lid <= last)
             {
-                if (ctrack == tracknr)
+                if (lpos == lid)
                 {
                     if (colour == "nocolour")
                     {
-                        printf("%2d  %s\n", tracknr, $0)
+                        printf("%2d  %s\n", lid, $0)
                     }
                     else
                     {
                         "tput cols" | getline cols
                         "mpvc cmd expand-text \\${percent-pos}" | getline pct
                         count=int((cols) * (pct/100))
-                        line=sprintf("%2d  %s", tracknr, $0)
+                        line=sprintf("%2d  %s", lid, $0)
                         fmtstr="\033[7m%-"count"s\033[0m\n"
                         printf(fmtstr, line)
                     }
                 }
                 else
                 {
-                    printf("%2d  %s\n", tracknr, $0)
+                    printf("%2d  %s\n", lid, $0)
                 }
             }
         }
@@ -492,55 +492,55 @@ mpvc_set_time() {
 
 mpvc_set_track() {
     isInt "$1" || return 1
-    cTrack=$(mpvc_get playlist-pos)
-    trackCount=$(mpvc_get playlist-count)
-    [ "$cTrack" = "null" ] && cTrack=0
+    lpos=$(mpvc_get playlist-pos)
+    lcount=$(mpvc_get playlist-count)
+    [ "$lpos" = "null" ] && lpos=0
     case "$2" in
-        absolute) newTrack=$(( $1 % trackCount ));;
-        relative) newTrack=$(( (cTrack + $1) % trackCount ))
+        absolute) newpos=$(( $1 % lcount ));;
+        relative) newpos=$(( (lpos + $1) % lcount ))
         ;;
     esac
-    quiet mpvc_set "playlist-pos" "$newTrack"
+    quiet mpvc_set "playlist-pos" "$newpos"
 }
 
 mpvc_move_track() {
     isInt "$1" || exit 1
     QUIETFLAG="true"
-    trackCount=$(mpvc_get playlist-count)
+    lcount=$(mpvc_get playlist-count)
     if [ -z "$2" ]; then
-        trackToMove=$(mpvc_get playlist-pos)
-        newTrackPosition=$1
+        srcpos=$(mpvc_get playlist-pos)
+        dstpos=$1
     else
-        trackToMove=$1
-        [ "$1" = "$" ] && trackToMove="$trackCount"
-        newTrackPosition=$2
-        [ "$2" = "$" ] && newTrackPosition="$trackCount"
-        if [ "$trackToMove" -lt 0 ] || [ "$trackToMove" -gt "$trackCount" ]; then
-            eeprintf 1 "Item $trackToMove is out of range of playlist."
+        srcpos=$1
+        [ "$1" = "$" ] && srcpos="$lcount"
+        dstpos=$2
+        [ "$2" = "$" ] && dstpos="$lcount"
+        if [ "$srcpos" -lt 0 ] || [ "$srcpos" -gt "$lcount" ]; then
+            eeprintf 1 "Item $srcpos is out of range of playlist."
         fi
     fi
 
-    [ "$newTrackPosition" -lt 0 ] &&
-        eeprintf 1 "Position $newTrackPosition is out of range of playlist."
-    #[ "$newTrackPosition" -eq 1 ] && newTrackPosition=0
-    quiet mpvc_cmd "playlist-move" "$trackToMove" "$newTrackPosition"
+    [ "$dstpos" -lt 0 ] &&
+        eeprintf 1 "Position $dstpos is out of range of playlist."
+    #[ "$dstpos" -eq 1 ] && dstpos=0
+    quiet mpvc_cmd "playlist-move" "$srcpos" "$dstpos"
 
     quietcheck mpvc_get_playlist
 }
 
 mpvc_remove_track() {
-    trackId=$1
-    if [ "$trackId" = "current" ]; then
-        oquiet mpvc_cmd "playlist-remove" "$trackId"
+    lid=$1
+    if [ "$lid" = "current" ]; then
+        oquiet mpvc_cmd "playlist-remove" "$lid"
         return;
     fi
-    isInt "$trackId" || return 1
-    trackCount=$(mpvc_get playlist-count)
-    if [ -z "$trackCount" ] || [ "$trackId" -lt 0 ] || [ "$trackId" -ge "$trackCount" ]; then
-        warn "Item $trackId is out of range of playlist."
+    isInt "$lid" || return 1
+    lcount=$(mpvc_get playlist-count)
+    if [ -z "$lcount" ] || [ "$lid" -lt 0 ] || [ "$lid" -ge "$lcount" ]; then
+        warn "Item $lid is out of range of playlist."
     fi
-    filename="$(mpvc_get_playlist_filename "$trackId")"
-    oquiet mpvc_cmd "playlist-remove" "$trackId"
+    filename="$(mpvc_get_playlist_filename "$lid")"
+    oquiet mpvc_cmd "playlist-remove" "$lid"
     quietcheck warn "$filename has been removed from the playlist."
 }
 
@@ -589,26 +589,26 @@ mpvc_search() {
 mpvc_search_play() {
     mode=$1; shift
     [ -z "$1" ] && return
-    track=$(mpvc_search "$mode" "$1" | awk '{print $1; exit}')
-    [ -z "$track" ] && warn "$PROGNAME: Searching for $*, nothing found."
-    mpvc_set_track "$track" absolute
+    lid=$(mpvc_search "$mode" "$1" | awk '{print $1; exit}')
+    [ -z "$lid" ] && warn "$PROGNAME: Searching for $*, nothing found."
+    mpvc_set_track "$lid" absolute
 }
 
 mpvc_search_remove() {
     mode=$1; shift
     [ -z "$1" ] && return
-    tracks=$(mpvc_search "$mode" "$1" | awk '{print $1}' | tac )
-    [ -z "$tracks" ] && warn "$PROGNAME: Searching for $*, nothing found."
-    for i in $tracks; do mpvc_remove_track "$i"; done
+    list=$(mpvc_search "$mode" "$1" | awk '{print $1}' | tac )
+    [ -z "$list" ] && warn "$PROGNAME: Searching for $*, nothing found."
+    for i in $list; do mpvc_remove_track "$i"; done
     QUIETFLAG=true
 }
 
 mpvc_search_move() {
     mode=$1; shift
     [ -z "$1" ] && return
-    tracks=$(mpvc_search "$mode" "$1" | awk '{print $1}' | tac )
-    [ -z "$tracks" ] && warn "$PROGNAME: Searching for $*, nothing found."
-    for i in $tracks; do mpvc_move_track "$i" "$2"; done
+    list=$(mpvc_search "$mode" "$1" | awk '{print $1}' | tac )
+    [ -z "$list" ] && warn "$PROGNAME: Searching for $*, nothing found."
+    for i in $list; do mpvc_move_track "$i" "$2"; done
     QUIETFLAG=true
 }
 
@@ -681,21 +681,21 @@ mpvc_print_status_final() {
 isInt() { printf '%d' "$1" >/dev/null; }
 
 calculateTerminalHeight() {
-    ctrack="$1"
-    tracks="$2"
+    lpos="$1"
+    lcount="$2"
     lines=$(tput lines)
     crow=${MPVC_CLINE:-3}
     rows=$((lines - crow))
     halfrows=$((rows / 2))
-    [ "$ctrack" = "null" ] && ctrack=0
-    if [ "$tracks" -le $rows ]; then
-        FIRST=0; LAST=$tracks
-    elif [ "$ctrack" -le $halfrows ]; then
+    [ "$lpos" = "null" ] && lpos=0
+    if [ "$lcount" -le $rows ]; then
+        FIRST=0; LAST=$lcount
+    elif [ "$lpos" -le $halfrows ]; then
         FIRST=0; LAST=$rows
-    elif [  $((ctrack + halfrows)) -ge "$tracks" ]; then
-        FIRST=$((tracks - rows)); LAST=$tracks
-    elif [  $((ctrack + halfrows)) -lt "$tracks" ]; then
-        FIRST=$((ctrack - halfrows)); LAST=$((ctrack + halfrows))
+    elif [  $((lpos + halfrows)) -ge "$lcount" ]; then
+        FIRST=$((lcount - rows)); LAST=$lcount
+    elif [  $((lpos + halfrows)) -lt "$lcount" ]; then
+        FIRST=$((lpos - halfrows)); LAST=$((lpos + halfrows))
     fi
 }
 
