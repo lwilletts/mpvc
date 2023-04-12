@@ -24,43 +24,58 @@ function die($msg)
     Exit(1)
 }
 
+function wr($line)
+{
+    $writer.WriteLine($line)
+    $writer.Flush()
+    if ($line.StartsWith("{"))
+    {
+        echo $reader.ReadLine()
+    }
+}
+
 function main()
 {
     $input=$args[0]
-    $output=$args[1]
+    $infile=$args[1]
+    $outfile=$args[2]
     $timeout=1000
 
-    if ($args.length -ne 2 -or $input -ne "-" -or $output -eq $null) {
+    if ($args.length -ne 4 -or $infile -ne "-" -or $outfile -eq $null) {
         return usage
     }
 
-    $pipe = new-object System.IO.Pipes.NamedPipeClientStream(".", $output, "InOut")
+    $pipe = new-object System.IO.Pipes.NamedPipeClientStream(".", $outfile, "InOut")
     $pipe.Connect($timeout)
     if (-not $pipe.isConnected) {
-        return die("# Failed: connect $output")
+        return die("# Failed: connect $outfile")
     }
 
     $script:reader = new-object System.IO.StreamReader($pipe)
     if (-not $reader) {
-        return die("# Failed: reader $output")
+        return die("# Failed: reader $outfile")
     }
     $script:writer = new-object System.IO.StreamWriter($pipe)
     if (-not $writer) {
-        return die("# Failed: writer $output")
+        return die("# Failed: writer $outfile")
     }
-    $writer.AutoFlush = $true
 
-    while ($iline = read-host)
+    $iline="$input"
+    if ($iline -ne $null)
     {
-        $writer.WriteLine($iline)
-        $job = Start-Job -ScriptBlock { echo $args.ReadLine() } -ArgumentList $reader
-        Wait-Job -Job $job -Timeout 2 | Out-Null
-        Receive-Job -Job $job
+        wr($iline)
+    }
+    else
+    {
+        while ($iline = Read-Host)
+        {
+            wr($iline)
+        }
     }
 
-    $reader.Dispose()
     $writer.Dispose()
+    $reader.Dispose()
     $pipe.Close()
 }
 
-main $args[0] $args[1] $args[2]
+main $input $args[0] $args[1] $args[2]
