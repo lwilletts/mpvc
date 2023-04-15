@@ -182,6 +182,7 @@ mpvctui_fzf_ddg()
                 gsub("</a>","");
 
                 gsub("%3A",":"); gsub("%2F","/"); gsub("%3F","?"); gsub("%3D","=");
+                gsub("^ *","");
                 #print urldecode($0)
                 print
             }'
