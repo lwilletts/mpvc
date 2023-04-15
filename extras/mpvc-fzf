@@ -65,7 +65,7 @@ mpvctui_fzf_isearch()
     url_search="https://yewtu.be/search?q=$(for f in $@; do printf "%s+" "$f"; done)"
 
     echo "$url_search"
-    curl -sL "$url_search&page=1" "$url_search&page=2" |
+    curl -fsSL -A 'Mozilla/5.0' "$url_search&page=1" "$url_search&page=2" |
     awk '
         /^ *<p dir="auto">/ {
             gsub("^ *<p dir=\"auto\">",""); gsub("</p>",""); vtitle=$0
@@ -161,7 +161,7 @@ mpvctui_fzf_playlist()
 
 mpvctui_fzf_ddg()
 {
-    curl -A 'Mozilla/5.0' -sL "https://duckduckgo.com/html?q=$*&iax=videos&ia=videos" |
+    curl -fsSL -A 'Mozilla/5.0' "https://duckduckgo.com/html?q=$*&iax=videos&ia=videos" |
         awk  '
             function urldecode(url)
             {
