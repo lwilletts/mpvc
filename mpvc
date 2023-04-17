@@ -378,36 +378,36 @@ mpvc_stash() {
                 case "$line" in
                     "# $PROGNAME "*) echo "$line";;
                     "mpvc cmd "*) $line;;
-                    "mpvc sets "*) $line;;
+                    "mpvc set "*) $line;;
                     "mpvc add "*) mpvc add "${line##mpvc add }";;
                 esac
             done
             ;;
         current)
             echo "# $PROGNAME stash $MPVC_STASH_DIR/$1 # $PROGURL @version $PROGVERSION"
-            echo "mpvc sets pause yes"
+            echo "mpvc set pause yes"
             echo "mpvc cmd playlist-clear"
             echo "mpvc cmd playlist-remove 0"
             mpvc_get_playlist_once | awk '{ gsub("^[ 	]*|[ 	]*$", ""); print "mpvc add "$0 }'
-            echo "mpvc sets playlist-pos $(mpvc_get playlist-pos)"
-            echo "mpvc sets playback-time $(mpvc_get playback-time)"
-            echo "mpvc sets loop-file $(mpvc_get loop-file)"
-            echo "mpvc sets loop-playlist $(mpvc_get loop-playlist)"
-            echo "mpvc sets ab-loop-a $(mpvc_get ab-loop-a)"
-            echo "mpvc sets ab-loop-b $(mpvc_get ab-loop-b)"
-            echo "mpvc sets idle $(mpvc_get idle)"
-            echo "mpvc sets mute $(mpvc_get mute)"
-            echo "mpvc sets video $(mpvc_get video)"
-            echo "mpvc sets video-zoom $(mpvc_get video-zoom)"
-            echo "mpvc sets fullscreen $(mpvc_get fullscreen)"
-            echo "mpvc sets aspect $(mpvc_get aspect)"
-            echo "mpvc sets cache $(mpvc_get cache)"
-            echo "mpvc sets speed $(mpvc_get speed)"
-            echo "mpvc sets volume $(mpvc_get volume)"
-            echo "mpvc sets volume-max $(mpvc_get volume-max)"
-            echo "mpvc sets pause $(mpvc_get pause)"
-            #echo "mpvc sets af $(mpvc_get af)"
-            #echo "mpvc sets working-directory $(mpvc_get working-directory)"
+            echo "mpvc set playlist-pos $(mpvc_get playlist-pos)"
+            echo "mpvc set playback-time $(mpvc_get playback-time)"
+            echo "mpvc set loop-file $(mpvc_get loop-file)"
+            echo "mpvc set loop-playlist $(mpvc_get loop-playlist)"
+            echo "mpvc set ab-loop-a $(mpvc_get ab-loop-a)"
+            echo "mpvc set ab-loop-b $(mpvc_get ab-loop-b)"
+            echo "mpvc set idle $(mpvc_get idle)"
+            echo "mpvc set mute $(mpvc_get mute)"
+            echo "mpvc set video $(mpvc_get video)"
+            echo "mpvc set video-zoom $(mpvc_get video-zoom)"
+            echo "mpvc set fullscreen $(mpvc_get fullscreen)"
+            echo "mpvc set aspect $(mpvc_get aspect)"
+            echo "mpvc set cache $(mpvc_get cache)"
+            echo "mpvc set speed $(mpvc_get speed)"
+            echo "mpvc set volume $(mpvc_get volume)"
+            echo "mpvc set volume-max $(mpvc_get volume-max)"
+            echo "mpvc set pause $(mpvc_get pause)"
+            #echo "mpvc set af $(mpvc_get af)"
+            #echo "mpvc set working-directory $(mpvc_get working-directory)"
             ;;
         help)
             echo "usage: $PROGNAME stash [list|current|show|push|drop|apply]"
