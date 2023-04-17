@@ -217,16 +217,16 @@ mpvc_cmdr() {
 
 mpvc_cmd()   { mpvc_cmdr "$@" | mpvc_getjson '"data":'; }
 mpvc_add()   { mpvc_cmd "add" "$@"; }
-mpvc_set()   { mpvc_cmd "set_property" "$@"; }
-mpvc_sets()  { mpvc_cmd "set_property_string" "$@"; }
+mpvc_get()   { mpvc_cmd "get_property_string" "$1"; }
+mpvc_set()   { mpvc_cmd "set_property_string" "$@"; }
 mpvc_cycle() { quiet mpvc_cmd "cycle" "$1"; }
 
-mpvc_get()   { mpvc_cmd "get_property" "$1"; }
-mpvc_gets()  { mpvc_cmd "get_property_string" "$1"; }
+#mpvc_gets()  { mpvc_cmd "get_property_string" "$1"; }
+#mpvc_sets()  { mpvc_cmd "set_property_string" "$@"; }
 
 getPauseStatus() {
     case "$(mpvc_get pause)" in
-        true) echo "paused";; false) echo "playing" ;; *) echo "NA";;
+        yes) echo "paused";; no) echo "playing" ;; *) echo "NA";;
     esac
 }
 
@@ -389,25 +389,25 @@ mpvc_stash() {
             echo "mpvc cmd playlist-clear"
             echo "mpvc cmd playlist-remove 0"
             mpvc_get_playlist_once | awk '{ gsub("^[ 	]*|[ 	]*$", ""); print "mpvc add "$0 }'
-            echo "mpvc sets playlist-pos $(mpvc_gets playlist-pos)"
-            echo "mpvc sets playback-time $(mpvc_gets playback-time)"
-            echo "mpvc sets loop-file $(mpvc_gets loop-file)"
-            echo "mpvc sets loop-playlist $(mpvc_gets loop-playlist)"
+            echo "mpvc sets playlist-pos $(mpvc_get playlist-pos)"
+            echo "mpvc sets playback-time $(mpvc_get playback-time)"
+            echo "mpvc sets loop-file $(mpvc_get loop-file)"
+            echo "mpvc sets loop-playlist $(mpvc_get loop-playlist)"
             echo "mpvc sets ab-loop-a $(mpvc_get ab-loop-a)"
             echo "mpvc sets ab-loop-b $(mpvc_get ab-loop-b)"
-            echo "mpvc sets idle $(mpvc_gets idle)"
-            echo "mpvc sets mute $(mpvc_gets mute)"
-            echo "mpvc sets video $(mpvc_gets video)"
-            echo "mpvc sets video-zoom $(mpvc_gets video-zoom)"
-            echo "mpvc sets fullscreen $(mpvc_gets fullscreen)"
-            echo "mpvc sets aspect $(mpvc_gets aspect)"
-            echo "mpvc sets cache $(mpvc_gets cache)"
-            echo "mpvc sets speed $(mpvc_gets speed)"
-            echo "mpvc sets volume $(mpvc_gets volume)"
-            echo "mpvc sets volume-max $(mpvc_gets volume-max)"
-            echo "mpvc sets pause $(mpvc_gets pause)"
-            #echo "mpvc sets af $(mpvc_gets af)"
-            #echo "mpvc sets working-directory $(mpvc_gets working-directory)"
+            echo "mpvc sets idle $(mpvc_get idle)"
+            echo "mpvc sets mute $(mpvc_get mute)"
+            echo "mpvc sets video $(mpvc_get video)"
+            echo "mpvc sets video-zoom $(mpvc_get video-zoom)"
+            echo "mpvc sets fullscreen $(mpvc_get fullscreen)"
+            echo "mpvc sets aspect $(mpvc_get aspect)"
+            echo "mpvc sets cache $(mpvc_get cache)"
+            echo "mpvc sets speed $(mpvc_get speed)"
+            echo "mpvc sets volume $(mpvc_get volume)"
+            echo "mpvc sets volume-max $(mpvc_get volume-max)"
+            echo "mpvc sets pause $(mpvc_get pause)"
+            #echo "mpvc sets af $(mpvc_get af)"
+            #echo "mpvc sets working-directory $(mpvc_get working-directory)"
             ;;
         help)
             echo "usage: $PROGNAME stash [list|current|show|push|drop|apply]"
@@ -478,12 +478,12 @@ mpvc_set_time() {
     mode=$1; shift
     if [ "$mode" = "absolute" ]; then
         timeSec=$(parseTimeString "$1") || return $?
-        mpvc_sets "playback-time" "$timeSec"
+        mpvc_set "playback-time" "$timeSec"
         return
     fi
     # relative
     case "$1" in
-        *%*) mpvc_sets "percent-pos" "${1%%%}"; return ;;
+        *%*) mpvc_set "percent-pos" "${1%%%}"; return ;;
         -*)  mpvc_add "playback-time" "-$(parseTimeString "${1##-}")" ;;
         +*)  mpvc_add "playback-time" "+$(parseTimeString "${1##+}")" ;;
         *)   mpvc_add "playback-time" "$(parseTimeString "${1}")" ;;
@@ -556,7 +556,7 @@ mpvc_set_pause() {
 }
 
 mpvc_toggle_mute() {
-    [ -n "$1" ] && quiet mpvc_sets "mute" "$1" && return
+    [ -n "$1" ] && quiet mpvc_set "mute" "$1" && return
     quiet mpvc_cmd "cycle" "mute"
 }
 
@@ -565,9 +565,9 @@ mpvc_toggle_loop() {
     value=$2
     case "$value" in
         '')      quiet mpvc_cmd "cycle-values" "$property" "yes" "no" ;;
-        on|yes)  quiet mpvc_sets "$property" yes ;;
-        off|no)  quiet mpvc_sets "$property" no  ;;
-        *)       quiet mpvc_sets "$property" "$value";;
+        on|yes)  quiet mpvc_set "$property" yes ;;
+        off|no)  quiet mpvc_set "$property" no  ;;
+        *)       quiet mpvc_set "$property" "$value";;
     esac
 }
 
@@ -618,7 +618,7 @@ mpvc_shuffle_playlist() {
         *) return;;
     esac
     echo "Playlist $1."
-    [ "$(mpvc_gets loop-playlist)" = "no" ] && mpvc_toggle_loop "loop-playlist" yes
+    [ "$(mpvc_get loop-playlist)" = "no" ] && mpvc_toggle_loop "loop-playlist" yes
 }
 
 mpvc_crop_playlist() {
@@ -726,7 +726,7 @@ mpvc_validate_socket() {
     # test if socket exists
     [ ! -S "$MPVC_SOCKET" ] && eeprintf 2 "Socket ${MPVC_SOCKET##$HOME/} does not exist. Use mpvc --mpv to start one."
     # test if socket is open
-    [ "$(mpvc_gets pause)" = "" ] && eeprintf 3 "No files added to ${MPVC_SOCKET##$HOME/}."
+    [ "$(mpvc_get pause)" = "" ] && eeprintf 3 "No files added to ${MPVC_SOCKET##$HOME/}."
 }
 
 mpvc_get_version() {
@@ -800,8 +800,8 @@ main() {
             -T|--time|time)                  shift; mpvc_set_time "absolute" "$1" ;;
             -v|--vol)                        shift; mpvc_add "volume" "$1"  ;;
             -V|--volume)                     shift; mpvc_set "volume" "$1"  ;;
-            -x|--speed|speed)                shift; mpvc_add  "speed" "$1"  ;;
-            -X|--speedval)                   shift; mpvc_sets "speed" "$1"  ;;
+            -x|--speed|speed)                shift; mpvc_add "speed" "$1"  ;;
+            -X|--speedval)                   shift; mpvc_set "speed" "$1"  ;;
             -j|--track)                      shift; mpvc_set_track "$1" relative  ;;
             -J|--tracknum)                   shift; mpvc_set_track "$1" absolute  ;;
             -r|--remove|rm|remove|del)       shift; mpvc_remove_track "$1"; QUIETFLAG=true;;
@@ -821,10 +821,10 @@ main() {
             --cycle|cycle)                   shift; mpvc_cmd cycle "$@"; QUIETFLAG=true;;
             --set|set|s)                     shift; mpvc_cmd set_property "$@"; return;;
             --get|get|g)                     shift; mpvc_cmd get_property "$1"; QUIETFLAG=true;;
-            --setr|setr|sr)                  shift; mpvc_cmdr set_property "$@"; return;;
-            --getr|getr|gr)                  shift; mpvc_cmdr get_property "$1"; QUIETFLAG=true;;
             --sets|sets|ss)                  shift; mpvc_cmd set_property_string "$@"; return;;
             --gets|gets|gs)                  shift; mpvc_cmd get_property_string "$1"; QUIETFLAG=true;;
+            --setr|setr|sr)                  shift; mpvc_cmdr set_property "$@"; return;;
+            --getr|getr|gr)                  shift; mpvc_cmdr get_property "$1"; QUIETFLAG=true;;
             --togglec|togglec)               shift; mpvc_cycle "cache" ;;
             --togglev|togglev)               shift; mpvc_cycle "video" ;;
             --togglew|togglew)               shift; mpvc_cycle "force-window" ;;
