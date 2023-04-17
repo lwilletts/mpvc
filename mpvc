@@ -61,10 +61,10 @@ Usage: $PROGNAME [-S "socket"] [-a "filenames"] [-o "path"] [-f "format string"]
     cycle               : Toggle/Cycle through MPV property values.
     idleloop            : Listen to MPV player events on $PROGNAME socket.
     search              : Search the playlist by filename/url.
-    searchplay          : Search the playlist by filename and play the first match.
-    searchPlay          : Search the playlist by title and play the first match.
-    searchrm            : Search the playlist and remove matching entries.
-    searchmv            : Search the playlist and move matching entries.
+    -n | --searchplay   : Search the playlist by filename and play the first match.
+    -N | --searchPlay   : Search the playlist by title and play the first match.
+    -R | --searchrm     : Search the playlist and remove matching entries.
+    -M | --searchmv     : Search the playlist and move matching entries.
     stash               : Manage mpv playing state as in git-stash(1)
     delay               : Sleep between commands, as in: $PROGNAME play 0 delay seek 20% vol 60
 
