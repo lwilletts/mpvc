@@ -215,9 +215,6 @@ mpvc_get()   { mpvc_cmd "get_property_string" "$1"; }
 mpvc_set()   { mpvc_cmd "set_property_string" "$@"; }
 mpvc_cycle() { quiet mpvc_cmd "cycle" "$1"; }
 
-#mpvc_gets()  { mpvc_cmd "get_property_string" "$1"; }
-#mpvc_sets()  { mpvc_cmd "set_property_string" "$@"; }
-
 getPauseStatus() {
     case "$(mpvc_get pause)" in
         yes) echo "paused";; no) echo "playing" ;; *) echo "NA";;
@@ -458,14 +455,11 @@ mpvc_appendtracks() {
 
 mpvc_play_next() {
     QUIETFLAG="true"
-    # add track to the playlist
+    # add track to the playlist & move to next position
     mpvc_appendtracks "$1"
-    # find position of track to move
-    trackToMove="$(( $(mpvc_get playlist-count) - 1 ))"
-    # find position of current track
-    newTrackPosition="$(( $(mpvc_get playlist-pos) + 1 ))"
-    # set position of next track
-    mpvc_move_track "$trackToMove" "$newTrackPosition"
+    lid_last="$(( $(mpvc_get playlist-count) - 1 ))"
+    lid_next="$(( $(mpvc_get playlist-pos) + 1 ))"
+    mpvc_move_track "$lid_last" "$lid_next"
 }
 
 mpvc_set_time() {
