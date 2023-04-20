@@ -95,8 +95,8 @@ oquiet() { "$@" 1> /dev/null; }
 quiet()  { "$@" > /dev/null 2>&1; }
 quietcheck(){ if [ "$QUIETFLAG" = "true" ]; then quiet "$@"; else "$@"; fi; }
 
-warn()   { echo "$@" >&2; }
-eeprintf() { e=$1; shift; warn "$@"; exit "$e"; }
+warn() { echo "$@" >&2; }
+die()  { e=$1; shift; warn "$@"; exit "$e"; }
 
 mpvc_defaults()
 {
@@ -122,8 +122,8 @@ video:%video% aspect:%aspect% window:%window% fullscreen:%fullscreen% idle:%idle
 chapter:%chapter% %=chapter%/%chapters%"
 
     # validate deps
-    quiet type $MPVC_MPV || eeprintf 4 "$PROGNAME: Error: No mpv found. Install to continue."
-    quiet type socat || type nc || eeprintf 4 "$PROGNAME: Error: No socat/nc found. Install one"
+    quiet type $MPVC_MPV || die 4 "$PROGNAME: Error: No mpv found. Install to continue."
+    quiet type socat || type nc || die 4 "$PROGNAME: Error: No socat/nc found. Install one"
 }
 
 # Load user config
@@ -504,12 +504,12 @@ mpvc_move_track() {
         dstpos=$2
         [ "$2" = "$" ] && dstpos="$lcount"
         if [ "$srcpos" -lt 0 ] || [ "$srcpos" -gt "$lcount" ]; then
-            eeprintf 1 "Item $srcpos is out of range of playlist."
+            die 1 "Item $srcpos is out of range of playlist."
         fi
     fi
 
     [ "$dstpos" -lt 0 ] &&
-        eeprintf 1 "Position $dstpos is out of range of playlist."
+        die 1 "Position $dstpos is out of range of playlist."
     #[ "$dstpos" -eq 1 ] && dstpos=0
     quiet mpvc_cmd "playlist-move" "$srcpos" "$dstpos"
 
@@ -561,7 +561,7 @@ mpvc_toggle_loop() {
 
 mpvc_set_volume() {
     case "$1" in
-        '') eeprintf 1 "Specify volume in/decrease amount or absolute amount." ;;
+        '') die 1 "Specify volume in/decrease amount or absolute amount." ;;
         +*) mpvc_add "volume" "$1"  ;;
         -*) mpvc_add "volume" "$1"  ;;
         *%) mpvc_set "volume" "${1%%%}";;
@@ -712,9 +712,9 @@ parseTimeString() {
 
 mpvc_validate_socket() {
     # test if socket exists
-    [ ! -S "$MPVC_SOCKET" ] && eeprintf 2 "Socket ${MPVC_SOCKET##$HOME/} does not exist. Use mpvc --mpv to start one."
+    [ ! -S "$MPVC_SOCKET" ] && die 2 "Socket ${MPVC_SOCKET##$HOME/} does not exist. Use mpvc --mpv to start one."
     # test if socket is open
-    [ "$(mpvc_get pause)" = "" ] && eeprintf 3 "No files added to ${MPVC_SOCKET##$HOME/}."
+    [ "$(mpvc_get pause)" = "" ] && die 3 "No files added to ${MPVC_SOCKET##$HOME/}."
 }
 
 mpvc_get_version() {
@@ -774,8 +774,8 @@ main() {
             move|mv)    shift; mpvc_move_track "$1" "$2" ;;
             mute)       mpvc_toggle_mute yes     ;;
             unmute)     mpvc_toggle_mute no      ;;
-            pretty)     eeprintf 1 "$PROGNAME: $* not implemented" ;;
-            find)       eeprintf 1 "$PROGNAME: $* not implemented" ;;
+            pretty)     die 1 "$PROGNAME: $* not implemented" ;;
+            find)       die 1 "$PROGNAME: $* not implemented" ;;
 
             add|-a|--append) mpvc_appendtracks "$@"; shift "$((shiftcount+1))" ;;
             #replace|--replace) replaceTracks "$@"; shift "$((shiftcount+1))" ;;
