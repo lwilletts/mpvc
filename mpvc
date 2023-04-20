@@ -157,7 +157,7 @@ mpvc_curl_cache()
 
 mpvc_curl_cache_title()
 {
-    mpvc_curl_cache -sL "https://youtube.com/oembed?url=$1" | mpvc_getjson '"title":'
+    mpvc_curl_cache -sL "https://youtube.com/oembed?url=$1" | mpvc_getjson 'title'
 }
 
 # fn args: filename, match given filename string to appropriate output
@@ -187,13 +187,7 @@ cleanFilename() {
 }
 
 mpvc_getjson() {
-    awk -F ',"' -v jf="$1" '{
-        gsub("[{}]", "");
-        gsub("\\\\u00", "\\x");
-        for (i=1; i<=NF; i++) {
-            if ($i ~ jf){ r=$i; sub(jf, "", r); gsub("[\"]", "", r); print r; }
-        }
-    }'
+    sed 's/.*"'$1'":"\?\(.*\?\)"\?,.*/\1/; s/"\?,".\+".*//'
 }
 
 mpvc_sockrepl() { socat - "$MPVC_SOCKET" || nc -U -N "$MPVC_SOCKET"; }
@@ -215,7 +209,7 @@ mpvc_cmdr() {
     equiet mpvc_sockcmd_ "{ \"command\": [ $command ] }"
 }
 
-mpvc_cmd()   { mpvc_cmdr "$@" | mpvc_getjson '"data":'; }
+mpvc_cmd()   { mpvc_cmdr "$@" | mpvc_getjson 'data'; }
 mpvc_add()   { mpvc_cmd "add" "$@"; }
 mpvc_get()   { mpvc_cmd "get_property_string" "$1"; }
 mpvc_set()   { mpvc_cmd "set_property_string" "$@"; }
