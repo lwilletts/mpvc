@@ -41,7 +41,7 @@ function main()
     $outfile=$args[2]
     $timeout=1000
 
-    if ($args.length -ne 4 -or $infile -ne "-" -or $outfile -eq $null) {
+    if ($args.length -ne 4 -or $infile -eq $null -or $outfile -eq $null) {
         return usage
     }
 
