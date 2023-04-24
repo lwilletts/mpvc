@@ -75,7 +75,7 @@ Formatting:
     %genre%, %year%, %percentage%, %playlistlength%, %position%, %repeat%,
     %single, %status%, %time%, %precisetime%, %speed%, %length%, %remaining%,
     %volume%, %muted%, %frame%, %width%, %height%, %ab-loop-a%, %ab-loop-b%
-    %video%, %aspect%, %window%, %fullscreen%, %idle%, %chapter%, %chapters%
+    %video%, %aspect%, %force-window%, %fullscreen%, %idle%, %chapter%, %chapters%
 
 MPC compatibility layer:
     mpvc features a nearly complete compatibility layer for mpc commands in
@@ -118,7 +118,7 @@ mpvc_defaults()
 %artist% - %title% NL\
 [%status%] #%position%/%playlistlength% %time%/%length% (%percentage%%%) NL\
 speed:%speed%x volume:%volume%%% muted:%muted% repeat:%repeat% single:%single% NL\
-video:%video% aspect:%aspect% window:%window% fullscreen:%fullscreen% idle:%idle% NL\
+video:%video% aspect:%aspect% window:%force-window% fullscreen:%fullscreen% idle:%idle% NL\
 chapter:%chapter% %=chapter%/%chapters%"
 
     # validate deps
@@ -627,13 +627,12 @@ mpvc_clear_playlist() {
 # formats and prints according to $FORMATSTRING
 mpvc_print_status() {
     # not that nice, in fact way more ugly, but also way faster
-    RE='year\|genre\|artist\|album\|comment\|volume\|path\|height\|width\|ab-loop-[ab]\|speed\|video\|aspect\|idle\|fullscreen\|chapter\|chapters\|=chapter'
+    RE='year\|genre\|artist\|album\|comment\|volume\|path\|height\|width\|playback-time\|ab-loop-[ab]\|speed\|force-window\|video\|aspect\|idle\|fullscreen\|chapter\|chapters\|=chapter'
     F=$(echo "$FORMATSTRING" |
         sed \
             -e "s/%\(${RE}\)%/\${\1:NA}/g" \
             -e "s/%title%/\${media-title}/g" \
             -e "s/%albumartist%/\${album_artist}/g" \
-            -e "s/%playback-time%/\${playback-time}/g" \
             -e "s/%muted%/\${mute}/g" \
             -e "s/%percentage%/\${percent-pos}/g" \
             -e "s/%name%/\${filename}/g" \
@@ -647,7 +646,6 @@ mpvc_print_status() {
             -e "s/%precisetime%/\${playback-time}/g" \
             -e "s/%playlistlength%/\${playlist-count}/g" \
             -e "s/%position%/\${playlist-pos}/g" \
-            -e "s/%window%/\${force-window}/g" \
             -e "s/%status%/$(getPauseStatus)/g" \
             -e ''
     )
