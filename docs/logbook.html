@@ -79,7 +79,8 @@ Logbook Entries
     <li> <a href="#logbook-20230112">#20230112 On using mpv together with the fzf fuzzy finder</a> </li>
     <li> <a href="#logbook-20230119">#20230119 On controlling multiple remotely running mpv instances</a> </li>
     <li> <a href="#logbook-20230219">#20230219 On stashing mpv media player state to restore later</a> </li>
-    <li> <a href="#logbook-20230331">CSS, RSS &amp; casts updates on the gmt4.github.io/mpvc site, 31 Mar 2023</a></li>
+    <li> <a href="#logbook-20230331">#20230331 CSS, RSS &amp; casts updates on the gmt4.github.io/mpvc site</a></li>
+    <li> <a href="#logbook-20230425">#20230425 Introducing mpvc-equalizer: a basic mpv equalizer for the CLI</a></li>
 </ul>
 
 <hr />
@@ -219,11 +220,11 @@ I discovered fzf while adding support for selecting and playing YT videos <a hre
 </p>
 <ul>
 <li><code>mpvc-fzf -p</code>: For searching/playing Internet media from YouTube.</li>
-<li><code>mpvc-fzf -l</code>: For searching/playing Local media from your filesystem.</li>
+<li><code>mpvc-fzf -l</code>: For searching/playing Local media from your file-system.</li>
 <li><code>mpvc-fzf -f</code>: For managing the mpv status and playlist: say mpvc play, pause, seek etc.</li>
 </ul>
 <p>
-This is still on a very preliminar state, but it's amazing what fzf can do, and so far, seems to fit very well with mpvc.
+This is still on a very preliminary state, but it's amazing what fzf can do, and so far, seems to fit very well with mpvc.
 </p>
 
 <h3 id="logbook-20230112">On using mpv together with the fzf fuzzy finder, 12 Jan 2023</h3>
@@ -251,7 +252,7 @@ A work in progress update, in no particular order, but, mostly focused on using 
         <em>Note</em>, the above command just "works", but probably has some rough edges, and can be improved.
     </li>
 
-    <li> After issuing the previous command, the <code>mpvsocket0</code> is locally accesible and can be directly managed by <code>mpvc, mpvc-fzf, mpvc-tui</code>. For example, running mpvc to start a randomly choosen track from the playlist:
+    <li> After issuing the previous command, the <code>mpvsocket0</code> is locally accessible and can be directly managed by <code>mpvc, mpvc-fzf, mpvc-tui</code>. For example, running mpvc to start a randomly chosen track from the playlist:
         <code>mpvc -q play $(( $RANDOM % $(mpvc get playlist-count) )</code>)
     </li>
 </ul>
@@ -284,15 +285,35 @@ A few things have been going on since last entry, some effort focused on getting
 <p>
 Keep posted.
 </p>
+
+<h3 id="logbook-20230425">Introducing mpvc-equalizer: a basic mpv equalizer for the CLI, 25 Apr 2023</h3>
+<p>
+This entry introduces <a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-equalizer">mpvc-equalizer</a> a Linear Phase 15-Bands Equalizer for the CLI/shell based on the <a href="#">firequalizer15.lua</a> mpv-script. 
+The basic operations that are available in <code>mpvc-equalizer</code> are:
+</p>
+<ul>
+<li><code>mpvc-equalizer preset</code>: Provides a set of basic equalizer presets ready to be loaded</li>
+<li><code>mpvc-equalizer reset/load/save</code>: To reset/load/save mpvc equalizer settings</li>
+<li><code>mpvc-equalizer json/bars</code>: To query the equalizer settings as JSON or as CLI bars</li>
+</ul>
+<p>
+An example of the `mpvc-equalizer` to set equalizer values for classical music:
+<pre>
+ mpvc-equalizer preset
+ mpvc-equalizer preset classical | mpvc-equalizer load
+ mpvc-equalizer bars
+ mpvc-equalizer reset
+</pre>
+</p>
 <!-- SOF -->
 
 <hr/>
 <p>
 <span>
-    <em>Last-Modified: Friday, 31 March 2023 by <a href="https://gmt4.github.io">gmt4</a></em>
+    <em>Last-Modified: Tuesday, 25 April 2023 by <a href="https://gmt4.github.io">gmt4</a></em>
 </span>
 <span style="float: right;">
-    <em>Powered by #OwnYourHTML 🧡 💚 💙 </em>
+    <em>Powered by #HTML 🧡 💚 💙 </em>
 </span>
 </p>
 
