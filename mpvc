@@ -187,7 +187,7 @@ cleanFilename() {
 }
 
 mpvc_getjson() {
-    sed 's/.*"'$1'":"\?\(.*\?\)"\?,.*/\1/; s/"\?,".\+".*//'
+    sed -n '/"'$1'":/ { s/.*"'$1'":"\?\(.*\?\)"\?,.*/\1/; s/"\?,".\+".*//; p }'
 }
 
 mpvc_sockrepl() { socat - "$MPVC_SOCKET" || nc -U -N "$MPVC_SOCKET"; }
