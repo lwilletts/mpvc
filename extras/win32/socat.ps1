@@ -61,7 +61,7 @@ function main()
     }
 
     $iline="$input"
-    if ($iline -ne $null)
+    if ($iline -ne "")
     {
         wr($iline)
     }
