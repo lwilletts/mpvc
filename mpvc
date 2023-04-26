@@ -664,7 +664,7 @@ mpvc_print_status_final() {
 
 ## Misc Functions #############################################################
 
-isInt() { printf '%d' "$1" >/dev/null 2>&1; }
+isInt() { printf '%d' "$1" >/dev/null 2>&1 && [ -n "$1" ]; }
 
 calculateTerminalHeight() {
     lpos="$1"
