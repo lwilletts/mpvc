@@ -39,7 +39,7 @@ function main()
     $input=$args[0]
     $infile=$args[1]
     $outfile=$args[2]
-    $timeout=500
+    $timeout=100
 
     if ($args.length -ne 4 -or $infile -eq $null -or $outfile -eq $null) {
         return usage
