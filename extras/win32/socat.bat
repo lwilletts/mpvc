@@ -6,6 +6,4 @@
 ::
 
 @echo off
-set cwd=%~dp0
-set socat="%cwd%\socat.ps1"
-powershell.exe -File %socat% "%1" "%2"
+powershell.exe -NoProfile -File "%~dp0\socat.ps1" "" "%2"
