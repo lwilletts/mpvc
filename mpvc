@@ -19,6 +19,7 @@ Usage: $PROGNAME [-S "socket"] [-a "filenames"] [-o "path"] [-f "format string"]
     -P | --play         : Always start playback.
     -f | --format       : Enter a formatting string.
     -a | --add          : Add files to playlist from given path (see --load for stdin).
+    -A | --playnext     : Add files to playlist after the current track.
     -i | --playlist     : Print filenames of tracks to fit within terminal.
     -I | --fullplaylist : Print all filenames of tracks in current playlist.
     -o | --save         : Save current playlist to given path.
@@ -803,8 +804,8 @@ main() {
             --autosave|autosave)             shift; mpvc_autosave_playlist "$1"; ;;
             --autoload|autoload)             shift; mpvc_autoload_playlist "$1"; ;;
             --lsplaylists|lsplaylists)       shift; mpvc_lsplaylists "$1"; QUIETFLAG=true;;
-            --dblist|dblist)                 shift; mpvc_dblist; return          ;;
-            --dbinit|dbinit)                 shift; mpvc_dbinit; return          ;;
+            --dblist|dblist)                 shift; mpvc_dblist; return ;;
+            --dbinit|dbinit)                 shift; mpvc_dbinit; return ;;
             --cycle|cycle)                   shift; mpvc_cmd cycle "$@"; QUIETFLAG=true;;
             --set|set|s)                     shift; mpvc_cmd set_property "$@"; return;;
             --get|get|g)                     shift; mpvc_cmd get_property "$1"; QUIETFLAG=true;;
