@@ -158,9 +158,10 @@ mpvctui_watch()
 
 mpvctui_notify()
 {
+    # $MPVC_SCROBBLER: scrobbling file contains one entry per line with tab-separated fields
     cmd_default='
         notify-send -u normal -i dialog-information "$(mpvc)";
-        echo $(date +%s) $(mpvc g duration g path g media-title) >> '"$MPVC_SCROBBLER"
+        echo $(mpvc expand-text "$(date +%s)\t\\${=duration}\t\\${path}\t\\${media-title}") >> '"$MPVC_SCROBBLER"
 
     cmd="${1:-$cmd_default}"
     awk -v cmd="$cmd" '
@@ -182,13 +183,14 @@ mpvctui_suggest()
         ! /https:/ {
             gsub($1,"")
             gsub($1,"")
-            if(length($0) > 0)
+            if (length($0) > 0)
             {
                 tracks[n++]=$0
                 seen[$0]++
             }
         }
         END {
+            //asort(seen, sorted)
             r=int(rand() * n)
             t=tracks[r]
             print r,seen[t],t
