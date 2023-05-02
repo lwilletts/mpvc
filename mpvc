@@ -832,6 +832,7 @@ main() {
             -N|--searchplay|searchplay)      shift; mpvc_search_play "full" "$1" ;;
             -n|--searchPlay|searchPlay)      shift; mpvc_search_play "numbered" "$1" ;;
             --stash|stash)                   shift; mpvc_stash "$1" "$2";;
+            expand-text)                     shift; mpvc_cmd expand-text "$@"; return;;
 
             -k|--kill|kill)                  quiet mpvc_cmd "quit"; QUIETFLAG=true ;;
             -K|--killall|killall)            quiet pkill -9 -f "$MPVC_MPV "; QUIETFLAG=true ;;
