@@ -123,7 +123,8 @@ mpvctui_fzf_fetch()
 
     ytdl_json=$(mpvc getr ytdl-raw-options)
     if [ -z "$ytdl_json" ]; then
-        mpvctui_warn "$PROGNAME: Check docs/mpv.conf for setting ytdl-raw-options"
+        mpvctui_warn "$PROGNAME: Error ytdl-raw-options not set. Check docs/mpv.conf"
+        return
     fi
     for option in $(echo "$ytdl_json" | jq -r ".data | keys | .[]")
     do
