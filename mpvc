@@ -232,7 +232,7 @@ mpvc_get_playlist_json() {
 
 mpvc_get_playlist_once() {
     mpvc_get_playlist_json |
-        sed 's|,"current":true||; s|,"playing":true||; s|{"filename":"\(.*\)"}|\1|; s/,$//; /^\[$/d; /\]$/d' |
+        sed 's|,"current":true||; s|,"playing":true||; s|{"filename":"\(.*\)"}|\1|; s|","title":.*||; s/,$//; /^\[$/d; /\]$/d' |
         awk -v numbered="$1" '
         {
             gsub("^[ \t]*", " ")
