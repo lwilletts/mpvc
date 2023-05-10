@@ -167,20 +167,24 @@ cleanFilename() {
     filename="$1"
     result="$1"
     case "$filename" in
-        http*.googlevideo.com/*) filename="mps-yt stream" ;;
-        http*://youtu.be/watch*)
+        https://googlevideo.com/*) filename="mps-yt stream" ;;
+        https://youtu.be/watch*)
             filename="$(echo "$filename" | sed 's|/watch?v=|/|')"
             result="$(mpvc_curl_cache_title "$filename")"
             ;;
-        http*://youtu.be/*|http*://youtube.com/*|http*://www.youtube.com/*)
+        https://youtu.be/*|https://youtube.com/*|https://www.youtube.com/*)
             result="$(mpvc_curl_cache_title "$filename")"
             ;;
-        http*://yewtu.be/watch*)
+        https://yewtu.be/watch*)
             filename="$(echo "$filename" | sed 's|://yewtu.be|://youtu.be|; s|/watch?v=|/|')"
             result="$(mpvc_curl_cache_title "$filename")"
             ;;
-        http*://yewtu.be/*)
+        https://yewtu.be/*)
             filename="$(echo "$filename" | sed 's|://yewtu.be|://youtu.be|')"
+            result="$(mpvc_curl_cache_title "$filename")"
+            ;;
+        ???????????) # ytid videoid [A-Za-z-]{11}
+            filename="https://youtu.be/$filename"
             result="$(mpvc_curl_cache_title "$filename")"
             ;;
         *) [ -e "$filename" ] && result=${filename##*/} || result=${filename##*/};;
@@ -434,7 +438,6 @@ mpvc_appendtrack() {
     case "$filename" in
         *.txt|*.log|*.cue) return ;;
         *.png|*.jpg|*.jpeg|*.gif|*.psd|*.pdf) [ "$IMAGEFLAG" != "true" ] && return ;;
-        http*) ;;
     esac
     if [ -n "$filename" ]; then
         quiet mpvc_cmd "loadfile" "$filename" "append-play"
@@ -448,6 +451,7 @@ mpvc_appendtracks() {
     mpvc_startmpv --really-quiet --idle=once
     for arg in "$@"; do
         case "$arg" in
+        ???????????) mpvc_appendtrack "$arg"; _=$((shiftcount+=1)) ;; # ytid videoid [A-Za-z-]{11}
         http*) mpvc_appendtrack "$arg"; _=$((shiftcount+=1)) ;;
         *)     if [ -e "$arg" ]; then mpvc_appendtrack "$arg"; _=$((shiftcount+=1)); fi
         esac
