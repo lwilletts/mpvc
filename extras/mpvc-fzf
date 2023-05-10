@@ -118,7 +118,6 @@ mpvctui_fzf_fetch()
     ytdlp=$(command -v youtube-dl || command -v yt-dlp)
     if [ ! -x "$ytdlp" ]; then
         mpvctui_warn "$PROGNAME: Warning: No yt-dlp, Install to get support!"
-        return
     fi
 
     ytdl_json=$(mpvc getr ytdl-raw-options)
@@ -230,17 +229,17 @@ main()
         d) MPVC_DIR="$OPTARG"; cd "$MPVC_DIR" || return;;
         D) shift; mpvctui_ddg_play "$@";;
         #D) shift; mpvctui_fzf_ddg "$@";;
-        f) shift; mpvctui_fzf_playlist ;;
+        f) mpvctui_fzf_playlist ;;
         F) shift; mpvctui_fzf_preview "$@" ;;
-        g) shift; mpvctui_fzf_fetch "$OPTARG";;
-        G) shift; mpvctui_fzf_fetch $(mpvctui_fzf_iplay "$OPTARG");;
-        h) shift; mpvctui_usage ;;
-        l) shift; mpvctui_fzf_local;;
-        p) shift; mpvctui_fzf_iplay "$OPTARG" | mpvc load ;;
-        P) shift; mpvctui_fzf_iplay "$OPTARG" | mpvc loadc ;;
-        s) shift; mpvctui_fzf_isearch "$OPTARG";;
+        g) mpvctui_fzf_fetch "$OPTARG";;
+        G) mpvctui_fzf_fetch $(mpvctui_fzf_iplay "$OPTARG");;
+        h) mpvctui_usage ;;
+        l) mpvctui_fzf_local;;
+        p) mpvctui_fzf_iplay "$OPTARG" | mpvc load ;;
+        P) mpvctui_fzf_iplay "$OPTARG" | mpvc loadc ;;
+        s) mpvctui_fzf_isearch "$OPTARG";;
         x) shift; quiet command -v $MPVC_TERM && $MPVC_TERM -e "$0" "$@"; exit;;
-        v) shift; mpvctui_version;;
+        v) mpvctui_version;;
         *) mpvctui_usage;;
         esac
     done
