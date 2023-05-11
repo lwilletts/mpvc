@@ -280,6 +280,9 @@ mpvc_get_playlist() {
             lid = NR-1
             if (first <= lid && lid <= last)
             {
+                gsub("\\u00", "\x")
+                gsub("\\\\x22", "\"")
+                gsub("\\\\x26", "\\&")
                 if (lpos == lid)
                 {
                     if (colour == "nocolour")
