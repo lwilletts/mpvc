@@ -124,8 +124,8 @@ video:%video% aspect:%aspect% window:%force-window% fullscreen:%fullscreen% idle
 chapter:%chapter% %=chapter%/%chapters%"
 
     # validate deps
-    quiet command -v $MPVC_MPV || die 4 "$PROGNAME: Error: No mpv found. Install to continue."
-    quiet command -v $MPVC_SOCAT || quiet command -v nc || die 4 "$PROGNAME: Error: No socat/nc found. Install one"
+    quiet command -v "$MPVC_MPV" || die 4 "$PROGNAME: Error: No mpv found. Install to continue."
+    quiet command -v "$MPVC_SOCAT" || quiet command -v nc || die 4 "$PROGNAME: Error: No socat/nc found. Install one"
 }
 
 # Load user config
@@ -167,7 +167,7 @@ cleanFilename() {
     filename="$1"
     result="$1"
     case "$filename" in
-        https://googlevideo.com/*) filename="mps-yt stream" ;;
+        #https://googlevideo.com/*) filename="mps-yt stream" ;;
         https://youtu.be/watch*)
             filename="$(echo "$filename" | sed 's|/watch?v=|/|')"
             result="$(mpvc_curl_cache_title "$filename")"
@@ -193,7 +193,7 @@ cleanFilename() {
 }
 
 mpvc_getjson() {
-    sed -n '/"'$1'":/ { s/.*"'$1'":"\?\(.*\?\)"\?,.*/\1/; s/"\?,".\+".*//; p }'
+    sed -n '/"'"$1"'":/ { s/.*"'"$1"'":"\?\(.*\?\)"\?,.*/\1/; s/"\?,".\+".*//; p }'
 }
 
 mpvc_sockrepl() { $MPVC_SOCAT - "$MPVC_SOCKET" || nc -U -N "$MPVC_SOCKET"; }
