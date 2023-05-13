@@ -67,7 +67,7 @@ Distribution Packages:
 - [Gentoo](https://gitlab.com/xy2_/osman) - `emerge mpvc`
 - [Nixos](http://github.com/nixos/nixpkgs) - `nix-env -i mpvc`
 
-To manually install mpvc, use the Makefile provided or link/copy mpvc to somewhere to your $PATH.
+To manually install mpvc, use `extras/mpvc-installer` or link/copy mpvc to somewhere to your $PATH.
 
 ## Usage
 
