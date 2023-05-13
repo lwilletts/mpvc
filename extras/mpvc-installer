@@ -17,9 +17,21 @@ BINDIR="${BINDIR:-$PREFIX/bin}"
 
 SCRIPT="mpvc extras/mpvc-tui extras/mpvc-fzf extras/mpvc-chapter extras/mpvc-equalizer extras/mpvc-installer"
 
+mpvc_fetch()
+{
+    mkdir -p "$BINDIR"
+	for script in ${SCRIPT};
+    do
+        local="$BINDIR/$(basename "$script")"
+        echo "Fetch $local"
+        curl -fsSL -o "$local" "$PROGURL/raw/master/$script";
+        chmod u+x "$local"
+	done
+}
+
 mpvc_link()
 {
-    mkdir -p ${BINDIR}
+    mkdir -p "$BINDIR"
 	for script in ${SCRIPT};
     do
 		ln -svfn "$(pwd)/$script" "$BINDIR";
@@ -29,7 +41,7 @@ mpvc_link()
 mpvc_install()
 {
 	echo 'Installing mpvc...'
-    mkdir -p ${BINDIR}
+    mkdir -p "$BINDIR"
 	for script in ${SCRIPT};
     do
 		install -Dvm755 "$(pwd)/$script" "$BINDIR";
@@ -48,6 +60,7 @@ mpvc_uninstall()
 usage()
 {
     echo "usage: $PROGNAME args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
+    echo "  fetch-user     : Fetch to BINDIR=$HOME/bin"
     echo "  link-user      : Symlink to BINDIR=$HOME/bin"
     echo "  install-user   : Install to BINDIR=$HOME/bin"
     echo "  install-sys    : Install to BINDIR=$PREFIX/bin"
@@ -61,6 +74,8 @@ main()
     [ $# -lt 1 ] && usage
 
     case "$1" in
+    fetch-user)       shift; PREFIX=$HOME mpvc_fetch;;
+
     link-user)       shift; PREFIX=$HOME mpvc_link;;
     install-user)    shift; PREFIX=$HOME mpvc_install;;
     install-sys)     shift; PREFIX=/usr/local mpvc_install;;
@@ -68,6 +83,7 @@ main()
     uninstall-user)  shift; PREFIX=$HOME mpvc_uninstall;;
     uninstall-sys)   shift; PREFIX=/usr/local mpvc_uninstall;;
 
+    fetch)           shift; mpvc_fetch "$@";;
     link)            shift; mpvc_link "$@";;
     install)         shift; mpvc_install "$@";;
     uninstall)       shift; mpvc_uninstall "$@";;
