@@ -12,34 +12,36 @@ PROGVERSION="v1.0"
 PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
 
-PREFIX=${PREFIX:-/usr/local}
-BINDIR=${BINDIR:-$PREFIX/bin}
+PREFIX="${PREFIX:-/usr/local}"
+BINDIR="${BINDIR:-$PREFIX/bin}"
 
-SCRIPT=mpvc extras/mpvc-tui extras/mpvc-fzf extras/mpvc-chapter extras/mpvc-equalizer extras/mpvc-installer
+SCRIPT="mpvc extras/mpvc-tui extras/mpvc-fzf extras/mpvc-chapter extras/mpvc-equalizer extras/mpvc-installer"
 
 mpvc_link()
 {
-	for script in $(SCRIPT);
+    mkdir -p ${BINDIR}
+	for script in ${SCRIPT};
     do
-		ln -svfn "$(pwd)/$script" "$(BINDIR)";
+		ln -svfn "$(pwd)/$script" "$BINDIR";
 	done
 }
 
 mpvc_install()
 {
 	echo 'Installing mpvc...'
-	for script in $(SCRIPT);
+    mkdir -p ${BINDIR}
+	for script in ${SCRIPT};
     do
-		install -Dvm755 "$(pwd)/$script" "$(BINDIR)";
+		install -Dvm755 "$(pwd)/$script" "$BINDIR";
 	done
 }
 
 mpvc_uninstall()
 {
 	echo 'Un-installing mpvc...'
-	for script in $(SCRIPT);
+	for script in ${SCRIPT};
     do
-        rm -v "$(BINDIR)/$(basename "$script")";
+        rm -v "$BINDIR/$(basename "$script")";
 	done
 }
 
@@ -59,11 +61,11 @@ main()
     [ $# -lt 1 ] && usage
 
     case "$1" in
-    link-user)       shift; PREFIX=$(HOME) mpvc_link;;
-    install-user)    shift; PREFIX=$(HOME) mpvc_install;;
+    link-user)       shift; PREFIX=$HOME mpvc_link;;
+    install-user)    shift; PREFIX=$HOME mpvc_install;;
     install-sys)     shift; PREFIX=/usr/local mpvc_install;;
 
-    uninstall-user)  shift; PREFIX=$(HOME) mpvc_uninstall;;
+    uninstall-user)  shift; PREFIX=$HOME mpvc_uninstall;;
     uninstall-sys)   shift; PREFIX=/usr/local mpvc_uninstall;;
 
     link)            shift; mpvc_link "$@";;
