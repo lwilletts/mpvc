@@ -15,7 +15,7 @@ Check the [Wiki](https://github.com/gmt4/mpvc/wiki) & [Casts](https://gmt4.githu
 ## QuickStart
 
 <pre>
- <b># make a local copy of the github repo</b>
+ <b># fetch a local copy of the github repo</b>
  git clone https://github.com/gmt4/mpvc/
  <b># use make to install: just copy/link to your $HOME/bin</b>
  make -C mpvc link BINDIR=$HOME/bin
