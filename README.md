@@ -12,6 +12,12 @@ addition to GNU style arguments.
 This forks [lwillets/mpvc](https://github.com/lwilletts/mpvc) providing some extra goodies such as: improved CLI, TUI, FZF & playing media from YouTube & streaming services.
 Check the [Wiki](https://github.com/gmt4/mpvc/wiki) & [Casts](https://gmt4.github.io/mpvc/casts/) for a detailed view of the extra features of this fork.
 
+## QuickInstall
+
+<pre>
+curl -fsSL -o mpvc-installer https://github.com/gmt4/mpvc/raw/master/extras/mpvc-installer && sh ./mpvc-installer fetch-user
+</pre>
+
 ## QuickStart
 
 <pre>
