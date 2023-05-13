@@ -17,8 +17,8 @@ Check the [Wiki](https://github.com/gmt4/mpvc/wiki) & [Casts](https://gmt4.githu
 <pre>
  <b># fetch a local copy of the github repo</b>
  git clone https://github.com/gmt4/mpvc/
- <b># use make to install: just copy/link to your $HOME/bin</b>
- make -C mpvc link BINDIR=$HOME/bin
+ <b># use extras/mpvc-installer: just copy/link to your $HOME/bin</b>
+ mpvc/extras/mpvc-installer link-user
 
  <b># use mpvc-fzf to search and play youtube media</b>
  mpvc-fzf -p kupla mirage
