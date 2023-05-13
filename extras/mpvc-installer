@@ -67,6 +67,7 @@ usage()
     echo "  uninstall-sys  : Uninstall from BINDIR=$PREFIX/bin"
     echo "  uninstall-user : Uninstall from BINDIR=$HOME/bin}"
     echo "*tips: If unsure where to start, start with: $PROGNAME link-user"
+    exit
 }
 
 main()
