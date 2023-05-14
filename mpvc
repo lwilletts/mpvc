@@ -263,7 +263,6 @@ mpvc_get_playlist() {
     mode="$1"
     lcount=$(mpvc_get playlist-count)
     lpos=$(mpvc_get playlist-pos)
-    [ -z "$lpos" ] && lpos=0
 
     [ "$mode" = "numbered" ] && mpvc_get_playlist_once "$mode" && return
     # by default, display only items fitting terminal, otherwise, display all
@@ -676,21 +675,21 @@ mpvc_print_status_final() {
 isInt() { printf '%d' "$1" >/dev/null 2>&1 && [ -n "$1" ]; }
 
 calculateTerminalHeight() {
-    lpos="$1"
+    plpos="$1"
     lcount="$2"
     lines=$(tput lines)
     crow=${MPVC_CLINE:-3}
     rows=$((lines - crow))
     halfrows=$((rows / 2))
-    [ "$lpos" = "null" ] && lpos=0
+    [ "$plpos" = "null" ] && plpos=0
     if [ "$lcount" -le $rows ]; then
         FIRST=0; LAST=$lcount
-    elif [ "$lpos" -le $halfrows ]; then
+    elif [ "$plpos" -le $halfrows ]; then
         FIRST=0; LAST=$rows
-    elif [  $((lpos + halfrows)) -ge "$lcount" ]; then
+    elif [  $((plpos + halfrows)) -ge "$lcount" ]; then
         FIRST=$((lcount - rows)); LAST=$lcount
-    elif [  $((lpos + halfrows)) -lt "$lcount" ]; then
-        FIRST=$((lpos - halfrows)); LAST=$((lpos + halfrows))
+    elif [  $((plpos + halfrows)) -lt "$lcount" ]; then
+        FIRST=$((plpos - halfrows)); LAST=$((plpos + halfrows))
     fi
 }
 
