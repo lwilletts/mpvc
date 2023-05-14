@@ -24,7 +24,7 @@ mpvc_fetch()
     do
         local="$BINDIR/$(basename "$script")"
         echo "Fetch $local"
-        curl -fsSL -o "$local" "$PROGURL/raw/master/$script";
+        curl -fsSL -o "$local" "$PROGURL/raw/master/$script"
         chmod u+x "$local"
 	done
 }
@@ -57,9 +57,22 @@ mpvc_uninstall()
 	done
 }
 
+mpvc_check_update()
+{
+    master=$(curl -fsSL "$PROGURL/raw/master/extras/mpvc-installer" |
+        sed -n '/PROGVERSION/ s/PROGVERSION=//p')
+    if [ "$PROGVERSION" = "$master" ]
+    then
+        echo "$PROGNAME: No new version $PROGNAME available at $PROGURL"
+    else
+        echo "$PROGNAME: Found new version $master available at $PROGURL"
+    fi
+}
+
 usage()
 {
     echo "usage: $PROGNAME args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
+    echo "  check-update   : Check for updates"
     echo "  fetch-user     : Fetch to BINDIR=$HOME/bin"
     echo "  link-user      : Symlink to BINDIR=$HOME/bin"
     echo "  install-user   : Install to BINDIR=$HOME/bin"
@@ -75,8 +88,9 @@ main()
     [ $# -lt 1 ] && usage
 
     case "$1" in
-    fetch-user)       shift; PREFIX=$HOME mpvc_fetch;;
+    check-update)    shift; mpvc_check_update;;
 
+    fetch-user)      shift; PREFIX=$HOME mpvc_fetch;;
     link-user)       shift; PREFIX=$HOME mpvc_link;;
     install-user)    shift; PREFIX=$HOME mpvc_install;;
     install-sys)     shift; PREFIX=/usr/local mpvc_install;;
