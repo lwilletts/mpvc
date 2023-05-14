@@ -7,7 +7,7 @@
 #
 
 PROGNAME=$(basename "$0")
-PROGVERSION="v1.0"
+PROGVERSION="v1.4"
 PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
 
