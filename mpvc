@@ -6,8 +6,8 @@
 # https://mpv.io/manual/master/#json-ipc
 #
 
-PROGNAME=$(basename "$0");
-PROGVERSION="v1.3-add-stash";
+PROGNAME=$(basename "$0")
+PROGVERSION="v1.3-add-stash"
 PROGURL="https://github.com/gmt4/mpvc"
 PROGAUTHOR=gmt4
 
