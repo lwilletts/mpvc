@@ -5,14 +5,14 @@
 ![GitHub top language](https://img.shields.io/github/languages/top/gmt4/mpvc)
 ![GitHub lines of Code](https://sloc.xyz/github/gmt4/mpvc/?category=code)
 
-# mpvc
+# mpvc 🎧
 
 An mpc-like control interface for mpv with a nearly complete compatibility layer for mpc commands in
 addition to GNU style arguments.
 This forks [lwillets/mpvc](https://github.com/lwilletts/mpvc) providing some extra goodies such as: improved CLI, TUI, FZF & playing media from YouTube & streaming services.
 Check the [Wiki](https://github.com/gmt4/mpvc/wiki) & [Casts](https://gmt4.github.io/mpvc/casts/) for a detailed view of the extra features of this fork.
 
-## QuickInstall
+## QuickInstall ▶️
 
 `curl -fsSL -o mpvc-installer https://github.com/gmt4/mpvc/raw/master/extras/mpvc-installer && sh ./mpvc-installer fetch-user`
 
