@@ -60,10 +60,10 @@ mpvc_uninstall()
 mpvc_check_update()
 {
     master=$(curl -fsSL "$PROGURL/raw/master/extras/mpvc-installer" |
-        sed -n '/PROGVERSION/ s/PROGVERSION=//p')
+        sed -n '/^PROGVERSION/ { s/"//g; s/PROGVERSION=//p }')
     if [ "$PROGVERSION" = "$master" ]
     then
-        echo "$PROGNAME: No new version $PROGNAME available at $PROGURL"
+        echo "$PROGNAME: Up-to-date, no new version > $PROGVERSION available at $PROGURL"
     else
         echo "$PROGNAME: Found new version $master available at $PROGURL"
     fi
