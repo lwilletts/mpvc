@@ -157,9 +157,14 @@ mpvc_curl_cache()
     echo "$v"
 }
 
+mpvc_curl_cache_json()
+{
+    mpvc_curl_cache -sL "https://youtube.com/oembed?url=$1"
+}
+
 mpvc_curl_cache_title()
 {
-    mpvc_curl_cache -sL "https://youtube.com/oembed?url=$1" | mpvc_getjson 'title'
+    mpvc_curl_cache_json "$@" | mpvc_getjson 'title'
 }
 
 # fn args: filename, match given filename string to appropriate output
@@ -839,6 +844,8 @@ main() {
             -n|--searchPlay|searchPlay)      shift; mpvc_search_play "numbered" "$1" ;;
             --stash|stash)                   shift; mpvc_stash "$1" "$2";;
             expand-text)                     shift; mpvc_cmd expand-text "$@"; return;;
+
+            ytquery)                         shift; mpvc_curl_cache_json "$@"; return;;
 
             -k|--kill|kill)                  quiet mpvc_cmd "quit"; QUIETFLAG=true ;;
             -K|--killall|killall)            quiet pkill -9 -f "$MPVC_MPV "; QUIETFLAG=true ;;
