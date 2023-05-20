@@ -207,6 +207,8 @@ mpvctui_usage()
     echo "  -d : Set the WD to the media directory given as argument"
     echo "  -D : Search & play media using DuckDuckGo (fzf*)"
     echo "  -f : Start fzf to manage the current mpv playist (fzf*)"
+    echo "  -g : Fetch provided YT URL, and store locally (fzf*)"
+    echo "  -G : Search for provided query , fetch, and store locally (fzf*)"
     echo "  -l : Search & play local media (fzf*)"
     echo "  -s : Search for media using Invidious (fzf*)"
     echo "  -p : Search & play media found using Invidious (fzf*)"
