@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 #
-# fyr - 2019 (c) MIT | /bin/sh mpvc
+# fyr  - 2019 (c) MIT | /bin/sh mpvc
 # gmt4 - 2022 | fork & contributions
 # control mpv remotely using JSON ipc
 # https://mpv.io/manual/master/#json-ipc
@@ -152,7 +152,7 @@ mpvc_curl_cache()
     v="$(awk -F'\t' -v k="$k" '{ if ($1 == k) {print $2; exit} }' "$MPVC_CURL_CACHE")"
     if [ -z "$v" ]; then
         v=$(curl "$@")
-        echo "$k	$v" >> "$MPVC_CURL_CACHE"
+        [ -n "$v" ] && echo "$k	$v" >> "$MPVC_CURL_CACHE"
     fi
     echo "$v"
 }
@@ -276,37 +276,44 @@ mpvc_get_playlist() {
     [ "$mode" != "full" ] && calculateTerminalHeight "$lpos" "$lcount"
 
     mpvc_get_playlist_once |
-        while read -r line; do cleanFilename "$line"; echo; done |
-        awk -v colour="$COLOURFLAG" \
-            -v lpos=$lpos -v first=$FIRST -v last="$LAST" \
+        awk -v lpos=$lpos -v first=$FIRST -v last="$LAST" \
         '
         {
             lid = NR-1
             if (first <= lid && lid <= last)
             {
-                gsub("\\\\u00", "\\x")
-                gsub("\\\\x22", "\"")
-                gsub("\\\\x26", "\\&")
-                if (lpos == lid)
-                {
-                    if (colour == "nocolour")
-                    {
-                        printf("%2d  %s\n", lid, $0)
-                    }
-                    else
-                    {
-                        "tput cols" | getline cols
-                        "mpvc cmd expand-text \\${percent-pos}" | getline pct
-                        count=int((cols) * (pct/100))
-                        line=sprintf("%2d  %s", lid, $0)
-                        fmtstr="\033[7m%-"count"s\033[0m\n"
-                        printf(fmtstr, line)
-                    }
-                }
-                else
+                print
+            }
+        }
+        ' |
+        while read -r line; do cleanFilename "$line"; echo; done |
+        awk -v colour="$COLOURFLAG" \
+            -v lpos=$lpos -v first=$FIRST -v last="$LAST" \
+        '
+        {
+            gsub("\\\\u00", "\\x")
+            gsub("\\\\x22", "\"")
+            gsub("\\\\x26", "\\&")
+            lid = first + NR -1
+            if (lpos == lid)
+            {
+                if (colour == "nocolour")
                 {
                     printf("%2d  %s\n", lid, $0)
                 }
+                else
+                {
+                    "tput cols" | getline cols
+                    "mpvc cmd expand-text \\${percent-pos}" | getline pct
+                    count=int((cols) * (pct/100))
+                    line=sprintf("%2d  %s", lid, $0)
+                    fmtstr="\033[7m%-"count"s\033[0m\n"
+                    printf(fmtstr, line)
+                }
+            }
+            else
+            {
+                printf("%2d  %s\n", lid, $0)
             }
         }
     '
