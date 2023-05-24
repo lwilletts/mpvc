@@ -19,48 +19,50 @@ SCRIPT="mpvc extras/mpvc-tui extras/mpvc-fzf extras/mpvc-chapter extras/mpvc-equ
 
 mpvc_fetch()
 {
+    BINDIR="${BINDIR:-$PREFIX/bin}"
     mkdir -p "$BINDIR"
-	for script in ${SCRIPT};
+    for script in ${SCRIPT};
     do
         local="$BINDIR/$(basename "$script")"
         echo "Fetch $local"
         curl -fsSL -o "$local" "$PROGURL/raw/master/$script"
         chmod u+x "$local"
-	done
+    done
 }
 
 mpvc_link()
 {
     mkdir -p "$BINDIR"
-	for script in ${SCRIPT};
+    for script in ${SCRIPT};
     do
-		ln -svfn "$(pwd)/$script" "$BINDIR";
-	done
+        ln -svfn "$(pwd)/$script" "$BINDIR";
+    done
 }
 
 mpvc_install()
 {
-	echo 'Installing mpvc...'
+    echo 'Installing mpvc...'
     mkdir -p "$BINDIR"
-	for script in ${SCRIPT};
+    for script in ${SCRIPT};
     do
-		install -Dvm755 "$(pwd)/$script" "$BINDIR";
-	done
+        install -Dvm755 "$(pwd)/$script" "$BINDIR";
+    done
 }
 
 mpvc_uninstall()
 {
-	echo 'Un-installing mpvc...'
-	for script in ${SCRIPT};
+    echo 'Un-installing mpvc...'
+    for script in ${SCRIPT};
     do
         rm -v "$BINDIR/$(basename "$script")";
-	done
+    done
 }
 
 mpvc_check_update()
 {
     master=$(curl -fsSL "$PROGURL/raw/master/extras/mpvc-installer" |
         sed -n '/^PROGVERSION/ { s/"//g; s/PROGVERSION=//p }')
+
     if [ "$PROGVERSION" = "$master" ]
     then
         echo "$PROGNAME: Up-to-date, no new version > $PROGVERSION available at $PROGURL"
@@ -91,6 +93,7 @@ main()
     check-update)    shift; mpvc_check_update;;
 
     fetch-user)      shift; PREFIX=$HOME mpvc_fetch;;
+    fetch-sys)       shift; PREFIX=/usr/local mpvc_fetch;;
     link-user)       shift; PREFIX=$HOME mpvc_link;;
     install-user)    shift; PREFIX=$HOME mpvc_install;;
     install-sys)     shift; PREFIX=/usr/local mpvc_install;;
