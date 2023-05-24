@@ -19,7 +19,6 @@ SCRIPT="mpvc extras/mpvc-tui extras/mpvc-fzf extras/mpvc-chapter extras/mpvc-equ
 
 mpvc_fetch()
 {
-    BINDIR="${BINDIR:-$PREFIX/bin}"
     mkdir -p "$BINDIR"
     for script in ${SCRIPT};
     do
@@ -90,21 +89,21 @@ main()
     [ $# -lt 1 ] && usage
 
     case "$1" in
+
     check-update)    shift; mpvc_check_update;;
-
-    fetch-user)      shift; PREFIX=$HOME mpvc_fetch;;
-    fetch-sys)       shift; PREFIX=/usr/local mpvc_fetch;;
-    link-user)       shift; PREFIX=$HOME mpvc_link;;
-    install-user)    shift; PREFIX=$HOME mpvc_install;;
-    install-sys)     shift; PREFIX=/usr/local mpvc_install;;
-
-    uninstall-user)  shift; PREFIX=$HOME mpvc_uninstall;;
-    uninstall-sys)   shift; PREFIX=/usr/local mpvc_uninstall;;
-
     fetch)           shift; mpvc_fetch "$@";;
     link)            shift; mpvc_link "$@";;
     install)         shift; mpvc_install "$@";;
     uninstall)       shift; mpvc_uninstall "$@";;
+
+    fetch-user)      shift; PREFIX=$HOME $0 fetch;;
+    fetch-sys)       shift; PREFIX=/usr/local $0 fetch;;
+    link-user)       shift; PREFIX=$HOME $0 link;;
+    install-user)    shift; PREFIX=$HOME $0 install;;
+    install-sys)     shift; PREFIX=/usr/local $0 install;;
+
+    uninstall-user)  shift; PREFIX=$HOME $0 uninstall;;
+    uninstall-sys)   shift; PREFIX=/usr/local $0 uninstall;;
 
     *) usage;;
     esac
