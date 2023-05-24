@@ -96,14 +96,14 @@ main()
     install)         shift; mpvc_install "$@";;
     uninstall)       shift; mpvc_uninstall "$@";;
 
-    fetch-user)      shift; PREFIX=$HOME $0 fetch;;
-    fetch-sys)       shift; PREFIX=/usr/local $0 fetch;;
-    link-user)       shift; PREFIX=$HOME $0 link;;
-    install-user)    shift; PREFIX=$HOME $0 install;;
-    install-sys)     shift; PREFIX=/usr/local $0 install;;
+    fetch-user)      shift; PREFIX=$HOME $SHELL $0 fetch;;
+    fetch-sys)       shift; PREFIX=/usr/local $SHELL $0 fetch;;
+    link-user)       shift; PREFIX=$HOME $SHELL $0 link;;
+    install-user)    shift; PREFIX=$HOME $SHELL $0 install;;
+    install-sys)     shift; PREFIX=/usr/local $SHELL $0 install;;
 
-    uninstall-user)  shift; PREFIX=$HOME $0 uninstall;;
-    uninstall-sys)   shift; PREFIX=/usr/local $0 uninstall;;
+    uninstall-user)  shift; PREFIX=$HOME $SHELL $0 uninstall;;
+    uninstall-sys)   shift; PREFIX=/usr/local $SHELL $0 uninstall;;
 
     *) usage;;
     esac
