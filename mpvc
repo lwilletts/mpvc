@@ -167,12 +167,11 @@ mpvc_curl_cache_title()
     mpvc_curl_cache_json "$@" | mpvc_getjson 'title'
 }
 
-# fn args: filename, match given filename string to appropriate output
-cleanFilename() {
+# fn args: given a file/url return its title (may use curl to query YT)
+mpvc_curl_cache_title_clean() {
     filename="$1"
     result="$1"
     case "$filename" in
-        #https://googlevideo.com/*) filename="mps-yt stream" ;;
         https://youtu.be/watch*)
             filename="$(echo "$filename" | sed 's|/watch?v=|/|')"
             result="$(mpvc_curl_cache_title "$filename")"
@@ -188,10 +187,7 @@ cleanFilename() {
             filename="$(echo "$filename" | sed 's|://yewtu.be|://youtu.be|')"
             result="$(mpvc_curl_cache_title "$filename")"
             ;;
-        ???????????) # ytid videoid [A-Za-z-]{11}
-            filename="https://youtu.be/$filename"
-            result="$(mpvc_curl_cache_title "$filename")"
-            ;;
+        # otherwise
         *) [ -e "$filename" ] && result=${filename##*/} || result=${filename##*/};;
     esac
     printf "$result"
@@ -258,7 +254,7 @@ mpvc_get_playlist_filename() {
     lid="$1"
     fullPath="$2"
     filename=$(mpvc_get "playlist/$lid/filename")
-    [  "$fullPath" != "fullpath" ] && filename=$(cleanFilename "$filename")
+    [  "$fullPath" != "fullpath" ] && filename=$(mpvc_curl_cache_title_clean "$filename")
     echo "$filename"
 }
 
@@ -276,39 +272,58 @@ mpvc_get_playlist() {
     [ "$mode" != "full" ] && calculateTerminalHeight "$lpos" "$lcount"
 
     mpvc_get_playlist_once |
-        awk -v first="$FIRST" -v last="$LAST" \
+        awk -v colour="$COLOURFLAG" -v lpos="$lpos" -v first="$FIRST" -v last="$LAST" \
         '
+        function basename(line)
         {
-            if (first <= (NR-1) && (NR-1) <= last) { print }
+            n=split(line, fields, "/")
+            return fields[n]
         }
-        ' |
-        while read -r line; do cleanFilename "$line"; echo; done |
-        awk -v colour="$COLOURFLAG" -v first="$FIRST" -v lpos="$lpos" \
-        '
+
+        function mpvc_ytquery(line)
+        {
+            title=basename(line)
+            if (line ~ "^https?:")
+            {
+                cmd=sprintf("mpvc ytquery \"%s\"", line)
+                cmd | getline title # wierd callback but works
+            }
+            return title
+        }
+
         {
             gsub("\\\\u00", "\\x")
             gsub("\\\\x22", "\"")
             gsub("\\\\x26", "\\&")
-            lid = first + NR -1
+
+            lid = NR -1
+            if (!(first <= lid && lid <= last))
+            {
+                next
+            }
+
             if (lpos == lid)
             {
                 if (colour == "nocolour")
                 {
-                    printf("%2d  %s\n", lid, $0)
+                    title=mpvc_ytquery($0)
+                    printf("%2d  %s\n", lid, title)
                 }
                 else
                 {
                     "tput cols" | getline cols
                     "mpvc cmd expand-text \\${percent-pos}" | getline pct
                     count=int((cols) * (pct/100))
-                    line=sprintf("%2d  %s", lid, $0)
+                    title=mpvc_ytquery($0)
+                    line=sprintf("%2d  %s", lid, title)
                     fmtstr="\033[7m%-"count"s\033[0m\n"
                     printf(fmtstr, line)
                 }
             }
             else
             {
-                printf("%2d  %s\n", lid, $0)
+                title=mpvc_ytquery($0)
+                printf("%2d  %s\n", lid, title)
             }
         }
     '
@@ -450,7 +465,7 @@ mpvc_appendtrack() {
     esac
     if [ -n "$filename" ]; then
         quiet mpvc_cmd "loadfile" "$filename" "append-play"
-        echo "Adding: $(cleanFilename "$filename")"
+        echo "Adding: $(mpvc_curl_cache_title_clean "$filename")"
     fi
 }
 
@@ -756,6 +771,7 @@ mpvc_startmpv() {
 main() {
     mpvc_config
     case "$1" in
+    ytquery*) ;;
     -k|--kill|kill|-K|--killall|killall) ;;
     -c|--crop|crop|-C|--clear|clear|cmd|sockcmd|socklist|--socklist) ;;
     -a|add|append|-A|playnext|--playnext|mpv|--mpv|stash|--stash|--toggle|toggle|-q|--quiet) ;;
@@ -847,7 +863,8 @@ main() {
             --stash|stash)                   shift; mpvc_stash "$1" "$2";;
             expand-text)                     shift; mpvc_cmd expand-text "$@"; return;;
 
-            ytquery)                         shift; mpvc_curl_cache_json "$@"; return;;
+            ytquery)                         shift; mpvc_curl_cache_title_clean "$@"; return;;
+            ytqueryjson)                     shift; mpvc_curl_cache_json "$@"; return;;
 
             -k|--kill|kill)                  quiet mpvc_cmd "quit"; QUIETFLAG=true ;;
             -K|--killall|killall)            quiet pkill -9 -f "$MPVC_MPV "; QUIETFLAG=true ;;
