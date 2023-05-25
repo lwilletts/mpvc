@@ -276,14 +276,14 @@ mpvc_get_playlist() {
     [ "$mode" != "full" ] && calculateTerminalHeight "$lpos" "$lcount"
 
     mpvc_get_playlist_once |
-        awk -v first=$FIRST -v last="$LAST" \
+        awk -v first="$FIRST" -v last="$LAST" \
         '
         {
             if (first <= (NR-1) && (NR-1) <= last) { print }
         }
         ' |
         while read -r line; do cleanFilename "$line"; echo; done |
-        awk -v colour="$COLOURFLAG" -v lpos=$lpos \
+        awk -v colour="$COLOURFLAG" -v first="$FIRST" -v lpos="$lpos" \
         '
         {
             gsub("\\\\u00", "\\x")
