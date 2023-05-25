@@ -282,20 +282,21 @@ mpvc_get_playlist() {
 
         function mpvc_ytquery(line)
         {
+            gsub("^ *", "", line)
             title=basename(line)
-            if (line ~ "^https?:")
+            if (line ~ "^ *https?:")
             {
                 cmd=sprintf("mpvc ytquery \"%s\"", line)
-                cmd | getline title # wierd callback but works
+                cmd | getline title
             }
+            gsub("\\\\u00", "\\x", title)
+            gsub("\\\\x22", "\"", title)
+            gsub("\\\\x26", "\\&", title)
+            gsub("\\\\x27", "\x27", title)
             return title
         }
 
         {
-            gsub("\\\\u00", "\\x")
-            gsub("\\\\x22", "\"")
-            gsub("\\\\x26", "\\&")
-
             lid = NR -1
             if (!(first <= lid && lid <= last))
             {
