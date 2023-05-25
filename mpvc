@@ -6,7 +6,7 @@
 # https://mpv.io/manual/master/#json-ipc
 #
 
-PROGNAME=$(basename "$0")
+PROGNAME="mpvc"
 PROGVERSION="v1.4"
 PROGURL="https://github.com/gmt4/mpvc"
 PROGAUTHOR=gmt4
@@ -122,10 +122,6 @@ mpvc_defaults()
 speed:%speed%x volume:%volume%%% muted:%muted% repeat:%repeat% single:%single% NL\
 video:%video% aspect:%aspect% window:%force-window% fullscreen:%fullscreen% idle:%idle% NL\
 chapter:%chapter% %=chapter%/%chapters%"
-
-    # validate deps
-    quiet command -v "$MPVC_MPV" || die 4 "$PROGNAME: Error: No mpv found. Install to continue."
-    quiet command -v "$MPVC_SOCAT" || quiet command -v nc || die 4 "$PROGNAME: Error: No socat/nc found. Install one"
 }
 
 # Load user config
@@ -137,7 +133,7 @@ mpvc_config()
     [ ! -d "$MPVC_CACHE_DIR" ] && mkdir -p "$MPVC_CACHE_DIR"
     [ ! -d "$MPVC_PLAYLIST" ] && mkdir -p "$MPVC_PLAYLIST"
     # if not present, create config files
-    touch "$MPVC_CURL_CACHE"
+    [ ! -e "$MPVC_CURL_CACHE" ] && touch "$MPVC_CURL_CACHE"
     # if present load user config
     if [ -r "$MPVC_CONFIG" ]; then
         . "$MPVC_CONFIG"
@@ -150,9 +146,9 @@ mpvc_curl_cache()
 {
     k=$2
     v="$(awk -F'\t' -v k="$k" '{ if ($1 == k) {print $2; exit} }' "$MPVC_CURL_CACHE")"
-    if [ -z "$v" ]; then
+    if [ "${#v}" -eq 0 ]; then
         v=$(curl "$@")
-        [ -n "$v" ] && echo "$k	$v" >> "$MPVC_CURL_CACHE"
+        echo "$k	$v" >> "$MPVC_CURL_CACHE"
     fi
     echo "$v"
 }
@@ -187,8 +183,9 @@ mpvc_curl_cache_title_clean() {
             filename="$(echo "$filename" | sed 's|://yewtu.be|://youtu.be|')"
             result="$(mpvc_curl_cache_title "$filename")"
             ;;
-        # otherwise
-        *) [ -e "$filename" ] && result=${filename##*/} || result=${filename##*/};;
+        *) # otherwise
+            [ -e "$filename" ] && result=${filename##*/} || result=${filename##*/}
+            ;;
     esac
     printf "$result"
 }
@@ -290,8 +287,8 @@ mpvc_get_playlist() {
                 cmd | getline title
             }
             gsub("\\\\u00", "\\x", title)
-            gsub("\\\\x22", "\"", title)
-            gsub("\\\\x26", "\\&", title)
+            gsub("\\\\x22", "\x22", title)
+            gsub("\\\\x26", "\x26", title)
             gsub("\\\\x27", "\x27", title)
             return title
         }
@@ -740,6 +737,10 @@ parseTimeString() {
 }
 
 mpvc_validate_socket() {
+    # validate deps
+    quiet command -v "$MPVC_MPV" || die 4 "$PROGNAME: Error: No mpv found. Install to continue."
+    quiet command -v "$MPVC_SOCAT" || quiet command -v nc || die 4 "$PROGNAME: Error: No socat/nc found. Install one"
+
     # test if socket exists
     [ ! -S "$MPVC_SOCKET" ] && die 2 "Socket ${MPVC_SOCKET##$HOME/} does not exist. Use mpvc --mpv to start one."
     # test if socket is open
