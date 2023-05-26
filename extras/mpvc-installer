@@ -7,7 +7,7 @@
 # @url github.com/gmt4/mpvc
 #
 
-PROGNAME=$(basename "$0")
+PROGNAME=${0##*/}
 PROGVERSION="v1.4"
 PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
