@@ -145,7 +145,7 @@ mpvc_config()
 mpvc_curl_cache()
 {
     k=$2
-    v="$(awk -F'\t' -v k="$k" '{ if ($1 == k) {print $2; exit} }' "$MPVC_CURL_CACHE")"
+    v="$(tac "$MPVC_CURL_CACHE" | awk -F'\t' -v k="$k" '{ if ($1 == k) {print $2; exit} }' )"
     if [ "${#v}" -eq 0 ]; then
         v=$(curl "$@")
         echo "$k	$v" >> "$MPVC_CURL_CACHE"
@@ -280,11 +280,12 @@ mpvc_get_playlist() {
         function mpvc_ytquery(line)
         {
             gsub("^ *", "", line)
-            title=basename(line)
             if (line ~ "^ *https?:")
             {
                 cmd=sprintf("mpvc ytquery \"%s\"", line)
                 cmd | getline title
+            } else {
+                title=basename(line)
             }
             gsub("\\\\u00", "\\x", title)
             gsub("\\\\x22", "\x22", title)
