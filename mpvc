@@ -873,6 +873,7 @@ main() {
 
             ytquery)                         shift; mpvc_curl_cache_title_clean "$@"; return;;
             ytqueryjson)                     shift; mpvc_curl_cache_json "$@"; return;;
+            filename)                        shift; mpvc_get_playlist_filename "$@"; return;;
 
             -k|--kill|kill)                  quiet mpvc_cmd "quit"; QUIETFLAG=true ;;
             -K|--killall|killall)            quiet pkill -9 -f "$MPVC_MPV "; QUIETFLAG=true ;;
