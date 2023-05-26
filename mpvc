@@ -6,7 +6,7 @@
 # https://mpv.io/manual/master/#json-ipc
 #
 
-PROGNAME="mpvc"
+PROGNAME=${0##/}
 PROGVERSION="v1.4"
 PROGURL="https://github.com/gmt4/mpvc"
 PROGAUTHOR=gmt4
