@@ -6,35 +6,40 @@
 # https://mpv.io/manual/master/#json-ipc
 #
 
-PROGNAME=${0##/}
+PROGNAME=${0##*/}
 PROGVERSION="v1.4"
 PROGURL="https://github.com/gmt4/mpvc"
 PROGAUTHOR=gmt4
 
 usage() {
     cat >&2 << EOF
-Usage: $PROGNAME [-S "socket"] [-a "filenames"] [-o "path"] [-f "format string"]
+usage: $PROGNAME args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
     -p | --toggle       : Toggle playback.
     -s | --stop         : Always stop playback.
     -P | --play         : Always start playback.
-    -f | --format       : Enter a formatting string.
+    -j | --track        : Go forwards/backwards through the playlist queue.
+    -J | --tracknum     : Jump to playlist item number.
     -a | --add          : Add files to playlist from given path (see --load for stdin).
-    -A | --playnext     : Add files to playlist after the current track.
     -i | --playlist     : Print filenames of tracks to fit within terminal.
     -I | --fullplaylist : Print all filenames of tracks in current playlist.
     -o | --save         : Save current playlist to given path.
     -l | --load         : Load playlist from given path (stdin if none is specified).
+    -v | --vol          : Increase/decrease volume relative to current volume.
+    -V | --volume       : Set absolute volume.
+    -h | --help         : Prints the short help.
+    -H | --long-help    : Prints the long help.
+EOF
+
+    [ -n "$1" ] && cat >&2 << EOF
+    -f | --format       : Enter a formatting string.
+    -A | --playnext     : Add files to playlist after the current track.
     -o | --autosave     : Auto save current playlist to ${MPVC_PLAYLIST##$HOME/}.
     -l | --autoload     : Auto load playlist from ${MPVC_PLAYLIST##$HOME/}.
     -l | --lsplaylists  : List playlist from ${MPVC_PLAYLIST##$HOME/}.
-    -j | --track        : Go forwards/backwards through the playlist queue.
-    -J | --tracknum     : Jump to playlist item number.
     -c | --crop         : Clear the playlist except for the file currently playing.
     -z | --shuffle      : Shuffle the current playlist.
     -l | --loop         : Loop currently playing playlist.
     -L | --loopfile     : Loop currently playing file.
-    -v | --vol          : Increase/decrease volume relative to current volume.
-    -V | --volume       : Set absolute volume.
     -m | --mute         : Toggle sound.
     -t | --seek         : Increases/decreases time relatively, accepts % values.
     -T | --time         : Set absolute time.
@@ -47,7 +52,6 @@ Usage: $PROGNAME [-S "socket"] [-a "filenames"] [-o "path"] [-f "format string"]
     -q | --quiet        : Surpress all text output.
     -Q | --vid=no       : Start mpv with video output disabled.
     -- |                : After adding files options after -- are passed to mpv.
-    -h | --help         : Prints this help.
        | --version      : Prints the $PROGNAME version.
 
     get                 : Get MPV property from $PROGNAME socket.
@@ -779,7 +783,8 @@ main() {
     -c|--crop|crop|-C|--clear|clear|cmd|sockcmd|socklist|--socklist) ;;
     -a|add|append|-A|playnext|--playnext|mpv|--mpv|stash|--stash|--toggle|toggle|-q|--quiet) ;;
     load|--load|autoload|--autoload|lsplaylists|--lsplaylists|dbinit|--dbinit|dblist|--dblist) ;;
-    version|--version|help|--help|-h|--list-options|-Q|--vid=no|-S) ;;
+    version|--version-Q|--vid=no|-S) ;;
+    help|--help|-h|long-help|--long-help|-H|--list-options) ;;
     *) mpvc_validate_socket;; # otherwise, validate socket
     esac
     for arg in "$@"; do
@@ -897,6 +902,7 @@ main() {
             --version|version)               mpvc_get_version; exit 0;      ;;
             --list-options)                  usage; exit 0;                 ;;
             -h|--help|h|help)                usage; exit 0;                 ;;
+            -H|--long-help|long-help)        usage "$@"; exit 0;            ;;
             -?)                              usage; exit 1;                 ;;
         esac
         [ -n "$1" ] && shift
