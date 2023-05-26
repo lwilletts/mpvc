@@ -100,15 +100,15 @@ mpvctui_header2() { mpvctui_headerc '─' '[' ']' "$MPVC_COLOR2" " + $* "; }
 mpvctui_tips()
 {
     [ "$MPVC_TIPS" = "false" ] && return
-    tip=$(( count % 70 ))
+    tip=$(( count % 80 ))
     case $tip in
-    0|1)   echo ": type control+c to enter prompt";;
-    10|11) echo ": check more tips at $PROGURL!";;
-    20|21) echo ": check more tips at $SITEURL!";;
-    30|31) echo ": customize theme at ${MPVC_CONFIG##$HOME/}";;
-    40|41) echo ": launch from WM with: $PROGNAME -x";;
-    50|51) echo ": version $PROGNAME $PROGVERSION at $PROGURL";;
-    60|61) echo ": update $MPVC_UPDATEC secs refresh $((count % MPVC_CLEARC))/$MPVC_CLEARC";;
+    0|1|2)    echo ": type control+c to enter prompt";;
+    10|11|12) echo ": check more tips at $PROGURL!";;
+    20|21|22) echo ": check more tips at $SITEURL!";;
+    30|31|32) echo ": customize theme at ${MPVC_CONFIG##$HOME/}";;
+    40|41|42) echo ": launch from WM with: $PROGNAME -x";;
+    50|51|52) echo ": version $PROGNAME $PROGVERSION at $PROGURL";;
+    60|61|62) echo ": update $MPVC_UPDATEC secs refresh $((count % MPVC_CLEARC))/$MPVC_CLEARC";;
     esac
 }
 
