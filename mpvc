@@ -8,31 +8,33 @@
 
 PROGNAME=${0##*/}
 PROGVERSION="v1.4"
-PROGURL="https://github.com/gmt4/mpvc"
 PROGAUTHOR=gmt4
+PROGURL="https://github.com/gmt4/mpvc"
+SITEURL="https://gmt4.github.io/mpvc"
 
 usage() {
     cat >&2 << EOF
 usage: $PROGNAME args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
-    -p | --toggle       : Toggle playback.
+    -a | --add          : Add media to playlist (see --load for stdin).
     -s | --stop         : Always stop playback.
     -P | --play         : Always start playback.
-    -j | --track        : Go forwards/backwards through the playlist queue.
-    -J | --tracknum     : Jump to playlist item number.
-    -a | --add          : Add files to playlist from given path (see --load for stdin).
+    -p | --toggle       : Toggle playback.
+       | --next         : Jump to next entry in the playlist
+       | --prev         : Jump to previous entry in the playlist
     -i | --playlist     : Print filenames of tracks to fit within terminal.
     -I | --fullplaylist : Print all filenames of tracks in current playlist.
-    -o | --save         : Save current playlist to given path.
-    -l | --load         : Load playlist from given path (stdin if none is specified).
     -v | --vol          : Increase/decrease volume relative to current volume.
-    -V | --volume       : Set absolute volume.
     -h | --help         : Prints the short help.
     -H | --long-help    : Prints the long help.
 EOF
 
     [ -n "$1" ] && cat >&2 << EOF
     -f | --format       : Enter a formatting string.
+    -j | --track        : Go forwards/backwards through the playlist queue.
+    -J | --tracknum     : Jump to playlist item number.
     -A | --playnext     : Add files to playlist after the current track.
+    -o | --save         : Save current playlist to given path.
+    -l | --load         : Load playlist from given path (stdin if none is specified).
     -o | --autosave     : Auto save current playlist to ${MPVC_PLAYLIST##$HOME/}.
     -l | --autoload     : Auto load playlist from ${MPVC_PLAYLIST##$HOME/}.
     -l | --lsplaylists  : List playlist from ${MPVC_PLAYLIST##$HOME/}.
@@ -41,21 +43,24 @@ EOF
     -l | --loop         : Loop currently playing playlist.
     -L | --loopfile     : Loop currently playing file.
     -m | --mute         : Toggle sound.
-    -t | --seek         : Increases/decreases time relatively, accepts % values.
-    -T | --time         : Set absolute time.
+    -t | --seek         : Increase/decrease playback time relatively, accepts % values.
+    -T | --time         : Set absolute playback time.
     -x | --speed        : Increase/decrease speed relative to the current speed.
     -X | --speedval     : Set absolute speed.
     -I | --image        : Enable adding of images to the queue.
     -k | --kill         : Kill the mpv process controlling the given socket.
     -K | --killall      : Kill all mpv processes indiscriminately.
-    -S | --socket       : Set socket location [default: $MPVC_SOCKET].
-    -q | --quiet        : Surpress all text output.
+    -S | --socket       : Set mpv socket [default: $MPVC_SOCKET].
+    -q | --quiet        : Suppress all text output.
+    -V | --volume       : Set absolute volume.
     -Q | --vid=no       : Start mpv with video output disabled.
     -- |                : After adding files options after -- are passed to mpv.
        | --version      : Prints the $PROGNAME version.
 
     get                 : Get MPV property from $PROGNAME socket.
     set                 : Set MPV property from $PROGNAME socket.
+    getr                : Get JSON MPV property from $PROGNAME socket.
+    setr                : Set JSON MPV property from $PROGNAME socket.
     cmd                 : Send command to $PROGNAME socket.
     cmdr                : Send command to $PROGNAME socket & retrieve raw JSON.
     sockcmd             : Send MPV JSON IPC command to $PROGNAME socket.
@@ -71,7 +76,7 @@ EOF
     -R | --searchrm     : Search the playlist and remove matching entries.
     -M | --searchmv     : Search the playlist and move matching entries.
     stash               : Manage mpv playing state as in git-stash(1)
-    delay               : Sleep between commands, as in: $PROGNAME play 0 delay seek 20% vol 60
+    delay               : Sleep delay, as in: $PROGNAME play 0 delay seek 20% vol 60
 
 Formatting:
     \`$PROGNAME --format\` will interpret the following delimiters if they are found:
@@ -806,8 +811,8 @@ main() {
             repeat)     shift; mpvc_toggle_loop "loop-playlist" "$1" ;;
             single)     shift; mpvc_toggle_loop "loop-file" "$1" ;;
             pause)      mpvc_set_pause "yes"       ;;
-            next)       mpvc_set_track 1 relative ;;
-            prev)       mpvc_set_track -1 relative;;
+            next|--next)mpvc_set_track 1 relative ;;
+            prev|--prev)mpvc_set_track -1 relative;;
             move|mv)    shift; mpvc_move_track "$1" "$2" ;;
             mute)       mpvc_toggle_mute yes     ;;
             unmute)     mpvc_toggle_mute no      ;;
