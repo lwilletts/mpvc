@@ -99,12 +99,12 @@ chapter_list()
 
     chapter_list_json |
         grep -o '"title":"[^"]*' | sed 's/"title":"//;' |
-        awk -v colour="colour" -v numbered="$numbered" -v cchapter="$cchapter" '
+        awk -v no_color="$NO_COLOR" -v numbered="$numbered" -v cchapter="$cchapter" '
         {
             chapternr = NR-1
             if (cchapter == chapternr)
             {
-                if (colour == "nocolour")
+                if (no_color)
                 {
                     if (numbered) printf("%2d  %s\n", chapternr, $0);
                     else printf("%s\n", $0);
