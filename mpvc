@@ -278,7 +278,7 @@ mpvc_get_playlist() {
     [ "$mode" != "full" ] && calculateTerminalHeight "$lpos" "$lcount"
 
     mpvc_get_playlist_once |
-        awk -v colour="$COLOURFLAG" -v lpos="$lpos" -v first="$FIRST" -v last="$LAST" \
+        awk -v no_color="$NO_COLOR" -v lpos="$lpos" -v first="$FIRST" -v last="$LAST" \
         '
         function basename(line)
         {
@@ -312,7 +312,7 @@ mpvc_get_playlist() {
 
             if (lpos == lid)
             {
-                if (colour == "nocolour")
+                if (no_color)
                 {
                     title=mpvc_ytquery($0)
                     printf("%2d  %s\n", lid, title)
@@ -903,8 +903,8 @@ main() {
             -Q|--vid=no)                     MPVOPTIONS="$MPVOPTIONS --vid=no"; ;;
             --image)                         IMAGEFLAG=true;                ;;
             -q|--quiet)                      QUIETFLAG=true;                ;;
-            --mono|mono)                     COLOURFLAG=nocolour;           ;;
-            --colour|colour)                 COLOURFLAG=colour;             ;;
+            --color|color)                   unset NO_COLOR                 ;;
+            --nocolor|nocolor)               NO_COLOR=true                  ;;
             --version|version)               mpvc_get_version; exit 0;      ;;
             --list-options)                  usage; exit 0;                 ;;
             -h|--help|h|help)                usage; exit 0;                 ;;
