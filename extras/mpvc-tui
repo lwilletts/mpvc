@@ -58,8 +58,7 @@ mpvctui_config()
     mkdir -p "$(dirname "$MPVC_CONFIG")"
     touch "$MPVC_HISTORY"
     # if present load user config
-    if [ -r "$MPVC_CONFIG" ];
-    then
+    if [ -r "$MPVC_CONFIG" ]; then
         . "$MPVC_CONFIG"
     fi
     if ! quiet command -v rlwrap; then
@@ -90,7 +89,12 @@ mpvctui_headerc()
     do
         hdr="$hdr$char"
     done
-    printf "${ccolor}${hdr}${MPVC_CRST}\n"
+
+    if [ -n "$NO_COLOR" ]; then
+        printf "%s" "${hdr}\n"
+    else
+        printf "%s" "${ccolor}${hdr}${MPVC_CRST}\n"
+    fi
 }
 
 mpvctui_header0() { mpvctui_headerc '═' '[' ']' "$MPVC_COLOR0" " * $* "; }
