@@ -160,6 +160,52 @@ mpvctui_watch()
     done
 }
 
+mpvctui_mouse()
+{
+    #stty -echo
+    stty -icanon
+    echo "\e[?1002h"
+
+    # f: 1b5b 4d20 2623 0a
+    #       |    |    |
+    #       |    |    +----- coord TL 2121 - BR 7b3a: (33,33) - (123,58): (90,25)
+    #       |    +---------- btn press 4020 release 4d23
+    #       +--------------- tag for mouse event?
+
+    mpvc_buttons="M < = > [ ] { }"
+    clear
+    echo "$mpvc_buttons"
+    while line=$(xxd -l 6 -g 2 -p);
+    do
+        case "$line" in
+        1b5b4d20*) # btn1 press
+            coords=${line##1b5b4d20}
+            coordx=${coords%%??}
+            coordy=${coords##??}
+
+            posx=$((0x${coordx} - 0x21))
+            posy=$((0x${coordy} - 0x21))
+            #echo "posxy $posx/$(tput cols) $posy/$(tput lines)"
+            case "$posx,$posy" in
+                0,0) mpvc -q --mute;;
+                2,0) mpvc -q prev;;
+                4,0) mpvc -q toggle;;
+                6,0) mpvc -q next;;
+                8,0) mpvc-chapter prev;;
+               10,0) mpvc-chapter next;;
+               12,0) mpvc -q vol -10;;
+               14,0) mpvc -q vol +10;;
+            esac
+        ;;
+        1b5b4d23*) # btn1 release
+        ;;
+        esac
+
+        clear
+        echo "$mpvc_buttons"
+    done
+}
+
 mpvctui_notify()
 {
     # $MPVC_SCROBBLER: scrobbling file contains one entry per line with tab-separated fields
@@ -232,7 +278,7 @@ mpvctui_main()
                   ( sleep 1 && pgrep -f "$PROGNAME -n" || setsid "$0" -n ) &
                   mpvctui_watch
                   ;;
-        m) shift; mpvctui_notify "$OPTARG" ;;
+        m) shift; mpvctui_mouse "$OPTARG" ;;
         n) shift; mpvc idleloop | mpvctui_notify ;;
         N) shift; mpvc idleloop | mpvctui_notify "$OPTARG" ;;
         s) shift; mpvctui_suggest ;;
