@@ -144,6 +144,11 @@ chapter_set()
     mpvc sets "chapter" "$1"
 }
 
+chapter_replay()
+{
+    chapter_set "$(mpvc gets chapter)"
+}
+
 chapter_search()
 {
     chapter_list | awk '/'$@'/ {print NR-1; exit}'
@@ -171,6 +176,7 @@ usage()
     echo "  load      : Load current ffmetadata chapter-file"
     echo "  add       : Add new chapter to current ffmetadata chapter-file"
     echo "  play      : Play the given chapter number (property chapter)"
+    echo "  replay    : Replay the current chapter number (property chapter)"
     echo "  next      : Jump to next chapter (property chapter)"
     echo "  prev      : Jump to prev chapter (property chapter)"
     echo "  search    : Search the chapterlist."
@@ -197,6 +203,7 @@ main()
     next)   shift; chapter_next "$@";;
     prev)   shift; chapter_prev "$@";;
     play)   shift; chapter_set "$@";;
+    replay) shift; chapter_replay "$@";;
     status) shift; chapter_status "$@";;
     help) usage;;
     *) usage;;
