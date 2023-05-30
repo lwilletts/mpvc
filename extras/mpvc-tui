@@ -162,6 +162,25 @@ mpvctui_watch()
 
 mpvctui_mouse()
 {
+    clear
+    mpvctui_mouse_buttons
+    while mpvctui_mouse_events
+    do
+        clear
+        mpvctui_mouse_buttons
+    done
+}
+mpvctui_mouse_buttons()
+{
+    # groups: flags play chapter seek volume
+    mpvc_buttons="MRS <=> [#] {%} (=)"
+    printf "%s" "$mpvc_buttons"
+}
+
+mpvctui_mouse_events()
+{
+    # check if $TERM supports mouse
+
     #stty -echo
     stty -icanon
     echo "\e[?1002h"
@@ -172,43 +191,41 @@ mpvctui_mouse()
     #       |    +---------- btn press 4020 release 4d23
     #       +--------------- tag for mouse event?
 
-    mpvc_buttons="M < = > [ # ] { % } - = +"
-    clear
-    echo "$mpvc_buttons"
-    while line=$(xxd -l 6 -g 2 -p);
-    do
-        case "$line" in
-        1b5b4d20*) # btn1 press
-            coords=${line##1b5b4d20}
-            coordx=${coords%%??}
-            coordy=${coords##??}
+    line=$(xxd -l 6 -g 2 -p)
+    case "$line" in
+    1b5b4d20*) # btn1 press
+        coords=${line##1b5b4d20}
+        coordx=${coords%%??}
+        coordy=${coords##??}
 
-            posx=$((0x${coordx} - 0x21))
-            posy=$((0x${coordy} - 0x21))
-            #echo "posxy $posx/$(tput cols) $posy/$(tput lines)"
-            case "$posx,$posy" in
-                0,0) mpvc -q --mute;;
-                2,0) mpvc -q prev;;
-                4,0) mpvc -q toggle;;
-                6,0) mpvc -q next;;
-                8,0) mpvc-chapter prev;;
-               10,0) mpvc-chapter replay;;
-               12,0) mpvc-chapter next;;
-               14,0) mpvc -q seek -30;;
-               16,0) mpvc -q time 0;;
-               18,0) mpvc -q seek +60;;
-               20,0) mpvc -q vol -10;;
-               22,0) mpvc -q vol 70;;
-               24,0) mpvc -q vol +10;;
-            esac
-        ;;
-        1b5b4d23*) # btn1 release
-        ;;
+        posx=$((0x${coordx} - 0x21))
+        posy=$((0x${coordy} - 0x21))
+        #echo "posxy $posx/$(tput cols) $posy/$(tput lines)"
+        case "$posx,$posy" in
+            0,0) mpvc -q --mute;;
+            1,0) mpvc -q repeat;;
+            2,0) mpvc -q single;;
+
+            4,0) mpvc -q prev;;
+            5,0) mpvc -q toggle;;
+            6,0) mpvc -q next;;
+
+            8,0) mpvc-chapter prev;;
+            9,0) mpvc-chapter replay;;
+           10,0) mpvc-chapter next;;
+
+           12,0) mpvc -q seek -30;;
+           13,0) mpvc -q time 0;;
+           14,0) mpvc -q seek +60;;
+
+           16,0) mpvc -q vol -10;;
+           17,0) mpvc -q vol 70;;
+           18,0) mpvc -q vol +10;;
         esac
-
-        clear
-        echo "$mpvc_buttons"
-    done
+    ;;
+    1b5b4d23*) # btn1 release
+    ;;
+    esac
 }
 
 mpvctui_notify()
