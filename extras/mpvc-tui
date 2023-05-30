@@ -183,7 +183,7 @@ mpvctui_mouse_events()
 
     #stty -echo
     stty -icanon
-    echo "\e[?1002h"
+    printf "\e[?1002h"
 
     # f: 1b5b 4d20 2623 0a
     #       |    |    |
