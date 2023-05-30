@@ -21,7 +21,7 @@ chapter_file()
 }
 
 # generate a ffmpeg metadata file with chapters
-# loadable with: mpvc sets chapters-file chapters.txt
+# loadable with: mpvc set chapters-file chapters.txt
 chapter_add()
 {
     chaptersfile=$(chapter_file)
@@ -72,17 +72,17 @@ chapter_load()
 {
     track=$(mpvc gets playlist-pos)
     timepos=$(mpvc gets time-pos)
-    mpvc sets chapters-file "$(chapter_file)"
-    mpvc play "$track" delay sets time-pos "$timepos"
+    mpvc set chapters-file "$(chapter_file)"
+    mpvc play "$track" delay set time-pos "$timepos"
 }
 
 chapter_info()
 {
-    echo "mpvc sets chapter $(mpvc gets chapter)"
-    echo "mpvc sets chapters $(mpvc gets chapters)"
-    echo "mpvc sets ordered-chapters $(mpvc gets ordered-chapters)"
-    echo "mpvc sets ordered-chapters-files $(mpvc gets ordered-chapters-files)"
-    echo "mpvc sets chapters-file $(mpvc gets chapters-file)"
+    echo "mpvc set chapter $(mpvc gets chapter)"
+    echo "mpvc set chapters $(mpvc gets chapters)"
+    echo "mpvc set ordered-chapters $(mpvc gets ordered-chapters)"
+    echo "mpvc set ordered-chapters-files $(mpvc gets ordered-chapters-files)"
+    echo "mpvc set chapters-file $(mpvc gets chapters-file)"
 }
 
 chapter_list_json()
@@ -111,8 +111,8 @@ chapter_list()
                 }
                 else
                 {
-                    if (numbered) printf("%2d  [7m%s[0m\n", chapternr, $0);
-                    else printf("[7m%s[0m\n", $0);
+                    if (numbered) printf("%2d  \033[7m%s\033[0m\n", chapternr, $0);
+                    else printf("\033[7m%s\033[0m\n", $0);
                 }
             }
             else
@@ -141,7 +141,7 @@ chapter_set()
 {
     chapters=$(mpvc get chapters)
     [ "$chapters" -eq 0 ] && return
-    mpvc sets "chapter" "$1"
+    mpvc set "chapter" "$1"
 }
 
 chapter_replay()
@@ -158,7 +158,7 @@ chapter_search_play()
 {
     chapter=$(chapter_search "$@")
     [ -z "$chapter" ] && return
-    mpvc sets "chapter" "$chapter"
+    mpvc set "chapter" "$chapter"
 }
 
 chapter_status()
