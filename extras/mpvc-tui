@@ -173,7 +173,11 @@ mpvctui_mouse()
 mpvctui_mouse_buttons()
 {
     # groups: flags play chapter seek volume
-    mpvc_buttons="MRS <=> [#] {%} (=)"
+    mpvc_button_mute=$( [ "$(mpvc get mute)" = "true" ] && echo M || echo m)
+    mpvc_button_repeat=$( [ "$(mpvc get loop-playlist)" = "inf" ] && echo R || echo r)
+    mpvc_button_single=$( [ "$(mpvc get loop-file)" = "true" ] && echo S || echo s)
+    mpvc_button_pause=$( [ "$(mpvc get pause)" = "true" ] && echo P || echo p)
+    mpvc_buttons="${mpvc_button_mute}${mpvc_button_repeat}${mpvc_button_single} <${mpvc_button_pause}> [#] {%} (=)"
     printf "%s" "$mpvc_buttons"
 }
 
