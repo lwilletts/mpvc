@@ -177,7 +177,7 @@ mpvctui_mouse_buttons()
     mpvc_button_repeat=$( [ "$(mpvc get loop-playlist)" = "inf" ] && echo R || echo r)
     mpvc_button_single=$( [ "$(mpvc get loop-file)" = "true" ] && echo S || echo s)
     mpvc_button_pause=$( [ "$(mpvc get pause)" = "true" ] && echo P || echo p)
-    mpvc_buttons="${mpvc_button_mute}${mpvc_button_repeat}${mpvc_button_single} <${mpvc_button_pause}> [#] {%} (=)"
+    mpvc_buttons="${mpvc_button_mute}${mpvc_button_repeat}${mpvc_button_single}${mpvc_button_pause} <-> [#] {%} (=)"
     printf "%s" "$mpvc_buttons"
 }
 
@@ -209,18 +209,19 @@ mpvctui_mouse_events()
             0,0) mpvc -q --mute;;
             1,0) mpvc -q repeat;;
             2,0) mpvc -q single;;
+            3,0) mpvc -q toggle;;
 
-            4,0) mpvc -q prev;;
-            5,0) mpvc -q toggle;;
-            6,0) mpvc -q next;;
+            5,0) mpvc -q prev;;
+            6,0) mpvc -q play "$(mpvc get playlist-pos)";;
+            7,0) mpvc -q next;;
 
-            8,0) mpvc-chapter prev;;
-            9,0) mpvc-chapter replay;;
-           10,0) mpvc-chapter next;;
+            9,0) mpvc-chapter prev;;
+           10,0) mpvc-chapter replay;;
+           11,0) mpvc-chapter next;;
 
-           12,0) mpvc -q seek -30;;
-           13,0) mpvc -q time 0;;
-           14,0) mpvc -q seek +60;;
+           13,0) mpvc -q seek -30;;
+           14,0) mpvc -q time 0;;
+           15,0) mpvc -q seek +60;;
 
            16,0) mpvc -q vol -10;;
            17,0) mpvc -q vol 70;;
