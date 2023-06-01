@@ -223,9 +223,9 @@ mpvctui_mouse_events()
            14,0) mpvc -q time 0;;
            15,0) mpvc -q seek +60;;
 
-           16,0) mpvc -q vol -10;;
-           17,0) mpvc -q vol 70;;
-           18,0) mpvc -q vol +10;;
+           17,0) mpvc -q vol -10;;
+           18,0) mpvc -q vol 70;;
+           19,0) mpvc -q vol +10;;
         esac
     ;;
     1b5b4d23*) # btn1 release
