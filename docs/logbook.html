@@ -307,8 +307,10 @@ An example of the `mpvc-equalizer` to set equalizer values for classical music:
 
 <h3 id="logbook-20230602">On applying ffmpeg AV filters using the MPV JSON IPC, 2 June 2023</h3>
 <p>
-Continuing with whats covered in the previous post about mpvc-equalizer, one reason for starting mpvc, to ease was to managing audio from the CLI. In that sense mpv integrates well with ffmpeg to apply AV filters. However you've to, either start mpv specifying the ffmpeg cli flags for the AV-filters, or add keyboard shortcuts into the input.conf to be triggedred during runtime.
+Continuing with the topic of the previous post about mpvc-equalizer, one reason for starting mpvc, was to ease was to managing audio from the CLI. In that sense mpv integrates well with ffmpeg to apply AV filters. However you've to, either start mpv specifying the ffmpeg cli flags for the AV-filters, or add keyboard shortcuts into the input.conf to be triggedred during runtime.
+</p>
 
+<p>
 Instead of that, for quickly testing combinations of filters, I was looking for something more CLI oriented: apply the filters using the MPV JSON IPC. That's what happens under the hood when a command `mpvc cmdr af ...` runs, for example:
 
 <pre>
