@@ -43,7 +43,7 @@ mpvctui_defaults()
     MPVC_TERM=xterm
     MPVC_TIPS=true
     MPVC_SHELL=$(readlink -f /proc/$$/exe)
-    export MPVC_CLINE=11
+    export MPVC_CLINE=12
 }
 
 # Load user config
