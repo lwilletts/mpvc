@@ -97,7 +97,7 @@ mpvctui_headerc()
     fi
 }
 
-mpvctui_header0() { mpvctui_headerc '═' '[' ']' "$MPVC_COLOR0" " * $* "; }
+mpvctui_header0() { mpvctui_headerc '═' '[' ']' "$MPVC_COLOR0" " + $* "; }
 mpvctui_header1() { mpvctui_headerc '─' '[' ']' "$MPVC_COLOR1" " + $* "; }
 mpvctui_header2() { mpvctui_headerc '─' '[' ']' "$MPVC_COLOR2" " + $* "; }
 
@@ -107,8 +107,8 @@ mpvctui_tips()
     tip=$(( count % 80 ))
     case $tip in
     0|1|2)    echo ": type control+c to enter prompt";;
-    10|11|12) echo ": check more tips at $PROGURL!";;
-    20|21|22) echo ": check more tips at $SITEURL!";;
+    10|11|12) echo ": Check $PROGURL";;
+    20|21|22) echo ": Check $SITEURL";;
     30|31|32) echo ": customize theme at ${MPVC_CONFIG##$HOME/}";;
     40|41|42) echo ": launch from WM with: $PROGNAME -x";;
     50|51|52) echo ": version $PROGNAME $PROGVERSION at $PROGURL";;
@@ -118,7 +118,7 @@ mpvctui_tips()
 
 mpvctui_watcher()
 {
-    mpvctui_header0 "Running ${PROGNAME%%.sh}$(mpvctui_tips)"
+    mpvctui_header0 "${PROGNAME%%.sh}$(mpvctui_tips)"
     mpvctui_header1 "Status"
     mpvc status
     mpvctui_header1 "Playlist"
