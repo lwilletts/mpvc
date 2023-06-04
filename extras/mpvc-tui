@@ -43,7 +43,7 @@ mpvctui_defaults()
     MPVC_TERM=xterm
     MPVC_TIPS=true
     MPVC_SHELL=$(readlink -f /proc/$$/exe)
-    export MPVC_CLINE=12
+    export MPVC_CLINE=11
 }
 
 # Load user config
@@ -91,9 +91,9 @@ mpvctui_headerc()
     done
 
     if [ -n "$NO_COLOR" ]; then
-        printf "%s" "${hdr}\n"
+        printf "%s" "${hdr}"
     else
-        printf "%s" "${ccolor}${hdr}${MPVC_CRST}\n"
+        printf "%s" "${ccolor}${hdr}${MPVC_CRST}"
     fi
 }
 
@@ -308,7 +308,7 @@ mpvctui_main()
         T) shift;
                   mpvc -q --mpv &
                   ( sleep 2 && [ -n "$1" ] && mpvc --append "$@" )
-                  ( sleep 1 && pgrep -f "$PROGNAME -n" || setsid "$0" -n ) &
+                  ( sleep 1; pgrep -f "$PROGNAME -n" || setsid "$0" -n ) &
                   mpvctui_watch
                   ;;
         m) shift; mpvctui_mouse "$OPTARG" ;;
