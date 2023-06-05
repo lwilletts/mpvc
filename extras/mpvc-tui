@@ -109,10 +109,10 @@ mpvctui_tips()
     0|1|2)    echo ": type control+c to enter prompt";;
     10|11|12) echo ": Check $PROGURL";;
     20|21|22) echo ": Check $SITEURL";;
-    30|31|32) echo ": customize theme at ${MPVC_CONFIG##$HOME/}";;
-    40|41|42) echo ": launch from WM with: $PROGNAME -x";;
+    30|31|32) echo ": Config at ${MPVC_CONFIG##$HOME/}";;
+    40|41|42) echo ": Launch from WM with: $PROGNAME -x";;
     50|51|52) echo ": version $PROGNAME $PROGVERSION at $PROGURL";;
-    60|61|62) echo ": update $MPVC_UPDATEC secs refresh $((count % MPVC_CLEARC))/$MPVC_CLEARC";;
+    60|61|62) echo ": Update $MPVC_UPDATEC secs refresh $((count % MPVC_CLEARC))/$MPVC_CLEARC";;
     esac
 }
 
