@@ -396,12 +396,12 @@ mpvc_stash() {
             ;;
         apply) # if no stash given, default to stdin
             if [ -z "$1" ]; then
-                mpvc_stash current_apply
+                mpvc_stash apply_current
             else
-                mpvc_stash current_apply < "$MPVC_STASH_DIR/$1"
+                mpvc_stash apply_current < "$MPVC_STASH_DIR/$1"
             fi
             ;;
-        current_apply)
+        apply_current)
             while read -r line
             do
                 case "$line" in
