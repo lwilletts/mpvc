@@ -62,7 +62,9 @@ mpvctui_fzf_preview()
 
 mpvctui_fzf_isearch()
 {
-    url_search="https://yewtu.be/search?q=$(for f in $@; do printf "%s+" "$f"; done)"
+    url_sort="sort=relevance" # relevance views date
+    url_query="q=$(for f in $@; do printf "%s+" "$f"; done)"
+    url_search="https://yewtu.be/search?$url_query&$url_sort"
 
     echo "$url_search"
     curl -fsSL -A 'Mozilla/5.0' "$url_search&page=1" "$url_search&page=2" |
