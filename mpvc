@@ -164,6 +164,7 @@ mpvc_curl_cache()
 
 mpvc_curl_cache_json()
 {
+    # query invidi.us API TBD
     mpvc_curl_cache -sL "https://youtube.com/oembed?url=$1"
 }
 
