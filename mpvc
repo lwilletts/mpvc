@@ -788,7 +788,7 @@ main() {
     -c|--crop|crop|-C|--clear|clear|cmd|sockcmd|socklist|--socklist) ;;
     -a|add|append|-A|playnext|--playnext|mpv|--mpv|stash|--stash|--toggle|toggle|-q|--quiet) ;;
     load|--load|autoload|--autoload|lsplaylists|--lsplaylists|dbinit|--dbinit|dblist|--dblist) ;;
-    version|--version-Q|--vid=no|-S) ;;
+    version|--version|-Q|--vid=no|-S) ;;
     help|--help|-h|long-help|--long-help|-H|--list-options) ;;
     *) mpvc_validate_socket;; # otherwise, validate socket
     esac
