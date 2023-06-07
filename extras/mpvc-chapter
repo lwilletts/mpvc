@@ -25,7 +25,7 @@ chapter_file()
 chapter_add()
 {
     chaptersfile=$(chapter_file)
-    
+
     path=$(mpvc get path)
     timepos=$(mpvc get time-pos)
     percentpos=$(mpvc get percent-pos)
@@ -41,16 +41,16 @@ title=$mediatitle
 #percent-pos=0
 [CHAPTER]
 TIMEBASE=1/1
-START=0
-END=$timepos
-title=chapter_0
+START= 0
+END= $timepos
+title= 0 $@
 EOF
 
     fi
 
-    start_time=$(awk -F'=' 'BEGIN{s=0} /^END=[0-9]+/ {s=$2} END{print s}' "$chaptersfile")
+    start_time=$(awk 'BEGIN{s=0} /^END= [0-9]+/ {s=$2} END{print s}' "$chaptersfile")
     end_time=$timepos
-    last_chapter=$(awk -F'=' 'BEGIN{s=0} /^title=chapter_[0-9]+/ {s=$2} END{print s}' "$chaptersfile")
+    chapter=$(awk 'BEGIN{s=0} /^title= [0-9]+/ {s=$2} END{print ++s}' "$chaptersfile")
 
     if [ -n "$1" ]
     then
@@ -59,13 +59,13 @@ EOF
 #percent-pos=$percentpos
 [CHAPTER]
 TIMEBASE=1/1
-START=$start_time
-END=$end_time
-title=$last_chapter $@
+START= $start_time
+END= $end_time
+title= $chapter $@
 EOF
     fi
 
-    cat "$chaptersfile"
+    #cat "$chaptersfile"
 }
 
 chapter_load()
