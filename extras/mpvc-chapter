@@ -70,10 +70,11 @@ EOF
 
 chapter_load()
 {
-    track=$(mpvc gets playlist-pos)
-    timepos=$(mpvc gets time-pos)
+    track=$(mpvc get playlist-pos)
+    timepos=$(mpvc get time-pos)
     mpvc set chapters-file "$(chapter_file)"
-    mpvc play "$track" delay set time-pos "$timepos"
+    mpvc play "$track"
+    mpvc delay set time-pos "$timepos"
 }
 
 chapter_info()
