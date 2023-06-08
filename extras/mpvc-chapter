@@ -191,9 +191,9 @@ main()
 
     case "$1" in
 
-    -i | list)   shift; chapter_list "numbered" "$@";;
-    -I | listnum)shift; chapter_list "numbered" "$@";;
-    -C | search) shift; chapter_search "$@";;
+    -i | list)       shift; chapter_list "numbered" "$@";;
+    -I | listnum)    shift; chapter_list "numbered" "$@";;
+    -c | search)     shift; chapter_search "$@";;
     -C | searchplay) shift; chapter_search_play "$@";;
 
     json)   shift; chapter_list_json "$@";;
