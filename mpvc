@@ -859,6 +859,7 @@ main() {
             --togglec|togglec)               shift; mpvc_cycle "cache" ;;
             --togglev|togglev)               shift; mpvc_cycle "video" ;;
             --togglew|togglew)               shift; mpvc_cycle "force-window" ;;
+            --togglei|togglei)               shift; mpvc_cycle "idle" ;;
             --idleloop|idleloop)             shift; mpvc_idleloop "$1"; QUIETFLAG=true ;;
             --cmd|cmd)                       shift; mpvc_cmd "$@"; return ;;
             --cmdr|cmdr)                     shift; mpvc_cmdr "$@"; return ;;
