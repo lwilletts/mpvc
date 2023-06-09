@@ -68,6 +68,7 @@ EOF
     togglec             : Toggle MPV cache property.
     togglev             : Toggle MPV video property.
     togglew             : Toggle MPV window property.
+    togglei             : Toggle MPV idle property.
     cycle               : Toggle/Cycle through MPV property values.
     idleloop            : Listen to MPV player events on $PROGNAME socket.
     search              : Search the playlist by filename/url.
