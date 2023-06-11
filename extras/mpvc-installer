@@ -15,7 +15,7 @@ PROGURL="https://github.com/gmt4/mpvc"
 PREFIX="${PREFIX:-/usr/local}"
 BINDIR="${BINDIR:-$PREFIX/bin}"
 
-SCRIPT="mpvc extras/mpvc-tui extras/mpvc-fzf extras/mpvc-chapter extras/mpvc-equalizer extras/mpvc-installer"
+SCRIPT="mpvc extras/mpvc-tui extras/mpvc-fzf extras/mpvc-chapter extras/mpvc-mpris extras/mpvc-equalizer extras/mpvc-installer"
 
 mpvc_fetch()
 {
