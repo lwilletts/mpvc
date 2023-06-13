@@ -149,7 +149,7 @@ chapter_prev()
 chapter_set()
 {
     chapters=$(mpvc get chapters)
-    [ "$chapters" -eq 0 ] && return
+    if [ "$chapters" -eq 0 ]; then return; fi
     mpvc set "chapter" "$1"
 }
 
@@ -166,7 +166,7 @@ chapter_search()
 chapter_search_play()
 {
     chapter=$(chapter_search "$@")
-    [ -z "$chapter" ] && return
+    if [ -z "$chapter" ]; then return; fi
     mpvc set "chapter" "$chapter"
 }
 
@@ -196,7 +196,7 @@ usage()
 main()
 {
     chapter_defaults
-    [ $# -lt 1 ] && usage
+    if [ $# -lt 1 ]; then usage; fi
 
     case "$1" in
 
