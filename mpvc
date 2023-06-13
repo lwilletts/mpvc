@@ -12,7 +12,7 @@ PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
 SITEURL="https://gmt4.github.io/mpvc"
 
-#set -euf
+#set -euf # TBD
 
 usage() {
     cat >&2 << EOF
@@ -921,7 +921,7 @@ main() {
             -H|--long-help|long-help)        usage "$@"; exit 0;            ;;
             -?)                              usage; exit 1;                 ;;
         esac
-        [ -n "$1" ] && shift
+        if [ -n "$1" ]; then shift; fi
     done
     # produce format strings last
     quietcheck mpvc_print_status_final
