@@ -178,13 +178,13 @@ mpvctui_mouse()
 mpvctui_mouse_buttons()
 {
     # groups: flags play chapter seek volume
-    mpvc_button_mute=$( [ "$(mpvc get mute)" = "true" ] && echo M || echo m)
-    mpvc_button_pause=$( [ "$(mpvc get pause)" = "true" ] && echo P || echo p)
-    mpvc_button_video=$( [ "$(mpvc get video)" = "true" ] && echo V || echo v)
-    mpvc_button_cache=$( [ "$(mpvc get cache)" = "true" ] && echo C || echo c)
-    mpvc_button_repeat=$( [ "$(mpvc get loop-playlist)" = "inf" ] && echo R || echo r)
-    mpvc_button_single=$( [ "$(mpvc get loop-file)" = "true" ] && echo S || echo s)
-    mpvc_button_idle=$( [ "$(mpvc get idle)" = "true" ] && echo I || echo i)
+    mpvc_button_mute=$( if [ "$(mpvc get mute)" = "true" ]; then echo M; else echo m; fi )
+    mpvc_button_pause=$( if [ "$(mpvc get pause)" = "true" ]; then echo P; else echo p; fi )
+    mpvc_button_video=$( if [ "$(mpvc get video)" = "true" ]; then echo V; else echo v; fi )
+    mpvc_button_cache=$( if [ "$(mpvc get cache)" = "true" ]; then echo C; else echo c; fi )
+    mpvc_button_repeat=$( if [ "$(mpvc get loop-playlist)" = "inf" ]; then echo R; else echo r; fi)
+    mpvc_button_single=$( if [ "$(mpvc get loop-file)" = "true" ]; then echo S; else  echo s; fi)
+    mpvc_button_idle=$( if [ "$(mpvc get idle)" = "true" ]; then echo I; else  echo i; fi )
     mpvc_buttons="${mpvc_button_mute}${mpvc_button_pause}${mpvc_button_video}${mpvc_button_cache}${mpvc_button_repeat}${mpvc_button_single}${mpvc_button_idle} <-> [#] {%} (=)"
     printf "%s" "$mpvc_buttons"
 }
