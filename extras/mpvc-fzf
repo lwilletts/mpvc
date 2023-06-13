@@ -99,7 +99,7 @@ mpvctui_fzf_icache()
     if [ -z "$ytdl_json" -o ! -r "$ytdl_archive" -o ! -d "$ytdl_dir" ]
     then
         mpvctui_warn "$PROGNAME: Error not using cache"
-        cat && return
+        if cat; then return; fi
     fi
 
     while read -r line
@@ -117,7 +117,7 @@ mpvctui_fzf_icache()
 
 mpvctui_fzf_fetch()
 {
-    [ $# -lt 1 ] && mpvctui_usage
+    if [ $# -lt 1 ]; then mpvctui_usage; fi
     ytdl_opts=""
     ytdlp=$(command -v youtube-dl || command -v yt-dlp)
     if [ ! -x "$ytdlp" ]; then
@@ -159,7 +159,7 @@ mpvctui_fzf_local()
 mpvctui_fzf_playlist()
 {
     len=$(mpvc gets playlist-count)
-    ( [ -z "$len" ] && echo || mpvc fullplaylist) |
+    ( if [ -z "$len" ]; then echo; else mpvc fullplaylist; fi) |
         mpvctui_fzf_preview --prompt="(playlist) "
 }
 
@@ -224,7 +224,7 @@ mpvctui_usage()
 main()
 {
     mpvctui_config
-    [ $# -lt 1 ] && mpvctui_usage
+    if [ $# -lt 1 ]; then mpvctui_usage; fi
 
     while getopts "$optflags" flag;
     do
@@ -244,7 +244,7 @@ main()
         p) mpvctui_fzf_iplay "$OPTARG" | mpvc load ;;
         P) mpvctui_fzf_iplay "$OPTARG" | mpvc loadc ;;
         s) mpvctui_fzf_isearch "$OPTARG";;
-        x) shift; quiet command -v $MPVC_TERM && $MPVC_TERM -e "$0" "$@"; exit;;
+        x) shift; if quiet command -v $MPVC_TERM; then $MPVC_TERM -e "$0" "$@"; fi; exit;;
         v) mpvctui_version;;
         *) mpvctui_usage;;
         esac
