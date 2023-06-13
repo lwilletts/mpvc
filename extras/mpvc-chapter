@@ -11,6 +11,14 @@ PROGVERSION="v1.4"
 PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
 
+set -euf
+
+chapter_defaults()
+{
+    # config defaults
+    NO_COLOR="${NO_COLOR:-}"
+}
+
 # See https://ffmpeg.org/ffmpeg-formats.html#Metadata-1
 chapter_file()
 {
@@ -187,6 +195,7 @@ usage()
 
 main()
 {
+    chapter_defaults
     [ $# -lt 1 ] && usage
 
     case "$1" in
