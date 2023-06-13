@@ -15,7 +15,7 @@ PROGURL="https://github.com/gmt4/mpvc"
 DBUS=$(command -v dbus-send)
 playerPath=org.mpris.MediaPlayer2.Player
 
-MPVC_MPRIS_PLAYERS=${MPVC_MPRIS_PLAYERS:-"mpv mpd vlc ."}
+MPVC_MPRIS_PLAYERS=${MPVC_MPRIS_PLAYERS:-"mpv mpd vlc"}
 
 set -euf
 
@@ -81,7 +81,7 @@ mpris_set_shuffle()
 mpris_detect_player()
 {
     name=""
-    for name in $MPVC_MPRIS_PLAYERS;
+    for name in $MPVC_MPRIS_PLAYERS "";
     do
         mpris_name="$name"
         if mpris_get string:PlaybackStatus >/dev/null 2>&1;
@@ -105,7 +105,7 @@ main()
     if [ -z "$DBUS" ]; then usage "$PROGNAME: no dbus-send found"; fi
 
     mpris_name=$(mpris_detect_player)
-    if [ "${#mpris_name}" -le 1 ]; then usage "$PROGNAME: No player found that speaks MPRIS"; fi
+    if [ -z "${mpris_name}" ]; then usage "$PROGNAME: No player found that speaks MPRIS"; fi
 
     cmd="$1"
     case "$cmd" in
