@@ -88,7 +88,7 @@ mpvctui_headerc()
     hdr="${char}${char}${cstart}$*${cend}"
     rem=$(( cols - ${#hdr} ))
     # when SHELL=/bin/dash, ${#hdr} is 4 chars smaller
-    [ "$MPVC_SHELL" = "/bin/dash" ] && rem=$(( rem + 4 ))
+    if [ "$MPVC_SHELL" = "/bin/dash" ]; then rem=$(( rem + 4 )); fi
     for _ in $(seq 1 $rem)
     do
         hdr="$hdr$char"
@@ -107,7 +107,7 @@ mpvctui_header2() { mpvctui_headerc '─' '[' ']' "$MPVC_COLOR2" " + $* "; }
 
 mpvctui_tips()
 {
-    [ "$MPVC_TIPS" = "false" ] && return
+    if [ "$MPVC_TIPS" = "false" ]; then return; fi
     tip=$(( count % 80 ))
     case $tip in
     0|1|2)    echo ": type control+c to enter prompt";;
@@ -157,7 +157,7 @@ mpvctui_watch()
     while :
     do
         output=$(mpvctui_watcher 2>&1)
-        [ $(( count % MPVC_CLEARC )) -eq 0 ] && tput clear
+        if [ $(( count % MPVC_CLEARC )) -eq 0 ]; then tput clear; fi
         tput cup 0 0
         echo "$output"
         count=$(( count + 1 ))
@@ -303,7 +303,8 @@ optflags="d:htTm:nN:sP:x"
 mpvctui_main()
 {
     mpvctui_config
-    [ $# -eq 0 ] && mpvctui_usage
+    if [ $# -eq 0 ]; then mpvctui_usage; fi
+
     while getopts "$optflags" flag;
     do
         case "$flag" in
@@ -312,7 +313,7 @@ mpvctui_main()
         t) shift; mpvctui_watch ;;
         T) shift;
                   mpvc -q --mpv &
-                  ( sleep 2 && [ -n "$1" ] && mpvc --append "$@" )
+                  ( sleep 2 && if [ "$#" -gt 0 ]; then mpvc --append "$@"; fi )
                   ( sleep 1; pgrep -f "$PROGNAME -n" || setsid "$0" -n ) &
                   mpvctui_watch
                   ;;
@@ -320,7 +321,7 @@ mpvctui_main()
         n) shift; mpvc idleloop | mpvctui_notify ;;
         N) shift; mpvc idleloop | mpvctui_notify "$OPTARG" ;;
         s) shift; mpvctui_suggest ;;
-        x) shift; quiet command -v $MPVC_TERM && $MPVC_TERM -e "$0" "$@"; exit;;
+        x) shift; if quiet command -v $MPVC_TERM; then $MPVC_TERM -e "$0" "$@"; fi; exit;;
         *) mpvctui_usage;;
         esac
     done
