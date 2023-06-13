@@ -125,7 +125,7 @@ mpvc_bar_line()
 
 mpvc_bars()
 {
-    [ -z "$(mpvc_values)" ] && usage
+    if [ -z "$(mpvc_values)" ]; then usage; fi
     printf "# Linear Phase 15-Bands Equalizer\n"
     freq_table="0\n65\n157\n288\n472\n733\n1k1\n1k6\n2k4\n3k4\n4k9\n7k0\n10k\n14k\n20k\n"
     gain_table="$(mpvc_values | sed '/^$/d')"
@@ -154,7 +154,7 @@ usage()
 
 main()
 {
-    [ $# -lt 1 ] && usage
+    if [ $# -lt 1 ]; then usage; fi
 
     case "$1" in
     save)  mpvc_save;;
