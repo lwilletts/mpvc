@@ -12,7 +12,7 @@ PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
 SITEURL="https://gmt4.github.io/mpvc"
 
-set -euf
+set -uf # -euf # TBD
 
 equiet() { "$@" 2> /dev/null; }
 oquiet() { "$@" 1> /dev/null; }
