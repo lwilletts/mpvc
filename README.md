@@ -14,6 +14,8 @@ Check the [Wiki](https://github.com/gmt4/mpvc/wiki) & [Casts](https://gmt4.githu
 
 ## QuickInstall ▶️
 
+mpvc-installer fetch-user: installs mpvc under BINDIR=~/bin/
+
 `curl -fsSL -o mpvc-installer https://github.com/gmt4/mpvc/raw/master/extras/mpvc-installer && sh ./mpvc-installer fetch-user`
 
 ## QuickStart
