@@ -12,6 +12,8 @@ PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
 SITEURL="https://gmt4.github.io/mpvc"
 
+set -euf
+
 equiet() { "$@" 2> /dev/null; }
 oquiet() { "$@" 1> /dev/null; }
 quiet()  { "$@" > /dev/null 2>&1; }
@@ -35,6 +37,8 @@ mpvctui_defaults()
     MPVC_CRST='\033[0m'
 
     # config defaults
+    NO_COLOR="${NO_COLOR:-}"
+
     MPVC_COLOR0="$MPVC_CGREENL"
     MPVC_COLOR1="$MPVC_CCYAN"
     MPVC_COLOR2="$MPVC_CYELLOW"
@@ -148,6 +152,7 @@ mpvctui_input()
 
 mpvctui_watch()
 {
+    count=0
     trap mpvctui_input INT
     while :
     do
