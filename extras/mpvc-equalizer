@@ -13,6 +13,8 @@ PROGURL="https://github.com/gmt4/mpvc"
 
 MPVC_LABEL="${MPVC_LABEL:-mpvc-equalizer}"
 
+set -euf
+
 mpvc_genfilter()
 {
     awk -v quote="'" -v gain_curr="$*" \
@@ -66,7 +68,8 @@ mpvc_genfilter()
 
 mpvc_presets()
 {
-    case "$1" in
+    cmd=${1:-list}
+    case "$cmd" in
     reset)      echo "0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0";;       # preset: Flat (Default)
     fullbass)   echo "4.8 5.7 5.7 3.3 1.0 -2.4 -4.8 -6.3 -6.7 -6.7";;  # preset: Full Bass
     fulltreble) echo "5.8 -5.8 -5.8 -2.4 1.4 6.7 9.6 9.6 9.6 10.1";;   # preset: Full Treble
@@ -164,7 +167,9 @@ main()
     vals)  mpvc_vals;;
     bars)  mpvc_bars;;
     json)  mpvc_json;;
+
     help)  usage;;
+    *)     usage;;
     esac
 }
 
