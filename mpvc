@@ -12,6 +12,8 @@ PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
 SITEURL="https://gmt4.github.io/mpvc"
 
+#set -euf
+
 usage() {
     cat >&2 << EOF
 usage: $PROGNAME args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
@@ -125,6 +127,10 @@ mpvc_defaults()
     MPVOPTIONS="${MPVOPTIONS:---no-audio-display --no-input-terminal}"
     MPVC_MPV="${MPVC_MPV:-mpv}"
     MPVC_SOCAT="${MPVC_SOCAT:-socat}"
+
+    QUIETFLAG="${QUIETFLAG:-}"
+    FORMATSTRING="${FORMATSTRING:-}"
+
     # print default status of mpv instance
     [ -z "$FORMATSTRING" ] && FORMATSTRING="\
 %artist% - %title% NL\
@@ -240,7 +246,7 @@ mpvc_get_playlist_json() {
     mpvc_cmdr "get_property" "playlist" |
         grep -o '"data":\[.*\]' |
         sed 's/^"data"://; s|{"filename":|\n\t{"filename":|g; /^\[\]$/ !s/]$/\n]/'
-    QUIETFLAG=true
+    QUIETFLAG="true"
 }
 
 mpvc_get_playlist_once() {
@@ -628,7 +634,7 @@ mpvc_search_remove() {
     list=$(mpvc_search "$mode" "$1" | awk '{print $1}' | tac )
     [ -z "$list" ] && warn "$PROGNAME: Searching for $*, nothing found."
     for i in $list; do mpvc_remove_track "$i"; done
-    QUIETFLAG=true
+    QUIETFLAG="true"
 }
 
 mpvc_search_move() {
@@ -637,7 +643,7 @@ mpvc_search_move() {
     list=$(mpvc_search "$mode" "$1" | awk '{print $1}' | tac )
     [ -z "$list" ] && warn "$PROGNAME: Searching for $*, nothing found."
     for i in $list; do mpvc_move_track "$i" "$2"; done
-    QUIETFLAG=true
+    QUIETFLAG="true"
 }
 
 mpvc_shuffle_playlist() {
@@ -784,7 +790,8 @@ mpvc_startmpv() {
 
 main() {
     mpvc_config
-    case "$1" in
+    arg1=${1:-}
+    case "$arg1" in
     ytquery*) ;;
     -k|--kill|kill|-K|--killall|killall) ;;
     -c|--crop|crop|-C|--clear|clear|cmd|sockcmd|socklist|--socklist) ;;
