@@ -4,6 +4,7 @@
 # @description mpvc-mpris speaks MPRIS to interact with media player
 # @author gmt4 <gmt4 at github.com> (c) Copyright 2022 MIT
 # @url github.com/gmt4/mpvc
+#
 
 PROGNAME=${0##*/}
 PROGVERSION="v1.4"
@@ -13,6 +14,10 @@ PROGURL="https://github.com/gmt4/mpvc"
 # globals really
 DBUS=$(command -v dbus-send)
 playerPath=org.mpris.MediaPlayer2.Player
+
+MPVC_MPRIS_PLAYERS="${MPVC_MPRIS_PLAYERS:-"mpv mpd vlc ''"}"
+
+set -euf
 
 mpris_cmd()
 {
@@ -56,12 +61,6 @@ mpris_get_statusbar()
     echo "$basename $cVolume"
 }
 
-mpris_update_statusbar()
-{
-    basename="$(mpris_get_statusbar)"
-    xsetroot -name "$mpris_name $cmd $basename"
-}
-
 mpris_get_status()
 {
     (
@@ -81,7 +80,7 @@ mpris_set_shuffle()
 
 mpris_detect_player()
 {
-    for name in mpv mpd vlc "";
+    for name in $MPVC_MPRIS_PLAYERS;
     do
         mpris_name="$name"
         if mpris_get string:PlaybackStatus >/dev/null 2>&1;
@@ -118,7 +117,6 @@ main()
     stop)      shift; mpris_method Pause ;;
     seek)      shift; mpris_method Seek "int64:$1"; ;;
     status)    shift; mpris_get_status ;;
-    statusbar) shift; mpris_update_statusbar "$mpris_name" ;;
     mute)      shift; mpris_method Mute || pactl set-sink-mute 0 toggle ;;
     vol)       shift; mpris_get_volume ;;
     shuffle)   shift; mpris_set_shuffle "$*" ;;
