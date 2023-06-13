@@ -15,7 +15,7 @@ PROGURL="https://github.com/gmt4/mpvc"
 DBUS=$(command -v dbus-send)
 playerPath=org.mpris.MediaPlayer2.Player
 
-MPVC_MPRIS_PLAYERS="${MPVC_MPRIS_PLAYERS:-"mpv mpd vlc ''"}"
+MPVC_MPRIS_PLAYERS=${MPVC_MPRIS_PLAYERS:-"mpv mpd vlc ."}
 
 set -euf
 
@@ -53,7 +53,7 @@ mpris_set_volume()
 
 mpris_get_statusbar()
 {
-    [ -z "$DISPLAY" ] && exit
+    if [ -z "$DISPLAY" ]; then exit; fi
 
     basename=$($0 "$mpris_name" status |
         awk ' /file:/ { gsub("%20", " "); nf=patsplit($0, f, ":" , s);  np=split(s[1], p, "/"); print p[np] }')
@@ -74,12 +74,13 @@ mpris_set_shuffle()
 {
     current=$(mpris_get string:Shuffle | awk '/^   variant / {print $3}')
     other=true
-    [ "$current" = "true" ] && other=false
+    if [ "$current" = "true" ]; then other=false; fi
     mpris_set string:Shuffle variant:boolean:$other
 }
 
 mpris_detect_player()
 {
+    name=""
     for name in $MPVC_MPRIS_PLAYERS;
     do
         mpris_name="$name"
@@ -93,18 +94,18 @@ mpris_detect_player()
 
 usage()
 {
-    echo "usage: $PROGNAME [prev|next|stop|toggle|status] # @version $PROGVERSION (c) $PROGAUTHOR"
-    [ -n "$1" ] && echo "$@" 1>&2
+    echo "usage: $PROGNAME [prev|next|stop] # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
+    if [ $# -gt 0 ]; then echo "$@" 1>&2; fi
     exit
 }
 
 main()
 {
-    [ $# -lt 1 ] && usage
-    [ -z "$DBUS" ] && usage "$PROGNAME: no dbus-send found"
+    if [ $# -lt 1 ]; then usage; fi
+    if [ -z "$DBUS" ]; then usage "$PROGNAME: no dbus-send found"; fi
 
     mpris_name=$(mpris_detect_player)
-    [ -z "$mpris_name" ] && usage "$PROGNAME: No player found that speaks MPRIS"
+    if [ "${#mpris_name}" -le 1 ]; then usage "$PROGNAME: No player found that speaks MPRIS"; fi
 
     cmd="$1"
     case "$cmd" in
