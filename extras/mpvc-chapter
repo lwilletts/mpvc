@@ -103,7 +103,7 @@ chapter_list_json()
 
 chapter_list()
 {
-    numbered="$1"
+    numbered="${1:-}"
     cchapter=$(mpvc get chapter)
 
     chapter_list_json |
