@@ -17,6 +17,8 @@ BINDIR="${BINDIR:-$PREFIX/bin}"
 
 SCRIPT="mpvc extras/mpvc-tui extras/mpvc-fzf extras/mpvc-chapter extras/mpvc-mpris extras/mpvc-equalizer extras/mpvc-installer"
 
+set -euf
+
 mpvc_fetch()
 {
     mkdir -p "$BINDIR"
