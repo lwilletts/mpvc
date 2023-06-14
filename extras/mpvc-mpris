@@ -61,8 +61,7 @@ mpris_get_status()
 mpris_set_shuffle()
 {
     current=$(mpris_get string:Shuffle | awk '/^   variant / {print $3}')
-    other=true
-    if [ "$current" = "true" ]; then other=false; fi
+    if [ "$current" = "true" ]; then other=false; else other=false; fi
     mpris_set string:Shuffle variant:boolean:$other
 }
 
