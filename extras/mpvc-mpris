@@ -53,11 +53,9 @@ mpris_set_volume()
 
 mpris_get_status()
 {
-    (
-        mpris_get string:PlaybackStatus | awk '/^   variant / {print $3}'
-        mpris_get string:Metadata | awk '/   variant / {print $3}'
-        mpris_get string:Volume | awk '/^   variant / {print $3}'
-    ) | sed 's|,[^)]|,\n  |g'
+    #mpris_get string:Volume | awk '/^   variant / {print $3}'
+    mpris_get string:PlaybackStatus | awk '/^   variant / {print $3}'
+    mpris_get string:Metadata | awk '/^ *variant +/ && ! /\[/ {gsub("^ *"$1" *"$2" ",""); print}'
 }
 
 mpris_set_shuffle()
