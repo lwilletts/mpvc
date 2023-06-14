@@ -51,16 +51,6 @@ mpris_set_volume()
     mpris_set string:Volume "variant:double:$pVolume"
 }
 
-mpris_get_statusbar()
-{
-    if [ -z "$DISPLAY" ]; then exit; fi
-
-    basename=$($0 "$mpris_name" status |
-        awk ' /file:/ { gsub("%20", " "); nf=patsplit($0, f, ":" , s);  np=split(s[1], p, "/"); print p[np] }')
-    cVolume=$(mpris_get_volume | grep -o '^0.[0-9]\{2\}')
-    echo "$basename $cVolume"
-}
-
 mpris_get_status()
 {
     (
