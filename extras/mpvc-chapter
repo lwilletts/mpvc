@@ -60,7 +60,7 @@ EOF
     end_time=$timepos
     chapter=$(awk 'BEGIN{s=0} /^title= [0-9]+/ {s=$2} END{print ++s}' "$chaptersfile")
 
-    if [ -n "$1" ]
+    if [ "$#" -gt 0 ]
     then
         cat >>"$chaptersfile" <<EOF
 
