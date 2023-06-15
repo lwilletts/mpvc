@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # @file        mpvc-mpris
-# @description mpvc-mpris speaks MPRIS to interact with media player
+# @description mpvc-mpris speaks MPRIS to control mplayer through key-bindings
 # @author gmt4 <gmt4 at github.com> (c) Copyright 2022 MIT
 # @url github.com/gmt4/mpvc
 #
