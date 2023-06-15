@@ -92,7 +92,9 @@ main()
     if [ -z "$DBUS" ]; then usage "$PROGNAME: no dbus-send found"; fi
 
     mpris_name=$(mpris_detect_player)
-    if [ -z "${mpris_name}" ]; then usage "$PROGNAME: No player found that speaks MPRIS"; fi
+    if [ -z "${mpris_name}" ] && [ "$1" = "volup" -o "$1" = "voldown" ]; then
+        usage "$PROGNAME: No player found that speaks MPRIS";
+    fi
 
     cmd="$1"
     case "$cmd" in
