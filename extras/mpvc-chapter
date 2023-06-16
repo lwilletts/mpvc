@@ -97,8 +97,11 @@ chapter_info()
 chapter_list_json()
 {
      mpvc getr chapter-list |
-         grep -o '"data":\[.*\]' |
-         sed 's/^"data"://; s|{"title"|\n\t{"title"|g;  /^\[\]$/ !s/]$/\n]/'
+         grep -o '"data":\[.*\]' | 
+         sed -e 's/^"data"://;' \
+             -e 's|{"title"|\n    {"title"|g;' \
+             -e '/^\[\]$/ !s/]$/\n]/;' \
+             -e 's/","/", "/g; s/":/": /g'
 }
 
 chapter_list()
