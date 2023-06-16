@@ -100,8 +100,8 @@ chapter_list_json()
          grep -o '"data":\[.*\]' | 
          sed -e 's/^"data"://;' \
              -e 's|{"title"|\n    {"title"|g;' \
-             -e '/^\[\]$/ !s/]$/\n]/;' \
-             -e 's/","/", "/g; s/":/": /g'
+             -e '/^\[\]$/ !s/]$/\n]/;'
+         #    -e 's/","/", "/g; s/":/": /g'
 }
 
 chapter_list()
