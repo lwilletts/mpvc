@@ -14,7 +14,7 @@ Check the [Wiki](https://github.com/gmt4/mpvc/wiki) & [Casts](https://gmt4.githu
 
 ## QuickInstall ▶️
 
-mpvc-installer fetch-user: installs mpvc under BINDIR=~/bin/
+[mpvc-installer](https://github.com/gmt4/mpvc/blob/master/extras/mpvc-installer) fetch-user: installs mpvc under BINDIR=~/bin/
 
 `curl -fsSL -o mpvc-installer https://github.com/gmt4/mpvc/raw/master/extras/mpvc-installer && sh ./mpvc-installer fetch-user`
 
@@ -66,14 +66,10 @@ Recommended extras:
 
 ## Install
 
-If you have packaged mpvc for your distribution, let me know so I can add it here.
+To install mpvc:
 
-Distribution Packages:
-- [Arch](https://aur.archlinux.org/packages/mpvc-git) - `pacaur -y mpvc-git`
-- [Gentoo](https://gitlab.com/xy2_/osman) - `emerge mpvc`
-- [Nixos](http://github.com/nixos/nixpkgs) - `nix-env -i mpvc`
-
-To manually install mpvc, use `extras/mpvc-installer` or link/copy mpvc to somewhere to your $PATH.
+- curl based install: as in in [QuickInstall](#quickinstall-).
+- git based install: as in [QuickSetup](#quicksetup).
 
 ## Usage
 
