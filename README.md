@@ -68,7 +68,7 @@ Recommended extras:
 
 To install mpvc:
 
-- curl based install: as in in [QuickInstall](#quickinstall-▶️).
+- curl based install: as in in [QuickInstall](#quickinstall-%EF%B8%8F).
 - git based install: as in [QuickStart](#quickstart).
 
 ## Usage
