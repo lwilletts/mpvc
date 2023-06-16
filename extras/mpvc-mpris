@@ -100,6 +100,7 @@ main()
     case "$cmd" in
     get)       shift; mpris_get "$@" ;;
     set)       shift; mpris_set "$@" ;;
+    method)    shift; mpris_method "$@" ;;
 
     prev)      shift; mpris_method Previous ;;
     next)      shift; mpris_method Next ;;
@@ -110,6 +111,8 @@ main()
     mute)      shift; mpris_method Mute || pactl set-sink-mute 0 toggle ;;
     vol)       shift; mpris_get_volume ;;
     shuffle)   shift; mpris_set_shuffle "$*" ;;
+    open)      shift; mpris_method OpenUri "string:$1" ;;
+    #loop)      shift; mpris_get "string:LoopStatus" ;;
 
     voldown)
         sink=$(pactl list | awk '/^Sink #/ {gsub("#", ""); print $2}')
