@@ -885,6 +885,7 @@ main() {
             -n|--searchPlay|searchPlay)      shift; mpvc_search_play "numbered" "$1" ;;
             --stash|stash)                   shift; mpvc_stash "$1" "$2";;
             expand-text)                     shift; mpvc_cmd expand-text "$@"; return;;
+            metadata)                        shift; mpvc_cmdr get_property metadata "$@"; return;;
 
             ytquery)                         shift; mpvc_curl_cache_title_clean "$@"; return;;
             ytqueryjson)                     shift; mpvc_curl_cache_json "$@"; return;;
