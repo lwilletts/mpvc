@@ -12,10 +12,16 @@ PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
 
 # globals really
-DBUS=$(command -v dbus-send)
-playerPath=org.mpris.MediaPlayer2.Player
+mpris_defaults()
+{
+    DBUS=$(command -v dbus-send)
+    PACTL=$(command -v pactl)
+    playerPath=org.mpris.MediaPlayer2.Player
+    MPVC_MPRIS_PLAYERS=${MPVC_MPRIS_PLAYERS:-"mpv mpd vlc"}
 
-MPVC_MPRIS_PLAYERS=${MPVC_MPRIS_PLAYERS:-"mpv mpd vlc"}
+    if [ -z "$DBUS" ]; then usage "$PROGNAME: Error no dbus-send found (required)"; fi
+    if [ -z "$PACTL" ]; then usage "$PROGNAME: Error no pactl found (required)"; fi
+}
 
 set -euf
 
@@ -88,12 +94,12 @@ usage()
 
 main()
 {
+    mpris_defaults
     if [ $# -lt 1 ]; then usage; fi
-    if [ -z "$DBUS" ]; then usage "$PROGNAME: no dbus-send found"; fi
 
     mpris_name=$(mpris_detect_player)
-    if [ -z "${mpris_name}" ] && [ "$1" = "volup" -o "$1" = "voldown" ]; then
-        usage "$PROGNAME: No player found that speaks MPRIS";
+    if [ -z "${mpris_name}" ] && ! [ "$1" = "volup" -o "$1" = "voldown" -o "$1" = "mute" ]; then
+        usage "$PROGNAME: Error no player found that speaks MPRIS";
     fi
 
     cmd="$1"
