@@ -97,8 +97,9 @@ main()
     mpris_defaults
     if [ $# -lt 1 ]; then usage; fi
 
+    sink=$(pactl list | awk '/^Sink #/ {gsub("#", ""); print $2}')
     mpris_name=$(mpris_detect_player)
-    if [ -z "${mpris_name}" ] && ! [ "$1" = "volup" -o "$1" = "voldown" -o "$1" = "mute" ]; then
+    if [ -z "${mpris_name}" ] && ! [ "$1" = "volup" -o "$1" = "voldown" -o "$1" = "volon" -o "$1" = "voloff" -o "$1" = "mute" ]; then
         usage "$PROGNAME: Error no player found that speaks MPRIS";
     fi
 
@@ -114,20 +115,16 @@ main()
     stop)      shift; mpris_method Pause ;;
     seek)      shift; mpris_method Seek "int64:$1"; ;;
     status)    shift; mpris_get_status ;;
-    mute)      shift; mpris_method Mute || pactl set-sink-mute 0 toggle ;;
     vol)       shift; mpris_get_volume ;;
     shuffle)   shift; mpris_set_shuffle "$*" ;;
     open)      shift; mpris_method OpenUri "string:$1" ;;
     #loop)      shift; mpris_get "string:LoopStatus" ;;
 
-    voldown)
-        sink=$(pactl list | awk '/^Sink #/ {gsub("#", ""); print $2}')
-        pactl set-sink-volume "$sink" -250 || mpris_set_volume "$cmd"
-        ;;
-    volup)
-        sink=$(pactl list | awk '/^Sink #/ {gsub("#", ""); print $2}')
-        pactl set-sink-volume "$sink" +250 || mpris_set_volume "$cmd"
-        ;;
+    mute)      pactl set-sink-mute "$sink" toggle || mpris_method Mute ;;
+    volon)     pactl set-sink-mute "$sink" off ;;
+    voloff)    pactl set-sink-mute "$sink" on  ;;
+    voldown)   pactl set-sink-volume "$sink" -250 || mpris_set_volume "$cmd" ;;
+    volup)     pactl set-sink-volume "$sink" +250 || mpris_set_volume "$cmd" ;;
 
     *) usage "$PROGNAME: unknown command: $cmd" ;;
     esac
