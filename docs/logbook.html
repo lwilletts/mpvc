@@ -329,11 +329,15 @@ mpvc cmdr af toggle "@rubberband:lavfi=[rubberband=pitch=0.98:tempo=1]"
 # The same goes for what filters are currently applied
 mpvc getr af | jq
 
-# Clearing all the AV filters currently applied
+# Clearing all the current af filters
 mpvc setr af ''
 
-# Some cools filters are flanger
-mpvc cmdr af add "@flanger:lavfi=[flanger=delay=1]"
+# Some cools af filters
+mpvc cmdr af toggle "@flanger:lavfi=[flanger=delay=1]"
+mpvc cmdr af toggle "@tremolo:lavfi=[tremolo]"
+mpvc cmdr af toggle "@vibrato:lavfi=[vibrato]"
+mpvc cmdr af toggle "@apulsator:lavfi=[apulsator]"
+mpvc cmdr af toggle "@aphaser:lavfi=[aphaser]"
 
 # And audio echo
 mpvc cmdr af add "@aecho:lavfi=[aecho=in_gain=0.9:out_gain=0.9:delays=1:decays=0.9]"
@@ -345,7 +349,7 @@ mpvc cmdr af add "@aecho:lavfi=[aecho=in_gain=0.9:out_gain=0.9:delays=1:decays=0
 <hr/>
 <p>
 <span>
-    <em>Last-Modified: Tuesday, 13 June 2023 by <a href="https://gmt4.github.io">gmt4</a></em>
+    <em>Last-Modified: Saturday, 24 June 2023 by <a href="https://gmt4.github.io">gmt4</a></em>
 </span>
 <span style="float: right;">
     <em>Powered by #HTML 🧡 💚 💙 </em>
