@@ -28,8 +28,11 @@ Check the [Wiki](https://github.com/gmt4/mpvc/wiki) & [Casts](https://gmt4.githu
 
  <b># use mpvc-fzf to search and play youtube media</b>
  mpvc-fzf -p kupla mirage
- <b># use mpvc to enqueue local media / online YT media</b>
+ <b># use mpvc to add/load/save media files or online YT URLs</b>
  mpvc add /path/to/your/*.mp3 # or your URLs
+ find . -type f -name | mpvc load
+ mpvc save my-playlist
+
  <b># use mpvc-fzf to manage the playlist</b>
  mpvc-fzf -f
  <b># use mpvc-tui to start the tui + desktop notifications</b>
@@ -96,34 +99,14 @@ this by adding the video via mpvc, and manually switching to the video.
 
 ## Useful Tricks
 
+Some basic tricks are provided in [QuickStart](#quickstart). For more tips on loading/saving/maniputaling the mpv playlist/state, managing av/vf filters, etc. are provided in the [LogBook](https://gmt4.github.io/mpvc/logbook.html).
+
 - Hotkey daemons like [sxhkd](https://github.com/baskerville/sxhkd) can be used
   to bind mpvc commands to key combinations. Alternatively check your window
   manager documentation on how to bind keys to commands.
 - Any URL that can be played using mpv can be added to the playlist, e.g. using
   [mps-youtube](https://github.com/mps-youtube/mps-youtube) with `player` set to
   mpvc and `playerargs` set to add.
-- mpvc GNU options can be combined together to give improved results: `$ mpvc -P
-  -j 1` will make mpvc always start playing when switching to the next track.
-- Piping files directly into mpvc is possible and preferable when loading
-  multiple directories to be played:
-```
-$ find . -type f | mpvc
-```
-- You can use m3u playlists with mpv by saving the absolute path of your media into a file:
-```
-$ find "$(pwd)" -iname "*Your Artist Here*" > Artist.m3u
-$ mpvc add Artist.m3u
-```
-- You can save your current playlist to a file for later playback:
-```
-$ mpvc save myPlaylist
-Adding files to myPlaylist.m3u...
-```
-- You can specify default player options directly through mpv.conf:
-```
-volume=70
-loop-playlist
-```
 - mpvc executes faster ~4x faster when using dash symlinked to /bin/sh instead
 of bash. Another faster alternative is mksh.
 - mpvc should be fully POSIX compliant, meaning it should run on any UNIX-like
