@@ -332,6 +332,11 @@ mpvc getr af | jq
 # Clearing all the current af filters
 mpvc setr af ''
 
+# Useful debuging af filters errors: lower/raise verbosity
+mpvc setr msg-level all=error
+mpvc setr msg-level all=warn
+mpvc setr msg-level all=info
+
 # Some cools af filters
 mpvc cmdr af toggle "@flanger:lavfi=[flanger=delay=1]"
 mpvc cmdr af toggle "@tremolo:lavfi=[tremolo]"
