@@ -315,10 +315,10 @@ Instead of that, for quickly testing combinations of filters, I was looking for 
 
 <pre>
 # start adding a rubberband filter
-mpvc cmdr af add "@rubberband:lavfi=[rubberband=pitch=1:tempo=1]"
+mpvc cmdr af toggle "@rubberband:lavfi=[rubberband=pitch=1:tempo=1]"
 
 # Change the AV filter is easy, rerun the command with the changes
-mpvc cmdr af add "@rubberband:lavfi=[rubberband=pitch=0.98:tempo=1]"
+mpvc cmdr af toggle "@rubberband:lavfi=[rubberband=pitch=0.98:tempo=1]"
 
 # Removing the filter is as expected
 mpvc cmdr af remove "@rubberband:lavfi=[rubberband=pitch=0.98:tempo=1]"
@@ -343,9 +343,7 @@ mpvc cmdr af toggle "@tremolo:lavfi=[tremolo]"
 mpvc cmdr af toggle "@vibrato:lavfi=[vibrato]"
 mpvc cmdr af toggle "@apulsator:lavfi=[apulsator]"
 mpvc cmdr af toggle "@aphaser:lavfi=[aphaser]"
-
-# And audio echo
-mpvc cmdr af add "@aecho:lavfi=[aecho=in_gain=0.9:out_gain=0.9:delays=1:decays=0.9]"
+mpvc cmdr af toggle "@aecho:lavfi=[aecho=in_gain=0.9:out_gain=0.9:delays=1:decays=0.9]"
 </pre>
 </p>
 
