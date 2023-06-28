@@ -163,7 +163,7 @@ chapter_replay()
 
 chapter_search()
 {
-    chapter_list | awk '/'$@'/ {print NR-1; exit}'
+    chapter_list | awk "/$*/ {print NR-1; exit}"
 }
 
 chapter_search_play()
