@@ -772,7 +772,7 @@ mpvc_get_version() {
     echo "version: $PROGNAME # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
     echo "originally forked from lwillets/mpvc"
     echo
-    $MPVC_MPV --version
+    "$MPVC_MPV" --version
 }
 
 mpvc_idleloop() {
@@ -786,7 +786,7 @@ mpvc_delay() { sleep "${1:-0.1}"; }
 mpvc_startmpv() {
     if [ -z "$(mpvc_get idle-active)" ]; then
         echo "$PROGNAME: No running mpv found, starting mpv now"
-        exec $MPVC_MPV --input-ipc-server="$MPVC_SOCKET" $MPVOPTIONS "$@" &
+        exec "$MPVC_MPV" --input-ipc-server="$MPVC_SOCKET" $MPVOPTIONS "$@" &
         until [ -n "$(mpvc_get idle-active)" ]; do mpvc_delay 0.1; done
     fi
 }
