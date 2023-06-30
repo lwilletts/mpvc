@@ -405,6 +405,11 @@ appendTrack() {
     printf '%s\n' "Adding: ${filename}"
 }
 
+skipTrack() {
+  printf '%s\n' "{  \"command\": [\"playlist-next\"] }" | \
+    $SOCKETCOMMAND > /dev/null
+}
+
 playNext() {
     # add track to the playlist
     appendTrack "$1"
@@ -1185,6 +1190,7 @@ main() {
             -A|--playnext|playnext)          PLAYNEXT=true                  ;;
             -p|--toggle|toggle)              togglePause                    ;;
             -m|--mute)                       toggleMute                     ;;
+            -n|--next)                       skipTrack                      ;;
             mute)                            toggleMute true                ;;
             unmute)                          toggleMute false               ;;
             -i|--playlist|playlist)          getPlaylist; exit              ;;
