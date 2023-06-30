@@ -15,6 +15,8 @@ Usage: $(basename $0) [-S "socket"] [-a "filenames"] [-o "path"] [-f "format str
     -P | --play         : Always start playback.
     -f | --format       : Enter a formatting string.
     -a | --add          : Add files to playlist.
+    -n | --next         : Skip currently playing track.
+    -b | --back         : Skip back to previously playing track.
     -i | --playlist     : Print filenames of tracks to fit within terminal.
     -I | --fullplaylist : Print all filenames of tracks in current playlist.
     -o | --save         : Save current playlist to given path.
@@ -364,7 +366,7 @@ savePlaylist() {
 ###############################################################################
 
 appendTrack() {
-    filename="$*"
+    filename="$1"
 
     # require absolute paths
     if [ -e "$filename" ]; then
@@ -407,6 +409,11 @@ appendTrack() {
 
 skipTrack() {
   printf '%s\n' "{  \"command\": [\"playlist-next\"] }" | \
+    $SOCKETCOMMAND > /dev/null
+}
+
+prevTrack() {
+  printf '%s\n' "{  \"command\": [\"playlist-prev\"] }" | \
     $SOCKETCOMMAND > /dev/null
 }
 
@@ -1191,6 +1198,7 @@ main() {
             -p|--toggle|toggle)              togglePause                    ;;
             -m|--mute)                       toggleMute                     ;;
             -n|--next)                       skipTrack                      ;;
+            -b|--back)                       prevTrack                      ;;
             mute)                            toggleMute true                ;;
             unmute)                          toggleMute false               ;;
             -i|--playlist|playlist)          getPlaylist; exit              ;;
