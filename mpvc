@@ -366,7 +366,7 @@ savePlaylist() {
 ###############################################################################
 
 appendTrack() {
-    filename="$1"
+    filename="$*"
 
     # require absolute paths
     if [ -e "$filename" ]; then
