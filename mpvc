@@ -844,8 +844,8 @@ main() {
             -V|--volume)                     shift; mpvc_set "volume" "$1"  ;;
             -x|--speed|speed)                shift; mpvc_add "speed" "$1"  ;;
             -X|--speedval)                   shift; mpvc_set "speed" "$1"  ;;
-            -j|--track)                      shift; mpvc_set_track "$1" relative  ;;
-            -J|--tracknum)                   shift; mpvc_set_track "$1" absolute  ;;
+            -j|--track|track)                shift; mpvc_set_track "$1" relative  ;;
+            -J|--tracknum|tracknum)          shift; mpvc_set_track "$1" absolute  ;;
             -r|--remove|rm|remove|del)       shift; mpvc_remove_track "$1"; QUIETFLAG=true;;
             -A|--playnext|playnext)          shift; mpvc_play_next "$1"           ;;
             -o|--save|save)                  shift; mpvc_save_playlist "$1" ;;
