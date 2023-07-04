@@ -118,6 +118,7 @@ mpvctui_fzf_icache()
 mpvctui_fzf_fetch()
 {
     if [ $# -lt 1 ]; then mpvctui_usage; fi
+
     ytdl_opts=""
     ytdlp=$(command -v youtube-dl || command -v yt-dlp)
     if [ ! -x "$ytdlp" ]; then
@@ -237,7 +238,7 @@ main()
         #D) shift; mpvctui_fzf_ddg "$@";;
         f) mpvctui_fzf_playlist ;;
         F) shift; mpvctui_fzf_preview "$@" ;;
-        g) mpvctui_fzf_fetch "$OPTARG";;
+        g) mpvc --mpv && mpvctui_fzf_fetch "$OPTARG";;
         G) mpvctui_fzf_fetch $(mpvctui_fzf_iplay "$OPTARG");;
         h) mpvctui_usage ;;
         l) mpvctui_fzf_local;;
