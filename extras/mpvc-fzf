@@ -65,7 +65,7 @@ mpvctui_fzf_preview()
 mpvctui_fzf_isearch()
 {
     url_sort="sort=relevance" # relevance views date
-    url_query="q=$(for f in $@; do printf "%s+" "$f"; done)"
+    url_query="q=$(for f in "$@"; do printf "%s+" "$f"; done)"
     url_search="https://yewtu.be/search?$url_query&$url_sort"
 
     echo "$url_search"
