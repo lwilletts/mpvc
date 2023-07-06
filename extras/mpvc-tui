@@ -140,7 +140,7 @@ mpvctui_input()
     fi
     case "$cmd" in
         '!!'*) "${SHELL}" -c "${cmd##!!}";;
-        '!'*) eval ${cmd##!};;
+        '!'*) eval "${cmd##!}";;
         'mpvc '*) QUIETFLAG=true $cmd;;
         'mpvc-tui '*) $cmd;;
         'mpvc-fzf '*) $cmd;;
