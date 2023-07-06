@@ -34,7 +34,7 @@ mpris_cmd()
         "$@"
 }
 
-mpris_method(){ mpris_cmd org.mpris.MediaPlayer2.Player.$*; }
+mpris_method(){ mpris_cmd "org.mpris.MediaPlayer2.Player.$*"; }
 mpris_get(){ mpris_cmd org.freedesktop.DBus.Properties.Get string:$playerPath "$@"; }
 mpris_set(){ mpris_cmd org.freedesktop.DBus.Properties.Set string:$playerPath "$@"; }
 
