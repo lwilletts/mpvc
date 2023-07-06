@@ -100,7 +100,7 @@ main()
     sink=$(pactl list | awk '/^Sink #/ {gsub("#", ""); print $2}')
     mpris_name=$(mpris_detect_player)
     if [ -z "${mpris_name}" ] && ! [ "$1" = "volup" -o "$1" = "voldown" -o "$1" = "volon" -o "$1" = "voloff" -o "$1" = "mute" ]; then
-        usage "$PROGNAME: Error no player found that speaks MPRIS";
+        usage "$PROGNAME: Error no player found that speaks MPRIS. Check that you started mpv with mpris.so in ~/.config/mpv/scripts/";
     fi
 
     cmd="$1"
