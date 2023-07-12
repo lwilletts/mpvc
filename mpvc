@@ -288,27 +288,30 @@ mpvc_get_playlist() {
     mpvc_get_playlist_once |
         awk -v no_color="$NO_COLOR" -v lpos="$lpos" -v first="$FIRST" -v last="$LAST" \
         '
-        function basename(line)
+        function basename(url, fields, n)
         {
-            n=split(line, fields, "/")
+            n=split(url, fields, "/")
             return fields[n]
         }
 
-        function mpvc_ytquery(line)
+        function mpvc_ytquery(url,  ytcmd, ytitle)
         {
-            gsub("^ *", "", line)
-            if (line ~ "^ *https?:")
+            gsub("^ *", "", url)
+            if (url ~ "^ *https?:")
             {
-                cmd=sprintf("mpvc ytquery \"%s\"", line)
-                cmd | getline title
+                ytcmd=sprintf("mpvc ytquery \"%s\"", url)
+                ytcmd | getline ytitle
+                if (!ytitle)
+                    "mpvc ytquery " url | getline ytitle
             } else {
-                title=basename(line)
+                ytitle=basename(url)
             }
-            gsub("\\\\u00", "\\x", title)
-            gsub("\\\\x22", "\x22", title)
-            gsub("\\\\x26", "\x26", title)
-            gsub("\\\\x27", "\x27", title)
-            return title
+            gsub("\\\\u00", "\\x", ytitle)
+            gsub("\\\\x22", "\x22", ytitle)
+            gsub("\\\\x25", "\x25", ytitle)
+            gsub("\\\\x26", "\x26", ytitle)
+            gsub("\\\\x27", "\x27", ytitle)
+            return ytitle
         }
 
         {
