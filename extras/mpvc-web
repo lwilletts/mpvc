@@ -1,0 +1,120 @@
+#!/usr/bin/env sh
+#
+# @file mpvc-web
+# @description mpvc web, A hack to remotely control mpvc from web/http
+# @author gmt4 <gmt4 at github.com> (c) Copyright 2022 MIT
+# @url github.com/gmt4/mpvc
+#
+
+# REMEMBER This is a hack, DISCLAIMER * Use at Your Own Risk *
+# The sole reason for its existence is to mimic mpvc-tui when this is not available,
+# for example, controlling a remotely running an mpv, accessing from a client without a CLI,
+# like a laptop, tablet, or phone.
+
+PROGNAME=${0##*/}
+PROGVERSION="v1.4"
+PROGAUTHOR=gmt4
+PROGURL="https://github.com/gmt4/mpvc"
+PROGINFO="mpvc-web, A hack to remotely control mpvc from web # DISCLAIMER * Use at Your Own Risk *"
+
+set -euf
+
+mpvc_web_index()
+{
+    cat <<EOF
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+    <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>$PROGNAME $PROGVERSION ($PROGURL)</title>
+    </head>
+    <style type="text/css" media="all">
+    :root { --body-bg: #fff; --body-color: #111; --pre-bg:#eee; --link-color:#00f; } /* Light mode */
+    @media (prefers-color-scheme: dark) {
+       :root { --body-bg: #222; --body-color: #eee; --pre-bg:#333; --link-color:#07f; } /* Dark mode */
+    }
+    :root { --body-bg: #fff; --body-color: #111; --pre-bg:#eee; --link-color:#00f; } /* Light mode */
+    body { background: var(--body-bg); color: var(--body-color); font-family: sans-serif; }
+    code { background: var(--pre-bg); }
+    pre  { background: var(--pre-bg); }
+    a    { color: var(--link-color); }
+    </style>
+    <body>
+    <strong>$PROGNAME $PROGVERSION</strong>
+    <hr>
+    <ul>
+    <li> mpvc <a href="?cmd=mpvc status">status</a> <a href="?cmd=mpvc toggle">toggle</a> <a href="?cmd=mpvc prev">prev</a> <a href="?cmd=mpvc next">next</a></li>
+    <li> mpvc <a href="?cmd=mpvc play">play</a> <a href="?cmd=mpvc stop">stop</a></li>
+    <li> mpvc <a href="?cmd=mpvc repeat">repeat</a> <a href="?cmd=mpvc single">single</a></li>
+    <li> mpvc vol <a href="?cmd=mpvc vol -10">-10</a> <a href="?cmd=mpvc vol +10">+10</a></li>
+    </ul>
+    <hr>
+    <strong>mpvc status</strong>
+    <iframe width="100%" frameborder="1" src="/cgi-bin/mpvc?status" allowtransparency="true" ></iframe>
+    <strong>mpvc playlist</strong>
+    <iframe width="100%" height="300" frameborder="1" src="/cgi-bin/mpvc?playlist" allowtransparency="true" ></iframe>
+    <sub>$PROGINFO <a href="$PROGURL">$PROGURL</a></sub>
+    </body>
+</html>
+EOF
+}
+
+mpvc_web_cgi()
+{
+    cat <<"EOF"
+#!/bin/sh
+echo "Content-Type: text/plain"
+echo
+case "$QUERY_STRING" in
+    status) mpvc status;;
+    playlist) mpvc --nocolor playlist;;
+    playlistfull) mpvc --nocolor playlistfull;;
+    *) mpvc ;;
+esac
+EOF
+
+}
+
+mpvc_web()
+{
+    echo "# $PROGINFO"
+    MPVC_WEB_ROOT=/tmp/mpvc-web
+    (
+        mkdir -p "$MPVC_WEB_ROOT" || return
+        mkdir -p "$MPVC_WEB_ROOT/cgi-bin/" || return
+        cd "$MPVC_WEB_ROOT" || return
+
+        mpvc_web_index > "$MPVC_WEB_ROOT/index.html"
+        mpvc_web_cgi > "$MPVC_WEB_ROOT/cgi-bin/mpvc"
+        chmod u+x "$MPVC_WEB_ROOT/cgi-bin/mpvc"
+
+        python3 -u -m http.server --cgi "$@" 2>&1 | awk \
+        '
+        /GET \/\?cmd=mpvc%20toggle/   { system("mpvc -q toggle") }
+        /GET \/\?cmd=mpvc%20prev/     { system("mpvc -q prev") }
+        /GET \/\?cmd=mpvc%20next/     { system("mpvc -q next") }
+        /GET \/\?cmd=mpvc%20play/     { system("mpvc -q play") }
+        /GET \/\?cmd=mpvc%20stop/     { system("mpvc -q stop") }
+
+        /GET \/\?cmd=mpvc%20repeat/   { system("mpvc -q repeat") }
+        /GET \/\?cmd=mpvc%20single/   { system("mpvc -q single") }
+
+        { print $0 }
+        '
+    )
+}
+
+usage()
+{
+    echo "usage: $PROGNAME 8000 # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
+    exit
+}
+
+main()
+{
+    [ $# -lt 1 ] && usage
+
+    mpvc_web "$@"
+}
+
+main "$@"

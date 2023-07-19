@@ -1,0 +1,265 @@
+#!/bin/sh
+#
+# @file mpvc-fzf
+# @description mpvc fzf, mpv terminal user interface
+# @author gmt4 <gmt4 at github.com> (c) Copyright 2022 MIT
+# @url github.com/gmt4/mpvc
+#
+
+PROGNAME=${0##*/}
+PROGVERSION="v1.4"
+PROGAUTHOR=gmt4
+PROGURL="https://github.com/gmt4/mpvc"
+
+#set -euf
+
+quiet()  { "$@" > /dev/null 2>&1; }
+mpvctui_warn() { echo "$@" >&2; }
+
+# Set defaults
+mpvctui_defaults()
+{
+    MPVC_TERM=xterm
+}
+
+mpvctui_config()
+{
+    mpvctui_defaults
+    if ! quiet command -v fzf; then
+        mpvctui_warn "$PROGNAME: Warning: No fzf, Install to get fuzzy media search & play support!"
+        sleep 1
+    fi
+    XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}
+    MPVC_CONFIG="${MPVC_CONFIG:-$XDG_CONFIG_HOME/mpvc/mpvc-tui.conf}"
+    # if present load user config
+    if [ -r "$MPVC_CONFIG" ];
+    then
+        . "$MPVC_CONFIG"
+    fi
+}
+
+mpvctui_fzf_help="C-x:list C-v:yt-add C-\\:add C-o:play C-r:del C-t:reload C-s:seek C-spc:toggle"
+mpvctui_fzf_preview()
+{
+    # fzf keys: ctrl + [dorstxv\]
+    fzf \
+        --ansi --reverse --no-sort \
+        --multi \
+        --bind='ctrl-space:execute-silent(mpvc toggle &)' \
+        --bind='ctrl-o:execute-silent(mpvc play {n} &)' \
+        --bind='ctrl-r:reload(mpvc fullplaylist)' \
+        --bind='ctrl-s:execute-silent(mpvc seek +20 &)' \
+        --bind='ctrl-t:execute-silent(mpvc remove {n} &)' \
+        \
+        --bind='ctrl-x:execute(mpvc-fzf -f {q})' \
+        --bind='ctrl-v:execute(mpvc-fzf -p {q})' \
+        --bind='ctrl-\:execute(mpvc-fzf -l)' \
+        \
+        --preview-window='up:5' \
+        --preview="mpvc" \
+        --header="$PROGNAME help: $mpvctui_fzf_help" \
+        "$@"
+        #--bind='ctrl-d:execute-silent(mpvc seek -20 &)' \
+}
+
+mpvctui_fzf_isearch()
+{
+    url_sort="sort=relevance" # relevance views date
+    url_query="q=$(for f in $@; do printf "%s+" "$f"; done)"
+    url_search="https://yewtu.be/search?$url_query&$url_sort"
+
+    echo "$url_search"
+    curl -fsSL -A 'Mozilla/5.0' "$url_search&page=1" "$url_search&page=2" |
+    awk '
+        /^ *<p dir="auto">/ {
+            gsub("^ *<p dir=\"auto\">",""); gsub("</p>",""); vtitle=$0
+        }
+        /<p class="video-data" dir="auto">/ {
+            gsub("^ *<p class=\"video-data\" dir=\"auto\">",""); gsub(" views",""); gsub("</p>",""); shared=$0
+        }
+        /^ *<p class="length">/ {
+            gsub("^ *<p class=\"length\">",""); gsub("</p>",""); vlength=$0
+        }
+        /^ *<a title="Audio mode/ {
+            gsub("^ *<a title=\"Audio mode\" href=\"",""); gsub("\">","");
+            gsub("/watch\\?v=", "https://yewtu.be/"); gsub("&listen=1","");
+            printf "%s %4s %7s %s\n", $0, shared, vlength, vtitle
+        }'
+}
+
+mpvctui_fzf_nextvideo()
+{
+    id="${1##https://yewtu.be/}"
+    output=$(curl -fsSL -A '' "https://yewtu.be/watch?v=$id")
+    next_video=$(echo "$output" | awk '/next_video/ {gsub("[\",]",""); print $2}')
+    next_url="https://yewtu.be/$next_video"
+    echo "$next_url"
+}
+
+mpvctui_fzf_icache()
+{
+    # check for media present in local cache
+    ytdl_json=$(mpvc getr ytdl-raw-options)
+    ytdl_archive=$(echo $ytdl_json | jq -r '.data."download-archive"')
+    ytdl_output=$(echo $ytdl_json | jq -r ".data.output")
+    ytdl_archive=$(eval echo $ytdl_archive)
+    ytdl_dir=$(dirname $ytdl_output)
+    ytdl_dir=$(eval echo $ytdl_dir)
+    if [ -z "$ytdl_json" -o ! -r "$ytdl_archive" -o ! -d "$ytdl_dir" ]
+    then
+        mpvctui_warn "$PROGNAME: Error not using cache"
+        if cat; then return; fi
+    fi
+
+    while read -r line
+    do
+        url=$(echo "$line" | awk '{print $1}')
+        vid=$(basename "$url")
+        file=$(ls $ytdl_dir/*$vid* 2>/dev/null)
+        if quiet grep -q "$vid" $ytdl_archive && [ -e "$file" ]; then
+            echo "$line" | sed "s|^$url|$file|"
+        else
+            echo "$line"
+        fi
+    done
+}
+
+mpvctui_fzf_fetch()
+{
+    if [ $# -lt 1 ]; then mpvctui_usage; fi
+
+    ytdl_opts=""
+    ytdlp=$(command -v youtube-dl || command -v yt-dlp)
+    if [ ! -x "$ytdlp" ]; then
+        mpvctui_warn "$PROGNAME: Warning: No yt-dlp, Install to get support!"
+    fi
+
+    ytdl_json=$(mpvc getr ytdl-raw-options)
+    if [ -z "$ytdl_json" ]; then
+        mpvctui_warn "$PROGNAME: Error ytdl-raw-options not set. Check docs/mpv.conf"
+        return
+    fi
+    for option in $(echo "$ytdl_json" | jq -r ".data | keys | .[]")
+    do
+        value=$(echo "$ytdl_json" | jq -r ".data.\"$option\"")
+        if [ -n "$value" ]
+        then
+            ytdl_opts="$ytdl_opts --$option=$value"
+        else
+            ytdl_opts="$ytdl_opts --$option"
+        fi
+    done
+    "$ytdlp" $ytdl_opts $YTDL_OPTS "$@"
+}
+
+mpvctui_fzf_iplay()
+{
+    mpvctui_fzf_isearch "$1" |
+        mpvctui_fzf_preview --prompt="(youtube) " |
+            awk '{print $1}'
+}
+
+mpvctui_fzf_local()
+{
+    find . -type f,d | sort |
+        mpvctui_fzf_preview --prompt="(local) " |
+            mpvc load
+}
+
+mpvctui_fzf_playlist()
+{
+    len=$(mpvc gets playlist-count)
+    ( if [ -z "$len" ]; then echo; else mpvc fullplaylist; fi) |
+        mpvctui_fzf_preview --prompt="(playlist) "
+}
+
+mpvctui_fzf_ddg()
+{
+    curl -fsSL -A 'Mozilla/5.0' "https://duckduckgo.com/html?q=$*&iax=videos&ia=videos" |
+        awk  '
+            function urldecode(url)
+            {
+                for (y=0; y < 127; y++)
+                {
+                    if (y != 37)
+                        gsub(sprintf("%%%02x|%%%02X", y, y), y==38 ? "\\&" : sprintf("%c", y), url);
+                    gsub(/%25/, "%", url);
+                }
+                return url
+            }
+
+            /result__a/ {
+                gsub("<a rel=\"nofollow\" class=\"result__a\" href=\"//duckduckgo.com/l/\\?uddg=", "");
+                gsub("&amp", "\\&");
+                gsub("rut=[0-9a-f]+","");
+                gsub("\">", " ");
+                gsub("</a>","");
+
+                gsub("%3A",":"); gsub("%2F","/"); gsub("%3F","?"); gsub("%3D","=");
+                gsub("^ *","");
+                #print urldecode($0)
+                print
+            }'
+}
+
+mpvctui_ddg_play()
+{
+    mpvctui_fzf_ddg "$@" |
+        mpvctui_fzf_preview |
+            awk '{print $1}' | mpvc load
+}
+
+mpvctui_version()
+{
+    echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
+}
+
+optflags="1cCd:DfFg:G:hn:s:p:P:lxv"
+mpvctui_usage()
+{
+    echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
+    echo "  -d : Set the WD to the media directory given as argument"
+    echo "  -D : Search & play media using DuckDuckGo (fzf*)"
+    echo "  -f : Start fzf to manage the current mpv playist (fzf*)"
+    echo "  -g : Fetch provided YT URL, and store locally (fzf*)"
+    echo "  -G : Search for provided query , fetch, and store locally (fzf*)"
+    echo "  -l : Search & play local media (fzf*)"
+    echo "  -s : Search for media using Invidious (fzf*)"
+    echo "  -p : Search & play media found using Invidious (fzf*)"
+    echo "  -x : Starts $PROGNAME in a new $MPVC_TERM (config \$MPVC_TERM) [combine -x with $optflags]"
+    echo "*tips: If unsure about where to begin, start with: $PROGNAME -p kupla mirage"
+    exit;
+}
+
+main()
+{
+    mpvctui_config
+    if [ $# -lt 1 ]; then mpvctui_usage; fi
+
+    while getopts "$optflags" flag;
+    do
+        case "$flag" in
+        1) shift; awk '{print $1}';;
+        c) shift; mpvctui_fzf_icache;;
+        C) shift; mpvctui_fzf_icache;;
+        d) MPVC_DIR="$OPTARG"; cd "$MPVC_DIR" || return;;
+        D) shift; mpvctui_ddg_play "$@";;
+        #D) shift; mpvctui_fzf_ddg "$@";;
+        f) mpvctui_fzf_playlist ;;
+        F) shift; mpvctui_fzf_preview "$@" ;;
+        g) mpvc --mpv && mpvctui_fzf_fetch "$OPTARG";;
+        G) mpvctui_fzf_fetch $(mpvctui_fzf_iplay "$OPTARG");;
+        h) mpvctui_usage ;;
+        l) mpvctui_fzf_local;;
+        n) mpvctui_fzf_nextvideo "$OPTARG" ;;
+        p) mpvctui_fzf_iplay "$OPTARG" | mpvc load ;;
+        P) mpvctui_fzf_iplay "$OPTARG" | mpvc loadc ;;
+        s) mpvctui_fzf_isearch "$OPTARG";;
+        x) shift; if quiet command -v $MPVC_TERM; then $MPVC_TERM -e "$0" "$@"; fi; exit;;
+        v) mpvctui_version;;
+        *) mpvctui_usage;;
+        esac
+    done
+}
+
+main "$@"

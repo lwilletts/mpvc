@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes" />
+    <meta name="generator" content="#write-your-own-html" />
+    <meta name="author" content="gmt4" />
+    <meta name="description" content="gmt4 mpvc logbook" />
+    <title>gmt4.github.io/mpvc/logbook.html</title>
+    <!-- SOH -->
+    <link rel="canonical" href="https://gmt4.github.io/mpvc" />
+    <link href="atom.xml" type="application/atom+xml" rel="alternate" title="gmt4.github.io/mpvc"/>
+    <!-- Open Graph tags -->
+    <meta property="og:site_name" content="gmt4.github.io/mpvc/logbook.html" />
+    <meta property="og:type" content="website"/>
+    <meta property="og:title" content="gmt4 mpvc logbook"/>
+    <meta property="og:url" content="https://gmt4.github.io/mpvc/logbook.html"/>
+    <meta property="og:description" content="A minimal mpc-like CLI and TUI for controlling mpv from the shell"/>
+    <meta property="og:image" content="https://raw.githubusercontent.com/gmt4/mpvc/master/docs/mpvc-tui.png"/>
+    <!-- GH stuff -->
+    <script async="true" defer="true" src="https://buttons.github.io/buttons.js"></script>
+    <style type="text/css" media="all">
+    :root { --body-bg: #fff; --body-color: #111; --pre-bg:#eee; --link-color:#00f; } /* Light mode */
+    @media (prefers-color-scheme: dark) {
+       :root { --body-bg: #222; --body-color: #eee; --pre-bg:#333; --link-color:#07f; } /* Dark mode */
+    }
+    body { background: var(--body-bg); color: var(--body-color); font-family: sans-serif; }
+    code { background: var(--pre-bg); }
+    pre  { background: var(--pre-bg); }
+    a    { color: var(--link-color); }
+    </style>
+    <!-- SOB -->
+</head>
+<body>
+<h1 id="gmt4-mpvc-fork"><a href="/">@gmt4</a> mpvc logbook</h1>
+<ul>
+    <li><strong>about</strong> A minimal mpc-like CLI and TUI for controlling mpv from the shell.</li>
+    <li><strong>tags</strong> cli music-player terminal minimal mpv tui media-player mplayer posix-sh mpv-player mpvc mpvc-tui</li>
+    <li><strong>goodies</strong> Support TUI, FZF, CLI, play/manage URLs to youtube and streaming services (<a href="#logbook-20221219">See #20221219</a>)</li>
+    <li><strong>github</strong> <a href="https://github.com/gmt4/mpvc/" class="uri">https://github.com/gmt4/mpvc/</a></li>
+    <li><strong>promote</strong> Star, share, and promote our work through the buttons below if you find it useful. Thanks!</li>
+</ul>
+
+<a class="github-button" href="https://github.com/gmt4/mpvc" data-icon="octicon-star" aria-label="Star gmt4/mpvc on GitHub">Star</a> <!-- data-show-count="true" -->
+<a class="github-button" href="https://github.com/gmt4" aria-label="Follow @gmt4 on GitHub">Follow @gmt4</a>
+<a class="github-button" href="https://github.com/gmt4/mpvc/archive/HEAD.zip" data-icon="octicon-download" aria-label="Download gmt4/mpvc on GitHub">Download</a>
+<a class="github-button" href="https://github.com/gmt4/mpvc/subscription" data-icon="octicon-eye" aria-label="Watch gmt4/mpvc on GitHub">Watch</a>
+<a class="github-button" href="https://github.com/gmt4/mpvc/issues" data-icon="octicon-issue-opened" aria-label="Issue gmt4/mpvc on GitHub">Issue</a>
+
+<a href="https://github.com/gmt4/mpvc" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+<hr />
+<h2 id="gmt4-mpvc-contents">Contents</h2>
+
+<ul>
+<li> <a href="#gmt4-mpvc-logbook">Logbook</a> </li>
+</ul>
+
+Logbook Entries
+<ul>
+    <li> <a href="#logbook-20220330">#20220330 On playing URLs</a> </li>
+    <li> <a href="#logbook-20221114">#20221114 On securing mpv socket location</a> </li>
+    <li> <a href="#logbook-20221118">#20221118 On load/save functionality</a> </li>
+    <li> <a href="#logbook-20221120">#20221120 On persistent mpv startup</a> </li>
+    <li> <a href="#logbook-20221203">#20221203 On a minimal mpvc-tui</a> </li>
+    <li> <a href="#logbook-20221213">#20221213 On using the mpvc-tui prompt</a> </li>
+    <li> <a href="#logbook-20221214">#20221214 On using the mpvc-tui -x launcher</a> </li>
+    <li> <a href="#logbook-20221215">#20221215 On managing playlists with mpvc autoload/autosave</a> </li>
+    <li> <a href="#logbook-20221216">#20221216 On customizing mpvc-tui look and feel</a> </li>
+    <li> <a href="#logbook-20221216">#20221216 Show HN: mpvc-tui – A minimal mpc-like CLI and TUI for controlling mpv</a> </li>
+    <li> <a href="#logbook-20221217">#20221217 On issuing direct JSON IPC commands to mpv</a> </li>
+    <li> <a href="#logbook-20221219">#20221219 On playing music from streaming services as youtube &amp; co.</a> </li>
+    <li> <a href="#logbook-20221221">#20221221 On subscribing and receiving mpv events</a> </li>
+    <li> <a href="#logbook-20221227">#20221227 On using mpv together with the fzf fuzzy finder</a> </li>
+    <li> <a href="#logbook-20230112">#20230112 On using mpv together with the fzf fuzzy finder</a> </li>
+    <li> <a href="#logbook-20230119">#20230119 On controlling multiple remotely running mpv instances</a> </li>
+    <li> <a href="#logbook-20230219">#20230219 On stashing mpv media player state to restore later</a> </li>
+    <li> <a href="#logbook-20230331">#20230331 CSS, RSS &amp; casts updates on the gmt4.github.io/mpvc site</a></li>
+    <li> <a href="#logbook-20230425">#20230425 Introducing mpvc-equalizer: a basic mpv equalizer for the CLI</a></li>
+    <li> <a href="#logbook-20230602">#20230602 On applying ffmpeg AV filters using the MPV JSON IPC</a></li>
+</ul>
+
+<hr />
+<h2 id="gmt4-mpvc-logbook">Logbook</h2>
+<p>
+The logbook below is just that, a log of notes as I use and work on mpvc.
+Entries are chronologically ordered with oldest first, and, attempt to be self-contained focused on a certain functionality/topic, to the extent that it is possible.
+</p>
+
+<h3 id="logbook-20220330">On playing URLs, 30 Mar 2022</h3>
+<p>
+What got me started on using mpvc is being able to play URLs. This is the cause to start writing what you are reading now (this repo at <a href="https://github.com/gmt4/mpvc/">https://github.com/gmt4/mpvc/</a>). As in
+<ul>
+    <li><code>mpvc add https://kuplasound.bandcamp.com/album/mirage/</code></li>
+</ul>
+</p>
+
+<h3 id="logbook-20221114">On securing mpv socket location, 14 Nov 2022</h3>
+<p>
+One thing that bothers me when using mpvc, is that most programs performing ipc on mpv socket, just leave the socket at <code>/tmp/mpvsocket</code>. A better default location for the mpv socket is <code>$HOME/.config/mpvc/mpvsocket</code>.
+</p>
+
+<h3 id="logbook-20221118">On load/save functionality, 18 Nov 2022</h3>
+<p>
+A thing that I'd like to be able to do is to perform <code>mpvc load/save</code> of the playlist, and, be able of manipulating the playlist using standard Unix commands eg. grep. The easiest way that comes to mind, is something a la: <code>mpvc save | grep -v artist | mpvc load</code>, this enables to filter out an artist, and drop all the songs by this artist.
+</p>
+
+<h3 id="logbook-20221120">On persistent mpv startup, 20 Nov 2022</h3>
+<p>
+One particular feature where improvement could be done mpvc -a audio.opus, when mpv finishes playing audio.opus, mpv terminates, and, the current playlist is lost. This happens as mpv is started with --idle=once. A solution for this is to start mpv separately with --idle=yes. A shortcut for this is to run `mpvc --mpv` that does exactly this, after this the mpv instance can be manipulated with mpvc, and does not terminate once mpv finishes playing.
+</p>
+
+<h3 id="logbook-20221203">On a minimal mpvc-tui, 03 Dec 2022</h3>
+<p>
+One thing I keep doing a lot, is typing mpvc status and mpvc -i, to check the mpv playlist and status. To this end I've quickly hacked a minimal TUI named <code>mpvc-tui</code>, that continuously shows the mpvc playlist and status. In addition, while in mpvc-tui you can Control+C, to get a mpvc prompt to run quick mpvc commands, like: prev, next, pause, toggle, seek, volume, etc.
+</p>
+
+<h3 id="logbook-20221213">On using the mpvc-tui prompt, 13 Dec 2022</h3>
+<p>
+As explained above, mpvc-tui does three things: 1) display status, 2) display playlist, 3) prompt the user for interaction.
+
+Once we hit Control+C, and land on the user prompt, the following can be done:
+<ol>
+    <li> run mpvc commands starting with "mpvc". This allows for manipulating the mpv/mpvc status. The commands run with "mpvc" have QUIETFLAG=true set, to not clutter the mpvc-tui.</li>
+    <li> run shell commands internally starting with "!". This allows for commands that manipulate mpvc-tui program, such as changing the working directory, with cd/pwd. This also allows for starting your favorite editor to configure the mpvc-tui look and feel with: "!$EDITOR $MPVC_CONFIG".</li>
+    <li> run shell commands externally starting with "!!". This allows for running commands on a separate shell. This gives room for more complex commands, like starting alsamixer to manipulate audio levels, change outputs with `pactl(1)`, etc.</li>
+    <li> quit the mpvc-tui, by typing quit, exit, or "q".</li>
+</ol>
+<p>
+When using the mpvc-tui prompt for some time, one notices that there's a lot of repetition of commands. To address repetition, one solution is to use a history file of past commands, and completion of commands and filenames. This can be achieved using `rlwrap(1)` in one shot mode that becomes a life-saver. Now, you get a more comfortable prompt, where TAB completion works on commands and filenames, as well as Control+R to repeat previous commands in the history file.
+</p>
+
+<h3 id="logbook-20221214">On using the mpvc-tui -x launcher, 14 Dec 2022</h3>
+<p>
+Another nifty detail of mpvc-tui, is that it can be quickly spawn from the WM launcher by using <code>mpvc-tui -x</code>, then type a few mpvc commands to setup music, and close it. Or it can be started on the current terminal with `mpvc-tui` and left running as a long running program, and get back to it when needed.
+</p>
+
+<h3 id="logbook-20221215">On managing playlists with mpvc autoload/autosave, 15 Dec 2022</h3>
+<p>
+When using `mpc(1)`, playlists can be managed using the mpc load/save/lsplaylists commands.
+
+In addition to load/save, mpvc adds the autoload/autosave commands:
+</p>
+<ul>
+<li>
+    <code>mpvc autosave</code>: save the current playlist to $XDG_CONFIG_HOME/mpvc/playlist/.
+    If no arguments are provided the current playlist is named "$(date -Imin)".
+    Otherwise, if a name is given "mpvc autosave ambient.m3u", then the file is saved as "ambient.m3u"
+</li>
+<li> <code>mpvc autoload</code>: loads the named playlist from $XDG_CONFIG_HOME/mpvc/playlist/.</li>
+<li> <code>mpvc lsplaylists</code>: list the playlists under $XDG_CONFIG_HOME/mpvc/playlist/.</li>
+</ul>
+<p>
+The above enables to arrange a playlist, and once we are happy with it, save it with `mpvc autosave playlist.m3u`, later, we can replay it again with: `mpvc autoload playlist.m3u`.
+</p>
+
+<h3 id="logbook-20221216">On customizing mpvc-tui look and feel, 16 Dec 2022</h3>
+<p>
+While using <code>mpvc-tui</code>, one ends up wanting to configure the minimal look and feel that mpvc-tui provides. To this end the file <code>mpvc-tui.conf</code> under $XDG_CONFIG_HOME/mpvc/ provides a place to overwrite the look and feel default settings of mpvc-tui.
+</p>
+
+<h3 id="logbook-20221216">Show HN: mpvc-tui – A minimal mpc-like CLI and TUI for controlling mpv, 16 Dec 2022</h3>
+<p>
+We are on "Show HN"! <a href="https://news.ycombinator.com/item?id=34013149">https://news.ycombinator.com/item?id=34013149</a>
+</p>
+
+<h3 id="logbook-20221217">On issuing direct JSON IPC commands to mpv, 17 Dec 2022</h3>
+<p>
+That one is easy, for that purpose <code>mpvc cmd args</code> sends the <code>{ "command": args }</code> to the JSON IPC. Some usage examples to test are:
+</p>
+<ul>
+<li> <code>mpvc cmd show-text "hello-world" 2000</code></li>
+<li> <code>mpvc cmd af toggle lavfi=[loudnorm=I=-16:TP=-3:LRA=4]</code></li>
+<li> <code>mpvc cmd af toggle lavfi=[dynaudnorm=g=5:f=250:r=0.9:p=0.5]</code></li>
+</ul>
+<p>
+Note, audio filter commands above are lifted from https://github.com/mpv-player/mpv/issues/6210.
+</p>
+
+<h3 id="logbook-20221219">On playing music from streaming services as youtube and co., 19 Dec 2022</h3>
+<p>
+Mpv already plays URLs (both video and audio) from streaming platforms as youtube. So the one thing missing is to be able to search, select, and enqueue music from these services. This is provided by mpvc-fzf -s/-p, that does:
+</p>
+<ol>
+<li>Query the Invidious API and return a list of URLs</li>
+<li>Use fzf -m to select from the search results.</li>
+<li>Use mpvc load to enqueue the selected songs into the mpv playlist.</li>
+</ol>
+Some usage examples of the above are:
+<ul>
+<li> <code>mpvc-fzf -s rolling stones</code>: Search and return the list of URLs found.</li>
+<li> <code>mpvc-fzf -s rolling stones | fzf -m</code>: Search, Select and return the list of URLs selected.</li>
+<li> <code>mpvc-fzf -s rolling stones | fzf -m | awk '{print $1}' | mpvc load</code>: Search, Select, Enqueue and play the list of URLs selected.</li>
+<li> <code>mpvc-fzf -p rolling stones</code>: Is a shortcut of the last command that does the whole thing.</li>
+</ul>
+Note, that you can use this command from inside mpvc-tui too, by hitting Control+C and then typing "!mpvc-fzf -p rolling stones"
+</p>
+
+<h3 id="logbook-20221221">On subscribing and receiving mpv events, 21 Dec 2022</h3>
+<p>
+Mpv IPC JSON socket allows receiving the media events generated by the running mpv instance.
+Subscribing to the mpv events can be done using the command: mpvc idleloop, by default events appear on standard output for a separate program to consume and react them.
+Some usage examples of the above are:
+</p>
+
+<p>
+<ul>
+<li><code>mpvc idleloop</code>: send the mpv events to stdout.</li>
+<li><code>mpvc idleloop | awk '/playback-restart/ {print}'</code>: select only the "playback-restart" mpv events.</li>
+<li><code>mpvc idleloop | awk '/playback-restart/ {system("notify-send -u normal -i dialog-warning \"$(mpvc)\"");print}'</code>: Send a notification when the track changes.</li>
+</ul>
+</p>
+
+<h3 id="logbook-20221227">On using mpv together with the fzf fuzzy finder, 27 Dec 2022</h3>
+<p>
+I discovered fzf while adding support for selecting and playing YT videos <a href="#logbook-20221219">#logbook-20221219</a>, so I'm quite a newbie on fzf. Still I've been playing with fzf+mpvc to get them working together. So far I've focused on 3 points:
+</p>
+<ul>
+<li><code>mpvc-fzf -p</code>: For searching/playing Internet media from YouTube.</li>
+<li><code>mpvc-fzf -l</code>: For searching/playing Local media from your file-system.</li>
+<li><code>mpvc-fzf -f</code>: For managing the mpv status and playlist: say mpvc play, pause, seek etc.</li>
+</ul>
+<p>
+This is still on a very preliminary state, but it's amazing what fzf can do, and so far, seems to fit very well with mpvc.
+</p>
+
+<h3 id="logbook-20230112">On using mpv together with the fzf fuzzy finder, 12 Jan 2023</h3>
+<p>
+Continuing on the topic of using fzf with mpv, I’ve decided to split the code into three scripts:
+</p>
+<ul>
+<li><code>mpvc</code>: that provides the mpvc functionality.</li>
+<li><code>extras/mpvc-tui</code>: that provides the mpvc TUI functionality.</li>
+<li><code>extras/mpvc-fzf</code>: that provides the mpvc FZF functionality.</li>
+</ul>
+<p>
+I think it’s clear/simpler this way, as the mpvc-tui was getting more and more fzf functionality, that was unrelated to the TUI. This breaks some things, as for example, uses of <code>mpvc-tui -[lfFspP]</code> that now have become <code>mpvc-fzf -[lfFspP]</code>.
+</p>
+
+<h3 id="logbook-20230119">On controlling multiple remotely running mpv instances, 19 Jan 2023</h3>
+A work in progress update, in no particular order, but, mostly focused on using mpvc to control a remote box (Raspberry Pi) acting as an audio/media center:
+
+<ul>
+    <li> <code>mpvc -S ~/.config/mpvc/mpvsocket-new --mpv add /path/to/media</code>: Starts a new <code>mpv</code> instance listening on <code>mpvsocket-new</code> and adds media.</li>
+    <li> <code>mpvc socklist</code>: Lists all mpv sockets, including those that are inactive: without a mpv instance running.</li>
+    <li> <code>mpvc sockclean</code>: Clean inactive mpv sockets: without a mpv instance running.</li>
+    <li> If the mpv socket resides on a separate computer, then, ssh forwarding can bring the socket home:
+        <code>ssh -NL $HOME/.config/mpvc/mpvsocket0:$HOME/.config/mpvc/mpvsocket0 mediacenter</code>
+        <em>Note</em>, the above command just "works", but probably has some rough edges, and can be improved.
+    </li>
+
+    <li> After issuing the previous command, the <code>mpvsocket0</code> is locally accessible and can be directly managed by <code>mpvc, mpvc-fzf, mpvc-tui</code>. For example, running mpvc to start a randomly chosen track from the playlist:
+        <code>mpvc -q play $(( $RANDOM % $(mpvc get playlist-count) )</code>)
+    </li>
+</ul>
+This goes together with other related command as: <code>mpvc cmd/sockcmd/repl/get/set/cycle</code>. 
+
+<h3 id="logbook-20230219">On stashing mpv media player state to restore later, 19 Feb 2023</h3>
+<p>
+Something experimental I've been testing lately is using: <code>mpvc stash</code> command to save the currently playing state, to be restored later. The commands implemented by <code>mpvc stash [list|show|push|drop|apply]</code> are inspired by <code>git-stash(1)</code>:
+
+<ul>
+<li><code>mpvc stash list</code>: Lists the currently mpvc stashes.</li>
+<li><code>mpvc stash show [name]</code>: Shows the contents of the mpvc stash named [name].</li>
+<li><code>mpvc stash push [name]</code>: Stashes the current mpvc state to [name].</li>
+<li><code>mpvc stash drop [name]</code>: Removes the mpvc stash named [name].</li>
+<li><code>mpvc stash apply [name]</code>: Applies the mpvc stash named [name].</li>
+</ul>
+</p>
+
+This is different from <code>mpvc load/save</code> that only loads/saves the playlist, as <code>mpvc stash</code> saves the current playing settings including: <code>playlist-pos, playback-time, volume, mute, pause, etc.</code> together with the playlist. 
+
+<h3 id="logbook-20230331">CSS, RSS &amp; casts updates on the gmt4.github.io/mpvc site, 31 Mar 2023</h3>
+<p>
+A few things have been going on since last entry, some effort focused on getting a “decent” site (this HTML thing you’re reading right now @ <a href="https://gmt4.github.io/mpvc">gmt4.github.io/mpvc</a> ) where its easy keep track of whats going on. This effort has :
+</p>
+<ul>
+<li>First, a minimal CSS to get a nice look and feel.</li>
+<li>Second, structure content, and, setup <a href="atom.xml">atom.xml</a> RSS feed now to keep track.</li>
+<li>Third, a <a href="casts/">casts/</a> page provides now some mpvc asciinerama screencasts.</li>
+</ul>
+<p>
+Keep posted.
+</p>
+
+<h3 id="logbook-20230425">Introducing mpvc-equalizer: a basic mpv equalizer for the CLI, 25 Apr 2023</h3>
+<p>
+This entry introduces <a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-equalizer">mpvc-equalizer</a> a Linear Phase 15-Bands Equalizer for the CLI/shell based on the <a href="#">firequalizer15.lua</a> mpv-script. 
+The basic operations that are available in <code>mpvc-equalizer</code> are:
+</p>
+<ul>
+<li><code>mpvc-equalizer preset</code>: Provides a set of basic equalizer presets ready to be loaded</li>
+<li><code>mpvc-equalizer reset/load/save</code>: To reset/load/save mpvc equalizer settings</li>
+<li><code>mpvc-equalizer json/bars</code>: To query the equalizer settings as JSON or as CLI bars</li>
+</ul>
+<p>
+An example of the `mpvc-equalizer` to set equalizer values for classical music:
+<pre>
+ mpvc-equalizer preset
+ mpvc-equalizer preset classical | mpvc-equalizer load
+ mpvc-equalizer bars
+ mpvc-equalizer reset
+</pre>
+</p>
+
+<h3 id="logbook-20230602">On applying ffmpeg AV filters using the MPV JSON IPC, 2 June 2023</h3>
+<p>
+Continuing with the topic of the previous post about mpvc-equalizer, one reason for starting mpvc, was to ease was to managing audio from the CLI. In that sense mpv integrates well with ffmpeg to apply AV filters. However you've to, either start mpv specifying the ffmpeg cli flags for the AV-filters, or add keyboard shortcuts into the input.conf to be triggedred during runtime.
+</p>
+
+<p>
+Instead of that, for quickly testing combinations of filters, I was looking for something more CLI oriented: apply the filters using the MPV JSON IPC. That's what happens under the hood when a command `mpvc cmdr af ...` runs, for example:
+
+<pre>
+# start adding a rubberband filter
+mpvc cmdr af toggle "@rubberband:lavfi=[rubberband=pitch=1:tempo=1]"
+
+# Change the AV filter is easy, rerun the command with the changes
+mpvc cmdr af toggle "@rubberband:lavfi=[rubberband=pitch=0.98:tempo=1]"
+
+# Removing the filter is as expected
+mpvc cmdr af remove "@rubberband:lavfi=[rubberband=pitch=0.98:tempo=1]"
+
+# Another option is toggling the AV filters on and off with
+mpvc cmdr af toggle "@rubberband:lavfi=[rubberband=pitch=0.98:tempo=1]"
+
+# The same goes for what filters are currently applied
+mpvc getr af | jq
+
+# Clearing all the current af filters
+mpvc setr af ''
+
+# Useful debuging af filters errors: lower/raise verbosity
+mpvc setr msg-level all=error
+mpvc setr msg-level all=warn
+mpvc setr msg-level all=info
+
+# Some cools af filters
+mpvc cmdr af toggle "@flanger:lavfi=[flanger=delay=1]"
+mpvc cmdr af toggle "@tremolo:lavfi=[tremolo]"
+mpvc cmdr af toggle "@vibrato:lavfi=[vibrato]"
+mpvc cmdr af toggle "@apulsator:lavfi=[apulsator]"
+mpvc cmdr af toggle "@aphaser:lavfi=[aphaser]"
+mpvc cmdr af toggle "@aecho:lavfi=[aecho=in_gain=0.9:out_gain=0.9:delays=1:decays=0.9]"
+</pre>
+</p>
+
+<!-- SOF -->
+
+<hr/>
+<p>
+<span>
+    <em>Last-Modified: Saturday, 24 June 2023 by <a href="https://gmt4.github.io">gmt4</a></em>
+</span>
+<span style="float: right;">
+    <em>Powered by #HTML 🧡 💚 💙 </em>
+</span>
+</p>
+
+</body>
+</html>
