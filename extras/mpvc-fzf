@@ -87,6 +87,15 @@ mpvctui_fzf_isearch()
         }'
 }
 
+mpvctui_fzf_nextvideo()
+{
+    id="${1##https://yewtu.be/}"
+    output=$(curl -fsSL -A '' "https://yewtu.be/watch?v=$id")
+    next_video=$(echo "$output" | awk '/next_video/ {gsub("[\",]",""); print $2}')
+    next_url="https://yewtu.be/$next_video"
+    echo "$next_url"
+}
+
 mpvctui_fzf_icache()
 {
     # check for media present in local cache
@@ -205,7 +214,7 @@ mpvctui_version()
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
 }
 
-optflags="1cCd:DfFg:G:hs:p:P:lxv"
+optflags="1cCd:DfFg:G:hn:s:p:P:lxv"
 mpvctui_usage()
 {
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
@@ -242,6 +251,7 @@ main()
         G) mpvctui_fzf_fetch $(mpvctui_fzf_iplay "$OPTARG");;
         h) mpvctui_usage ;;
         l) mpvctui_fzf_local;;
+        n) mpvctui_fzf_nextvideo "$OPTARG" ;;
         p) mpvctui_fzf_iplay "$OPTARG" | mpvc load ;;
         P) mpvctui_fzf_iplay "$OPTARG" | mpvc loadc ;;
         s) mpvctui_fzf_isearch "$OPTARG";;
