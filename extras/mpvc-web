@@ -26,7 +26,7 @@ mpvc_web_index()
 <html>
     <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>$PROGNAME $PROGVERSION ($PROGURL)</title>
+    <title>$PROGNAME $PROGVERSION 🎧</title>
     </head>
     <style type="text/css" media="all">
     :root { --body-bg: #fff; --body-color: #111; --pre-bg:#eee; --link-color:#00f; } /* Light mode */
@@ -40,7 +40,7 @@ mpvc_web_index()
     a    { color: var(--link-color); }
     </style>
     <body>
-    <strong>$PROGNAME $PROGVERSION</strong>
+    <strong>$PROGNAME $PROGVERSION 🎧</strong>
     <hr>
     <ul>
     <li> mpvc <a href="?cmd=mpvc status">status</a> </li>
@@ -96,8 +96,8 @@ mpvc_web()
         /GET \/\?cmd=mpvc%20play/     { system("mpvc -q play") }
         /GET \/\?cmd=mpvc%20stop/     { system("mpvc -q stop") }
 
-        /GET \/\?cmd=mpvc%20vol%20\-10/    { system("mpvc -q vol -10") }
-        /GET \/\?cmd=mpvc%20vol%20\+10/    { system("mpvc -q vol +10") }
+        /GET \/\?cmd=mpvc%20vol%20\-10/   { system("mpvc -q vol -10") }
+        /GET \/\?cmd=mpvc%20vol%20\+10/   { system("mpvc -q vol +10") }
 
         /GET \/\?cmd=mpvc%20repeat/   { system("mpvc -q repeat") }
         /GET \/\?cmd=mpvc%20single/   { system("mpvc -q single") }
