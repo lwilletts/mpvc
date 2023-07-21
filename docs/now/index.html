@@ -66,16 +66,16 @@
     </h1>
     <h2>Now Listening</h2>
     <div class="container">
+        <div class="item"> <iframe src="https://www.youtube.com/embed/ssDzysKLlpY" frameborder="0" allowfullscreen=""></iframe> </div>
         <div class="item"> <iframe src="https://www.youtube.com/embed/667dtK7O89k" frameborder="0" allowfullscreen=""></iframe> </div>
-        <div class="item"> <iframe src="https://www.youtube.com/embed/Hwg7hJrDiRg" frameborder="0" allowfullscreen=""></iframe> </div>
         <div class="item"> <iframe src="https://www.youtube.com/embed/UzRFQ6pDqhk" frameborder="0" allowfullscreen=""></iframe> </div>
 
         <div class="item"> <iframe src="https://www.youtube.com/embed/TCckoybjos8" frameborder="0" allowfullscreen=""></iframe> </div>
         <div class="item"> <iframe src="https://www.youtube.com/embed/ypAIWyH13aM" frameborder="0" allowfullscreen=""></iframe> </div>
         <div class="item"> <iframe src="https://www.youtube.com/embed/Jls9wXOSjl4" frameborder="0" allowfullscreen=""></iframe> </div>
 
+        <div class="item"> <iframe src="https://www.youtube.com/embed/Hwg7hJrDiRg" frameborder="0" allowfullscreen=""></iframe> </div>
         <div class="item"> <iframe src="https://www.youtube.com/embed/RbEN0c6bO9M" frameborder="0" allowfullscreen=""></iframe> </div>
-        <div class="item"> <iframe src="https://www.youtube.com/embed/9DR1MqA0an8" frameborder="0" allowfullscreen=""></iframe> </div>
         <div class="item"> <iframe src="https://www.youtube.com/embed/6FJ7F6trvBc" frameborder="0" allowfullscreen=""></iframe> </div>
     </div>
 
@@ -87,6 +87,7 @@
 
 awk '/https:/ { gsub($1,""); gsub($1,""); print }' ~/.config/mpvc/mpvc-tui.scb |
     tac | tail -n 10 | awk '{print $1}' | tee now-listening.csv
+https://www.youtube.com/watch?v=ssDzysKLlpY
 https://www.youtube.com/watch?v=667dtK7O89k
 https://www.youtube.com/watch?v=Hwg7hJrDiRg
 https://www.youtube.com/watch?v=UzRFQ6pDqhk
@@ -94,14 +95,13 @@ https://www.youtube.com/watch?v=TCckoybjos8
 https://www.youtube.com/watch?v=ypAIWyH13aM
 https://www.youtube.com/watch?v=Jls9wXOSjl4
 https://www.youtube.com/watch?v=RbEN0c6bO9M
-https://www.youtube.com/watch?v=9DR1MqA0an8
 https://www.youtube.com/watch?v=6FJ7F6trvBc
     </pre>
 
 <hr/>
 <p>
 <span>
-    <em>Last-Modified: Wednesday, 07 June 2023 by <a href="https://gmt4.github.io">gmt4</a></em>
+    <em>Last-Modified: Friday, 21 July 2023 by <a href="https://gmt4.github.io">gmt4</a></em>
 </span>
 <span style="float: right;">
     <em>Powered by #HTML 🧡 💚 💙 </em>
