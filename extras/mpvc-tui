@@ -36,6 +36,9 @@ mpvctui_defaults()
     MPVC_CWHITE='\033[0;37m'
     MPVC_CRST='\033[0m'
 
+    MPVC_CLEAR='\033c'
+    MPVC_CUP='\033[1;1H'
+
     # config defaults
     NO_COLOR="${NO_COLOR:-}"
 
@@ -84,7 +87,8 @@ mpvctui_headerc()
     cstart="$1"; shift
     cend="$1"; shift
     ccolor="$1"; shift
-    cols=$(tput cols)
+    cols=$(stty size)
+    cols=${cols##* }
     hdr="${char}${char}${cstart}$*${cend}"
     rem=$(( cols - ${#hdr} ))
     # when SHELL=/bin/dash, ${#hdr} is 4 chars smaller
@@ -94,6 +98,7 @@ mpvctui_headerc()
         hdr="$hdr$char"
     done
 
+    # XXX if sh displays raw escape sequences, instead of colored output, then remove "%s"
     if [ -n "$NO_COLOR" ]; then
         printf "%s" "${hdr}"
     else
@@ -157,8 +162,8 @@ mpvctui_watch()
     while :
     do
         output=$(mpvctui_watcher 2>&1)
-        if [ $(( count % MPVC_CLEARC )) -eq 0 ]; then tput clear; fi
-        tput cup 0 0
+        if [ $(( count % MPVC_CLEARC )) -eq 0 ]; then echo "${MPVC_CLEAR}"; fi
+        printf "${MPVC_CUP}"
         echo "$output"
         count=$(( count + 1 ))
         sleep $MPVC_UPDATEC
