@@ -23,6 +23,7 @@ set -euf
 mpvc_fetch()
 {
     mkdir -p "$BINDIR"
+    echo "Fetching mpvc from $PROGURL"
     for script in ${SCRIPT};
     do
         local="$BINDIR/$(basename "$script")"
