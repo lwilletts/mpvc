@@ -162,7 +162,7 @@ mpvctui_watch()
     while :
     do
         output=$(mpvctui_watcher 2>&1)
-        if [ $(( count % MPVC_CLEARC )) -eq 0 ]; then echo "${MPVC_CLEAR}"; fi
+        if [ $(( count % MPVC_CLEARC )) -eq 0 ]; then printf "${MPVC_CLEAR}"; fi
         printf "${MPVC_CUP}"
         echo "$output"
         count=$(( count + 1 ))
