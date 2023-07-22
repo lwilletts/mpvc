@@ -98,11 +98,11 @@ mpvctui_headerc()
         hdr="$hdr$char"
     done
 
-    # XXX if sh displays raw escape sequences, instead of colored output, then remove "%s"
     if [ -n "$NO_COLOR" ]; then
         printf "%s" "${hdr}"
     else
-        printf "%s" "${ccolor}${hdr}${MPVC_CRST}"
+        # not using printf "%s" here as sh displays raw escape sequences, instead of colored output
+        printf "${ccolor}${hdr}${MPVC_CRST}"
     fi
 }
 
