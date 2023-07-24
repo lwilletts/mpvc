@@ -61,6 +61,18 @@ mpvc_uninstall()
     done
 }
 
+mpvc_check_requirements()
+{
+    # attempt at listing packages required by mpvc & extras/ to work
+    command -v "mpv" || echo "$PROGNAME: Error: No mpv found. Install to continue."
+    command -v "fzf" || echo "$PROGNAME: Error: No fzf found, Install to continue"
+    command -v "curl" || echo "$PROGNAME: Error: No curl found, Install to continue"
+    command -v "socat" || echo "$PROGNAME: Error: No socat found, Install to continue"
+
+    command -v "rlwrap" || echo "$PROGNAME: Warning: No rlwrap, Install to get history, filename & completion support!"
+    command -v "notify-send" || mpvctui_warn "$PROGNAME: Warning: No notify-send, Install to get mpv desktop notifications"
+}
+
 mpvc_check_update()
 {
     master=$(curl -fsSL "$PROGURL/raw/master/extras/mpvc-installer" |
@@ -94,6 +106,7 @@ main()
 
     case "$1" in
 
+    check-requirements) shift; mpvc_check_requirements;;
     check-update)    shift; mpvc_check_update;;
     fetch)           shift; mpvc_fetch "$@";;
     link)            shift; mpvc_link "$@";;
