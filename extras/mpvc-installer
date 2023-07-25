@@ -15,10 +15,29 @@ PROGURL="https://github.com/gmt4/mpvc"
 SHELL="${SHELL:-/bin/sh}"
 PREFIX="${PREFIX:-/usr/local}"
 BINDIR="${BINDIR:-$PREFIX/bin}"
+MPV_CONFDIR="${CONFIGDIR:-$HOME/.config/mpv}"
 
 SCRIPT="mpvc extras/mpvc-tui extras/mpvc-fzf extras/mpvc-chapter extras/mpvc-mpris extras/mpvc-equalizer extras/mpvc-web extras/mpvc-installer"
+CONFIG="docs/mpv.conf"
 
 set -euf
+
+mpvc_config()
+{
+    mkdir -p "$MPV_CONFDIR/scripts/"
+    echo "Fetching mpv.conf from $PROGURL"
+    for config in ${CONFIG};
+    do
+        local="$MPV_CONFDIR/$(basename "$config")"
+        echo "Fetch $local"
+        curl -fsSL -o "$local" "$PROGURL/raw/master/$config"
+    done
+
+    (
+        cd "$MPV_CONFDIR/scripts/"
+        curl -fsSL -O "https://raw.githubusercontent.com/mpv-player/mpv/master/player/lua/ytdl_hook.lua"
+    )
+}
 
 mpvc_fetch()
 {
@@ -90,6 +109,8 @@ usage()
 {
     echo "usage: $PROGNAME args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
     echo "  check-update   : Check for updates"
+    echo "  check-reqs     : Check for required packages"
+    echo "  config         : Fetch mpv config"
     echo "  fetch-user     : Fetch to BINDIR=$HOME/bin"
     echo "  link-user      : Symlink to BINDIR=$HOME/bin"
     echo "  install-user   : Install to BINDIR=$HOME/bin"
@@ -106,12 +127,15 @@ main()
 
     case "$1" in
 
-    check-requirements) shift; mpvc_check_requirements;;
+    check-reqs)      shift; mpvc_check_requirements;;
     check-update)    shift; mpvc_check_update;;
+    config)          shift; mpvc_config "$@";;
     fetch)           shift; mpvc_fetch "$@";;
     link)            shift; mpvc_link "$@";;
     install)         shift; mpvc_install "$@";;
     uninstall)       shift; mpvc_uninstall "$@";;
+
+    fetch-config)    shift; PREFIX=$HOME $SHELL "$0" config;;
 
     fetch-user)      shift; PREFIX=$HOME $SHELL "$0" fetch;;
     fetch-sys)       shift; PREFIX=/usr/local $SHELL "$0" fetch;;
