@@ -92,7 +92,7 @@ mpvctui_headerc()
     hdr="${char}${char}${cstart}$*${cend}"
     rem=$(( cols - ${#hdr} ))
     # when SHELL=/bin/dash, ${#hdr} is 4 chars smaller
-    if [ "$MPVC_SHELL" = "/bin/dash" ]; then rem=$(( rem + 4 )); fi
+    if [ "${MPVC_SHELL##*/}" = "dash" ]; then rem=$(( rem + 4 )); fi
     for _ in $(seq 1 $rem)
     do
         hdr="$hdr$char"
@@ -121,7 +121,7 @@ mpvctui_tips()
     30|31|32) echo ": Config at ${MPVC_CONFIG##$HOME/}";;
     40|41|42) echo ": Launch from WM with: $PROGNAME -x";;
     50|51|52) echo ": version $PROGNAME $PROGVERSION at $PROGURL";;
-    60|61|62) echo ": Update $MPVC_UPDATEC secs refresh $((count % MPVC_CLEARC))/$MPVC_CLEARC";;
+    60|61|62) echo ": Update $MPVC_UPDATEC secs refresh $((count % MPVC_CLEARC))/$MPVC_CLEARC shell $MPVC_SHELL";;
     esac
 }
 
