@@ -80,9 +80,9 @@ mpvc_web_index()
     </ul>
     <hr>
     <strong>mpvc status</strong>
-    <iframe width="100%" frameborder="1" src="/cgi-bin/mpvc?status" allowtransparency="true" ></iframe>
+    <iframe name="mpvc-status" width="100%" frameborder="1" src="/cgi-bin/mpvc?status" allowtransparency="true" ></iframe>
     <strong>mpvc playlist</strong>
-    <iframe width="100%" height="300" frameborder="1" src="/cgi-bin/mpvc?playlist" allowtransparency="true" ></iframe>
+    <iframe name="mpvc-playlist" width="100%" height="300" frameborder="1" src="/cgi-bin/mpvc?playlist" allowtransparency="true" ></iframe>
     <sub>$PROGINFO <a href="$PROGURL">$PROGURL</a></sub>
     </body>
 </html>
@@ -94,10 +94,11 @@ mpvc_web_cgi()
     MPVC=$(command -v mpvc)
     cat <<EOF
 #!/bin/sh
-[ -n "\$HOME" ] && env -i "\$0" "\$@"
-export PATH=/usr/bin:/bin
-export HOME=$HOME
 set -euf
+if [ -n "\${USER:-}" ]; then
+    env -i PATH="/usr/bin:/bin" HOME="\$HOME" TERM="\$TERM" QUERY_STRING="\${QUERY_STRING:-}" "\$0" "\$@"; exit;
+fi
+export
 echo "Content-Type: text/plain"
 echo
 case "\${QUERY_STRING:-}" in
