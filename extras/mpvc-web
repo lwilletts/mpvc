@@ -7,7 +7,9 @@
 #
 
 # REMEMBER This is a hack, DISCLAIMER * Use at Your Own Risk *
-# The sole reason for its existence is to mimic mpvc-tui when this is not available,
+# A security hole in itself, with many open man-holes, evident holes have been marked with XXX
+#
+# The sole reason for its existence is to mimic mpvc-tui when is not available,
 # for example, controlling a remotely running an mpv, accessing from a client without a CLI,
 # like a laptop, tablet, or phone.
 
@@ -91,6 +93,7 @@ mpvc_web_cgi()
 {
     cat <<"EOF"
 #!/bin/sh
+set -euf
 echo "Content-Type: text/plain"
 echo
 case "$QUERY_STRING" in
@@ -142,7 +145,10 @@ mpvc_web()
             gsub("HTTP.*$","",r);
             gsub("^.*GET \\/\\?cli=mpvc\\+","mpvc ", r);
             gsub("\\+"," ", r);
-            if (ENVIRON["MPVC_DEV"]) system(r);
+            if (ENVIRON["MPVC_DEV"])
+            {
+                system(r); # XXX
+            }
         }
 
         { print $0 }
