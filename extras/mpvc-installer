@@ -88,9 +88,9 @@ mpvc_check_requirements()
     command -v "mpv" || echo "$PROGNAME: Error: No mpv found. Install to continue."
     command -v "fzf" || echo "$PROGNAME: Error: No fzf found, Install to continue"
     command -v "awk" || echo "$PROGNAME: Error: No awk found, Install to continue" # gawk ???
-    command -v "curl" || echo "$PROGNAME: Error: No curl found, Install to continue"
     command -v "socat" || echo "$PROGNAME: Error: No socat found, Install to continue"
-
+    # recommened, and good to have, but not required
+    command -v "curl" || echo "$PROGNAME: Warning: No curl found, Install to continue"
     command -v "rlwrap" || echo "$PROGNAME: Warning: No rlwrap, Install to get history, filename & completion support!"
     command -v "notify-send" || echo "$PROGNAME: Warning: No notify-send, Install to get mpv desktop notifications"
 }
