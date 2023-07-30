@@ -33,12 +33,6 @@ mpvc_config()
         curl -fsSL -o "$local" "$PROGURL/raw/master/$config"
     done
 
-    echo "Fetch ytdl_hook.lua"
-    (
-        cd "$MPV_CONFDIR/scripts/"
-        curl -fsSL -O "https://raw.githubusercontent.com/mpv-player/mpv/master/player/lua/ytdl_hook.lua"
-    )
-
     echo "Fetch yt-dlp"
 	(
         cd "$BINDIR"
