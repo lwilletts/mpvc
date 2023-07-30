@@ -89,7 +89,7 @@ mpvc_check_requirements()
     command -v "socat" || echo "$PROGNAME: Error: No socat found, Install to continue"
 
     command -v "rlwrap" || echo "$PROGNAME: Warning: No rlwrap, Install to get history, filename & completion support!"
-    command -v "notify-send" || mpvctui_warn "$PROGNAME: Warning: No notify-send, Install to get mpv desktop notifications"
+    command -v "notify-send" || echo "$PROGNAME: Warning: No notify-send, Install to get mpv desktop notifications"
 }
 
 mpvc_check_update()
