@@ -34,7 +34,7 @@ mpvc_config()
     done
 
     echo "Fetch yt-dlp"
-	(
+    (
         cd "$BINDIR"
         curl -fsSL -O "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp"
         chmod a+rx yt-dlp
