@@ -64,8 +64,14 @@ mpvc_web_index()
               <a href="?cmd=mpvc prev">prev</a>
               <a href="?cmd=mpvc next">next</a>
     </li>
-    <li> mpvc <a href="?cmd=mpvc repeat">repeat</a> <a href="?cmd=mpvc single">single</a></li>
-    <li> mpvc vol <a href="?cmd=mpvc vol -10">-10</a> <a href="?cmd=mpvc vol +10">+10</a></li>
+    <li> mpvc
+              <a href="?cmd=mpvc repeat">repeat</a>
+              <a href="?cmd=mpvc single">single</a>
+    </li>
+    <li> mpvc vol
+              <a href="?cmd=mpvc vol -10">-10</a>
+              <a href="?cmd=mpvc vol +10">+10</a>
+    </li>
     </ul>
     <hr>
     <strong>mpvc status</strong>
