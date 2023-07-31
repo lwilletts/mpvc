@@ -286,7 +286,7 @@ mpvc_get_playlist() {
     [ "$mode" != "full" ] && calculateTerminalHeight "$lpos" "$lcount"
 
     mpvc_get_playlist_once |
-        awk -v no_color="$NO_COLOR" -v lpos="$lpos" -v first="$FIRST" -v last="$LAST" \
+        awk -v no_color="$NO_COLOR" -v mpvc="$0" -v lpos="$lpos" -v first="$FIRST" -v last="$LAST" \
         '
         function basename(url, fields, n)
         {
@@ -299,10 +299,10 @@ mpvc_get_playlist() {
             gsub("^ *", "", url)
             if (url ~ "^ *https?:")
             {
-                ytcmd=sprintf("mpvc ytquery \"%s\"", url)
+                ytcmd=sprintf("%s ytquery \"%s\"", mpvc, url)
                 ytcmd | getline ytitle
                 if (!ytitle)
-                    "mpvc ytquery " url | getline ytitle
+                    mpvc " ytquery " url | getline ytitle
             } else {
                 ytitle=basename(url)
             }
@@ -331,7 +331,7 @@ mpvc_get_playlist() {
                 else
                 {
                     "tput cols" | getline cols
-                    "mpvc cmd expand-text \\${percent-pos}" | getline pct
+                    mpvc " cmd expand-text \\${percent-pos}" | getline pct
                     count=int((cols) * (pct/100))
                     title=mpvc_ytquery($0)
                     line=sprintf("%2d  %s", lid, title)
