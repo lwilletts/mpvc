@@ -24,7 +24,7 @@ Check the [Wiki](../../wiki) & [Casts](https://gmt4.github.io/mpvc/casts/) for a
  <b># fetch a local copy of the github repo</b>
  git clone https://github.com/gmt4/mpvc/
  <b># use extras/mpvc-installer: just copy/link to your $HOME/bin</b>
- mpvc/extras/mpvc-installer link-user
+ (cd mpvc; extras/mpvc-installer link-user)
 
  <b># use mpvc-fzf to search and play youtube media</b>
  mpvc-fzf -p kupla mirage
