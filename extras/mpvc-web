@@ -35,6 +35,7 @@ mpvc_web_index()
     @media (prefers-color-scheme: dark) {
        :root { --body-bg: #222; --body-color: #eee; --pre-bg:#333; --link-color:#07f; } /* Dark mode */
     }
+    :root { --body-bg: #fff; --body-color: #111; --pre-bg:#eee; --link-color:#00f; } /* Light mode */
     body { background: var(--body-bg); color: var(--body-color); font-family: sans-serif; }
     code { background: var(--pre-bg); }
     pre  { background: var(--pre-bg); }
@@ -42,10 +43,11 @@ mpvc_web_index()
     </style>
     <body>
     <strong>$PROGNAME $PROGVERSION 🎧</strong>
+    theme [ <a href="?theme=light">light</a> | <a href="?theme=dark">dark</a> ]
     <hr>
-    <ul>
 
     <!-- enable this optionally: only for dev/testing -->
+    <ul>
     <li>
         <form action="/" method="get">
             <input type="text" id="cli" name="cli" placeholder="mpvc status" onkeydown="if (event.keyCode == 13) { this.form.submit(); return false; }">
@@ -122,6 +124,7 @@ mpvc_web()
         mpvc_web_index > "$MPVC_WEB_ROOT/index.html"
         mpvc_web_cgi > "$MPVC_WEB_ROOT/cgi-bin/mpvc"
         chmod u+x "$MPVC_WEB_ROOT/cgi-bin/mpvc"
+        touch "$MPVC_WEB_ROOT/favicon.ico"
 
         # XXX handle cli commands, rewrite this mess
         python3 -u -m http.server --cgi "$@" 2>&1 | awk \
