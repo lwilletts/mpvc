@@ -91,16 +91,20 @@ EOF
 
 mpvc_web_cgi()
 {
-    cat <<"EOF"
+    MPVC=$(command -v mpvc)
+    cat <<EOF
 #!/bin/sh
+[ -n "\$HOME" ] && env -i "\$0" "\$@"
+export PATH=/usr/bin:/bin
+export HOME=$HOME
 set -euf
 echo "Content-Type: text/plain"
 echo
-case "$QUERY_STRING" in
-    status) mpvc status;;
-    playlist) mpvc --nocolor playlist;;
-    playlistfull) mpvc --nocolor playlistfull;;
-    *) mpvc ;;
+case "\${QUERY_STRING:-}" in
+    status) $MPVC status;;
+    playlist) $MPVC --nocolor playlist;;
+    playlistfull) $MPVC --nocolor playlistfull;;
+    *) $MPVC ;;
 esac
 EOF
 }
