@@ -721,7 +721,8 @@ isInt() { printf '%d' "$1" >/dev/null 2>&1 && [ -n "$1" ]; }
 calculateTerminalHeight() {
     plpos="$1"
     lcount="$2"
-    lines=$(stty size)
+    tty=$(tty -s && tty || ps -hp $$ -o tty | sed 's|^|/dev/|' ) # sorry XXX
+    lines=$(stty size -F "$tty")
     lines=${lines%% *}
     crow=${MPVC_CLINE:-3}
     rows=$((lines - crow))
