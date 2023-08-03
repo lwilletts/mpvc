@@ -156,15 +156,29 @@ mpvc_config()
     fi
 }
 
+mpvc_tac()
+{
+    awk '
+        NR == 1 { lines=$0 }
+        NR  > 1 { lines=$0"\n"lines }
+        END     { print lines }
+    ' "$@"
+}
+
 ## Retrieval Functions ########################################################
 
 mpvc_curl_cache()
 {
     k=$2
-    v="$(tac "$MPVC_CURL_CACHE" | awk -F'\t' -v k="$k" '{ if ($1 == k) {print $2; exit} }' )"
+    v="$( awk -F'\t' -v k="$k" '{ if ($1 == k) {print $2; exit} }' "$MPVC_CURL_CACHE" )"
+
+    if [ ! -s "$MPVC_CURL_CACHE" ]; then
+        echo > "$MPVC_CURL_CACHE";
+    fi
+
     if [ "${#v}" -eq 0 ]; then
         v=$(curl "$@")
-        echo "$k	$v" >> "$MPVC_CURL_CACHE"
+        sed -i "1i$k	$v" "$MPVC_CURL_CACHE"
     fi
     echo "$v"
 }
@@ -637,7 +651,7 @@ mpvc_search_play() {
 mpvc_search_remove() {
     mode=$1; shift
     [ -z "$1" ] && return
-    list=$(mpvc_search "$mode" "$1" | awk '{print $1}' | tac )
+    list=$(mpvc_search "$mode" "$1" | awk '{print $1}' | mpvc_tac )
     [ -z "$list" ] && warn "$PROGNAME: Searching for $*, nothing found."
     for i in $list; do mpvc_remove_track "$i"; done
     QUIETFLAG="true"
@@ -646,7 +660,7 @@ mpvc_search_remove() {
 mpvc_search_move() {
     mode=$1; shift
     [ -z "$1" ] && return
-    list=$(mpvc_search "$mode" "$1" | awk '{print $1}' | tac )
+    list=$(mpvc_search "$mode" "$1" | awk '{print $1}' | mpvc_tac )
     [ -z "$list" ] && warn "$PROGNAME: Searching for $*, nothing found."
     for i in $list; do mpvc_move_track "$i" "$2"; done
     QUIETFLAG="true"
