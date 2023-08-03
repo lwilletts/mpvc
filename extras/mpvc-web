@@ -153,10 +153,12 @@ mpvc_web()
 
         /GET \/\?cli=mpvc/                {
             r=$0;
-            gsub("HTTP.*$","",r);
-            gsub("^.*GET \\/\\?cli=mpvc\\+","mpvc ", r);
-            gsub("\\+"," ", r);
-            if (ENVIRON["MPVC_DEV"])
+            gsub("HTTP.*$", "", r);
+            gsub("^.*GET \\/\\?cli=mpvc\\+", "mpvc ", r);
+            gsub("\\+", " ", r);
+            gsub("[^a-z0-9 ]", "", r);
+
+            if (ENVIRON["MPVC_DEV"] && match(r, "^mpvc "))
             {
                 system(r); # XXX
             }
