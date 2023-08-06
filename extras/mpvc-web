@@ -17,7 +17,7 @@ PROGNAME=${0##*/}
 PROGVERSION="v1.4"
 PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
-PROGINFO="mpvc-web, A hack to remotely control mpvc from web # DISCLAIMER * Use at Your Own Risk *"
+PROGINFO="A hack to remotely control mpvc from web # DISCLAIMER * Use at Your Own Risk *"
 
 set -euf
 
@@ -29,7 +29,7 @@ mpvc_web_index()
     <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes" />
-    <title>$PROGNAME $PROGVERSION 🎧</title>
+    <title>$PROGNAME @ $(hostname) 🎧</title>
     </head>
     <style type="text/css" media="all">
     :root { --body-bg: #fff; --body-color: #111; --pre-bg:#eee; --link-color:#00f; } /* Light mode */
@@ -43,15 +43,15 @@ mpvc_web_index()
     a    { color: var(--link-color); }
     </style>
     <body>
-    <a href="."><strong>$PROGNAME $PROGVERSION 🎧</strong></a>
-    theme [ <a href="?theme=light">light</a> | <a href="?theme=dark">dark</a> ]
+    <a href="."><strong>$PROGNAME 🎧</strong></a>
+    theme [ <a href="#" onclick="document.body.style.background='#fff';">light</a> | <a href="#" onclick="document.body.style.background='#999';">dark</a> ]
     <hr>
 
     <!-- enable this optionally: only for dev/testing -->
     <ul>
     <li>
         <form action="/" method="get">
-            <input type="text" id="cli" name="cli" placeholder="mpvc status" onkeydown="if (event.keyCode == 13) { this.form.submit(); return false; }">
+            <input type="text" id="cli" name="cli" placeholder="mpvc status ${MPVC_DEV:-(off)}" onkeydown="if (event.keyCode == 13) { this.form.submit(); return false; }">
         </form>
     </li>
 
@@ -86,7 +86,7 @@ mpvc_web_index()
     <iframe name="mpvc-status" width="100%" frameborder="1" src="/cgi-bin/mpvc?status" allowtransparency="true" ></iframe>
     <strong>mpvc playlist</strong>
     <iframe name="mpvc-playlist" width="100%" height="300" frameborder="1" src="/cgi-bin/mpvc?playlist" allowtransparency="true" ></iframe>
-    <sub>$PROGINFO <a href="$PROGURL">$PROGURL</a></sub>
+    <sub><a href="$PROGURL">$PROGNAME $PROGVERSION</a>, $PROGINFO </sub>
     </body>
 </html>
 EOF
@@ -115,7 +115,7 @@ EOF
 
 mpvc_web()
 {
-    echo "# $PROGINFO"
+    echo "# $PROGNAME $PROGINFO"
     MPVC_WEB_ROOT=/tmp/mpvc-web
     (
         mkdir -p "$MPVC_WEB_ROOT" || return
