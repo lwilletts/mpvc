@@ -573,7 +573,6 @@ mpvc_move_track() {
         die 1 "Position $dstpos is out of range of playlist."
     #[ "$dstpos" -eq 1 ] && dstpos=0
     quiet mpvc_cmd "playlist-move" "$srcpos" "$dstpos"
-
     quietcheck mpvc_get_playlist
 }
 
@@ -710,7 +709,6 @@ mpvc_print_status() {
             -e "s/%status%/$(mpvc_get_pause_status)/g" \
             -e ''
     )
-    #echo "${F}"
     mpvc_cmd "expand-text" "${F}" | sed 's/NL/\n/g'
 }
 
@@ -775,7 +773,6 @@ mpvc_validate_socket() {
     # validate deps
     quiet command -v "$MPVC_MPV" || die 4 "$PROGNAME: Error: No mpv found. Install to continue."
     quiet command -v "$MPVC_SOCAT" || quiet command -v nc || die 4 "$PROGNAME: Error: No socat/nc found. Install one"
-
     # test if socket exists
     [ ! -S "$MPVC_SOCKET" ] && die 2 "Socket ${MPVC_SOCKET##$HOME/} does not exist. Use mpvc --mpv to start one."
     # test if socket is open
