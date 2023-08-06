@@ -118,6 +118,7 @@ mpvc_defaults()
 
     XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}
     MPVC_CONFIG_DIR="${MPVC_CONFIG_DIR:-$XDG_CONFIG_HOME/mpvc}"
+    MPVC_STASH_DIR="${MPVC_STASH_DIR:-$MPVC_CONFIG_DIR/stash}"
 
     MPVC_DATABASE="${MPVC_DATABASE:-$MPVC_CONFIG_DIR/db.m3u}"
     MPVC_PLAYLIST="${MPVC_PLAYLIST:-$MPVC_CONFIG_DIR/playlist}"
@@ -147,9 +148,10 @@ mpvc_config()
     # if not present, create config dir
     [ ! -d "$MPVC_CONFIG_DIR" ] && mkdir -p "$MPVC_CONFIG_DIR"
     [ ! -d "$MPVC_CACHE_DIR" ] && mkdir -p "$MPVC_CACHE_DIR"
+    [ ! -d "$MPVC_STASH_DIR" ] && mkdir -p "$MPVC_STASH_DIR"
     [ ! -d "$MPVC_PLAYLIST" ] && mkdir -p "$MPVC_PLAYLIST"
     # if not present, create config files
-    [ ! -e "$MPVC_CURL_CACHE" ] && touch "$MPVC_CURL_CACHE"
+    [ ! -s "$MPVC_CURL_CACHE" ] && echo > "$MPVC_CURL_CACHE"
     # if present load user config
     if [ -r "$MPVC_CONFIG" ]; then
         . "$MPVC_CONFIG"
@@ -171,10 +173,6 @@ mpvc_curl_cache()
 {
     k=$2
     v="$( awk -F'\t' -v k="$k" '{ if ($1 == k) {print $2; exit} }' "$MPVC_CURL_CACHE" )"
-
-    if [ ! -s "$MPVC_CURL_CACHE" ]; then
-        echo > "$MPVC_CURL_CACHE";
-    fi
 
     if [ "${#v}" -eq 0 ]; then
         v=$(curl "$@")
@@ -250,7 +248,7 @@ mpvc_get()   { mpvc_cmd "get_property_string" "$1"; }
 mpvc_set()   { mpvc_cmd "set_property_string" "$@"; }
 mpvc_cycle() { quiet mpvc_cmd "cycle" "$1"; }
 
-getPauseStatus() {
+mpvc_get_pause_status() {
     case "$(mpvc_get pause)" in
         yes) echo "paused";; no) echo "playing" ;; *) echo "NA";;
     esac
@@ -404,10 +402,7 @@ mpvc_load_playlist() {
 # mpvc stash [list|show|push|drop|apply]
 mpvc_stash() {
     cmd="$1"; shift
-
     QUIETFLAG="true"
-    MPVC_STASH_DIR="${MPVC_STASH_DIR:-$MPVC_CONFIG_DIR/stash}"
-    mkdir -p "$MPVC_STASH_DIR"
     case "$cmd" in
         list) ls -ltr "$MPVC_STASH_DIR" ;;
         show) cat "$MPVC_STASH_DIR/$1" ;;
@@ -712,7 +707,7 @@ mpvc_print_status() {
             -e "s/%precisetime%/\${playback-time}/g" \
             -e "s/%playlistlength%/\${playlist-count}/g" \
             -e "s/%position%/\${playlist-pos}/g" \
-            -e "s/%status%/$(getPauseStatus)/g" \
+            -e "s/%status%/$(mpvc_get_pause_status)/g" \
             -e ''
     )
     #echo "${F}"
