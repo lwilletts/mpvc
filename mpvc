@@ -12,7 +12,7 @@ PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
 SITEURL="https://gmt4.github.io/mpvc"
 
-#set -euf # TBD
+set -e #set -euf # TBD
 
 usage() {
     cat >&2 << EOF
@@ -511,7 +511,7 @@ mpvc_appendtracks() {
         *)     if [ -e "$arg" ]; then mpvc_appendtrack "$arg"; _=$((shiftcount+=1)); fi
         esac
     done
-    return $shiftcount
+    #return $shiftcount
 }
 
 mpvc_play_next() {
