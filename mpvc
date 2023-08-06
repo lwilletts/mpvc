@@ -106,7 +106,7 @@ EOF
 equiet() { "$@" 2> /dev/null; }
 oquiet() { "$@" 1> /dev/null; }
 quiet()  { "$@" > /dev/null 2>&1; }
-quietcheck(){ if [ "$QUIETFLAG" = "true" ]; then quiet "$@"; else "$@"; fi; }
+quietcheck(){ if [ "${QUIETFLAG:-}" = "true" ]; then quiet "$@"; else "$@"; fi; }
 
 warn() { echo "$@" >&2; }
 die()  { e=$1; shift; warn "$@"; exit "$e"; }
@@ -774,9 +774,9 @@ mpvc_validate_socket() {
     quiet command -v "$MPVC_MPV" || die 4 "$PROGNAME: Error: No mpv found. Install to continue."
     quiet command -v "$MPVC_SOCAT" || quiet command -v nc || die 4 "$PROGNAME: Error: No socat/nc found. Install one"
     # test if socket exists
-    [ ! -S "$MPVC_SOCKET" ] && die 2 "Socket ${MPVC_SOCKET##$HOME/} does not exist. Use mpvc --mpv to start one."
+    if [ ! -S "$MPVC_SOCKET" ]; then die 2 "Socket ${MPVC_SOCKET##$HOME/} does not exist. Use mpvc --mpv to start one."; fi
     # test if socket is open
-    [ "$(mpvc_get pause)" = "" ] && die 3 "No files added to ${MPVC_SOCKET##$HOME/}."
+    if [ "$(mpvc_get pause)" = "" ]; then die 3 "No files added to ${MPVC_SOCKET##$HOME/}."; fi
 }
 
 mpvc_get_version() {
