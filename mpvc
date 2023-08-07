@@ -264,7 +264,7 @@ mpvc_get_playlist_json() {
 mpvc_get_playlist_once() {
     mpvc_get_playlist_json |
         sed 's|,"current":true||; s|,"playing":true||; s|,"id":[0-9]\+||; s|{"filename":"\(.*\)"}|\1|; s|","title":.*||; s/,$//; /^\[$/d; /\]$/d' |
-        awk -v numbered="$@" '
+        awk -v numbered="${1:-}" '
         {
             gsub("^[ \t]*", " ")
             if (length(numbered)>0)
@@ -630,21 +630,22 @@ mpvc_set_volume() {
 }
 
 mpvc_search() {
+    [ $# -lt 2 ] && return
     mode=$1; shift;
     mpvc_get_playlist "$mode" | awk '/'"$*"'/ { print $0 }';
 }
 
 mpvc_search_play() {
+    [ $# -lt 2 ] && return
     mode=$1; shift
-    [ -z "$1" ] && return
     lid=$(mpvc_search "$mode" "$1" | awk '{print $1; exit}')
     [ -z "$lid" ] && warn "$PROGNAME: Searching for $*, nothing found."
     mpvc_set_track "$lid" absolute
 }
 
 mpvc_search_remove() {
+    [ $# -lt 2 ] && return
     mode=$1; shift
-    [ -z "$1" ] && return
     list=$(mpvc_search "$mode" "$1" | awk '{print $1}' | mpvc_tac )
     [ -z "$list" ] && warn "$PROGNAME: Searching for $*, nothing found."
     for i in $list; do mpvc_remove_track "$i"; done
@@ -652,8 +653,8 @@ mpvc_search_remove() {
 }
 
 mpvc_search_move() {
+    [ $# -lt 2 ] && return
     mode=$1; shift
-    [ -z "$1" ] && return
     list=$(mpvc_search "$mode" "$1" | awk '{print $1}' | mpvc_tac )
     [ -z "$list" ] && warn "$PROGNAME: Searching for $*, nothing found."
     for i in $list; do mpvc_move_track "$i" "$2"; done
