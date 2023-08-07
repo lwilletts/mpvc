@@ -395,7 +395,7 @@ mpvc_load_playlist() {
     buffer=""
     while read -r line; do buffer="${buffer}\n${line}"; done
     [ -z "$buffer" ] && return
-    [ "$1" = "clear" ] && mpvc_clear_playlist
+    [ "${1:-}" = "clear" ] && mpvc_clear_playlist
     printf "$buffer\n" | while read -r line; do mpvc_appendtracks "$line"; done
 }
 
