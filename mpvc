@@ -286,19 +286,17 @@ mpvc_get_playlist_filename() {
 
 # print filenames in the current playlist, mode=numbered disables filenames/URLs to title expansion
 mpvc_get_playlist() {
-    i=0
     mode="$1"
     lcount=$(mpvc_get playlist-count)
     lpos=$(mpvc_get playlist-pos)
 
-    [ "$mode" = "numbered" ] && mpvc_get_playlist_once "$mode" && return
-    # by default, display only items fitting terminal, otherwise, display all
-    FIRST=0
-    LAST=$lcount
-    [ "$mode" != "full" ] && calculateTerminalHeight "$lpos" "$lcount"
+    FIRSTLAST=$(mpvc_get_terminal_height "$lpos" "$lcount")
+    if [ "$mode" = "numbered" ]; then
+        mpvc_get_playlist_once "$mode"; return
+    fi
 
     mpvc_get_playlist_once |
-        awk -v no_color="${NO_COLOR:-}" -v mpvc="$0" -v lpos="$lpos" -v first="$FIRST" -v last="$LAST" \
+        awk -v no_color="${NO_COLOR:-}" -v mpvc="$0" -v lpos="$lpos" -v first="${FIRSTLAST%% *}" -v last="${FIRSTLAST##* }" \
         '
         function basename(url, fields, n)
         {
@@ -726,25 +724,33 @@ mpvc_print_status_final() {
 
 isInt() { printf '%d' "$1" >/dev/null 2>&1 && [ -n "$1" ]; }
 
-calculateTerminalHeight() {
-    plpos="$1"
-    lcount="$2"
+mpvc_tty_lines() {
     tty=$(tty -s && tty || ps -hp $$ -o tty | sed 's|^|/dev/|' ) # sorry XXX
     lines=$(stty size -F "$tty")
     lines=${lines%% *}
+    echo "$lines"
+}
+
+mpvc_get_terminal_height() {
+    FIRST=0
+    LAST=$2
+
+    plpos="$1"
+    lcount="$2"
+    lines=$(mpvc_tty_lines)
     crow=${MPVC_CLINE:-3}
     rows=$((lines - crow))
-    halfrows=$((rows / 2))
-    [ "$plpos" = "null" ] && plpos=0
-    if [ "$lcount" -le $rows ]; then
-        FIRST=0; LAST=$lcount
-    elif [ "$plpos" -le $halfrows ]; then
-        FIRST=0; LAST=$rows
-    elif [  $((plpos + halfrows)) -ge "$lcount" ]; then
-        FIRST=$((lcount - rows)); LAST=$lcount
-    elif [  $((plpos + halfrows)) -lt "$lcount" ]; then
-        FIRST=$((plpos - halfrows)); LAST=$((plpos + halfrows))
+    half=$((rows / 2))
+
+    if [ "$mode" != "full" ]; then
+        [ "$plpos" = "null" ] && plpos=0
+        if   [ "$lcount" -le $rows ]; then              FIRST=0; LAST=$lcount
+        elif [ "$plpos" -le $half ]; then               FIRST=0; LAST=$rows
+        elif [  $((plpos + half)) -ge "$lcount" ]; then FIRST=$((lcount - rows)); LAST=$lcount
+        elif [  $((plpos + half)) -lt "$lcount" ]; then FIRST=$((plpos - half)); LAST=$((plpos + half))
+        fi
     fi
+    echo "$FIRST $LAST"
 }
 
 mpvc_parse_time() {
