@@ -363,7 +363,7 @@ mpvc_get_playlist() {
 
 # saves playlist to file but with no path checking. we live dangerously
 mpvc_save_playlist() {
-    output="$1"
+    output="${1:-}"
     if [ -z "$output" ]; then
         output="/dev/stdout"
     else
@@ -820,24 +820,24 @@ main() {
         [ "$arg" = "--" ] && { MPVFLAG=true; shift; continue; }
         [ "${MPVFLAG:-}" = "true" ] && { MPVOPTIONS="$MPVOPTIONS $arg"; shift; continue; }
         [ $# -eq 0 ] && break
-        case "$1" in
+        case "${1:-}" in
             # mpc compatibility layer
             play|start|resume)
                 shift
-                case "$1" in
+                case "${1:-}" in
                     '') ;;
                     $) mpvc_set_track "$(( $(mpvc_get playlist-count) - 1 ))" absolute;;
-                    *) isInt "$1" && mpvc_set_track "$1" absolute;;
+                    *) isInt "${1:-}" && mpvc_set_track "$1" absolute;;
                 esac
                 mpvc_always_play
             ;;
-            vol|volume) shift; mpvc_set_volume "$1" ;;
-            repeat)     shift; mpvc_toggle_loop "loop-playlist" "$1" ;;
-            single)     shift; mpvc_toggle_loop "loop-file" "$1" ;;
+            vol|volume) shift; mpvc_set_volume "${1:-}" ;;
+            repeat)     shift; mpvc_toggle_loop "loop-playlist" "${1:-}" ;;
+            single)     shift; mpvc_toggle_loop "loop-file" "${1:-}" ;;
             pause)      mpvc_set_pause "yes"       ;;
             next|--next)mpvc_set_track 1 relative ;;
             prev|--prev)mpvc_set_track -1 relative;;
-            move|mv)    shift; mpvc_move_track "$1" "$2" ;;
+            move|mv)    shift; mpvc_move_track "${1:-}" "$2" ;;
             mute)       mpvc_toggle_mute yes     ;;
             unmute)     mpvc_toggle_mute no      ;;
             pretty)     die 1 "$PROGNAME: $* not implemented" ;;
@@ -850,55 +850,55 @@ main() {
             # random) MPV doesn't have this control option!
 
             # GNU-style options
-            -t|--seek|seek)                  shift; mpvc_set_time "relative" "$1" ;;
-            -T|--time|time)                  shift; mpvc_set_time "absolute" "$1" ;;
-            -v|--vol)                        shift; mpvc_add "volume" "$1"  ;;
-            -V|--volume)                     shift; mpvc_set "volume" "$1"  ;;
-            -x|--speed|speed)                shift; mpvc_add "speed" "$1"  ;;
-            -X|--speedval)                   shift; mpvc_set "speed" "$1"  ;;
-            -j|--track|track)                shift; mpvc_set_track "$1" relative  ;;
-            -J|--tracknum|tracknum)          shift; mpvc_set_track "$1" absolute  ;;
-            -r|--remove|rm|remove|del)       shift; mpvc_remove_track "$1"; QUIETFLAG=true;;
-            -A|--playnext|playnext)          shift; mpvc_play_next "$1"           ;;
-            -o|--save|save)                  shift; mpvc_save_playlist "$1" ;;
+            -t|--seek|seek)                  shift; mpvc_set_time "relative" "${1:-}" ;;
+            -T|--time|time)                  shift; mpvc_set_time "absolute" "${1:-}" ;;
+            -v|--vol)                        shift; mpvc_add "volume" "${1:-}"  ;;
+            -V|--volume)                     shift; mpvc_set "volume" "${1:-}"  ;;
+            -x|--speed|speed)                shift; mpvc_add "speed" "${1:-}"  ;;
+            -X|--speedval)                   shift; mpvc_set "speed" "${1:-}"  ;;
+            -j|--track|track)                shift; mpvc_set_track "${1:-}" relative  ;;
+            -J|--tracknum|tracknum)          shift; mpvc_set_track "${1:-}" absolute  ;;
+            -r|--remove|rm|remove|del)       shift; mpvc_remove_track "${1:-}"; QUIETFLAG=true;;
+            -A|--playnext|playnext)          shift; mpvc_play_next "${1:-}"           ;;
+            -o|--save|save)                  shift; mpvc_save_playlist "${1:-}" ;;
             --load|load)                     shift; mpvc_load_playlist      ;;
 
             mpv|--mpv)                       mpvc_startmpv --really-quiet --idle=yes;;
             --current|current)               ;;
             --loadc|loadc)                   shift; mpvc_load_playlist "clear"    ;;
             --saven|saven)                   shift; mpvc_get_playlist_once "numbered"; QUIETFLAG=true;;
-            --autosave|autosave)             shift; mpvc_autosave_playlist "$1"; ;;
-            --autoload|autoload)             shift; mpvc_autoload_playlist "$1"; ;;
-            --lsplaylists|lsplaylists)       shift; mpvc_lsplaylists "$1"; QUIETFLAG=true;;
+            --autosave|autosave)             shift; mpvc_autosave_playlist "${1:-}"; ;;
+            --autoload|autoload)             shift; mpvc_autoload_playlist "${1:-}"; ;;
+            --lsplaylists|lsplaylists)       shift; mpvc_lsplaylists "${1:-}"; QUIETFLAG=true;;
             --dblist|dblist)                 shift; mpvc_dblist; return ;;
             --dbinit|dbinit)                 shift; mpvc_dbinit; return ;;
             --cycle|cycle)                   shift; mpvc_cmd cycle "$@"; QUIETFLAG=true;;
             --set|set|s)                     shift; mpvc_cmd set_property "$@"; return;;
-            --get|get|g)                     shift; mpvc_cmd get_property "$1"; QUIETFLAG=true;;
+            --get|get|g)                     shift; mpvc_cmd get_property "${1:-}"; QUIETFLAG=true;;
             --sets|sets|ss)                  shift; mpvc_cmd set_property_string "$@"; return;;
-            --gets|gets|gs)                  shift; mpvc_cmd get_property_string "$1"; QUIETFLAG=true;;
+            --gets|gets|gs)                  shift; mpvc_cmd get_property_string "${1:-}"; QUIETFLAG=true;;
             --setr|setr|sr)                  shift; mpvc_cmdr set_property "$@"; return;;
-            --getr|getr|gr)                  shift; mpvc_cmdr get_property "$1"; QUIETFLAG=true;;
+            --getr|getr|gr)                  shift; mpvc_cmdr get_property "${1:-}"; QUIETFLAG=true;;
             --togglec|togglec)               shift; mpvc_cycle "cache" ;;
             --togglev|togglev)               shift; mpvc_cycle "video" ;;
             --togglew|togglew)               shift; mpvc_cycle "force-window" ;;
             --togglei|togglei)               shift; mpvc_cycle "idle" ;;
-            --idleloop|idleloop)             shift; mpvc_idleloop "$1"; QUIETFLAG=true ;;
+            --idleloop|idleloop)             shift; mpvc_idleloop "${1:-}"; QUIETFLAG=true ;;
             --cmd|cmd)                       shift; mpvc_cmd "$@"; return ;;
             --cmdr|cmdr)                     shift; mpvc_cmdr "$@"; return ;;
-            --sockcmd|sockcmd)               shift; mpvc_sockcmd_ "$1"; QUIETFLAG=true ;;
+            --sockcmd|sockcmd)               shift; mpvc_sockcmd_ "${1:-}"; QUIETFLAG=true ;;
             --sockrepl|sockrepl)             shift; mpvc_sockrepl; QUIETFLAG=true ;;
-            --socklist|socklist)             shift; mpvc_socklist "$1"; QUIETFLAG=true ;;
+            --socklist|socklist)             shift; mpvc_socklist "${1:-}"; QUIETFLAG=true ;;
 
             --search|search)                 shift; mpvc_search "full" "$@"; QUIETFLAG=true ;;
             --Search|Search)                 shift; mpvc_search "numbered" "$@"; QUIETFLAG=true ;;
-            -R|--searchrm|searchrm)          shift; mpvc_search_remove "full" "$1";;
-               --searchRm|searchRm)          shift; mpvc_search_remove "numbered" "$1";;
-            -M|--searchmv|searchmv)          shift; mpvc_search_move "full" "$1" "$2";;
-               --searchMv|searchMv)          shift; mpvc_search_move "numbered" "$1" "$2";;
-            -N|--searchplay|searchplay)      shift; mpvc_search_play "full" "$1" ;;
-            -n|--searchPlay|searchPlay)      shift; mpvc_search_play "numbered" "$1" ;;
-            --stash|stash)                   shift; mpvc_stash "$1" "$2";;
+            -R|--searchrm|searchrm)          shift; mpvc_search_remove "full" "${1:-}";;
+               --searchRm|searchRm)          shift; mpvc_search_remove "numbered" "${1:-}";;
+            -M|--searchmv|searchmv)          shift; mpvc_search_move "full" "${1:-}" "$2";;
+               --searchMv|searchMv)          shift; mpvc_search_move "numbered" "${1:-}" "$2";;
+            -N|--searchplay|searchplay)      shift; mpvc_search_play "full" "${1:-}" ;;
+            -n|--searchPlay|searchPlay)      shift; mpvc_search_play "numbered" "${1:-}" ;;
+            --stash|stash)                   shift; mpvc_stash "${1:-}" "$2";;
             expand-text)                     shift; mpvc_cmd expand-text "$@"; return;;
             metadata)                        shift; mpvc_cmdr get_property metadata "$@"; return;;
 
@@ -924,8 +924,8 @@ main() {
             --delay|delay)                   mpvc_delay;;
 
             # global argument parsing
-            -f|--format)                     shift; FORMATSTRING="$1"       ;;
-            -S|--socket)                     shift; MPVC_SOCKET="$1"; mpvc_config ;;
+            -f|--format)                     shift; FORMATSTRING="${1:-}"       ;;
+            -S|--socket)                     shift; MPVC_SOCKET="${1:-}"; mpvc_config ;;
             -Q|--vid=no)                     MPVOPTIONS="$MPVOPTIONS --vid=no"; ;;
             --image)                         IMAGEFLAG=true;                ;;
             -q|--quiet)                      QUIETFLAG=true;                ;;
