@@ -296,7 +296,7 @@ mpvc_get_playlist() {
     fi
 
     mpvc_get_playlist_once |
-        awk -v no_color="${NO_COLOR:-}" -v mpvc="$0" -v lpos="$lpos" -v first="${FIRSTLAST%% *}" -v last="${FIRSTLAST##* }" \
+        awk -v mpvc="$0" -v lpos="$lpos" -v first="${FIRSTLAST%% *}" -v last="${FIRSTLAST##* }" \
         '
         function basename(url, fields, n)
         {
@@ -333,7 +333,7 @@ mpvc_get_playlist() {
 
             if (lpos == lid)
             {
-                if (no_color)
+                if (ENVIRON["NO_COLOR"])
                 {
                     title=mpvc_ytquery($0)
                     printf("%2d  %s\n", lid, title)
