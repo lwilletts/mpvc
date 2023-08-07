@@ -507,8 +507,8 @@ mpvc_appendtracks() {
     for arg in "$@"; do
         case "$arg" in
         ???????????) mpvc_appendtrack "$arg"; _=$((shiftcount+=1)) ;; # ytid videoid [A-Za-z-]{11}
-        http*) mpvc_appendtrack "$arg"; _=$((shiftcount+=1)) ;;
-        *)     if [ -e "$arg" ]; then mpvc_appendtrack "$arg"; _=$((shiftcount+=1)); fi
+        http*)       mpvc_appendtrack "$arg"; _=$((shiftcount+=1)) ;;
+        *)           if [ -e "$arg" ]; then mpvc_appendtrack "$arg"; _=$((shiftcount+=1)); fi
         esac
     done
     #return $shiftcount
@@ -526,16 +526,16 @@ mpvc_play_next() {
 mpvc_set_time() {
     mode=$1; shift
     if [ "$mode" = "absolute" ]; then
-        timeSec=$(parseTimeString "$1") || return $?
+        timeSec=$(mpvc_parse_time "$1") || return $?
         mpvc_set "playback-time" "$timeSec"
         return
     fi
     # relative
     case "$1" in
         *%*) mpvc_set "percent-pos" "${1%%%}"; return ;;
-        -*)  mpvc_add "playback-time" "-$(parseTimeString "${1##-}")" ;;
-        +*)  mpvc_add "playback-time" "+$(parseTimeString "${1##+}")" ;;
-        *)   mpvc_add "playback-time" "$(parseTimeString "${1}")" ;;
+        -*)  mpvc_add "playback-time" "-$(mpvc_parse_time "${1##-}")" ;;
+        +*)  mpvc_add "playback-time" "+$(mpvc_parse_time "${1##+}")" ;;
+        *)   mpvc_add "playback-time" "$(mpvc_parse_time "${1}")" ;;
     esac
 }
 
@@ -746,7 +746,7 @@ calculateTerminalHeight() {
     fi
 }
 
-parseTimeString() {
+mpvc_parse_time() {
     if ! echo "$1" | grep -q -e "^\([0-9.]*:\)\{0,2\}[0-9.]*$" -e "^[0-9]*[sSmMhH]$"; then
         warn "Timestamp formats must match either H:M:S with hour and minute fields optional,"
         warn "or a single integer number with a unit of time appended: h, m, s."
