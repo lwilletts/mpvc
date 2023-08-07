@@ -30,7 +30,7 @@ usage: $PROGNAME args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
     -H | --long-help    : Prints the long help.
 EOF
 
-    [ -n "$1" ] && cat >&2 << EOF
+    [ $# -gt 0 ] && cat >&2 << EOF
     -f | --format       : Enter a formatting string.
     -j | --track        : Go forwards/backwards through the playlist queue.
     -J | --tracknum     : Jump to playlist item number.
@@ -604,7 +604,7 @@ mpvc_set_pause() {
 }
 
 mpvc_toggle_mute() {
-    [ -n "$1" ] && quiet mpvc_set "mute" "$1" && return
+    [ $# -gt 0 ] && quiet mpvc_set "mute" "$1" && return
     quiet mpvc_cmd "cycle" "mute"
 }
 
