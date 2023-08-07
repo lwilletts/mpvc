@@ -837,7 +837,7 @@ main() {
             pause)      mpvc_set_pause "yes"       ;;
             next|--next)mpvc_set_track 1 relative ;;
             prev|--prev)mpvc_set_track -1 relative;;
-            move|mv)    shift; mpvc_move_track "${1:-}" "$2" ;;
+            move|mv)    shift; mpvc_move_track "${1:-}" "${2:-}" ;;
             mute)       mpvc_toggle_mute yes     ;;
             unmute)     mpvc_toggle_mute no      ;;
             pretty)     die 1 "$PROGNAME: $* not implemented" ;;
@@ -894,11 +894,11 @@ main() {
             --Search|Search)                 shift; mpvc_search "numbered" "$@"; QUIETFLAG=true ;;
             -R|--searchrm|searchrm)          shift; mpvc_search_remove "full" "${1:-}";;
                --searchRm|searchRm)          shift; mpvc_search_remove "numbered" "${1:-}";;
-            -M|--searchmv|searchmv)          shift; mpvc_search_move "full" "${1:-}" "$2";;
-               --searchMv|searchMv)          shift; mpvc_search_move "numbered" "${1:-}" "$2";;
+            -M|--searchmv|searchmv)          shift; mpvc_search_move "full" "${1:-}" "${2:-}";;
+               --searchMv|searchMv)          shift; mpvc_search_move "numbered" "${1:-}" "${2:-}";;
             -N|--searchplay|searchplay)      shift; mpvc_search_play "full" "${1:-}" ;;
             -n|--searchPlay|searchPlay)      shift; mpvc_search_play "numbered" "${1:-}" ;;
-            --stash|stash)                   shift; mpvc_stash "${1:-}" "$2";;
+            --stash|stash)                   shift; mpvc_stash "${1:-}" "${2:-}";;
             expand-text)                     shift; mpvc_cmd expand-text "$@"; return;;
             metadata)                        shift; mpvc_cmdr get_property metadata "$@"; return;;
 
