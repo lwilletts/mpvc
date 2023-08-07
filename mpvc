@@ -284,7 +284,7 @@ mpvc_get_playlist_filename() {
     echo "$filename"
 }
 
-# print filenames in current playlist
+# print filenames in the current playlist, mode=numbered disables filenames/URLs to title expansion
 mpvc_get_playlist() {
     i=0
     mode="$1"
@@ -609,8 +609,8 @@ mpvc_toggle_mute() {
 }
 
 mpvc_toggle_loop() {
-    property=$1
-    value=$2
+    property=${1:-}
+    value=${2:-}
     case "$value" in
         '')      quiet mpvc_cmd "cycle-values" "$property" "yes" "no" ;;
         on|yes)  quiet mpvc_set "$property" yes ;;
