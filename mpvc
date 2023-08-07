@@ -12,7 +12,7 @@ PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
 SITEURL="https://gmt4.github.io/mpvc"
 
-set -e #set -euf # TBD
+set -euf # TBD
 
 usage() {
     cat >&2 << EOF
@@ -264,7 +264,7 @@ mpvc_get_playlist_json() {
 mpvc_get_playlist_once() {
     mpvc_get_playlist_json |
         sed 's|,"current":true||; s|,"playing":true||; s|,"id":[0-9]\+||; s|{"filename":"\(.*\)"}|\1|; s|","title":.*||; s/,$//; /^\[$/d; /\]$/d' |
-        awk -v numbered="$1" '
+        awk -v numbered="$@" '
         {
             gsub("^[ \t]*", " ")
             if (length(numbered)>0)
@@ -298,7 +298,7 @@ mpvc_get_playlist() {
     [ "$mode" != "full" ] && calculateTerminalHeight "$lpos" "$lcount"
 
     mpvc_get_playlist_once |
-        awk -v no_color="$NO_COLOR" -v mpvc="$0" -v lpos="$lpos" -v first="$FIRST" -v last="$LAST" \
+        awk -v no_color="${NO_COLOR:-}" -v mpvc="$0" -v lpos="$lpos" -v first="$FIRST" -v last="$LAST" \
         '
         function basename(url, fields, n)
         {
@@ -818,7 +818,8 @@ main() {
     for arg in "$@"; do
         # grab mpv options first if any
         [ "$arg" = "--" ] && { MPVFLAG=true; shift; continue; }
-        [ "$MPVFLAG" = "true" ] && { MPVOPTIONS="$MPVOPTIONS $arg"; shift; continue; }
+        [ "${MPVFLAG:-}" = "true" ] && { MPVOPTIONS="$MPVOPTIONS $arg"; shift; continue; }
+        [ $# -eq 0 ] && break
         case "$1" in
             # mpc compatibility layer
             play|start|resume)
@@ -936,7 +937,7 @@ main() {
             -H|--long-help|long-help)        usage "$@"; exit 0;            ;;
             -?)                              usage; exit 1;                 ;;
         esac
-        if [ -n "$1" ]; then shift; fi
+        if [ $# -ge 1 ]; then shift; fi
     done
     # produce format strings last
     quietcheck mpvc_print_status_final
