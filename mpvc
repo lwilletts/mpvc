@@ -194,8 +194,8 @@ mpvc_curl_cache_title()
 
 # fn args: given a file/url return its title (may use curl to query YT)
 mpvc_curl_cache_title_clean() {
-    filename="$1"
-    result="$1"
+    filename="${1:-}"
+    result="${1:-}"
     case "$filename" in
         https://youtu.be/watch*)
             filename="$(echo "$filename" | sed 's|/watch?v=|/|')"
@@ -277,8 +277,8 @@ mpvc_get_playlist_once() {
 
 # fn args: $1: filename $2: full path flag to skip basename
 mpvc_get_playlist_filename() {
-    lid="$1"
-    fullPath="$2"
+    lid="${1:-}"
+    fullPath="${2:-}"
     filename=$(mpvc_get "playlist/$lid/filename")
     [  "$fullPath" != "fullpath" ] && filename=$(mpvc_curl_cache_title_clean "$filename")
     echo "$filename"
