@@ -286,7 +286,7 @@ mpvc_get_playlist_filename() {
 
 # print filenames in the current playlist, mode=numbered disables filenames/URLs to title expansion
 mpvc_get_playlist() {
-    mode="$1"
+    mode="${1:-}"
     lcount=$(mpvc_get playlist-count)
     lpos=$(mpvc_get playlist-pos)
 
@@ -598,11 +598,11 @@ mpvc_always_play() {
 }
 
 mpvc_set_pause() {
-    quiet mpvc_set "pause" "$1"
+    quiet mpvc_set "pause" "${1:-}"
 }
 
 mpvc_toggle_mute() {
-    [ $# -gt 0 ] && quiet mpvc_set "mute" "$1" && return
+    [ $# -gt 0 ] && quiet mpvc_set "mute" "${1:-}" && return
     quiet mpvc_cmd "cycle" "mute"
 }
 
@@ -738,16 +738,16 @@ mpvc_get_terminal_height() {
     plpos="$1"
     lcount="$2"
     lines=$(mpvc_tty_lines)
-    crow=${MPVC_CLINE:-3}
-    rows=$((lines - crow))
+    rows=$((lines - ${MPVC_CLINE:-3}))
     half=$((rows / 2))
+    plhalf=$((plpos + half))
 
     if [ "$mode" != "full" ]; then
         [ "$plpos" = "null" ] && plpos=0
-        if   [ "$lcount" -le $rows ]; then              FIRST=0; LAST=$lcount
-        elif [ "$plpos" -le $half ]; then               FIRST=0; LAST=$rows
-        elif [  $((plpos + half)) -ge "$lcount" ]; then FIRST=$((lcount - rows)); LAST=$lcount
-        elif [  $((plpos + half)) -lt "$lcount" ]; then FIRST=$((plpos - half)); LAST=$((plpos + half))
+        if   [ "$lcount" -le $rows ]; then    FIRST=0; LAST=$lcount
+        elif [ "$plpos" -le $half ]; then     FIRST=0; LAST=$rows
+        elif [  $plhalf -ge "$lcount" ]; then FIRST=$((lcount - rows)); LAST=$lcount
+        elif [  $plhalf -lt "$lcount" ]; then FIRST=$((plpos - half)); LAST=$plhalf
         fi
     fi
     echo "$FIRST $LAST"
