@@ -732,25 +732,23 @@ mpvc_tty_lines() {
 }
 
 mpvc_get_terminal_height() {
-    FIRST=0
-    LAST=$2
-
     plpos="$1"
     lcount="$2"
+    [ "$plpos" = "null" ] && plpos=0
     lines=$(mpvc_tty_lines)
     rows=$((lines - ${MPVC_CLINE:-3}))
     half=$((rows / 2))
     plhalf=$((plpos + half))
 
+    FIRSTLAST="0 $lcount"
     if [ "$mode" != "full" ]; then
-        [ "$plpos" = "null" ] && plpos=0
-        if   [ "$lcount" -le $rows ]; then    FIRST=0; LAST=$lcount
-        elif [ "$plpos" -le $half ]; then     FIRST=0; LAST=$rows
-        elif [  $plhalf -ge "$lcount" ]; then FIRST=$((lcount - rows)); LAST=$lcount
-        elif [  $plhalf -lt "$lcount" ]; then FIRST=$((plpos - half)); LAST=$plhalf
+        if   [ "$lcount" -le $rows ]; then     FIRSTLAST="0 $lcount"
+        elif [ "$plpos"  -le $half ]; then     FIRSTLAST="0 $rows"
+        elif [  $plhalf  -ge "$lcount" ]; then FIRSTLAST="$((lcount - rows)) $lcount"
+        elif [  $plhalf  -lt "$lcount" ]; then FIRSTLAST="$((plpos - half)) $plhalf"
         fi
     fi
-    echo "$FIRST $LAST"
+    echo "$FIRSTLAST"
 }
 
 mpvc_parse_time() {
@@ -937,7 +935,7 @@ main() {
             --image)                         IMAGEFLAG=true;                ;;
             -q|--quiet)                      QUIETFLAG=true;                ;;
             --color|color)                   unset NO_COLOR                 ;;
-            --nocolor|nocolor)               NO_COLOR=true                  ;;
+            --nocolor|nocolor)               export NO_COLOR=true           ;;
             --version|version)               mpvc_get_version; exit 0;      ;;
             --list-options)                  usage; exit 0;                 ;;
             -h|--help|h|help)                usage; exit 0;                 ;;
