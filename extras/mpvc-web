@@ -24,11 +24,12 @@ set -euf
 mpvc_web_index()
 {
     cat <<EOF
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="en">
     <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes" />
+    <!-- <meta http-equiv="refresh" content="60"> -->
     <title>$PROGNAME @ $(hostname) 🎧</title>
     </head>
     <style type="text/css" media="all">
@@ -41,52 +42,81 @@ mpvc_web_index()
     code { background: var(--pre-bg); }
     pre  { background: var(--pre-bg); }
     a    { color: var(--link-color); }
+
+    h6 {
+       width: 100%;
+       text-align: left;
+       border-bottom: 1px solid #000;
+       line-height: 0.1em;
+       margin: 5px 0 5px 0;
+    }
+
+    h6 span {
+        background:#fff;
+        padding:0 5px 0 5px;
+    }
     </style>
     <body>
-    <a href="."><strong>$PROGNAME 🎧</strong></a>
-    theme [ <a href="#" onclick="document.body.style.background='#fff';">light</a> | <a href="#" onclick="document.body.style.background='#999';">dark</a> ]
-    <hr>
+    <h6>
+       <span>-[ <a href=".">$PROGNAME</a> ]</span>
+    </h6>
+        <br>
+        mpvc
+        <a href="?cmd=mpvc stop" title="mpvc stop" > ⏹️  </a> |
+        <a href="?cmd=mpvc play" title="mpvc play"> ▶️ </a> |
+        <a href="?cmd=mpvc toggle" title="mpvc toggle"> ⏸️</a> |
+        ⏪ |
+        ⏩ |
+        <a href="?cmd=mpvc prev" title="mpvc prev">⏮️</a> |
+        <a href="?cmd=mpvc prev" title="mpvc prev">⏭️</a> |
+        <a href="" title="refresh ">🔄</a> |
+        <a href="#" title="theme light" onclick="document.body.style.background='#fff';">⬜</a> |
+        <a href="#" title="theme dark" onclick="document.body.style.background='#999';">⬛</a>
 
-    <!-- enable this optionally: only for dev/testing -->
-    <ul>
-    <li>
+        <!-- enable this optionally: only for dev/testing -->
         <form action="/" method="get">
-            <input type="text" id="cli" name="cli" placeholder="mpvc status ${MPVC_DEV:-(off)}" onkeydown="if (event.keyCode == 13) { this.form.submit(); return false; }">
+            mpvc
+            <input type="text" id="cli" name="cli" placeholder="mpvc status ${MPVC_DEV:-(off)}" title="mpvc cli" onkeydown="if (event.keyCode == 13) { this.form.submit(); return false; }">
         </form>
-    </li>
 
-    <li> mpvc
-              <a href="?cmd=mpvc status">status</a>
-              <a href="?cmd=mpvc mpv">mpv</a>
-              <a href="?cmd=mpvc kill">kill</a>
-              <a href="?cmd=mpvc clear">clear</a>
-    </li>
-    <li> mpvc
-              <a href="?cmd=mpvc toggle">toggle</a>
-              <a href="?cmd=mpvc play">play</a>
-              <a href="?cmd=mpvc stop">stop</a>
-              <a href="?cmd=mpvc prev">prev</a>
-              <a href="?cmd=mpvc next">next</a>
-    </li>
-    <li> mpvc
-              <a href="?cmd=mpvc repeat">repeat</a>
-              <a href="?cmd=mpvc single">single</a>
-    </li>
-    <li> mpvc chapter
-              <a href="?cmd=mpvc-chapter prev">prev</a>
-              <a href="?cmd=mpvc-chapter next">next</a>
-    </li>
-    <li> mpvc vol
-              <a href="?cmd=mpvc vol -10">-10</a>
-              <a href="?cmd=mpvc vol +10">+10</a>
-    </li>
-    </ul>
-    <hr>
-    <strong>mpvc status</strong>
-    <iframe name="mpvc-status" width="100%" frameborder="1" src="/cgi-bin/mpvc?status" allowtransparency="true" ></iframe>
-    <strong>mpvc playlist</strong>
-    <iframe name="mpvc-playlist" width="100%" height="300" frameborder="1" src="/cgi-bin/mpvc?playlist" allowtransparency="true" ></iframe>
-    <sub><a href="$PROGURL">$PROGNAME $PROGVERSION</a>, $PROGINFO </sub>
+    mpvc
+        <a href="?cmd=mpvc status">status</a>
+        <a href="?cmd=mpvc mpv">mpv</a>
+        <a href="?cmd=mpvc kill">kill</a>
+        <a href="?cmd=mpvc clear">clear</a>
+    <br>
+    mpvc
+        <a href="?cmd=mpvc toggle">toggle</a>
+        <a href="?cmd=mpvc play">play</a>
+        <a href="?cmd=mpvc stop">stop</a>
+        <a href="?cmd=mpvc prev">prev</a>
+        <a href="?cmd=mpvc next">next</a>
+    <br>
+    mpvc
+        <a href="?cmd=mpvc repeat">repeat</a>
+        <a href="?cmd=mpvc single">single</a>
+    <br>
+    mpvc chapter
+        <a href="?cmd=mpvc-chapter prev">prev</a>
+        <a href="?cmd=mpvc-chapter next">next</a>
+    <br>
+    mpvc vol
+        <a href="?cmd=mpvc vol -10">-10</a>
+        <a href="?cmd=mpvc vol +10">+10</a>
+    <br>
+    <br>
+    <h6>
+        <span>-[ Status ]</span>
+    </h6>
+        <iframe name="mpvc-status" width="100%" height="120" frameborder="0" src="/cgi-bin/mpvc?status" allowtransparency="true" ></iframe>
+    <h6>
+        <span>-[ Playlist ]</span>
+    </h6>
+    <iframe name="mpvc-playlist" width="100%" height="300" frameborder="0" src="/cgi-bin/mpvc?playlist" allowtransparency="true" ></iframe>
+    <h6>
+        <span>-[ Prompt ]</span>
+    </h6>
+    <sub>🎧 <a href="$PROGURL">$PROGNAME</a> $PROGVERSION, a mpvc-tui for the web</sub>
     </body>
 </html>
 EOF
@@ -107,7 +137,7 @@ echo
 case "\${QUERY_STRING:-}" in
     status) $MPVC status;;
     playlist) $MPVC --nocolor playlist;;
-    playlistfull) $MPVC --nocolor playlistfull;;
+    fullplaylist) $MPVC --nocolor fullplaylist;;
     *) $MPVC ;;
 esac
 EOF
