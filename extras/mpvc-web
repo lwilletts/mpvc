@@ -61,6 +61,12 @@ mpvc_web_index()
        <span>-[ <a href=".">$PROGNAME</a> ]</span>
     </h6>
         <br>
+        theme
+        <a href="#" title="theme light" onclick="document.body.style.background='#fff';">⬜ light</a> |
+        <a href="#" title="theme dark" onclick="document.body.style.background='#999';">⬛ dark</a>
+        <a href="" title="reload">🔄 reload</a>
+
+        <br>
         mpvc
         <a href="?cmd=mpvc stop" title="mpvc stop" > ⏹️  </a> |
         <a href="?cmd=mpvc play" title="mpvc play"> ▶️ </a> |
@@ -68,10 +74,7 @@ mpvc_web_index()
         ⏪ |
         ⏩ |
         <a href="?cmd=mpvc prev" title="mpvc prev">⏮️</a> |
-        <a href="?cmd=mpvc prev" title="mpvc prev">⏭️</a> |
-        <a href="" title="refresh ">🔄</a> |
-        <a href="#" title="theme light" onclick="document.body.style.background='#fff';">⬜</a> |
-        <a href="#" title="theme dark" onclick="document.body.style.background='#999';">⬛</a>
+        <a href="?cmd=mpvc prev" title="mpvc prev">⏭️</a>
 
         <!-- enable this optionally: only for dev/testing -->
         <form action="/" method="get">
