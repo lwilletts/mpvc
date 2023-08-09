@@ -7,10 +7,10 @@
 #
 
 # REMEMBER This is a hack, DISCLAIMER * Use at Your Own Risk *
-# A security hole in itself, with many open man-holes, evident holes have been marked with XXX
+# A security hole in itself, with many open man-holes, evident one are marked with XXX
 #
 # The sole reason for its existence is to mimic mpvc-tui when is not available,
-# for example, controlling a remotely running an mpv, accessing from a client without a CLI,
+# like, controlling a remotely running an mpv, accessing from a client without a CLI,
 # like a laptop, tablet, or phone.
 
 PROGNAME=${0##*/}
