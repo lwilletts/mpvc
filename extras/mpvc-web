@@ -119,7 +119,7 @@ mpvc_web_index()
     <h4>
         <span>-[ Prompt ]</span>
     </h4>
-    <sub>🎧 <a href="$PROGURL">$PROGNAME</a> $PROGVERSION, a mpvc-tui for the web</sub>
+    <sub>🎧 <a href="$PROGURL">$PROGNAME</a> $PROGVERSION, a "mpvc-tui" for the web</sub>
     </body>
 </html>
 EOF
