@@ -317,6 +317,7 @@ mpvc_get_playlist() {
                 ytitle=basename(url)
             }
             gsub("\\\\u00", "\\x", ytitle)
+            gsub("\\u00", "\\x", ytitle)
             gsub("\\\\x22", "\x22", ytitle)
             gsub("\\\\x25", "\x25", ytitle)
             gsub("\\\\x26", "\x26", ytitle)
