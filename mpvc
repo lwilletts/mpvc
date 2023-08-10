@@ -151,7 +151,7 @@ mpvc_config()
     [ ! -d "$MPVC_STASH_DIR" ] && mkdir -p "$MPVC_STASH_DIR"
     [ ! -d "$MPVC_PLAYLIST" ] && mkdir -p "$MPVC_PLAYLIST"
     # if not present, create config files
-    [ ! -s "$MPVC_CURL_CACHE" ] && echo > "$MPVC_CURL_CACHE"
+    [ ! -e "$MPVC_CURL_CACHE" ] && > "$MPVC_CURL_CACHE"
     # if present load user config
     if [ -r "$MPVC_CONFIG" ]; then
         . "$MPVC_CONFIG"
@@ -176,7 +176,8 @@ mpvc_curl_cache()
 
     if [ "${#v}" -eq 0 ]; then
         v=$(curl "$@")
-        sed -i "1i$k	$v" "$MPVC_CURL_CACHE"
+        o=$(cat "$MPVC_CURL_CACHE") # append at the top in 2023 :-)
+        (echo "$k	$v"; echo "$o") > "$MPVC_CURL_CACHE"
     fi
     echo "$v"
 }
@@ -317,7 +318,6 @@ mpvc_get_playlist() {
                 ytitle=basename(url)
             }
             gsub("\\\\u00", "\\x", ytitle)
-            gsub("\\u00", "\\x", ytitle)
             gsub("\\\\x22", "\x22", ytitle)
             gsub("\\\\x25", "\x25", ytitle)
             gsub("\\\\x26", "\x26", ytitle)
