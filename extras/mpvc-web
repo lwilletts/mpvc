@@ -56,58 +56,66 @@ mpvc_web_index()
         padding:0 5px 0 5px;
     }
     </style>
+
     <body>
     <h4>
        <span>-[ <a href=".">$PROGNAME</a> ]</span>
     </h4>
-        <br>
-        theme
-        <a href="#" title="theme light" onclick="document.body.style.background='#fff';">⬜ light</a> |
-        <a href="#" title="theme dark" onclick="document.body.style.background='#999';">⬛ dark</a>
-        <a href="" title="reload">🔄 reload</a>
-
+        <ul>
+        <li>
         <!-- enable this optionally: only for dev/testing -->
         <form action="/" method="get">
-            mpvc
+        mpvc
             <input type="text" id="cli" name="cli" placeholder="mpvc status ${MPVC_DEV:-(off)}" title="mpvc cli" onkeydown="if (event.keyCode == 13) { this.form.submit(); return false; }">
         </form>
-
-    mpvc
-        <a href="?cmd=mpvc status">status</a>
-        <a href="?cmd=mpvc mpv">mpv</a>
-        <a href="?cmd=mpvc kill">kill</a>
-        <a href="?cmd=mpvc clear">clear</a>
-    <br>
-    mpvc
-        <a href="?cmd=mpvc toggle">toggle</a>
-        <a href="?cmd=mpvc play">play</a>
-        <a href="?cmd=mpvc stop">stop</a>
-        <a href="?cmd=mpvc prev">prev</a>
-        <a href="?cmd=mpvc next">next</a>
-    <br>
-    mpvc
-        <a href="?cmd=mpvc repeat">repeat</a>
-        <a href="?cmd=mpvc single">single</a>
-    <br>
-    mpvc chapter
-        <a href="?cmd=mpvc-chapter prev">prev</a>
-        <a href="?cmd=mpvc-chapter next">next</a>
-    <br>
-    mpvc vol
-        <a href="?cmd=mpvc vol -10">-10</a>
-        <a href="?cmd=mpvc vol +10">+10</a>
-    <br>
+        </li>
+        <li>
         mpvc
-        <a href="?cmd=mpvc stop" title="mpvc stop" > ⏹️  </a> |
-        <a href="?cmd=mpvc play" title="mpvc play"> ▶️ </a> |
-        <a href="?cmd=mpvc toggle" title="mpvc toggle"> ⏸️</a> |
-        ⏪ |
-        ⏩ |
-        <a href="?cmd=mpvc prev" title="mpvc prev">⏮️</a> |
-        <a href="?cmd=mpvc next" title="mpvc next">⏭️</a>
-
-    <br>
-    <br>
+            <a href="?cmd=mpvc status">status</a>
+            <a href="?cmd=mpvc mpv">mpv</a>
+            <a href="?cmd=mpvc kill">kill</a>
+            <a href="?cmd=mpvc clear">clear</a>
+        </li>
+        <li>
+        mpvc
+            <a href="?cmd=mpvc toggle">toggle</a>
+            <a href="?cmd=mpvc play">play</a>
+            <a href="?cmd=mpvc stop">stop</a>
+            <a href="?cmd=mpvc prev">prev</a>
+            <a href="?cmd=mpvc next">next</a>
+        </li>
+        <li>
+        mpvc
+            <a href="?cmd=mpvc repeat">repeat</a>
+            <a href="?cmd=mpvc single">single</a>
+        </li>
+        <li>
+        mpvc chapter
+            <a href="?cmd=mpvc-chapter prev">prev</a>
+            <a href="?cmd=mpvc-chapter next">next</a>
+        </li>
+        <li>
+        mpvc vol
+            <a href="?cmd=mpvc vol -10">-10</a>
+            <a href="?cmd=mpvc vol +10">+10</a>
+        </li>
+        <li>
+        mpvc
+            <a href="?cmd=mpvc stop" title="mpvc stop" > ⏹️  </a> |
+            <a href="?cmd=mpvc play" title="mpvc play"> ▶️ </a> |
+            <a href="?cmd=mpvc toggle" title="mpvc toggle"> ⏸️</a> |
+            ⏪ |
+            ⏩ |
+            <a href="?cmd=mpvc prev" title="mpvc prev">⏮️</a> |
+            <a href="?cmd=mpvc next" title="mpvc next">⏭️</a>
+        </li>
+        <li>
+        theme
+            <a href="#" title="theme light" onclick="document.body.style.background='#fff';">⬜</a> |
+            <a href="#" title="theme dark" onclick="document.body.style.background='#999';">⬛</a> |
+            <a href="." title="reload">🔄</a>
+        </li>
+        </ul>
     <h4>
         <span>-[ Status ]</span>
     </h4>
@@ -119,7 +127,7 @@ mpvc_web_index()
     <h4>
         <span>-[ Prompt ]</span>
     </h4>
-    🎧 <a href="$PROGURL">$PROGNAME</a> $PROGVERSION, a "mpvc-tui" for the web
+    🎧 <a href="$PROGURL">$PROGNAME</a> $PROGVERSION, a mpvc-tui for the web
     </body>
 </html>
 EOF
