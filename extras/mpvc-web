@@ -74,7 +74,7 @@ mpvc_web_index()
         ⏪ |
         ⏩ |
         <a href="?cmd=mpvc prev" title="mpvc prev">⏮️</a> |
-        <a href="?cmd=mpvc prev" title="mpvc prev">⏭️</a>
+        <a href="?cmd=mpvc next" title="mpvc next">⏭️</a>
 
         <!-- enable this optionally: only for dev/testing -->
         <form action="/" method="get">
