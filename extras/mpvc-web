@@ -66,16 +66,6 @@ mpvc_web_index()
         <a href="#" title="theme dark" onclick="document.body.style.background='#999';">⬛ dark</a>
         <a href="" title="reload">🔄 reload</a>
 
-        <br>
-        mpvc
-        <a href="?cmd=mpvc stop" title="mpvc stop" > ⏹️  </a> |
-        <a href="?cmd=mpvc play" title="mpvc play"> ▶️ </a> |
-        <a href="?cmd=mpvc toggle" title="mpvc toggle"> ⏸️</a> |
-        ⏪ |
-        ⏩ |
-        <a href="?cmd=mpvc prev" title="mpvc prev">⏮️</a> |
-        <a href="?cmd=mpvc next" title="mpvc next">⏭️</a>
-
         <!-- enable this optionally: only for dev/testing -->
         <form action="/" method="get">
             mpvc
@@ -107,6 +97,16 @@ mpvc_web_index()
         <a href="?cmd=mpvc vol -10">-10</a>
         <a href="?cmd=mpvc vol +10">+10</a>
     <br>
+        mpvc
+        <a href="?cmd=mpvc stop" title="mpvc stop" > ⏹️  </a> |
+        <a href="?cmd=mpvc play" title="mpvc play"> ▶️ </a> |
+        <a href="?cmd=mpvc toggle" title="mpvc toggle"> ⏸️</a> |
+        ⏪ |
+        ⏩ |
+        <a href="?cmd=mpvc prev" title="mpvc prev">⏮️</a> |
+        <a href="?cmd=mpvc next" title="mpvc next">⏭️</a>
+
+    <br>
     <br>
     <h4>
         <span>-[ Status ]</span>
@@ -119,7 +119,7 @@ mpvc_web_index()
     <h4>
         <span>-[ Prompt ]</span>
     </h4>
-    <sub>🎧 <a href="$PROGURL">$PROGNAME</a> $PROGVERSION, a "mpvc-tui" for the web</sub>
+    🎧 <a href="$PROGURL">$PROGNAME</a> $PROGVERSION, a "mpvc-tui" for the web
     </body>
 </html>
 EOF
