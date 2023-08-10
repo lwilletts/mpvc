@@ -319,9 +319,11 @@ mpvc_get_playlist() {
             }
             gsub("\\\\u00", "\\x", ytitle)
             gsub("\\\\x22", "\x22", ytitle)
+            gsub("\\\\x23", "\x23", ytitle)
             gsub("\\\\x25", "\x25", ytitle)
             gsub("\\\\x26", "\x26", ytitle)
             gsub("\\\\x27", "\x27", ytitle)
+            gsub("\\\\xa0", "\xa0", ytitle)
             return ytitle
         }
 
