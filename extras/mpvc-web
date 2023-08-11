@@ -52,7 +52,7 @@ mpvc_web_index()
     }
 
     h4 span {
-        background:#fff;
+        background: #fff;
         padding:0 5px 0 5px;
     }
     </style>
@@ -111,22 +111,17 @@ mpvc_web_index()
         </li>
         <li>
         theme
-            <a href="#" title="theme light" onclick="document.body.style.background='#fff';">⬜</a> |
-            <a href="#" title="theme dark" onclick="document.body.style.background='#999';">⬛</a> |
+            <a href="#" title="theme light" onclick="document.body.style.color=null; document.body.style.background=null; document.body.style.WebkitFilter=null;">⬜</a> |
+            <a href="#" title="theme dark" onclick="document.body.style.color='#eee'; document.body.style.background='#222'; document.body.style.WebkitFilter='invert(0.8)';">⬛</a> |
+            <a href="#" title="theme dark" onclick="document.body.style.color='#eee'; document.body.style.background='#222'; document.body.style.WebkitFilter='invert(0.4)';">🟦</a> |
             <a href="." title="reload">🔄</a>
         </li>
         </ul>
-    <h4>
-        <span>-[ Status ]</span>
-    </h4>
+        [ Status ] <hr>
         <iframe name="mpvc-status" width="100%" height="100%" frameborder="0" src="/cgi-bin/mpvc?status" allowtransparency="true" ></iframe>
-    <h4>
-        <span>-[ Playlist ]</span>
-    </h4>
+        [ Playlist ] <hr>
     <iframe name="mpvc-playlist" width="100%" height="300" frameborder="0" src="/cgi-bin/mpvc?playlist" allowtransparency="true" ></iframe>
-    <h4>
-        <span>-[ Prompt ]</span>
-    </h4>
+        [ Prompt ] <hr>
     🎧 <a href="$PROGURL">$PROGNAME</a> $PROGVERSION, a mpvc-tui for the web
     </body>
 </html>
