@@ -58,9 +58,7 @@ mpvc_web_index()
     </style>
 
     <body>
-    <h4>
-       <span>-[ <a href=".">$PROGNAME</a> ]</span>
-    </h4>
+        [ <a href=".">$PROGNAME</a> ] <hr>
         <ul>
         <li>
         <!-- enable this optionally: only for dev/testing -->
