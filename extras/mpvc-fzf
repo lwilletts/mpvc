@@ -38,7 +38,7 @@ mpvctui_config()
     fi
 }
 
-mpvctui_fzf_help="C-x:list C-v:yt-add C-\\:add C-o:play C-r:del C-t:reload C-s:seek C-spc:toggle"
+mpvctui_fzf_help="C-x:list C-v:yt-add C-\\:add C-o:play C-t:del C-r:reload C-s:seek C-spc:toggle"
 mpvctui_fzf_preview()
 {
     # fzf keys: ctrl + [dorstxv\]
