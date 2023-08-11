@@ -98,21 +98,20 @@ mpvc_web_index()
             <a href="?cmd=mpvc vol +10">+10</a>
         </li>
         <li>
-        mpvc
-            <a href="?cmd=mpvc stop" title="mpvc stop" > ⏹️  </a> |
-            <a href="?cmd=mpvc play" title="mpvc play"> ▶️ </a> |
-            <a href="?cmd=mpvc toggle" title="mpvc toggle"> ⏸️</a> |
-            ⏪ |
-            ⏩ |
-            <a href="?cmd=mpvc prev" title="mpvc prev">⏮️</a> |
-            <a href="?cmd=mpvc next" title="mpvc next">⏭️</a>
-        </li>
-        <li>
         theme
             <a href="#" title="theme light" onclick="document.body.style.color=null; document.body.style.background=null; document.body.style.WebkitFilter=null;">⬜</a> |
             <a href="#" title="theme dark" onclick="document.body.style.color='#eee'; document.body.style.background='#222'; document.body.style.WebkitFilter='invert(0.8)';">⬛</a> |
             <a href="#" title="theme dark" onclick="document.body.style.color='#eee'; document.body.style.background='#222'; document.body.style.WebkitFilter='invert(0.4)';">🟦</a> |
-            <a href="." title="reload">🔄</a>
+            <a href="." title="reload">🔄 reload</a>
+        </li>
+        <li>
+            <a href="?cmd=mpvc stop" title="mpvc stop" > ⏹️ </a> |
+            <a href="?cmd=mpvc play" title="mpvc play">▶️</a> |
+            <a href="?cmd=mpvc toggle" title="mpvc toggle">⏸️</a> |
+            <a href="?cmd=mpvc seek -60" title="mpvc seek-60">⏪</a> |
+            <a href="?cmd=mpvc seek +60" title="mpvc seek+60">⏩</a> |
+            <a href="?cmd=mpvc prev" title="mpvc prev">⏮️</a> |
+            <a href="?cmd=mpvc next" title="mpvc next">⏭️</a>
         </li>
         </ul>
         [ Status ] <hr>
