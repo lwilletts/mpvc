@@ -21,6 +21,11 @@ PROGINFO="A hack to remotely control mpvc from web # DISCLAIMER * Use at Your Ow
 
 set -euf
 
+mpvc_web_style()
+{
+    echo 'body { color: #fff; background: #000; filter: invert(0.6);'
+}
+
 mpvc_web_index()
 {
     cat <<EOF
@@ -37,28 +42,15 @@ mpvc_web_index()
     @media (prefers-color-scheme: dark) {
        :root { --body-bg: #222; --body-color: #eee; --pre-bg:#333; --link-color:#07f; } /* Dark mode */
     }
-    :root { --body-bg: #fff; --body-color: #111; --pre-bg:#eee; --link-color:#00f; } /* Light mode */
     body { background: var(--body-bg); color: var(--body-color); font-family: monospace; }
     code { background: var(--pre-bg); }
     pre  { background: var(--pre-bg); }
     a    { color: var(--link-color); }
-
-    h4 {
-       width: 100%;
-       text-align: left;
-       border-bottom: 1px solid #000;
-       line-height: 0.1em;
-       margin: 5px 0 5px 0;
-    }
-
-    h4 span {
-        background: #fff;
-        padding:0 5px 0 5px;
-    }
     </style>
+    <link rel="stylesheet" href="style.css" />
 
     <body>
-        [ <a href=".">$PROGNAME</a> ] <hr>
+        [ <a href="." name="mpvc-web">$PROGNAME</a> ] <hr>
         <ul>
         <li>
         <!-- enable this optionally: only for dev/testing -->
@@ -101,7 +93,6 @@ mpvc_web_index()
         theme
             <a href="#" title="theme light" onclick="document.body.style.color=null; document.body.style.background=null; document.body.style.WebkitFilter=null;">⬜</a> |
             <a href="#" title="theme dark" onclick="document.body.style.color='#eee'; document.body.style.background='#222'; document.body.style.WebkitFilter='invert(0.8)';">⬛</a> |
-            <a href="#" title="theme dark" onclick="document.body.style.color='#eee'; document.body.style.background='#222'; document.body.style.WebkitFilter='invert(0.4)';">🟦</a> |
             <a href="." title="reload">🔄 reload</a>
         </li>
         <li>
@@ -114,11 +105,11 @@ mpvc_web_index()
             <a href="?cmd=mpvc next" title="mpvc next">⏭️</a>
         </li>
         </ul>
-        [ Status ] <hr>
+        [ <a href="#mpvc-web-status" name="mpvc-web-status">Status</a> ] <hr>
         <iframe name="mpvc-status" width="100%" height="100%" frameborder="0" src="/cgi-bin/mpvc?status" allowtransparency="true" ></iframe>
-        [ Playlist ] <hr>
+        [ <a href="#mpvc-web-status" name="mpvc-web-status">Playlist</a> ] <hr>
     <iframe name="mpvc-playlist" width="100%" height="300" frameborder="0" src="/cgi-bin/mpvc?playlist" allowtransparency="true" ></iframe>
-        [ Prompt ] <hr>
+        [ <a href="#mpvc-web-status" name="mpvc-web-status">Prompt</a> ] <hr>
     🎧 <a href="$PROGURL">$PROGNAME</a> $PROGVERSION, a mpvc-tui for the web
     </body>
 </html>
@@ -158,6 +149,7 @@ mpvc_web()
         chmod u+w -R "$MPVC_WEB_ROOT/"
 
         mpvc_web_index > "$MPVC_WEB_ROOT/index.html"
+        [ ! -e "$MPVC_WEB_ROOT/style.css" ] && mpvc_web_style > "$MPVC_WEB_ROOT/style.css"
         mpvc_web_cgi > "$MPVC_WEB_ROOT/cgi-bin/mpvc"
         touch "$MPVC_WEB_ROOT/favicon.ico"
         touch "$MPVC_WEB_ROOT/apple-touch-icon.png"
