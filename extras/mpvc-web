@@ -23,7 +23,7 @@ set -euf
 
 mpvc_web_style()
 {
-    echo 'body { color: #fff; background: #000; filter: invert(0.6);'
+    echo 'body { filter: invert(0.6); }'
 }
 
 mpvc_web_index()
