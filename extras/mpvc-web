@@ -92,12 +92,15 @@ mpvc_web_index()
         <li>
         mpvc vol
             <a href="?cmd=mpvc vol -10">-10</a>
+            <a href="?cmd=mpvc vol -5">-5</a>
+            <a href="?cmd=mpvc vol +5">+5</a>
             <a href="?cmd=mpvc vol +10">+10</a>
         </li>
         <li>
         theme
-            <a href="#" title="theme light" onclick="document.body.style.color=null; document.body.style.background=null; document.body.style.WebkitFilter=null;">⬜</a> |
-            <a href="#" title="theme dark" onclick="document.body.style.color='#eee'; document.body.style.background='#222'; document.body.style.WebkitFilter='invert(0.8)';">⬛</a> |
+            <a href="#" title="theme off" onclick="document.body.style.WebkitFilter='invert(0)';">⬜</a> |
+            <a href="#" title="theme light" onclick="document.body.style.WebkitFilter=invert(0.6);">⬜</a> |
+            <a href="#" title="theme dark" onclick="document.body.style.WebkitFilter='invert(0.8)';">⬛</a> |
             <a href="." title="reload">🔄 reload</a>
         </li>
         <li>
@@ -135,8 +138,8 @@ echo "Content-Type: text/plain"
 echo
 case "\${QUERY_STRING:-}" in
     status) $MPVC status;;
-    playlist) $MPVC --nocolor playlist;;
-    fullplaylist) $MPVC --nocolor fullplaylist;;
+    playlist) $MPVC playlist | sed '/\x1b\[7m/ { s|\x1b\[7m||; s| |+|; }; s|\x1b\[0m||;' ;;
+    fullplaylist) $MPVC fullplaylist | sed '/\x1b\[7m/ { s|\x1b\[7m||; s| |+|; }; s|\x1b\[0m||;' ;;
     *) $MPVC ;;
 esac
 EOF
