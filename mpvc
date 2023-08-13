@@ -497,8 +497,10 @@ mpvc_appendtrack() {
         *.png|*.jpg|*.jpeg|*.gif|*.psd|*.pdf) [ "$IMAGEFLAG" != "true" ] && return ;;
     esac
     if [ -n "$filename" ]; then
-        quiet mpvc_cmd "loadfile" "$filename" "append-play"
+        # cache media here if a match is found TBD
+        # filename=$(echo "$filename" | mpvc-fzf -c)
         echo "Adding: $(mpvc_curl_cache_title_clean "$filename")"
+        quiet mpvc_cmd "loadfile" "$filename" "append-play"
     fi
 }
 
