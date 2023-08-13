@@ -437,6 +437,7 @@ mpvc_stash() {
         current)
             echo "# $PROGNAME stash $MPVC_STASH_DIR/$1 # $PROGURL @version $PROGVERSION"
             echo "mpvc --mpv"
+            echo "mpvc set mute yes"
             echo "mpvc set pause yes"
             echo "mpvc set video no"
             echo "mpvc -q cmd playlist-clear"
@@ -458,8 +459,8 @@ mpvc_stash() {
             echo "mpvc set volume-max $(mpvc_get volume-max)"
             echo "mpvc set video-zoom $(mpvc_get video-zoom)"
             echo "mpvc set video $(mpvc_get video)"
-            echo "mpvc set pause $(mpvc_get pause)"
             echo "mpvc set msg-level $(mpvc_get msg-level)"
+            echo "mpvc set pause $(mpvc_get pause)"
             #echo "mpvc set af $(mpvc_get af)"
             #echo "mpvc set working-directory $(mpvc_get working-directory)"
             ;;
