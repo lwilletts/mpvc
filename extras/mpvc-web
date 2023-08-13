@@ -178,6 +178,8 @@ mpvc_web()
         /GET \/\?cmd=mpvc%20prev/         { system("mpvc -q prev") }
         /GET \/\?cmd=mpvc%20next/         { system("mpvc -q next") }
 
+        /GET \/\?cmd=mpvc%20vol%20\-5/    { system("mpvc -q vol -5") }
+        /GET \/\?cmd=mpvc%20vol%20\+5/    { system("mpvc -q vol +5") }
         /GET \/\?cmd=mpvc%20vol%20\-10/   { system("mpvc -q vol -10") }
         /GET \/\?cmd=mpvc%20vol%20\+10/   { system("mpvc -q vol +10") }
 
