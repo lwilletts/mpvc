@@ -427,19 +427,21 @@ mpvc_stash() {
             do
                 case "$line" in
                     "# $PROGNAME "*) echo "$line";;
-                    "mpvc --mpv") $line;;
-                    "mpvc cmd "*) $line;;
-                    "mpvc set "*) $line;;
-                    "mpvc add "*) mpvc add "${line##mpvc add }";;
+                    "mpvc --mpv")  $line;;
+                    "mpvc --wait") $line;;
+                    "mpvc cmd "*)  $line;;
+                    "mpvc set "*)  $line;;
+                    "mpvc add "*)  mpvc add "${line##mpvc add }";;
                 esac
             done
             ;;
         current)
             echo "# $PROGNAME stash $MPVC_STASH_DIR/$1 # $PROGURL @version $PROGVERSION"
             echo "mpvc --mpv"
-            echo "mpvc set mute yes"
-            echo "mpvc set pause yes"
+            echo "mpvc --wait"
             echo "mpvc set video no"
+            echo "mpvc set pause yes"
+            echo "mpvc set mute yes"
             echo "mpvc -q cmd playlist-clear"
             echo "mpvc -q cmd playlist-remove 0"
             mpvc_get_playlist_once | awk '{ gsub("^[ 	]*|[ 	]*$", ""); print "mpvc add "$0 }'
@@ -499,7 +501,7 @@ mpvc_appendtrack() {
     esac
     if [ -n "$filename" ]; then
         # cache media here if a match is found TBD
-        # filename=$(echo "$filename" | mpvc-fzf -c)
+        #filename=$(echo "$filename" | mpvc-fzf -c)
         echo "Adding: $(mpvc_curl_cache_title_clean "$filename")"
         quiet mpvc_cmd "loadfile" "$filename" "append-play"
     fi
@@ -805,12 +807,13 @@ mpvc_idleloop() {
 }
 
 mpvc_delay() { sleep "${1:-0.1}"; }
+mpvc_wait()  { until [ -n "$(mpvc_get idle-active)" ]; do mpvc_delay 0.1; done; }
 # mpvc_startmpv: exec & wait until mpv starts up
 mpvc_startmpv() {
     if [ -z "$(mpvc_get idle-active)" ]; then
         echo "$PROGNAME: No running mpv found, starting mpv now"
         exec "$MPVC_MPV" --input-ipc-server="$MPVC_SOCKET" $MPVOPTIONS "$@" &
-        until [ -n "$(mpvc_get idle-active)" ]; do mpvc_delay 0.1; done
+        mpvc_wait
     fi
 }
 
@@ -934,6 +937,7 @@ main() {
             -c|--crop|crop)                  mpvc_crop_playlist; QUIETFLAG=true;;
             -C|--clear|clear)                mpvc_clear_playlist; QUIETFLAG=true;;
             --delay|delay)                   mpvc_delay;;
+            --wait|wait)                     mpvc_wait;;
 
             # global argument parsing
             -f|--format)                     shift; FORMATSTRING="${1:-}"       ;;
