@@ -67,13 +67,13 @@ mpvc_web_index()
         <li>
         mpvc
             <a href="?cmd=mpvc status">status</a>
+            <a href="?cmd=mpvc toggle">toggle</a>
             <a href="?cmd=mpvc mpv">mpv</a>
             <a href="?cmd=mpvc kill">kill</a>
             <a href="?cmd=mpvc clear">clear</a>
         </li>
         <li>
         mpvc
-            <a href="?cmd=mpvc toggle">toggle</a>
             <a href="?cmd=mpvc play">play</a>
             <a href="?cmd=mpvc start 0">start</a>
             <a href="?cmd=mpvc stop">stop</a>
@@ -89,6 +89,7 @@ mpvc_web_index()
         </li>
         <li>
         mpvc chapter
+            <a href="?cmd=mpvc-chapter replay">replay</a>
             <a href="?cmd=mpvc-chapter prev">prev</a>
             <a href="?cmd=mpvc-chapter next">next</a>
         </li>
