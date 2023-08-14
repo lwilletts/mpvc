@@ -75,6 +75,7 @@ mpvc_web_index()
         mpvc
             <a href="?cmd=mpvc toggle">toggle</a>
             <a href="?cmd=mpvc play">play</a>
+            <a href="?cmd=mpvc start 0">start</a>
             <a href="?cmd=mpvc stop">stop</a>
             <a href="?cmd=mpvc prev">prev</a>
             <a href="?cmd=mpvc next">next</a>
@@ -83,6 +84,8 @@ mpvc_web_index()
         mpvc
             <a href="?cmd=mpvc repeat">repeat</a>
             <a href="?cmd=mpvc single">single</a>
+            <a href="?cmd=mpvc shuffle">shuffle</a>
+            <a href="?cmd=mpvc unshuffle">unshuffle</a>
         </li>
         <li>
         mpvc chapter
@@ -98,10 +101,11 @@ mpvc_web_index()
         </li>
         <li>
         theme
-            <a href="#" title="theme off" onclick="document.body.style.WebkitFilter='invert(0)';">⬜</a> |
-            <a href="#" title="theme light" onclick="document.body.style.WebkitFilter=invert(0.6);">⬜</a> |
-            <a href="#" title="theme dark" onclick="document.body.style.WebkitFilter='invert(0.8)';">⬛</a> |
-            <a href="." title="reload">🔄 reload</a>
+            <a href="#" title="theme 0" onclick="document.body.style.WebkitFilter='invert(0)';">th0</a> |
+            <a href="#" title="theme 4" onclick="document.body.style.WebkitFilter='invert(0.4)';">th4</a> |
+            <a href="#" title="theme 6" onclick="document.body.style.WebkitFilter='invert(0.6)';">th6</a> |
+            <a href="#" title="theme 8" onclick="document.body.style.WebkitFilter='invert(0.8)';">th8</a> |
+            <a href="." title="reload"> reload</a>
         </li>
         <li>
             <a href="?cmd=mpvc stop" title="mpvc stop" > ⏹️ </a> |
@@ -111,6 +115,7 @@ mpvc_web_index()
             <a href="?cmd=mpvc seek +60" title="mpvc seek+60">⏩</a> |
             <a href="?cmd=mpvc prev" title="mpvc prev">⏮️</a> |
             <a href="?cmd=mpvc next" title="mpvc next">⏭️</a>
+            <a href="?cmd=mpvc single" title="mpvc single">🔄</a>
         </li>
         </ul>
         [ <a href="#mpvc-web-status" name="mpvc-web-status">Status</a> ] <hr>
@@ -177,9 +182,13 @@ mpvc_web()
 
         /GET \/\?cmd=mpvc%20toggle/       { system("mpvc -q toggle") }
         /GET \/\?cmd=mpvc%20play/         { system("mpvc -q play") }
+        /GET \/\?cmd=mpvc%20start%200/    { system("mpvc -q start 0") }
         /GET \/\?cmd=mpvc%20stop/         { system("mpvc -q stop") }
         /GET \/\?cmd=mpvc%20prev/         { system("mpvc -q prev") }
         /GET \/\?cmd=mpvc%20next/         { system("mpvc -q next") }
+
+        /GET \/\?cmd=mpvc%20shuffle/      { system("mpvc -q shuffle") }
+        /GET \/\?cmd=mpvc%20unshuffle/    { system("mpvc -q unshuffle") }
 
         /GET \/\?cmd=mpvc%20vol%20\-5/    { system("mpvc -q vol -5") }
         /GET \/\?cmd=mpvc%20vol%20\+5/    { system("mpvc -q vol +5") }
