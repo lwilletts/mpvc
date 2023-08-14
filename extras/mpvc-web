@@ -56,7 +56,7 @@ mpvc_web_index()
 
     <body>
         [ <a href="." name="mpvc-web">$PROGNAME</a> ] <hr>
-        <ul>
+        <ul style="padding: 0em 1em;">
         <li>
         <!-- enable this optionally: only for dev/testing -->
         <form action="/" method="get">
