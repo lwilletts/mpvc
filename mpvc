@@ -440,8 +440,8 @@ mpvc_stash() {
             echo "mpvc --mpv"
             echo "mpvc --wait"
             #echo "mpvc set video no"
-            #echo "mpvc set pause yes"
             #echo "mpvc set mute yes"
+            echo "mpvc set pause yes"
             echo "mpvc cmd playlist-clear"
             echo "mpvc cmd playlist-remove 0"
             mpvc_get_playlist_once | awk '{ gsub("^[ 	]*|[ 	]*$", ""); print "mpvc add "$0 }'
