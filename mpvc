@@ -439,11 +439,11 @@ mpvc_stash() {
             echo "# $PROGNAME stash $MPVC_STASH_DIR/$1 # $PROGURL @version $PROGVERSION"
             echo "mpvc --mpv"
             echo "mpvc --wait"
-            echo "mpvc set video no"
-            echo "mpvc set pause yes"
-            echo "mpvc set mute yes"
-            echo "mpvc -q cmd playlist-clear"
-            echo "mpvc -q cmd playlist-remove 0"
+            #echo "mpvc set video no"
+            #echo "mpvc set pause yes"
+            #echo "mpvc set mute yes"
+            echo "mpvc cmd playlist-clear"
+            echo "mpvc cmd playlist-remove 0"
             mpvc_get_playlist_once | awk '{ gsub("^[ 	]*|[ 	]*$", ""); print "mpvc add "$0 }'
             echo "mpvc set playlist-pos $(mpvc_get playlist-pos)"
             echo "mpvc set playback-time $(mpvc_get playback-time)"
@@ -807,13 +807,15 @@ mpvc_idleloop() {
 }
 
 mpvc_delay() { sleep "${1:-0.1}"; }
-mpvc_wait()  { until [ -n "$(mpvc_get idle-active)" ]; do mpvc_delay 0.1; done; }
+mpvc_wait()  { until [ -n "$(mpvc_get idle-active)" ]; do mpvc_delay "${1:-}"; done; }
 # mpvc_startmpv: exec & wait until mpv starts up
 mpvc_startmpv() {
     if [ -z "$(mpvc_get idle-active)" ]; then
+        mpvc_delay 0.1
+        [ -n "$(mpvc_get idle-active)" ] && return
         echo "$PROGNAME: No running mpv found, starting mpv now"
         exec "$MPVC_MPV" --input-ipc-server="$MPVC_SOCKET" $MPVOPTIONS "$@" &
-        mpvc_wait
+        mpvc_wait 0.5
     fi
 }
 
