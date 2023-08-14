@@ -115,9 +115,12 @@ mpvc_web_index()
         </ul>
         [ <a href="#mpvc-web-status" name="mpvc-web-status">Status</a> ] <hr>
         <iframe name="mpvc-status" width="100%" height="100%" frameborder="0" src="/cgi-bin/mpvc?status" allowtransparency="true" ></iframe>
-        [ <a href="#mpvc-web-status" name="mpvc-web-status">Playlist</a> ] <hr>
-    <iframe name="mpvc-playlist" width="100%" height="300" frameborder="0" src="/cgi-bin/mpvc?playlist" allowtransparency="true" ></iframe>
-        [ <a href="#mpvc-web-status" name="mpvc-web-status">Prompt</a> ] <hr>
+        [ <a href="#mpvc-web-playlist" name="mpvc-web-playlist">Playlist</a> <a href="#mpvc-web-fullplaylist" name="mpvc-web-fullplaylist">full</a> ] <hr>
+        <div style="display:flex">
+        <iframe name="mpvc-playlist" width="100%" height="300" frameborder="0" src="/cgi-bin/mpvc?playlist" allowtransparency="true" style="margin:auto" ></iframe>
+        <iframe name="mpvc-playlist" width="100%" height="100%" frameborder="0" src="/cgi-bin/mpvc?fullplaylist" allowtransparency="true" style="margin:auto; display:none" ></iframe>
+        </div>
+        [ <a href="#mpvc-web-prompt" name="mpvc-web-prompt">Prompt</a> ] <hr>
     🎧 <a href="$PROGURL">$PROGNAME</a> $PROGVERSION, a mpvc-tui for the web
     </body>
 </html>
