@@ -419,7 +419,7 @@ mpvc_stash() {
             if [ -z "$1" ]; then
                 mpvc_stash apply_current
             else
-                mpvc_stash apply_current < "$MPVC_STASH_DIR/$1"
+                mpvc_stash apply_current "$1" < "$MPVC_STASH_DIR/$1"
             fi
             ;;
         apply_current)
