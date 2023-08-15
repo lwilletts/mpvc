@@ -7,7 +7,7 @@
 #
 
 # REMEMBER This is a hack, DISCLAIMER * Use at Your Own Risk *
-# A security hole in itself, with many open man-holes, evident one are marked with XXX
+# A security hole in itself, with many open man-holes, evident ones are marked with XXX
 #
 # The sole reason for its existence is to mimic mpvc-tui when is not available,
 # like, controlling a remotely running an mpv, accessing from a client without a CLI,
@@ -23,7 +23,7 @@ set -euf
 
 mpvc_web_style()
 {
-    echo 'body { filter: invert(0.6); }'
+    echo 'body { filter: invert(0.7); }'
 }
 
 mpvc_web_index()
@@ -32,8 +32,13 @@ mpvc_web_index()
 <!DOCTYPE html>
 <html lang="en">
     <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta charset="utf-8" />
+    <meta name="generator" content="gmt4 mpvc-web" />
+    <meta name="author" content="gmt4 <gmt4 at github.com> (c) Copyright 2022" />
+    <meta name="description" content="mpvc-web, a mpvc-tui for the web" />
+
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes" />
+    <meta http-equiv="Content-Type" content="text/html">
     <meta http-equiv="cache-control" content="max-age=0" />
     <meta http-equiv="cache-control" content="no-cache" />
     <meta http-equiv="expires" content="0" />
