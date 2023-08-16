@@ -36,6 +36,9 @@ mpvctui_defaults()
     MPVC_CWHITE='\033[0;37m'
     MPVC_CRST='\033[0m'
 
+    MPVC_CLEAR='\033c'
+    MPVC_CUP='\033[1;1H'
+
     # config defaults
     NO_COLOR="${NO_COLOR:-}"
 
@@ -84,11 +87,12 @@ mpvctui_headerc()
     cstart="$1"; shift
     cend="$1"; shift
     ccolor="$1"; shift
-    cols=$(tput cols)
+    cols=$(stty size)
+    cols=${cols##* }
     hdr="${char}${char}${cstart}$*${cend}"
     rem=$(( cols - ${#hdr} ))
     # when SHELL=/bin/dash, ${#hdr} is 4 chars smaller
-    if [ "$MPVC_SHELL" = "/bin/dash" ]; then rem=$(( rem + 4 )); fi
+    if [ "${MPVC_SHELL##*/}" = "dash" ]; then rem=$(( rem + 4 )); fi
     for _ in $(seq 1 $rem)
     do
         hdr="$hdr$char"
@@ -97,7 +101,8 @@ mpvctui_headerc()
     if [ -n "$NO_COLOR" ]; then
         printf "%s" "${hdr}"
     else
-        printf "%s" "${ccolor}${hdr}${MPVC_CRST}"
+        # not using printf "%s" here as sh displays raw escape sequences, instead of colored output
+        printf "${ccolor}${hdr}${MPVC_CRST}"
     fi
 }
 
@@ -116,7 +121,7 @@ mpvctui_tips()
     30|31|32) echo ": Config at ${MPVC_CONFIG##$HOME/}";;
     40|41|42) echo ": Launch from WM with: $PROGNAME -x";;
     50|51|52) echo ": version $PROGNAME $PROGVERSION at $PROGURL";;
-    60|61|62) echo ": Update $MPVC_UPDATEC secs refresh $((count % MPVC_CLEARC))/$MPVC_CLEARC";;
+    60|61|62) echo ": Update $MPVC_UPDATEC secs refresh $((count % MPVC_CLEARC))/$MPVC_CLEARC shell $MPVC_SHELL";;
     esac
 }
 
@@ -157,8 +162,8 @@ mpvctui_watch()
     while :
     do
         output=$(mpvctui_watcher 2>&1)
-        if [ $(( count % MPVC_CLEARC )) -eq 0 ]; then tput clear; fi
-        tput cup 0 0
+        if [ $(( count % MPVC_CLEARC )) -eq 0 ]; then printf "${MPVC_CLEAR}"; fi
+        printf "${MPVC_CUP}"
         echo "$output"
         count=$(( count + 1 ))
         sleep $MPVC_UPDATEC

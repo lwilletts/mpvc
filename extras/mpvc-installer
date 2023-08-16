@@ -12,16 +12,39 @@ PROGVERSION="v1.4"
 PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
 
+SHELL="${SHELL:-/bin/sh}"
 PREFIX="${PREFIX:-/usr/local}"
 BINDIR="${BINDIR:-$PREFIX/bin}"
+MPV_CONFDIR="${CONFIGDIR:-$HOME/.config/mpv}"
 
 SCRIPT="mpvc extras/mpvc-tui extras/mpvc-fzf extras/mpvc-chapter extras/mpvc-mpris extras/mpvc-equalizer extras/mpvc-web extras/mpvc-installer"
+CONFIG="docs/mpv.conf"
 
 set -euf
+
+mpvc_config()
+{
+    mkdir -p "$MPV_CONFDIR/scripts/"
+    echo "Fetching mpv.conf from $PROGURL"
+    for config in ${CONFIG};
+    do
+        local="$MPV_CONFDIR/$(basename "$config")"
+        echo "Fetch $local"
+        curl -fsSL -o "$local" "$PROGURL/raw/master/$config"
+    done
+
+    echo "Fetch yt-dlp"
+    (
+        cd "$BINDIR"
+        curl -fsSL -O "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp"
+        chmod a+rx yt-dlp
+    )
+}
 
 mpvc_fetch()
 {
     mkdir -p "$BINDIR"
+    echo "Fetching mpvc from $PROGURL"
     for script in ${SCRIPT};
     do
         local="$BINDIR/$(basename "$script")"
@@ -59,6 +82,19 @@ mpvc_uninstall()
     done
 }
 
+mpvc_check_requirements()
+{
+    # attempt at listing packages required by mpvc & extras/ to work
+    command -v "mpv" || echo "$PROGNAME: Error: No mpv found. Install to continue."
+    command -v "fzf" || echo "$PROGNAME: Error: No fzf found, Install to continue"
+    command -v "awk" || echo "$PROGNAME: Error: No awk found, Install to continue" # gawk ???
+    command -v "socat" || echo "$PROGNAME: Error: No socat found, Install to continue"
+    # recommened, and good to have, but not required
+    command -v "curl" || echo "$PROGNAME: Warning: No curl found, Install to continue"
+    command -v "rlwrap" || echo "$PROGNAME: Warning: No rlwrap, Install to get history, filename & completion support!"
+    command -v "notify-send" || echo "$PROGNAME: Warning: No notify-send, Install to get mpv desktop notifications"
+}
+
 mpvc_check_update()
 {
     master=$(curl -fsSL "$PROGURL/raw/master/extras/mpvc-installer" |
@@ -76,6 +112,8 @@ usage()
 {
     echo "usage: $PROGNAME args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
     echo "  check-update   : Check for updates"
+    echo "  check-reqs     : Check for required packages"
+    echo "  config         : Fetch mpv config"
     echo "  fetch-user     : Fetch to BINDIR=$HOME/bin"
     echo "  link-user      : Symlink to BINDIR=$HOME/bin"
     echo "  install-user   : Install to BINDIR=$HOME/bin"
@@ -92,11 +130,15 @@ main()
 
     case "$1" in
 
+    check-reqs)      shift; mpvc_check_requirements;;
     check-update)    shift; mpvc_check_update;;
+    config)          shift; mpvc_config "$@";;
     fetch)           shift; mpvc_fetch "$@";;
     link)            shift; mpvc_link "$@";;
     install)         shift; mpvc_install "$@";;
     uninstall)       shift; mpvc_uninstall "$@";;
+
+    fetch-config)    shift; PREFIX=$HOME $SHELL "$0" config;;
 
     fetch-user)      shift; PREFIX=$HOME $SHELL "$0" fetch;;
     fetch-sys)       shift; PREFIX=/usr/local $SHELL "$0" fetch;;

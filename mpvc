@@ -12,7 +12,7 @@ PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
 SITEURL="https://gmt4.github.io/mpvc"
 
-#set -euf # TBD
+set -euf # TBD
 
 usage() {
     cat >&2 << EOF
@@ -30,7 +30,7 @@ usage: $PROGNAME args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
     -H | --long-help    : Prints the long help.
 EOF
 
-    [ -n "$1" ] && cat >&2 << EOF
+    [ $# -gt 0 ] && cat >&2 << EOF
     -f | --format       : Enter a formatting string.
     -j | --track        : Go forwards/backwards through the playlist queue.
     -J | --tracknum     : Jump to playlist item number.
@@ -106,7 +106,7 @@ EOF
 equiet() { "$@" 2> /dev/null; }
 oquiet() { "$@" 1> /dev/null; }
 quiet()  { "$@" > /dev/null 2>&1; }
-quietcheck(){ if [ "$QUIETFLAG" = "true" ]; then quiet "$@"; else "$@"; fi; }
+quietcheck(){ if [ "${QUIETFLAG:-}" = "true" ]; then quiet "$@"; else "$@"; fi; }
 
 warn() { echo "$@" >&2; }
 die()  { e=$1; shift; warn "$@"; exit "$e"; }
@@ -118,6 +118,7 @@ mpvc_defaults()
 
     XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}
     MPVC_CONFIG_DIR="${MPVC_CONFIG_DIR:-$XDG_CONFIG_HOME/mpvc}"
+    MPVC_STASH_DIR="${MPVC_STASH_DIR:-$MPVC_CONFIG_DIR/stash}"
 
     MPVC_DATABASE="${MPVC_DATABASE:-$MPVC_CONFIG_DIR/db.m3u}"
     MPVC_PLAYLIST="${MPVC_PLAYLIST:-$MPVC_CONFIG_DIR/playlist}"
@@ -147,13 +148,23 @@ mpvc_config()
     # if not present, create config dir
     [ ! -d "$MPVC_CONFIG_DIR" ] && mkdir -p "$MPVC_CONFIG_DIR"
     [ ! -d "$MPVC_CACHE_DIR" ] && mkdir -p "$MPVC_CACHE_DIR"
+    [ ! -d "$MPVC_STASH_DIR" ] && mkdir -p "$MPVC_STASH_DIR"
     [ ! -d "$MPVC_PLAYLIST" ] && mkdir -p "$MPVC_PLAYLIST"
     # if not present, create config files
-    [ ! -e "$MPVC_CURL_CACHE" ] && touch "$MPVC_CURL_CACHE"
+    [ ! -e "$MPVC_CURL_CACHE" ] && > "$MPVC_CURL_CACHE"
     # if present load user config
     if [ -r "$MPVC_CONFIG" ]; then
         . "$MPVC_CONFIG"
     fi
+}
+
+mpvc_tac()
+{
+    awk '
+        NR == 1 { lines=$0 }
+        NR  > 1 { lines=$0"\n"lines }
+        END     { print lines }
+    ' "$@"
 }
 
 ## Retrieval Functions ########################################################
@@ -161,10 +172,12 @@ mpvc_config()
 mpvc_curl_cache()
 {
     k=$2
-    v="$(tac "$MPVC_CURL_CACHE" | awk -F'\t' -v k="$k" '{ if ($1 == k) {print $2; exit} }' )"
+    v="$( awk -F'\t' -v k="$k" '{ if ($1 == k) {print $2; exit} }' "$MPVC_CURL_CACHE" )"
+
     if [ "${#v}" -eq 0 ]; then
         v=$(curl "$@")
-        echo "$k	$v" >> "$MPVC_CURL_CACHE"
+        o=$(cat "$MPVC_CURL_CACHE") # append at the top in 2023 :-)
+        (echo "$k	$v"; echo "$o") > "$MPVC_CURL_CACHE"
     fi
     echo "$v"
 }
@@ -182,8 +195,8 @@ mpvc_curl_cache_title()
 
 # fn args: given a file/url return its title (may use curl to query YT)
 mpvc_curl_cache_title_clean() {
-    filename="$1"
-    result="$1"
+    filename="${1:-}"
+    result="${1:-}"
     case "$filename" in
         https://youtu.be/watch*)
             filename="$(echo "$filename" | sed 's|/watch?v=|/|')"
@@ -236,7 +249,7 @@ mpvc_get()   { mpvc_cmd "get_property_string" "$1"; }
 mpvc_set()   { mpvc_cmd "set_property_string" "$@"; }
 mpvc_cycle() { quiet mpvc_cmd "cycle" "$1"; }
 
-getPauseStatus() {
+mpvc_get_pause_status() {
     case "$(mpvc_get pause)" in
         yes) echo "paused";; no) echo "playing" ;; *) echo "NA";;
     esac
@@ -251,8 +264,8 @@ mpvc_get_playlist_json() {
 
 mpvc_get_playlist_once() {
     mpvc_get_playlist_json |
-        sed 's|,"current":true||; s|,"playing":true||; s|{"filename":"\(.*\)"}|\1|; s|","title":.*||; s/,$//; /^\[$/d; /\]$/d' |
-        awk -v numbered="$1" '
+        sed 's|,"current":true||; s|,"playing":true||; s|,"id":[0-9]\+||; s|{"filename":"\(.*\)"}|\1|; s|","title":.*||; s/,$//; /^\[$/d; /\]$/d' |
+        awk -v numbered="${1:-}" '
         {
             gsub("^[ \t]*", " ")
             if (length(numbered)>0)
@@ -265,28 +278,26 @@ mpvc_get_playlist_once() {
 
 # fn args: $1: filename $2: full path flag to skip basename
 mpvc_get_playlist_filename() {
-    lid="$1"
-    fullPath="$2"
+    lid="${1:-}"
+    fullPath="${2:-}"
     filename=$(mpvc_get "playlist/$lid/filename")
     [  "$fullPath" != "fullpath" ] && filename=$(mpvc_curl_cache_title_clean "$filename")
     echo "$filename"
 }
 
-# print filenames in current playlist
+# print filenames in the current playlist, mode=numbered disables filenames/URLs to title expansion
 mpvc_get_playlist() {
-    i=0
-    mode="$1"
+    mode="${1:-}"
     lcount=$(mpvc_get playlist-count)
     lpos=$(mpvc_get playlist-pos)
 
-    [ "$mode" = "numbered" ] && mpvc_get_playlist_once "$mode" && return
-    # by default, display only items fitting terminal, otherwise, display all
-    FIRST=0
-    LAST=$lcount
-    [ "$mode" != "full" ] && calculateTerminalHeight "$lpos" "$lcount"
+    FIRSTLAST=$(mpvc_get_terminal_height "$lpos" "$lcount")
+    if [ "$mode" = "numbered" ]; then
+        mpvc_get_playlist_once "$mode"; return
+    fi
 
     mpvc_get_playlist_once |
-        awk -v no_color="$NO_COLOR" -v lpos="$lpos" -v first="$FIRST" -v last="$LAST" \
+        awk -v mpvc="$0" -v lpos="$lpos" -v first="${FIRSTLAST%% *}" -v last="${FIRSTLAST##* }" \
         '
         function basename(url, fields, n)
         {
@@ -299,18 +310,20 @@ mpvc_get_playlist() {
             gsub("^ *", "", url)
             if (url ~ "^ *https?:")
             {
-                ytcmd=sprintf("mpvc ytquery \"%s\"", url)
+                ytcmd=sprintf("%s ytquery \"%s\"", mpvc, url)
                 ytcmd | getline ytitle
                 if (!ytitle)
-                    "mpvc ytquery " url | getline ytitle
+                    mpvc " ytquery " url | getline ytitle
             } else {
                 ytitle=basename(url)
             }
             gsub("\\\\u00", "\\x", ytitle)
             gsub("\\\\x22", "\x22", ytitle)
+            gsub("\\\\x23", "\x23", ytitle)
             gsub("\\\\x25", "\x25", ytitle)
             gsub("\\\\x26", "\x26", ytitle)
             gsub("\\\\x27", "\x27", ytitle)
+            gsub("\\\\xa0", "\xa0", ytitle)
             return ytitle
         }
 
@@ -323,7 +336,7 @@ mpvc_get_playlist() {
 
             if (lpos == lid)
             {
-                if (no_color)
+                if (ENVIRON["NO_COLOR"])
                 {
                     title=mpvc_ytquery($0)
                     printf("%2d  %s\n", lid, title)
@@ -331,7 +344,7 @@ mpvc_get_playlist() {
                 else
                 {
                     "tput cols" | getline cols
-                    "mpvc cmd expand-text \\${percent-pos}" | getline pct
+                    mpvc " cmd expand-text \\${percent-pos}" | getline pct
                     count=int((cols) * (pct/100))
                     title=mpvc_ytquery($0)
                     line=sprintf("%2d  %s", lid, title)
@@ -351,7 +364,7 @@ mpvc_get_playlist() {
 
 # saves playlist to file but with no path checking. we live dangerously
 mpvc_save_playlist() {
-    output="$1"
+    output="${1:-}"
     if [ -z "$output" ]; then
         output="/dev/stdout"
     else
@@ -383,17 +396,14 @@ mpvc_load_playlist() {
     buffer=""
     while read -r line; do buffer="${buffer}\n${line}"; done
     [ -z "$buffer" ] && return
-    [ "$1" = "clear" ] && mpvc_clear_playlist
+    [ "${1:-}" = "clear" ] && mpvc_clear_playlist
     printf "$buffer\n" | while read -r line; do mpvc_appendtracks "$line"; done
 }
 
 # mpvc stash [list|show|push|drop|apply]
 mpvc_stash() {
     cmd="$1"; shift
-
     QUIETFLAG="true"
-    MPVC_STASH_DIR="${MPVC_STASH_DIR:-$MPVC_CONFIG_DIR/stash}"
-    mkdir -p "$MPVC_STASH_DIR"
     case "$cmd" in
         list) ls -ltr "$MPVC_STASH_DIR" ;;
         show) cat "$MPVC_STASH_DIR/$1" ;;
@@ -409,7 +419,7 @@ mpvc_stash() {
             if [ -z "$1" ]; then
                 mpvc_stash apply_current
             else
-                mpvc_stash apply_current < "$MPVC_STASH_DIR/$1"
+                mpvc_stash apply_current "$1" < "$MPVC_STASH_DIR/$1"
             fi
             ;;
         apply_current)
@@ -417,20 +427,23 @@ mpvc_stash() {
             do
                 case "$line" in
                     "# $PROGNAME "*) echo "$line";;
-                    "mpvc --mpv") $line;;
-                    "mpvc cmd "*) $line;;
-                    "mpvc set "*) $line;;
-                    "mpvc add "*) mpvc add "${line##mpvc add }";;
+                    "mpvc --mpv")  $line;;
+                    "mpvc --wait") $line;;
+                    "mpvc cmd "*)  $line;;
+                    "mpvc set "*)  $line;;
+                    "mpvc add "*)  mpvc add "${line##mpvc add }";;
                 esac
             done
             ;;
         current)
             echo "# $PROGNAME stash $MPVC_STASH_DIR/$1 # $PROGURL @version $PROGVERSION"
             echo "mpvc --mpv"
+            echo "mpvc --wait"
+            #echo "mpvc set video no"
+            #echo "mpvc set mute yes"
             echo "mpvc set pause yes"
-            echo "mpvc set video no"
-            echo "mpvc -q cmd playlist-clear"
-            echo "mpvc -q cmd playlist-remove 0"
+            echo "mpvc cmd playlist-clear"
+            echo "mpvc cmd playlist-remove 0"
             mpvc_get_playlist_once | awk '{ gsub("^[ 	]*|[ 	]*$", ""); print "mpvc add "$0 }'
             echo "mpvc set playlist-pos $(mpvc_get playlist-pos)"
             echo "mpvc set playback-time $(mpvc_get playback-time)"
@@ -448,6 +461,7 @@ mpvc_stash() {
             echo "mpvc set volume-max $(mpvc_get volume-max)"
             echo "mpvc set video-zoom $(mpvc_get video-zoom)"
             echo "mpvc set video $(mpvc_get video)"
+            echo "mpvc set msg-level $(mpvc_get msg-level)"
             echo "mpvc set pause $(mpvc_get pause)"
             #echo "mpvc set af $(mpvc_get af)"
             #echo "mpvc set working-directory $(mpvc_get working-directory)"
@@ -486,8 +500,10 @@ mpvc_appendtrack() {
         *.png|*.jpg|*.jpeg|*.gif|*.psd|*.pdf) [ "$IMAGEFLAG" != "true" ] && return ;;
     esac
     if [ -n "$filename" ]; then
-        quiet mpvc_cmd "loadfile" "$filename" "append-play"
+        # cache media here if a match is found TBD
+        #filename=$(echo "$filename" | mpvc-fzf -c)
         echo "Adding: $(mpvc_curl_cache_title_clean "$filename")"
+        quiet mpvc_cmd "loadfile" "$filename" "append-play"
     fi
 }
 
@@ -498,11 +514,11 @@ mpvc_appendtracks() {
     for arg in "$@"; do
         case "$arg" in
         ???????????) mpvc_appendtrack "$arg"; _=$((shiftcount+=1)) ;; # ytid videoid [A-Za-z-]{11}
-        http*) mpvc_appendtrack "$arg"; _=$((shiftcount+=1)) ;;
-        *)     if [ -e "$arg" ]; then mpvc_appendtrack "$arg"; _=$((shiftcount+=1)); fi
+        http*)       mpvc_appendtrack "$arg"; _=$((shiftcount+=1)) ;;
+        *)           if [ -e "$arg" ]; then mpvc_appendtrack "$arg"; _=$((shiftcount+=1)); fi
         esac
     done
-    return $shiftcount
+    #return $shiftcount
 }
 
 mpvc_play_next() {
@@ -517,16 +533,16 @@ mpvc_play_next() {
 mpvc_set_time() {
     mode=$1; shift
     if [ "$mode" = "absolute" ]; then
-        timeSec=$(parseTimeString "$1") || return $?
+        timeSec=$(mpvc_parse_time "$1") || return $?
         mpvc_set "playback-time" "$timeSec"
         return
     fi
     # relative
     case "$1" in
         *%*) mpvc_set "percent-pos" "${1%%%}"; return ;;
-        -*)  mpvc_add "playback-time" "-$(parseTimeString "${1##-}")" ;;
-        +*)  mpvc_add "playback-time" "+$(parseTimeString "${1##+}")" ;;
-        *)   mpvc_add "playback-time" "$(parseTimeString "${1}")" ;;
+        -*)  mpvc_add "playback-time" "-$(mpvc_parse_time "${1##-}")" ;;
+        +*)  mpvc_add "playback-time" "+$(mpvc_parse_time "${1##+}")" ;;
+        *)   mpvc_add "playback-time" "$(mpvc_parse_time "${1}")" ;;
     esac
 }
 
@@ -564,7 +580,6 @@ mpvc_move_track() {
         die 1 "Position $dstpos is out of range of playlist."
     #[ "$dstpos" -eq 1 ] && dstpos=0
     quiet mpvc_cmd "playlist-move" "$srcpos" "$dstpos"
-
     quietcheck mpvc_get_playlist
 }
 
@@ -592,17 +607,17 @@ mpvc_always_play() {
 }
 
 mpvc_set_pause() {
-    quiet mpvc_set "pause" "$1"
+    quiet mpvc_set "pause" "${1:-}"
 }
 
 mpvc_toggle_mute() {
-    [ -n "$1" ] && quiet mpvc_set "mute" "$1" && return
+    [ $# -gt 0 ] && quiet mpvc_set "mute" "${1:-}" && return
     quiet mpvc_cmd "cycle" "mute"
 }
 
 mpvc_toggle_loop() {
-    property=$1
-    value=$2
+    property=${1:-}
+    value=${2:-}
     case "$value" in
         '')      quiet mpvc_cmd "cycle-values" "$property" "yes" "no" ;;
         on|yes)  quiet mpvc_set "$property" yes ;;
@@ -622,31 +637,32 @@ mpvc_set_volume() {
 }
 
 mpvc_search() {
+    [ $# -lt 2 ] && return
     mode=$1; shift;
     mpvc_get_playlist "$mode" | awk '/'"$*"'/ { print $0 }';
 }
 
 mpvc_search_play() {
+    [ $# -lt 2 ] && return
     mode=$1; shift
-    [ -z "$1" ] && return
     lid=$(mpvc_search "$mode" "$1" | awk '{print $1; exit}')
     [ -z "$lid" ] && warn "$PROGNAME: Searching for $*, nothing found."
     mpvc_set_track "$lid" absolute
 }
 
 mpvc_search_remove() {
+    [ $# -lt 2 ] && return
     mode=$1; shift
-    [ -z "$1" ] && return
-    list=$(mpvc_search "$mode" "$1" | awk '{print $1}' | tac )
+    list=$(mpvc_search "$mode" "$1" | awk '{print $1}' | mpvc_tac )
     [ -z "$list" ] && warn "$PROGNAME: Searching for $*, nothing found."
     for i in $list; do mpvc_remove_track "$i"; done
     QUIETFLAG="true"
 }
 
 mpvc_search_move() {
+    [ $# -lt 2 ] && return
     mode=$1; shift
-    [ -z "$1" ] && return
-    list=$(mpvc_search "$mode" "$1" | awk '{print $1}' | tac )
+    list=$(mpvc_search "$mode" "$1" | awk '{print $1}' | mpvc_tac )
     [ -z "$list" ] && warn "$PROGNAME: Searching for $*, nothing found."
     for i in $list; do mpvc_move_track "$i" "$2"; done
     QUIETFLAG="true"
@@ -698,10 +714,9 @@ mpvc_print_status() {
             -e "s/%precisetime%/\${playback-time}/g" \
             -e "s/%playlistlength%/\${playlist-count}/g" \
             -e "s/%position%/\${playlist-pos}/g" \
-            -e "s/%status%/$(getPauseStatus)/g" \
+            -e "s/%status%/$(mpvc_get_pause_status)/g" \
             -e ''
     )
-    #echo "${F}"
     mpvc_cmd "expand-text" "${F}" | sed 's/NL/\n/g'
 }
 
@@ -718,26 +733,34 @@ mpvc_print_status_final() {
 
 isInt() { printf '%d' "$1" >/dev/null 2>&1 && [ -n "$1" ]; }
 
-calculateTerminalHeight() {
-    plpos="$1"
-    lcount="$2"
-    lines=$(tput lines)
-    crow=${MPVC_CLINE:-3}
-    rows=$((lines - crow))
-    halfrows=$((rows / 2))
-    [ "$plpos" = "null" ] && plpos=0
-    if [ "$lcount" -le $rows ]; then
-        FIRST=0; LAST=$lcount
-    elif [ "$plpos" -le $halfrows ]; then
-        FIRST=0; LAST=$rows
-    elif [  $((plpos + halfrows)) -ge "$lcount" ]; then
-        FIRST=$((lcount - rows)); LAST=$lcount
-    elif [  $((plpos + halfrows)) -lt "$lcount" ]; then
-        FIRST=$((plpos - halfrows)); LAST=$((plpos + halfrows))
-    fi
+mpvc_tty_lines() {
+    tty=$(tty -s && tty || ps -hp $$ -o tty | sed 's|^|/dev/|' ) # sorry XXX
+    lines=$(stty size -F "$tty")
+    lines=${lines%% *}
+    echo "$lines"
 }
 
-parseTimeString() {
+mpvc_get_terminal_height() {
+    plpos="$1"
+    lcount="$2"
+    [ "$plpos" = "null" ] && plpos=0
+    lines=$(mpvc_tty_lines)
+    rows=$((lines - ${MPVC_CLINE:-3}))
+    half=$((rows / 2))
+    plhalf=$((plpos + half))
+
+    FIRSTLAST="0 $lcount"
+    if [ "$mode" != "full" ]; then
+        if   [ "$lcount" -le $rows ]; then     FIRSTLAST="0 $lcount"
+        elif [ "$plpos"  -le $half ]; then     FIRSTLAST="0 $rows"
+        elif [  $plhalf  -ge "$lcount" ]; then FIRSTLAST="$((lcount - rows)) $lcount"
+        elif [  $plhalf  -lt "$lcount" ]; then FIRSTLAST="$((plpos - half)) $plhalf"
+        fi
+    fi
+    echo "$FIRSTLAST"
+}
+
+mpvc_parse_time() {
     if ! echo "$1" | grep -q -e "^\([0-9.]*:\)\{0,2\}[0-9.]*$" -e "^[0-9]*[sSmMhH]$"; then
         warn "Timestamp formats must match either H:M:S with hour and minute fields optional,"
         warn "or a single integer number with a unit of time appended: h, m, s."
@@ -764,11 +787,10 @@ mpvc_validate_socket() {
     # validate deps
     quiet command -v "$MPVC_MPV" || die 4 "$PROGNAME: Error: No mpv found. Install to continue."
     quiet command -v "$MPVC_SOCAT" || quiet command -v nc || die 4 "$PROGNAME: Error: No socat/nc found. Install one"
-
     # test if socket exists
-    [ ! -S "$MPVC_SOCKET" ] && die 2 "Socket ${MPVC_SOCKET##$HOME/} does not exist. Use mpvc --mpv to start one."
+    if [ ! -S "$MPVC_SOCKET" ]; then die 2 "Socket ${MPVC_SOCKET##$HOME/} does not exist. Use mpvc --mpv to start one."; fi
     # test if socket is open
-    [ "$(mpvc_get pause)" = "" ] && die 3 "No files added to ${MPVC_SOCKET##$HOME/}."
+    if [ "$(mpvc_get pause)" = "" ]; then die 3 "No files added to ${MPVC_SOCKET##$HOME/}."; fi
 }
 
 mpvc_get_version() {
@@ -785,12 +807,15 @@ mpvc_idleloop() {
 }
 
 mpvc_delay() { sleep "${1:-0.1}"; }
+mpvc_wait()  { until [ -n "$(mpvc_get idle-active)" ]; do mpvc_delay "${1:-}"; done; }
 # mpvc_startmpv: exec & wait until mpv starts up
 mpvc_startmpv() {
     if [ -z "$(mpvc_get idle-active)" ]; then
+        mpvc_delay 0.1
+        [ -n "$(mpvc_get idle-active)" ] && return
         echo "$PROGNAME: No running mpv found, starting mpv now"
         exec "$MPVC_MPV" --input-ipc-server="$MPVC_SOCKET" $MPVOPTIONS "$@" &
-        until [ -n "$(mpvc_get idle-active)" ]; do mpvc_delay 0.1; done
+        mpvc_wait 0.5
     fi
 }
 
@@ -810,25 +835,26 @@ main() {
     for arg in "$@"; do
         # grab mpv options first if any
         [ "$arg" = "--" ] && { MPVFLAG=true; shift; continue; }
-        [ "$MPVFLAG" = "true" ] && { MPVOPTIONS="$MPVOPTIONS $arg"; shift; continue; }
-        case "$1" in
+        [ "${MPVFLAG:-}" = "true" ] && { MPVOPTIONS="$MPVOPTIONS $arg"; shift; continue; }
+        [ $# -eq 0 ] && break
+        case "${1:-}" in
             # mpc compatibility layer
             play|start|resume)
                 shift
-                case "$1" in
+                case "${1:-}" in
                     '') ;;
                     $) mpvc_set_track "$(( $(mpvc_get playlist-count) - 1 ))" absolute;;
-                    *) isInt "$1" && mpvc_set_track "$1" absolute;;
+                    *) isInt "${1:-}" && mpvc_set_track "$1" absolute;;
                 esac
                 mpvc_always_play
             ;;
-            vol|volume) shift; mpvc_set_volume "$1" ;;
-            repeat)     shift; mpvc_toggle_loop "loop-playlist" "$1" ;;
-            single)     shift; mpvc_toggle_loop "loop-file" "$1" ;;
+            vol|volume) shift; mpvc_set_volume "${1:-}" ;;
+            repeat)     shift; mpvc_toggle_loop "loop-playlist" "${1:-}" ;;
+            single)     shift; mpvc_toggle_loop "loop-file" "${1:-}" ;;
             pause)      mpvc_set_pause "yes"       ;;
             next|--next)mpvc_set_track 1 relative ;;
             prev|--prev)mpvc_set_track -1 relative;;
-            move|mv)    shift; mpvc_move_track "$1" "$2" ;;
+            move|mv)    shift; mpvc_move_track "${1:-}" "${2:-}" ;;
             mute)       mpvc_toggle_mute yes     ;;
             unmute)     mpvc_toggle_mute no      ;;
             pretty)     die 1 "$PROGNAME: $* not implemented" ;;
@@ -841,55 +867,55 @@ main() {
             # random) MPV doesn't have this control option!
 
             # GNU-style options
-            -t|--seek|seek)                  shift; mpvc_set_time "relative" "$1" ;;
-            -T|--time|time)                  shift; mpvc_set_time "absolute" "$1" ;;
-            -v|--vol)                        shift; mpvc_add "volume" "$1"  ;;
-            -V|--volume)                     shift; mpvc_set "volume" "$1"  ;;
-            -x|--speed|speed)                shift; mpvc_add "speed" "$1"  ;;
-            -X|--speedval)                   shift; mpvc_set "speed" "$1"  ;;
-            -j|--track|track)                shift; mpvc_set_track "$1" relative  ;;
-            -J|--tracknum|tracknum)          shift; mpvc_set_track "$1" absolute  ;;
-            -r|--remove|rm|remove|del)       shift; mpvc_remove_track "$1"; QUIETFLAG=true;;
-            -A|--playnext|playnext)          shift; mpvc_play_next "$1"           ;;
-            -o|--save|save)                  shift; mpvc_save_playlist "$1" ;;
+            -t|--seek|seek)                  shift; mpvc_set_time "relative" "${1:-}" ;;
+            -T|--time|time)                  shift; mpvc_set_time "absolute" "${1:-}" ;;
+            -v|--vol)                        shift; mpvc_add "volume" "${1:-}"  ;;
+            -V|--volume)                     shift; mpvc_set "volume" "${1:-}"  ;;
+            -x|--speed|speed)                shift; mpvc_add "speed" "${1:-}"  ;;
+            -X|--speedval)                   shift; mpvc_set "speed" "${1:-}"  ;;
+            -j|--track|track)                shift; mpvc_set_track "${1:-}" relative  ;;
+            -J|--tracknum|tracknum)          shift; mpvc_set_track "${1:-}" absolute  ;;
+            -r|--remove|rm|remove|del)       shift; mpvc_remove_track "${1:-}"; QUIETFLAG=true;;
+            -A|--playnext|playnext)          shift; mpvc_play_next "${1:-}"           ;;
+            -o|--save|save)                  shift; mpvc_save_playlist "${1:-}" ;;
             --load|load)                     shift; mpvc_load_playlist      ;;
 
             mpv|--mpv)                       mpvc_startmpv --really-quiet --idle=yes;;
             --current|current)               ;;
             --loadc|loadc)                   shift; mpvc_load_playlist "clear"    ;;
             --saven|saven)                   shift; mpvc_get_playlist_once "numbered"; QUIETFLAG=true;;
-            --autosave|autosave)             shift; mpvc_autosave_playlist "$1"; ;;
-            --autoload|autoload)             shift; mpvc_autoload_playlist "$1"; ;;
-            --lsplaylists|lsplaylists)       shift; mpvc_lsplaylists "$1"; QUIETFLAG=true;;
+            --autosave|autosave)             shift; mpvc_autosave_playlist "${1:-}"; ;;
+            --autoload|autoload)             shift; mpvc_autoload_playlist "${1:-}"; ;;
+            --lsplaylists|lsplaylists)       shift; mpvc_lsplaylists "${1:-}"; QUIETFLAG=true;;
             --dblist|dblist)                 shift; mpvc_dblist; return ;;
             --dbinit|dbinit)                 shift; mpvc_dbinit; return ;;
             --cycle|cycle)                   shift; mpvc_cmd cycle "$@"; QUIETFLAG=true;;
             --set|set|s)                     shift; mpvc_cmd set_property "$@"; return;;
-            --get|get|g)                     shift; mpvc_cmd get_property "$1"; QUIETFLAG=true;;
+            --get|get|g)                     shift; mpvc_cmd get_property "${1:-}"; QUIETFLAG=true;;
             --sets|sets|ss)                  shift; mpvc_cmd set_property_string "$@"; return;;
-            --gets|gets|gs)                  shift; mpvc_cmd get_property_string "$1"; QUIETFLAG=true;;
+            --gets|gets|gs)                  shift; mpvc_cmd get_property_string "${1:-}"; QUIETFLAG=true;;
             --setr|setr|sr)                  shift; mpvc_cmdr set_property "$@"; return;;
-            --getr|getr|gr)                  shift; mpvc_cmdr get_property "$1"; QUIETFLAG=true;;
+            --getr|getr|gr)                  shift; mpvc_cmdr get_property "${1:-}"; QUIETFLAG=true;;
             --togglec|togglec)               shift; mpvc_cycle "cache" ;;
             --togglev|togglev)               shift; mpvc_cycle "video" ;;
             --togglew|togglew)               shift; mpvc_cycle "force-window" ;;
             --togglei|togglei)               shift; mpvc_cycle "idle" ;;
-            --idleloop|idleloop)             shift; mpvc_idleloop "$1"; QUIETFLAG=true ;;
+            --idleloop|idleloop)             shift; mpvc_idleloop "${1:-}"; QUIETFLAG=true ;;
             --cmd|cmd)                       shift; mpvc_cmd "$@"; return ;;
             --cmdr|cmdr)                     shift; mpvc_cmdr "$@"; return ;;
-            --sockcmd|sockcmd)               shift; mpvc_sockcmd_ "$1"; QUIETFLAG=true ;;
+            --sockcmd|sockcmd)               shift; mpvc_sockcmd_ "${1:-}"; QUIETFLAG=true ;;
             --sockrepl|sockrepl)             shift; mpvc_sockrepl; QUIETFLAG=true ;;
-            --socklist|socklist)             shift; mpvc_socklist "$1"; QUIETFLAG=true ;;
+            --socklist|socklist)             shift; mpvc_socklist "${1:-}"; QUIETFLAG=true ;;
 
             --search|search)                 shift; mpvc_search "full" "$@"; QUIETFLAG=true ;;
             --Search|Search)                 shift; mpvc_search "numbered" "$@"; QUIETFLAG=true ;;
-            -R|--searchrm|searchrm)          shift; mpvc_search_remove "full" "$1";;
-               --searchRm|searchRm)          shift; mpvc_search_remove "numbered" "$1";;
-            -M|--searchmv|searchmv)          shift; mpvc_search_move "full" "$1" "$2";;
-               --searchMv|searchMv)          shift; mpvc_search_move "numbered" "$1" "$2";;
-            -N|--searchplay|searchplay)      shift; mpvc_search_play "full" "$1" ;;
-            -n|--searchPlay|searchPlay)      shift; mpvc_search_play "numbered" "$1" ;;
-            --stash|stash)                   shift; mpvc_stash "$1" "$2";;
+            -R|--searchrm|searchrm)          shift; mpvc_search_remove "full" "${1:-}";;
+               --searchRm|searchRm)          shift; mpvc_search_remove "numbered" "${1:-}";;
+            -M|--searchmv|searchmv)          shift; mpvc_search_move "full" "${1:-}" "${2:-}";;
+               --searchMv|searchMv)          shift; mpvc_search_move "numbered" "${1:-}" "${2:-}";;
+            -N|--searchplay|searchplay)      shift; mpvc_search_play "full" "${1:-}" ;;
+            -n|--searchPlay|searchPlay)      shift; mpvc_search_play "numbered" "${1:-}" ;;
+            --stash|stash)                   shift; mpvc_stash "${1:-}" "${2:-}";;
             expand-text)                     shift; mpvc_cmd expand-text "$@"; return;;
             metadata)                        shift; mpvc_cmdr get_property metadata "$@"; return;;
 
@@ -913,22 +939,23 @@ main() {
             -c|--crop|crop)                  mpvc_crop_playlist; QUIETFLAG=true;;
             -C|--clear|clear)                mpvc_clear_playlist; QUIETFLAG=true;;
             --delay|delay)                   mpvc_delay;;
+            --wait|wait)                     mpvc_wait;;
 
             # global argument parsing
-            -f|--format)                     shift; FORMATSTRING="$1"       ;;
-            -S|--socket)                     shift; MPVC_SOCKET="$1"; mpvc_config ;;
+            -f|--format)                     shift; FORMATSTRING="${1:-}"       ;;
+            -S|--socket)                     shift; MPVC_SOCKET="${1:-}"; mpvc_config ;;
             -Q|--vid=no)                     MPVOPTIONS="$MPVOPTIONS --vid=no"; ;;
             --image)                         IMAGEFLAG=true;                ;;
             -q|--quiet)                      QUIETFLAG=true;                ;;
             --color|color)                   unset NO_COLOR                 ;;
-            --nocolor|nocolor)               NO_COLOR=true                  ;;
+            --nocolor|nocolor)               export NO_COLOR=true           ;;
             --version|version)               mpvc_get_version; exit 0;      ;;
             --list-options)                  usage; exit 0;                 ;;
             -h|--help|h|help)                usage; exit 0;                 ;;
             -H|--long-help|long-help)        usage "$@"; exit 0;            ;;
             -?)                              usage; exit 1;                 ;;
         esac
-        if [ -n "$1" ]; then shift; fi
+        if [ $# -ge 1 ]; then shift; fi
     done
     # produce format strings last
     quietcheck mpvc_print_status_final

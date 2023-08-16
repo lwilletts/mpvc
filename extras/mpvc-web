@@ -7,53 +7,132 @@
 #
 
 # REMEMBER This is a hack, DISCLAIMER * Use at Your Own Risk *
-# The sole reason for its existence is to mimic mpvc-tui when this is not available,
-# for example, controlling a remotely running an mpv, accessing from a client without a CLI,
+# A security hole in itself, with many open man-holes, evident ones are marked with XXX
+#
+# The sole reason for its existence is to mimic mpvc-tui when is not available,
+# like, controlling a remotely running an mpv, accessing from a client without a CLI,
 # like a laptop, tablet, or phone.
 
 PROGNAME=${0##*/}
 PROGVERSION="v1.4"
 PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
-PROGINFO="mpvc-web, A hack to remotely control mpvc from web # DISCLAIMER * Use at Your Own Risk *"
+PROGINFO="A hack to remotely control mpvc from web # DISCLAIMER * Use at Your Own Risk *"
 
 set -euf
+
+mpvc_web_style()
+{
+    echo 'body { filter: invert(0.7); }'
+}
 
 mpvc_web_index()
 {
     cat <<EOF
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="en">
     <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>$PROGNAME $PROGVERSION ($PROGURL)</title>
+    <meta charset="utf-8" />
+    <meta name="generator" content="gmt4 mpvc-web" />
+    <meta name="author" content="gmt4 <gmt4 at github.com> (c) Copyright 2022" />
+    <meta name="description" content="mpvc-web, a mpvc-tui for the web" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes" />
+    <meta http-equiv="Content-Type" content="text/html">
+    <meta http-equiv="cache-control" content="max-age=0" />
+    <meta http-equiv="cache-control" content="no-cache" />
+    <meta http-equiv="expires" content="0" />
+    <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <!-- <meta http-equiv="refresh" content="60"> -->
+    <title>$PROGNAME @ $(hostname) 🎧</title>
     </head>
     <style type="text/css" media="all">
     :root { --body-bg: #fff; --body-color: #111; --pre-bg:#eee; --link-color:#00f; } /* Light mode */
     @media (prefers-color-scheme: dark) {
        :root { --body-bg: #222; --body-color: #eee; --pre-bg:#333; --link-color:#07f; } /* Dark mode */
     }
-    :root { --body-bg: #fff; --body-color: #111; --pre-bg:#eee; --link-color:#00f; } /* Light mode */
-    body { background: var(--body-bg); color: var(--body-color); font-family: sans-serif; }
+    body { background: var(--body-bg); color: var(--body-color); font-family: monospace; }
     code { background: var(--pre-bg); }
     pre  { background: var(--pre-bg); }
     a    { color: var(--link-color); }
     </style>
+    <link rel="stylesheet" href="style.css" />
+
     <body>
-    <strong>$PROGNAME $PROGVERSION</strong>
-    <hr>
-    <ul>
-    <li> mpvc <a href="?cmd=mpvc status">status</a> <a href="?cmd=mpvc toggle">toggle</a> <a href="?cmd=mpvc prev">prev</a> <a href="?cmd=mpvc next">next</a></li>
-    <li> mpvc <a href="?cmd=mpvc play">play</a> <a href="?cmd=mpvc stop">stop</a></li>
-    <li> mpvc <a href="?cmd=mpvc repeat">repeat</a> <a href="?cmd=mpvc single">single</a></li>
-    <li> mpvc vol <a href="?cmd=mpvc vol -10">-10</a> <a href="?cmd=mpvc vol +10">+10</a></li>
-    </ul>
-    <hr>
-    <strong>mpvc status</strong>
-    <iframe width="100%" frameborder="1" src="/cgi-bin/mpvc?status" allowtransparency="true" ></iframe>
-    <strong>mpvc playlist</strong>
-    <iframe width="100%" height="300" frameborder="1" src="/cgi-bin/mpvc?playlist" allowtransparency="true" ></iframe>
-    <sub>$PROGINFO <a href="$PROGURL">$PROGURL</a></sub>
+        [ <a href="." name="mpvc-web">$PROGNAME</a> ] <hr>
+        <ul style="padding: 0em 1em;">
+        <li>
+        <!-- enable this optionally: only for dev/testing -->
+        <form action="/" method="get">
+        mpvc
+            <input type="text" id="cli" name="cli" placeholder="mpvc status ${MPVC_DEV:-(off)}" title="mpvc cli" onkeydown="if (event.keyCode == 13) { this.form.submit(); return false; }">
+        </form>
+        </li>
+        <li>
+        mpvc
+            <a href="?cmd=mpvc status">status</a>
+            <a href="?cmd=mpvc toggle">toggle</a>
+            <a href="?cmd=mpvc mpv">mpv</a>
+            <a href="?cmd=mpvc kill">kill</a>
+            <a href="?cmd=mpvc clear">clear</a>
+        </li>
+        <li>
+        mpvc
+            <a href="?cmd=mpvc play">play</a>
+            <a href="?cmd=mpvc start 0">start</a>
+            <a href="?cmd=mpvc stop">stop</a>
+            <a href="?cmd=mpvc prev">prev</a>
+            <a href="?cmd=mpvc next">next</a>
+        </li>
+        <li>
+        mpvc
+            <a href="?cmd=mpvc repeat">repeat</a>
+            <a href="?cmd=mpvc single">single</a>
+            <a href="?cmd=mpvc shuffle">shuffle</a>
+            <a href="?cmd=mpvc unshuffle">unshuffle</a>
+        </li>
+        <li>
+        mpvc chapter
+            <a href="?cmd=mpvc-chapter replay">replay</a>
+            <a href="?cmd=mpvc-chapter prev">prev</a>
+            <a href="?cmd=mpvc-chapter next">next</a>
+        </li>
+        <li>
+        mpvc vol
+            <a href="?cmd=mpvc vol -10">-10</a>
+            <a href="?cmd=mpvc vol -5">-5</a>
+            <a href="?cmd=mpvc vol +5">+5</a>
+            <a href="?cmd=mpvc vol +10">+10</a>
+        </li>
+        <li>
+        theme
+            <a href="#" title="theme 0" onclick="document.body.style.WebkitFilter='invert(0)';">th0</a> |
+            <a href="#" title="theme 4" onclick="document.body.style.WebkitFilter='invert(0.4)';">th4</a> |
+            <a href="#" title="theme 6" onclick="document.body.style.WebkitFilter='invert(0.6)';">th6</a> |
+            <a href="#" title="theme 8" onclick="document.body.style.WebkitFilter='invert(0.8)';">th8</a> |
+            <a href="." title="reload"> reload</a>
+        </li>
+        <li>
+            <a href="?cmd=mpvc stop" title="mpvc stop" > ⏹️ </a> |
+            <a href="?cmd=mpvc play" title="mpvc play">▶️</a> |
+            <a href="?cmd=mpvc toggle" title="mpvc toggle">⏸️</a> |
+            <a href="?cmd=mpvc seek -60" title="mpvc seek-60">⏪</a> |
+            <a href="?cmd=mpvc seek +60" title="mpvc seek+60">⏩</a> |
+            <a href="?cmd=mpvc prev" title="mpvc prev">⏮️</a> |
+            <a href="?cmd=mpvc next" title="mpvc next">⏭️</a>
+            <a href="?cmd=mpvc single" title="mpvc single">🔄</a>
+        </li>
+        </ul>
+        [ <a href="#mpvc-web-status" name="mpvc-web-status">Status</a> ] <hr>
+        <iframe name="mpvc-status" width="100%" height="100%" frameborder="0" src="/cgi-bin/mpvc?status" allowtransparency="true" ></iframe>
+        [ <a href="#mpvc-web-playlist" name="mpvc-web-playlist">Playlist</a> <a href="#mpvc-web-fullplaylist" name="mpvc-web-fullplaylist">full</a> ] <hr>
+        <div style="display:flex">
+        <iframe name="mpvc-playlist" width="100%" height="300" frameborder="0" src="/cgi-bin/mpvc?playlist" allowtransparency="true" style="margin:auto" ></iframe>
+        <iframe name="mpvc-playlist" width="100%" height="100%" frameborder="0" src="/cgi-bin/mpvc?fullplaylist" allowtransparency="true" style="margin:auto; display:none" ></iframe>
+        </div>
+        [ <a href="#mpvc-web-prompt" name="mpvc-web-prompt">Prompt</a> ] <hr>
+    🎧 <a href="$PROGURL">$PROGNAME</a> $PROGVERSION, a mpvc-tui for the web
     </body>
 </html>
 EOF
@@ -61,43 +140,85 @@ EOF
 
 mpvc_web_cgi()
 {
-    cat <<"EOF"
+    MPVC=$(command -v mpvc)
+    cat <<EOF
 #!/bin/sh
+set -euf
+if [ -n "\${USER:-}" ]; then
+    env -i PATH="/usr/bin:/bin" HOME="\$HOME" TERM="\$TERM" QUERY_STRING="\${QUERY_STRING:-}" "\$0" "\$@"; exit;
+fi
+export
 echo "Content-Type: text/plain"
 echo
-case "$QUERY_STRING" in
-    status) mpvc status;;
-    playlist) mpvc --nocolor playlist;;
-    playlistfull) mpvc --nocolor playlistfull;;
-    *) mpvc ;;
+case "\${QUERY_STRING:-}" in
+    status) $MPVC status;;
+    playlist) $MPVC playlist | sed '/\x1b\[7m/ { s|\x1b\[7m||; s| |+|; }; s|\x1b\[0m||;' ;;
+    fullplaylist) $MPVC fullplaylist | sed '/\x1b\[7m/ { s|\x1b\[7m||; s| |+|; }; s|\x1b\[0m||;' ;;
+    *) $MPVC ;;
 esac
 EOF
-
 }
 
 mpvc_web()
 {
-    echo "# $PROGINFO"
+    echo "# $PROGNAME $PROGINFO"
     MPVC_WEB_ROOT=/tmp/mpvc-web
     (
         mkdir -p "$MPVC_WEB_ROOT" || return
         mkdir -p "$MPVC_WEB_ROOT/cgi-bin/" || return
         cd "$MPVC_WEB_ROOT" || return
 
-        mpvc_web_index > "$MPVC_WEB_ROOT/index.html"
-        mpvc_web_cgi > "$MPVC_WEB_ROOT/cgi-bin/mpvc"
-        chmod u+x "$MPVC_WEB_ROOT/cgi-bin/mpvc"
+        chmod u+w -R "$MPVC_WEB_ROOT/"
 
+        mpvc_web_index > "$MPVC_WEB_ROOT/index.html"
+        [ ! -e "$MPVC_WEB_ROOT/style.css" ] && mpvc_web_style > "$MPVC_WEB_ROOT/style.css"
+        mpvc_web_cgi > "$MPVC_WEB_ROOT/cgi-bin/mpvc"
+        touch "$MPVC_WEB_ROOT/favicon.ico"
+        touch "$MPVC_WEB_ROOT/apple-touch-icon.png"
+
+        chmod u+x "$MPVC_WEB_ROOT/cgi-bin/mpvc"
+        chmod a-w -R "$MPVC_WEB_ROOT/"
+
+        # XXX handle cli commands, rewrite this mess
         python3 -u -m http.server --cgi "$@" 2>&1 | awk \
         '
-        /GET \/\?cmd=mpvc%20toggle/   { system("mpvc -q toggle") }
-        /GET \/\?cmd=mpvc%20prev/     { system("mpvc -q prev") }
-        /GET \/\?cmd=mpvc%20next/     { system("mpvc -q next") }
-        /GET \/\?cmd=mpvc%20play/     { system("mpvc -q play") }
-        /GET \/\?cmd=mpvc%20stop/     { system("mpvc -q stop") }
+        /GET \/\?cmd=mpvc%20mpv/          { system("mpvc -q mpv") }
+        /GET \/\?cmd=mpvc%20clear/        { system("mpvc -q clear") }
+        /GET \/\?cmd=mpvc%20kill/         { system("mpvc -q kill") }
 
-        /GET \/\?cmd=mpvc%20repeat/   { system("mpvc -q repeat") }
-        /GET \/\?cmd=mpvc%20single/   { system("mpvc -q single") }
+        /GET \/\?cmd=mpvc%20toggle/       { system("mpvc -q toggle") }
+        /GET \/\?cmd=mpvc%20play/         { system("mpvc -q play") }
+        /GET \/\?cmd=mpvc%20start%200/    { system("mpvc -q start 0") }
+        /GET \/\?cmd=mpvc%20stop/         { system("mpvc -q stop") }
+        /GET \/\?cmd=mpvc%20prev/         { system("mpvc -q prev") }
+        /GET \/\?cmd=mpvc%20next/         { system("mpvc -q next") }
+
+        /GET \/\?cmd=mpvc%20shuffle/      { system("mpvc -q shuffle") }
+        /GET \/\?cmd=mpvc%20unshuffle/    { system("mpvc -q unshuffle") }
+
+        /GET \/\?cmd=mpvc%20vol%20\-5/    { system("mpvc -q vol -5") }
+        /GET \/\?cmd=mpvc%20vol%20\+5/    { system("mpvc -q vol +5") }
+        /GET \/\?cmd=mpvc%20vol%20\-10/   { system("mpvc -q vol -10") }
+        /GET \/\?cmd=mpvc%20vol%20\+10/   { system("mpvc -q vol +10") }
+
+        /GET \/\?cmd=mpvc%20repeat/       { system("mpvc -q repeat") }
+        /GET \/\?cmd=mpvc%20single/       { system("mpvc -q single") }
+
+        /GET \/\?cmd=mpvc-chapter%20prev/ { system("mpvc-chapter prev") }
+        /GET \/\?cmd=mpvc-chapter%20next/ { system("mpvc-chapter next") }
+
+        /GET \/\?cli=mpvc/                {
+            r=$0;
+            gsub("HTTP.*$", "", r);
+            gsub("^.*GET \\/\\?cli=mpvc\\+", "mpvc ", r);
+            gsub("\\+", " ", r);
+            gsub("[^a-z0-9 ]", "", r);
+
+            if (ENVIRON["MPVC_DEV"] && match(r, "^mpvc "))
+            {
+                system(r); # XXX
+            }
+        }
 
         { print $0 }
         '

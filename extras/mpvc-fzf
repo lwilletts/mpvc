@@ -38,7 +38,7 @@ mpvctui_config()
     fi
 }
 
-mpvctui_fzf_help="C-x:list C-v:yt-add C-\\:add C-o:play C-r:del C-t:reload C-s:seek C-spc:toggle"
+mpvctui_fzf_help="C-x:list C-v:yt-add C-\\:add C-o:play C-t:del C-r:reload C-s:seek C-spc:toggle"
 mpvctui_fzf_preview()
 {
     # fzf keys: ctrl + [dorstxv\]
@@ -71,8 +71,8 @@ mpvctui_fzf_isearch()
     echo "$url_search"
     curl -fsSL -A 'Mozilla/5.0' "$url_search&page=1" "$url_search&page=2" |
     awk '
-        /^ *<p dir="auto">/ {
-            gsub("^ *<p dir=\"auto\">",""); gsub("</p>",""); vtitle=$0
+        /^.*<p dir="auto">/ {
+            gsub("^.*<p dir=\"auto\">",""); gsub("</p>.*$",""); vtitle=$0
         }
         /<p class="video-data" dir="auto">/ {
             gsub("^ *<p class=\"video-data\" dir=\"auto\">",""); gsub(" views",""); gsub("</p>",""); shared=$0
@@ -103,21 +103,21 @@ mpvctui_fzf_icache()
     ytdl_archive=$(echo $ytdl_json | jq -r '.data."download-archive"')
     ytdl_output=$(echo $ytdl_json | jq -r ".data.output")
     ytdl_archive=$(eval echo $ytdl_archive)
-    ytdl_dir=$(dirname $ytdl_output)
-    ytdl_dir=$(eval echo $ytdl_dir)
-    if [ -z "$ytdl_json" -o ! -r "$ytdl_archive" -o ! -d "$ytdl_dir" ]
+    if [ -z "$ytdl_json" -o ! -r "$ytdl_archive" -o ! -n "$ytdl_output" ]
     then
-        mpvctui_warn "$PROGNAME: Error not using cache"
+        mpvctui_warn "$PROGNAME: Error cache not enabled: undefined ytdl-raw-options"
         if cat; then return; fi
     fi
+    ytdl_dir=$(dirname $ytdl_output)
+    ytdl_dir=$(eval echo $ytdl_dir)
 
     while read -r line
     do
-        url=$(echo "$line" | awk '{print $1}')
+        url=$(echo "$line" | awk '{ gsub("watch\\?v=",""); print $1 }')
         vid=$(basename "$url")
         file=$(ls $ytdl_dir/*$vid* 2>/dev/null)
-        if quiet grep -q "$vid" $ytdl_archive && [ -e "$file" ]; then
-            echo "$line" | sed "s|^$url|$file|"
+        if [ -e "$file" ]; then # quiet grep -q "$vid" $ytdl_archive
+            echo "$file"
         else
             echo "$line"
         fi
@@ -247,7 +247,7 @@ main()
         #D) shift; mpvctui_fzf_ddg "$@";;
         f) mpvctui_fzf_playlist ;;
         F) shift; mpvctui_fzf_preview "$@" ;;
-        g) mpvc --mpv && mpvctui_fzf_fetch "$OPTARG";;
+        g) mpvc -q --mpv && mpvctui_fzf_fetch "$OPTARG";;
         G) mpvctui_fzf_fetch $(mpvctui_fzf_iplay "$OPTARG");;
         h) mpvctui_usage ;;
         l) mpvctui_fzf_local;;

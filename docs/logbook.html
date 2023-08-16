@@ -80,6 +80,7 @@ Logbook Entries
     <li> <a href="#logbook-20230331">#20230331 CSS, RSS &amp; casts updates on the gmt4.github.io/mpvc site</a></li>
     <li> <a href="#logbook-20230425">#20230425 Introducing mpvc-equalizer: a basic mpv equalizer for the CLI</a></li>
     <li> <a href="#logbook-20230602">#20230602 On applying ffmpeg AV filters using the MPV JSON IPC</a></li>
+    <li> <a href="#logbook-20230721">#20230721 Introducing mpvc-web: a mpvc-tui like hack for the web/browser</a></li>
 </ul>
 
 <hr />
@@ -173,6 +174,7 @@ That one is easy, for that purpose <code>mpvc cmd args</code> sends the <code>{ 
 <ul>
 <li> <code>mpvc cmd show-text "hello-world" 2000</code></li>
 <li> <code>mpvc cmd af toggle lavfi=[loudnorm=I=-16:TP=-3:LRA=4]</code></li>
+<li> <code>mpvc cmd af toggle lavfi=[dynaudnorm]</code></li>
 <li> <code>mpvc cmd af toggle lavfi=[dynaudnorm=g=5:f=250:r=0.9:p=0.5]</code></li>
 </ul>
 <p>
@@ -347,12 +349,36 @@ mpvc cmdr af toggle "@aecho:lavfi=[aecho=in_gain=0.9:out_gain=0.9:delays=1:decay
 </pre>
 </p>
 
+<h3 id="logbook-20230721">Introducing mpvc-web: a mpvc-tui like hack for the web/browser, 21 July 2023</h3>
+<p>
+A few things have been going on lately, among them, the most recent has been adding <code>mpvc-web</code> that is just a quick hack to control a running mpv instance from when no <code>mpvc</code> cli is available, a typical example is when you just have a phone or tablet with no cli. To this I resorted to mimic <code>mpvc-tui</code> interface but making it available through HTTP using <code>python3 -m http.server</code>. This seems to work fine for simple things like toggling music on and off, moving to next/prev entry in the playlist, and raising/lowering volume.
+Check <a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-web">extras/mpvc-web</a> for more, and you are warned: this is a ugly hack.
+</p>
+
+<p>
+As a minor thing I've started aliasing <code>mpvc</code> commands that I use frequently to their "m" counterparts in bash, not perfect, but handy enough, and saves some typing:
+<pre>
+$ grep mpvc ~/.bashrc
+alias m="mpvc"
+alias mi="mpvc -i"
+alias mI="mpvc -I"
+#alias mf="mpvc-fzf"
+alias mt="mpvc-tui"
+alias mc="mpvc-chapter"
+alias me="mpvc-equalizer"
+</pre>
+</p>
+
+<p>
+Check the <a href="now/">Now Playing @ now/</a> that builds upon <code>mpvc-tui</code> scrobbling code to generate a simple list of the most played media. The <a href="https://en.wikipedia.org/wiki/Anti_EP">Anti EP</a> by <a href="https://en.wikipedia.org/wiki/Autechre">Autechre</a> has raised to the top position.
+</p>
+
 <!-- SOF -->
 
 <hr/>
 <p>
 <span>
-    <em>Last-Modified: Saturday, 24 June 2023 by <a href="https://gmt4.github.io">gmt4</a></em>
+    <em>Last-Modified: Friday, 21 July 2023 by <a href="https://gmt4.github.io">gmt4</a></em>
 </span>
 <span style="float: right;">
     <em>Powered by #HTML 🧡 💚 💙 </em>

@@ -72,6 +72,7 @@
     <li> <a href="https://github.com/gmt4/mpvc/blob/master/mpvc">mpvc</a>: provides the mpc CLI commands</li>
     <li> <a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-tui">extras/mpvc-tui</a>: provides a console TUI, using mpvc underneath</li>
     <li> <a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-fzf">extras/mpvc-fzf</a>: provides FZF integration to mpvc.</li>
+    <li> <a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-web">extras/mpvc-web</a>: a hack to remotely control mpvc from web</li>
     <li> <a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-mpris">extras/mpvc-mpris</a>: speaks MPRIS to control mplayer through key-bindings.</li>
     <li> <a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-chapter">extras/mpvc-chapter</a>: provides mpvc chapter management .</li>
     <li> <a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-equalizer">extras/mpvc-equalizer</a>: provides a basic mpv equalizer for the CLI.</li>
@@ -97,7 +98,7 @@ curl -fsSL -o mpvc-installer https://github.com/gmt4/mpvc/raw/master/extras/mpvc
  <b># fetch a local copy of the github repo</b>
  git clone https://github.com/gmt4/mpvc/
  <b># use extras/mpvc-installer: just copy/link to your $HOME/bin</b>
- mpvc/extras/mpvc-installer link-user
+ (cd mpvc; extras/mpvc-installer link-user)
 
  <b># use mpvc-fzf to search and play youtube media</b>
  mpvc-fzf -p 'kupla mirage'
@@ -135,7 +136,7 @@ The logbook got big enought to deserve a page on its own, see here: <a href="log
 <hr/>
 <p>
 <span>
-    <em>Last-Modified: Saturday, 13 May 2023 by <a href="https://gmt4.github.io">gmt4</a></em>
+    <em>Last-Modified: Friday, 21 July 2023 by <a href="https://gmt4.github.io">gmt4</a></em>
 </span>
 <span style="float: right;">
     <em>Powered by #HTML 🧡 💚 💙 </em>

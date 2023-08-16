@@ -10,11 +10,11 @@
 An mpc-like control interface for mpv with a nearly complete compatibility layer for mpc commands in
 addition to GNU style arguments.
 This forks [lwillets/mpvc](https://github.com/lwilletts/mpvc) providing some extra goodies such as: improved CLI, TUI, FZF & playing media from YouTube & streaming services.
-Check the [Wiki](https://github.com/gmt4/mpvc/wiki) & [Casts](https://gmt4.github.io/mpvc/casts/) for a detailed view of the extra features of this fork.
+Check the [Wiki](../../wiki) & [Casts](https://gmt4.github.io/mpvc/casts/) for a detailed view of the extra features of this fork.
 
 ## QuickInstall ▶️
 
-[mpvc-installer](https://github.com/gmt4/mpvc/blob/master/extras/mpvc-installer) fetch-user: installs mpvc under BINDIR=~/bin/
+[mpvc-installer](../../blob/master/extras/mpvc-installer) fetch-user: installs mpvc under BINDIR=~/bin/
 
 `curl -fsSL -o mpvc-installer https://github.com/gmt4/mpvc/raw/master/extras/mpvc-installer && sh ./mpvc-installer fetch-user`
 
@@ -24,7 +24,7 @@ Check the [Wiki](https://github.com/gmt4/mpvc/wiki) & [Casts](https://gmt4.githu
  <b># fetch a local copy of the github repo</b>
  git clone https://github.com/gmt4/mpvc/
  <b># use extras/mpvc-installer: just copy/link to your $HOME/bin</b>
- mpvc/extras/mpvc-installer link-user
+ (cd mpvc; extras/mpvc-installer link-user)
 
  <b># use mpvc-fzf to search and play youtube media</b>
  mpvc-fzf -p kupla mirage
@@ -43,15 +43,15 @@ Check the [Wiki](https://github.com/gmt4/mpvc/wiki) & [Casts](https://gmt4.githu
 
 mpvc-tui -T: running the mpvc TUI
 
-![mpvc-tui -T screenshot](https://github.com/gmt4/mpvc/blob/master/docs/assets/mpvc-tui.png)
+![mpvc-tui -T screenshot](../../blob/master/docs/assets/mpvc-tui.png)
 
 mpvc-fzf -f: running with fzf to manage the playlist
 
-![mpvc-fzf screenshot](https://github.com/gmt4/mpvc/blob/master/docs/assets/mpvc-tui-arch.png)
+![mpvc-fzf screenshot](../../blob/master/docs/assets/mpvc-tui-arch.png)
 
 mpvc-tui -n: running with mpvc-fzf and desktop notifications on the upper-right corner
 
-![mpvc tui+fzf+notifications screenshot](https://github.com/gmt4/mpvc/blob/master/docs/assets/mpvc-tui-fzf.png)
+![mpvc tui+fzf+notifications screenshot](../../blob/master/docs/assets/mpvc-tui-fzf.png)
 
 ## Dependencies
 
