@@ -130,6 +130,7 @@ mpvc_defaults()
     MPVC_SOCAT="${MPVC_SOCAT:-socat}"
 
     QUIETFLAG="${QUIETFLAG:-}"
+    MPVC_LOCAL_CACHE="${MPVC_LOCAL_CACHE:-false}"
     FORMATSTRING="${FORMATSTRING:-}"
 
     # print default status of mpv instance
@@ -324,6 +325,8 @@ mpvc_get_playlist() {
             gsub("\\\\x26", "\x26", ytitle)
             gsub("\\\\x27", "\x27", ytitle)
             gsub("\\\\xa0", "\xa0", ytitle)
+            gsub("\\\\u[0-9a-f]{4}", "", ytitle)
+
             return ytitle
         }
 
@@ -500,8 +503,8 @@ mpvc_appendtrack() {
         *.png|*.jpg|*.jpeg|*.gif|*.psd|*.pdf) [ "$IMAGEFLAG" != "true" ] && return ;;
     esac
     if [ -n "$filename" ]; then
-        # cache media here if a match is found TBD
-        #filename=$(echo "$filename" | mpvc-fzf -c)
+        # cache media here if media is found in local storage TBD
+        if [ "$MPVC_LOCAL_CACHE" = "true" ]; then filename=$(echo "$filename" | mpvc-fzf -c); fi
         echo "Adding: $(mpvc_curl_cache_title_clean "$filename")"
         quiet mpvc_cmd "loadfile" "$filename" "append-play"
     fi
