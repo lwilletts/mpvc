@@ -66,7 +66,7 @@ mpvc_web_index()
         <!-- enable this optionally: only for dev/testing -->
         <form action="/" method="get">
         mpvc
-            <input type="text" id="cli" name="cli" placeholder="mpvc status ${MPVC_DEV:-(off)}" title="mpvc cli" onkeydown="if (event.keyCode == 13) { this.form.submit(); return false; }">
+            <input type="text" id="cli" name="cli" placeholder="mpvc status ${MPVC_WEB_DEV:-(off)}" title="mpvc cli" onkeydown="if (event.keyCode == 13) { this.form.submit(); return false; }">
         </form>
         </li>
         <li>
@@ -80,7 +80,8 @@ mpvc_web_index()
         <li>
         mpvc
             <a href="?cmd=mpvc play">play</a>
-            <a href="?cmd=mpvc start 0">start</a>
+            <a href="?cmd=mpvc play 0">start</a>
+            <a href="?cmd=mpvc play $">end</a>
             <a href="?cmd=mpvc stop">stop</a>
             <a href="?cmd=mpvc prev">prev</a>
             <a href="?cmd=mpvc next">next</a>
@@ -211,11 +212,11 @@ mpvc_web()
             r=$0;
             gsub("HTTP.*$", "", r);
             gsub("^.*GET \\/\\?cli=mpvc\\+", "mpvc ", r);
-            gsub("\\+", " ", r);
-            gsub("[^a-z0-9 ]", "", r);
+            gsub("^.*GET \\/\\?cli=mpvc-chapter\\+", "mpvc-chapter ", r);
 
-            if (ENVIRON["MPVC_DEV"] && match(r, "^mpvc "))
+            if (ENVIRON["MPVC_WEB_DEV"] && match(r, "^mpvc"))
             {
+                gsub("(mpvc|mpvc-chapter) [^a-zA-Z0-9 ]", "", r);
                 system(r); # XXX
             }
         }
