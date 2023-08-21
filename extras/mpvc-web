@@ -80,8 +80,8 @@ mpvc_web_index()
         <li>
         mpvc
             <a href="?cmd=mpvc play">play</a>
-            <a href="?cmd=mpvc play 0">start</a>
-            <a href="?cmd=mpvc play $">end</a>
+            <a href="?cmd=mpvc start 0">start</a>
+            <a href="?cmd=mpvc start $">end</a>
             <a href="?cmd=mpvc stop">stop</a>
             <a href="?cmd=mpvc prev">prev</a>
             <a href="?cmd=mpvc next">next</a>
@@ -190,6 +190,7 @@ mpvc_web()
         /GET \/\?cmd=mpvc%20toggle/       { system("mpvc -q toggle") }
         /GET \/\?cmd=mpvc%20play/         { system("mpvc -q play") }
         /GET \/\?cmd=mpvc%20start%200/    { system("mpvc -q start 0") }
+        /GET \/\?cmd=mpvc%20start%20$/    { system("mpvc -q start $") }
         /GET \/\?cmd=mpvc%20stop/         { system("mpvc -q stop") }
         /GET \/\?cmd=mpvc%20prev/         { system("mpvc -q prev") }
         /GET \/\?cmd=mpvc%20next/         { system("mpvc -q next") }
