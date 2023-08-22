@@ -115,7 +115,7 @@ mpvctui_fzf_icache()
     do
         url=$(echo "$line" | awk '{ gsub("watch\\?v=",""); print $1 }')
         vid=$(basename "$url")
-        file=$(ls $ytdl_dir/*$vid* 2>/dev/null || true)
+        file=$(find $ytdl_dir/ 2>/dev/null | awk "/$vid/ { print; exit }")
         if [ -e "$file" ]; then # quiet grep -q "$vid" $ytdl_archive
             echo "$file"
         else
