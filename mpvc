@@ -416,7 +416,7 @@ mpvc_stash() {
                 warn "$PROGNAME: Warn Existing $1 stash found, drop it first. Quitting"
                 return
             fi
-            mpvc_stash current > "$MPVC_STASH_DIR/$1"
+            mpvc_stash current "$1" > "$MPVC_STASH_DIR/$1"
             ;;
         apply) # if no stash given, default to stdin
             if [ -z "$1" ]; then
