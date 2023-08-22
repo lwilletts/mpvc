@@ -149,7 +149,7 @@ mpvctui_fzf_fetch()
             ytdl_opts="$ytdl_opts --$option"
         fi
     done
-    "$ytdlp" $ytdl_opts $YTDL_OPTS "$@"
+    "$ytdlp" $ytdl_opts ${YTDL_OPTS:-} "$@"
 }
 
 mpvctui_fzf_iplay()
