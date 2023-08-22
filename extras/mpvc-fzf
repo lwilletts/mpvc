@@ -11,7 +11,7 @@ PROGVERSION="v1.4"
 PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
 
-#set -euf
+set -euf
 
 quiet()  { "$@" > /dev/null 2>&1; }
 mpvctui_warn() { echo "$@" >&2; }
@@ -115,7 +115,7 @@ mpvctui_fzf_icache()
     do
         url=$(echo "$line" | awk '{ gsub("watch\\?v=",""); print $1 }')
         vid=$(basename "$url")
-        file=$(ls $ytdl_dir/*$vid* 2>/dev/null)
+        file=$(ls $ytdl_dir/*$vid* 2>/dev/null || true)
         if [ -e "$file" ]; then # quiet grep -q "$vid" $ytdl_archive
             echo "$file"
         else
