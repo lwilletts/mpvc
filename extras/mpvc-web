@@ -127,13 +127,22 @@ mpvc_web_index()
         </ul>
         [ <a href="#mpvc-web-status" name="mpvc-web-status">Status</a> ] <hr>
         <iframe name="mpvc-status" width="100%" height="100%" frameborder="0" src="/cgi-bin/mpvc?status" allowtransparency="true" ></iframe>
-        [ <a href="#mpvc-web-playlist" name="mpvc-web-playlist">Playlist</a> <a href="#mpvc-web-fullplaylist" name="mpvc-web-fullplaylist">full</a> ] <hr>
+        [ <a href="#mpvc-web-playlist" name="mpvc-web-playlist">Playlist</a> <a href="#mpvc-web-fullplaylist" name="mpvc-web-fullplaylist">full</a> <a href="#mpvc-web-rawplaylist" name="mpvc-web-rawplaylist">raw</a> <a href="#mpvc-web-chapterlist" name="mpvc-web-chapterlist">chapters</a> <a href="." >clear</a> ] <hr>
         <div style="display:flex">
-        <iframe name="mpvc-playlist" width="100%" height="300" frameborder="0" src="/cgi-bin/mpvc?playlist" allowtransparency="true" style="margin:auto" ></iframe>
-        <iframe name="mpvc-playlist" width="100%" height="100%" frameborder="0" src="/cgi-bin/mpvc?fullplaylist" allowtransparency="true" style="margin:auto; display:none" ></iframe>
+        <iframe name="mpvc-playlist" width="100%" frameborder="0" src="/cgi-bin/mpvc?playlist" allowtransparency="true" style="margin:auto" ></iframe>
+        <script>
+        var playlist = document.getElementsByName('mpvc-playlist')[0];
+        switch (window.location.hash)
+        {
+            case '#mpvc-web-playlist':      { playlist.src='/cgi-bin/mpvc?playlist'; break; }
+            case '#mpvc-web-fullplaylist':  { playlist.src='/cgi-bin/mpvc?fullplaylist'; break; }
+            case '#mpvc-web-rawplaylist':   { playlist.src='/cgi-bin/mpvc?rawplaylist'; break; }
+            case '#mpvc-web-chapterlist':   { playlist.src='/cgi-bin/mpvc?chapterlist'; break; }
+        }
+        </script>
         </div>
         [ <a href="#mpvc-web-prompt" name="mpvc-web-prompt">Prompt</a> ] <hr>
-    🎧 <a href="$PROGURL">$PROGNAME</a> $PROGVERSION, a mpvc-tui for the web
+        🎧 <a href="$PROGURL">$PROGNAME</a> $PROGVERSION, a mpvc-tui for the web
     </body>
 </html>
 EOF
@@ -142,21 +151,28 @@ EOF
 mpvc_web_cgi()
 {
     MPVC=$(command -v mpvc)
+    MPVC_CHAPTER=$(command -v mpvc-chapter)
     cat <<EOF
 #!/bin/sh
 set -euf
-if [ -n "\${USER:-}" ]; then
-    env -i PATH="/usr/bin:/bin" HOME="\$HOME" TERM="\$TERM" QUERY_STRING="\${QUERY_STRING:-}" "\$0" "\$@"; exit;
-fi
-export
-echo "Content-Type: text/plain"
-echo
-case "\${QUERY_STRING:-}" in
-    status) $MPVC status;;
-    playlist) $MPVC playlist | sed '/\x1b\[7m/ { s|\x1b\[7m||; s| |+|; }; s|\x1b\[0m||;' ;;
-    fullplaylist) $MPVC fullplaylist | sed '/\x1b\[7m/ { s|\x1b\[7m||; s| |+|; }; s|\x1b\[0m||;' ;;
-    *) $MPVC ;;
-esac
+mpvc_strip_escapes(){ sed '/\x1b\[7m/ { s|\x1b\[7m||; s| |+|; }; s|\x1b\[0m||;'; }
+main()
+{
+    if [ -n "\${USER:-}" ]; then
+        env -i PATH="/usr/bin:/bin" HOME="\$HOME" TERM="\$TERM" QUERY_STRING="\${QUERY_STRING:-}" "\$0" "\$@"; exit;
+    fi
+    echo "Content-Type: text/plain"
+    echo
+    case "\${QUERY_STRING:-}" in
+        status)       $MPVC status;;
+        playlist)     $MPVC playlist | mpvc_strip_escapes ;;
+        fullplaylist) $MPVC fullplaylist | mpvc_strip_escapes ;;
+        rawplaylist)  $MPVC saven | mpvc_strip_escapes ;;
+        chapterlist)  $MPVC_CHAPTER list | mpvc_strip_escapes ;;
+        *) $MPVC ;;
+    esac
+}
+main "\$@"
 EOF
 }
 
