@@ -234,6 +234,7 @@ mpvc_web()
             if (ENVIRON["MPVC_WEB_DEV"] && match(r, "^mpvc"))
             {
                 gsub("(mpvc|mpvc-chapter) [^a-zA-Z0-9 ]", "", r);
+                gsub("\\+", " ", r);
                 system(r); # XXX
             }
         }
