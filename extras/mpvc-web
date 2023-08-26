@@ -55,7 +55,7 @@ mpvc_web_index()
     body { background: var(--body-bg); color: var(--body-color); font-family: monospace; }
     code { background: var(--pre-bg); }
     pre  { background: var(--pre-bg); }
-    a    { color: var(--link-color); }
+    a    { color: var(--link-color); padding: 0.05rem 0.05rem; }
     </style>
     <link rel="stylesheet" href="style.css" />
 
@@ -65,12 +65,12 @@ mpvc_web_index()
         <li>
         <!-- enable this optionally: only for dev/testing -->
         <form action="/" method="get">
-        mpvc
+            mpvc
             <input type="text" id="cli" name="cli" placeholder="mpvc status ${MPVC_WEB_DEV:-(off)}" title="mpvc cli" onkeydown="if (event.keyCode == 13) { this.form.submit(); return false; }">
         </form>
         </li>
         <li>
-        mpvc
+            mpvc
             <a href="?cmd=mpvc status">status</a>
             <a href="?cmd=mpvc toggle">toggle</a>
             <a href="?cmd=mpvc mpv">mpv</a>
@@ -78,7 +78,7 @@ mpvc_web_index()
             <a href="?cmd=mpvc clear">clear</a>
         </li>
         <li>
-        mpvc
+            mpvc
             <a href="?cmd=mpvc play">play</a>
             <a href="?cmd=mpvc start 0">start</a>
             <a href="?cmd=mpvc start $">end</a>
@@ -87,20 +87,20 @@ mpvc_web_index()
             <a href="?cmd=mpvc next">next</a>
         </li>
         <li>
-        mpvc
+            mpvc
             <a href="?cmd=mpvc repeat">repeat</a>
             <a href="?cmd=mpvc single">single</a>
             <a href="?cmd=mpvc shuffle">shuffle</a>
             <a href="?cmd=mpvc unshuffle">unshuffle</a>
         </li>
         <li>
-        mpvc chapter
+            mpvc chapter
             <a href="?cmd=mpvc-chapter replay">replay</a>
             <a href="?cmd=mpvc-chapter prev">prev</a>
             <a href="?cmd=mpvc-chapter next">next</a>
         </li>
         <li>
-        mpvc vol
+            mpvc vol
             <a href="?cmd=mpvc vol -10">-10</a>
             <a href="?cmd=mpvc vol -5">-5</a>
             <a href="?cmd=mpvc vol +5">+5</a>
@@ -112,16 +112,17 @@ mpvc_web_index()
             <a href="#" title="theme 4" onclick="document.body.style.WebkitFilter='invert(0.4)';">th4</a> |
             <a href="#" title="theme 6" onclick="document.body.style.WebkitFilter='invert(0.6)';">th6</a> |
             <a href="#" title="theme 8" onclick="document.body.style.WebkitFilter='invert(0.8)';">th8</a> |
-            <a href="." title="reload"> reload</a>
+            <a href="." title="reset">rst</a>
         </li>
         <li>
-            <a href="?cmd=mpvc stop" title="mpvc stop" > ⏹️ </a> |
-            <a href="?cmd=mpvc play" title="mpvc play">▶️</a> |
+            mpvc
+            <a href="?cmd=mpvc stop" title="mpvc stop" >⏹️</a>
+            <a href="?cmd=mpvc play" title="mpvc play">▶️</a>
             <a href="?cmd=mpvc toggle" title="mpvc toggle">⏸️</a> |
-            <a href="?cmd=mpvc seek -60" title="mpvc seek-60">⏪</a> |
+            <a href="?cmd=mpvc seek -60" title="mpvc seek-60">⏪</a>
             <a href="?cmd=mpvc seek +60" title="mpvc seek+60">⏩</a> |
-            <a href="?cmd=mpvc prev" title="mpvc prev">⏮️</a> |
-            <a href="?cmd=mpvc next" title="mpvc next">⏭️</a>
+            <a href="?cmd=mpvc prev" title="mpvc prev">⏮️</a>
+            <a href="?cmd=mpvc next" title="mpvc next">⏭️</a> |
             <a href="?cmd=mpvc single" title="mpvc single">🔄</a>
         </li>
         </ul>
