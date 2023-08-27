@@ -173,6 +173,14 @@ mpvctui_fzf_playlist()
         mpvctui_fzf_preview --prompt="(playlist) "
 }
 
+mpvctui_fzf_chapterlist()
+{
+    len=$(mpvc gets chapter-list/count)
+    ( if [ -z "$len" ]; then echo; else mpvc-chapter list; fi) |
+        mpvctui_fzf_preview --prompt="(chapter) " \
+        --bind='ctrl-o:execute-silent(mpvc-chapter play {n} &)'
+}
+
 mpvctui_fzf_ddg()
 {
     curl -fsSL -A 'Mozilla/5.0' "https://duckduckgo.com/html?q=$*&iax=videos&ia=videos" |
@@ -240,7 +248,7 @@ main()
     do
         case "$flag" in
         1) shift; awk '{print $1}';;
-        c) shift; mpvctui_fzf_icache;;
+        c) mpvctui_fzf_chapterlist ;;
         C) shift; mpvctui_fzf_icache;;
         d) MPVC_DIR="$OPTARG"; cd "$MPVC_DIR" || return;;
         D) shift; mpvctui_ddg_play "$@";;
