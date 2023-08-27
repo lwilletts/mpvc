@@ -101,10 +101,13 @@ mpvc_web_index()
         </li>
         <li>
             mpvc vol
+            <a href="?cmd=mpvc vol -20">-20</a>
             <a href="?cmd=mpvc vol -10">-10</a>
             <a href="?cmd=mpvc vol -5">-5</a>
+            <a href="?cmd=mpvc vol 0">0</a>
             <a href="?cmd=mpvc vol +5">+5</a>
             <a href="?cmd=mpvc vol +10">+10</a>
+            <a href="?cmd=mpvc vol +20">+20</a>
         </li>
         <li>
         theme
@@ -215,10 +218,7 @@ mpvc_web()
         /GET \/\?cmd=mpvc%20shuffle/      { system("mpvc -q shuffle") }
         /GET \/\?cmd=mpvc%20unshuffle/    { system("mpvc -q unshuffle") }
 
-        /GET \/\?cmd=mpvc%20vol%20\-5/    { system("mpvc -q vol -5") }
-        /GET \/\?cmd=mpvc%20vol%20\+5/    { system("mpvc -q vol +5") }
-        /GET \/\?cmd=mpvc%20vol%20\-10/   { system("mpvc -q vol -10") }
-        /GET \/\?cmd=mpvc%20vol%20\+10/   { system("mpvc -q vol +10") }
+        /GET \/\?cmd=mpvc%20vol%20.*/     { gsub("%20", " "); system("mpvc -q vol "$(NF-3)); }
 
         /GET \/\?cmd=mpvc%20repeat/       { system("mpvc -q repeat") }
         /GET \/\?cmd=mpvc%20single/       { system("mpvc -q single") }
