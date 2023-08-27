@@ -504,7 +504,7 @@ mpvc_appendtrack() {
     esac
     if [ -n "$filename" ]; then
         # cache media here if media is found in local storage
-        if [ "$MPVC_LOCAL_CACHE" = "true" ]; then filename=$(echo "$filename" | mpvc-fzf -c); fi
+        if [ "$MPVC_LOCAL_CACHE" = "true" ]; then filename=$(echo "$filename" | mpvc-fzf -C); fi
         echo "Adding: $(mpvc_curl_cache_title_clean "$filename")"
         quiet mpvc_cmd "loadfile" "$filename" "append-play"
     fi
