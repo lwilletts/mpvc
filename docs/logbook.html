@@ -359,13 +359,18 @@ Check <a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-web">extras/
 As a minor thing I've started aliasing <code>mpvc</code> commands that I use frequently to their "m" counterparts in bash, not perfect, but handy enough, and saves some typing:
 <pre>
 $ grep mpvc ~/.bashrc
-alias m="mpvc"
-alias mi="mpvc -i"
-alias mI="mpvc -I"
-#alias mf="mpvc-fzf"
-alias mt="mpvc-tui"
-alias mc="mpvc-chapter"
-alias me="mpvc-equalizer"
+    alias m="mpvc"
+    alias mh="alias | grep mpvc"
+    alias mi="mpvc -i"
+    alias mI="mpvc -I"
+    alias mc="mpvc-chapter"
+    alias mci="mpvc-chapter -i"
+    alias me="mpvc-equalizer"
+    #alias mf="mpvc-fzf"
+    alias mff="mpvc-fzf -f"
+    alias mfl="mpvc-fzf -l"
+    alias mfp="mpvc-fzf -p"
+    alias mfc="mpvc-fzf -c"
 </pre>
 </p>
 
