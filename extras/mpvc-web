@@ -146,7 +146,7 @@ mpvc_web_index()
         </script>
         </div>
         [ <a href="#mpvc-web-prompt" name="mpvc-web-prompt">Prompt</a> ] <hr>
-        🎧 <a href="$PROGURL">$PROGNAME</a> $PROGVERSION, a mpvc-tui for the web
+        🎧 <a href="$PROGURL">$PROGNAME</a> $PROGVERSION, mpvc-tui for the web
     </body>
 </html>
 EOF
