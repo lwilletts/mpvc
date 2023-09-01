@@ -698,12 +698,13 @@ mpvc_clear_playlist() {
 # formats and prints according to $FORMATSTRING
 mpvc_print_status() {
     # not that nice, in fact way more ugly, but also way faster
-    RE='year\|genre\|artist\|album\|comment\|volume\|path\|height\|width\|playback-time\|ab-loop-[ab]\|speed\|force-window\|video\|aspect\|idle\|fullscreen\|chapter\|chapters\|=chapter'
+    RE='year\|genre\|album\|comment\|volume\|path\|height\|width\|playback-time\|ab-loop-[ab]\|speed\|force-window\|video\|aspect\|idle\|fullscreen\|chapter\|chapters\|=chapter'
     F=$(echo "$FORMATSTRING" |
         sed \
             -e "s/%\(${RE}\)%/\${\1:NA}/g" \
             -e "s/%title%/\${media-title}/g" \
-            -e "s/%albumartist%/\${album_artist}/g" \
+            -e "s/%artist%/\${metadata\/by-key\/artist}/g" \
+            -e "s/%albumartist%/\${metadata\/by-key\/album}/g" \
             -e "s/%muted%/\${mute}/g" \
             -e "s/%percentage%/\${percent-pos}/g" \
             -e "s/%name%/\${filename}/g" \
