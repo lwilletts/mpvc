@@ -68,6 +68,16 @@ mpvc_web_index()
             mpvc
             <input type="text" id="cli" name="cli" placeholder="mpvc status ${MPVC_WEB_DEV:-(off)}" title="mpvc cli" onkeydown="if (event.keyCode == 13) { this.form.submit(); return false; }">
         </form>
+        <li>
+            <form action="/" method="get">
+            mpvc stash
+            $(mpvc stash list | awk '
+                BEGIN   { printf "<select name=cli id=cli-select onchange=this.form.submit()>"}
+                NR == 1 { printf "<option value="">Please choose an option</option>" }
+                NR > 1  { printf "<option value=\"mpvc stash apply "$NF"\">"$NF"</option>" }
+                END     { printf "</select>"}' )
+            </form>
+        </li>
         </li>
         <li>
             mpvc
