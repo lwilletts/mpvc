@@ -703,8 +703,8 @@ mpvc_print_status() {
         sed \
             -e "s/%\(${RE}\)%/\${\1:NA}/g" \
             -e "s/%title%/\${media-title}/g" \
-            -e "s/%artist%/\${metadata\/by-key\/artist}/g" \
-            -e "s/%albumartist%/\${metadata\/by-key\/album}/g" \
+            -e "s/%artist%/\${?metadata\/by-key\/artist:\${metadata\/by-key\/artist}}\${!metadata\/by-key\/artist:NA}/g" \
+            -e "s/%albumartist%/\${?metadata\/by-key\/album:\${metadata\/by-key\/album}}\${!metadata\/by-key\/album:NA}/g" \
             -e "s/%muted%/\${mute}/g" \
             -e "s/%percentage%/\${percent-pos}/g" \
             -e "s/%name%/\${filename}/g" \
