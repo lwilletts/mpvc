@@ -73,7 +73,7 @@ mpvc_web_index()
             mpvc stash
             $(mpvc stash list | awk '
                 BEGIN   { printf "<select name=cli id=cli-select onchange=this.form.submit()>"}
-                NR == 1 { printf "<option value="">Please choose an option</option>" }
+                NR == 1 { printf "<option value="">Please choose a stash</option>" }
                 NR > 1  { printf "<option value=\"mpvc stash apply "$NF"\">"$NF"</option>" }
                 END     { printf "</select>"}' )
             </form>
