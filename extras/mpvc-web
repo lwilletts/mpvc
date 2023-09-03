@@ -65,7 +65,7 @@ mpvc_web_index()
         <li>
         <!-- enable this optionally: only for dev/testing -->
         <form action="/" method="get">
-            mpvc
+            mpvc cli
             <input type="text" id="cli" name="cli" placeholder="mpvc status ${MPVC_WEB_DEV:-(off)}" title="mpvc cli" onkeydown="if (event.keyCode == 13) { this.form.submit(); return false; }">
         </form>
         <li>
