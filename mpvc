@@ -511,17 +511,17 @@ mpvc_appendtrack() {
 }
 
 mpvc_appendtracks() {
-    shiftcount=0
     QUIETFLAG="true"
     mpvc_startmpv --really-quiet --idle=once
     for arg in "$@"; do
         case "$arg" in
-        ???????????) mpvc_appendtrack "$arg"; _=$((shiftcount+=1)) ;; # ytid videoid [A-Za-z-]{11}
-        http*)       mpvc_appendtrack "$arg"; _=$((shiftcount+=1)) ;;
-        *)           if [ -e "$arg" ]; then mpvc_appendtrack "$arg"; _=$((shiftcount+=1)); fi
+        ???????????)     mpvc_appendtrack "$arg" ;; # ytid videoid [A-Za-z-]{11}
+        ytdl://*)        mpvc_appendtrack "$arg" ;;
+        http:*|https:*)  mpvc_appendtrack "$arg" ;;
+        *)           if [ -e "$arg" ]; then mpvc_appendtrack "$arg"; fi ;;
         esac
+        shift
     done
-    #return $shiftcount
 }
 
 mpvc_play_next() {
@@ -864,8 +864,8 @@ main() {
             pretty)     die 1 "$PROGNAME: $* not implemented" ;;
             find)       die 1 "$PROGNAME: $* not implemented" ;;
 
-            add|-a|--append) mpvc_appendtracks "$@"; shift "$((shiftcount+1))" ;;
-            #replace|--replace) replaceTracks "$@"; shift "$((shiftcount+1))" ;;
+            add|-a|--append)    mpvc_appendtracks "$@"; ;;
+            #replace|--replace) mpvc_replacetracks "$@" ;;
 
             # consume) to implement # add on|off toggle
             # random) MPV doesn't have this control option!
