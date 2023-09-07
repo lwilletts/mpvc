@@ -410,6 +410,7 @@ mpvc_stash() {
     case "$cmd" in
         list) ls -ltr "$MPVC_STASH_DIR" ;;
         show) cat "$MPVC_STASH_DIR/$1" ;;
+        edit) ${EDITOR:-vi} "$MPVC_STASH_DIR/$1" ;;
         drop) rm -i "$MPVC_STASH_DIR/$1" ;;
         push)
             if [ -e "$MPVC_STASH_DIR/$1" ]; then
@@ -470,7 +471,7 @@ mpvc_stash() {
             #echo "mpvc set working-directory $(mpvc_get working-directory)"
             ;;
         help)
-            echo "usage: $PROGNAME stash [list|current|show|push|drop|apply]"
+            echo "usage: $PROGNAME stash [list|current|edit|show|push|drop|apply]"
             ;;
         *)
             warn "$PROGNAME stash: error: unknown subcommand $cmd (see $PROGNAME stash help)."
