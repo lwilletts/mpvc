@@ -514,12 +514,7 @@ mpvc_appendtracks() {
     QUIETFLAG="true"
     mpvc_startmpv --really-quiet --idle=once
     for arg in "$@"; do
-        case "$arg" in
-        ???????????)     mpvc_appendtrack "$arg" ;; # ytid videoid [A-Za-z-]{11}
-        ytdl://*)        mpvc_appendtrack "$arg" ;;
-        http:*|https:*)  mpvc_appendtrack "$arg" ;;
-        *)           if [ -e "$arg" ]; then mpvc_appendtrack "$arg"; fi ;;
-        esac
+        mpvc_appendtrack "$arg"
         shift
     done
 }
@@ -864,7 +859,7 @@ main() {
             pretty)     die 1 "$PROGNAME: $* not implemented" ;;
             find)       die 1 "$PROGNAME: $* not implemented" ;;
 
-            add|-a|--append)    mpvc_appendtracks "$@"; ;;
+            add|-a|--append)    shift; mpvc_appendtracks "$@"; ;;
             #replace|--replace) mpvc_replacetracks "$@" ;;
 
             # consume) to implement # add on|off toggle
