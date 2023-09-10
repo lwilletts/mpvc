@@ -222,7 +222,7 @@ mpvctui_version()
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
 }
 
-optflags="1cCd:DfFg:G:hn:s:p:P:lxv"
+optflags="01cCd:DfFg:G:hn:s:p:P:lxv"
 mpvctui_usage()
 {
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
@@ -247,6 +247,7 @@ main()
     while getopts "$optflags" flag;
     do
         case "$flag" in
+        0) shift; awk '{print $NF}';;
         1) shift; awk '{print $1}';;
         c) mpvctui_fzf_chapterlist ;;
         C) shift; mpvctui_fzf_icache;;
