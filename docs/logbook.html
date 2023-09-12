@@ -217,12 +217,13 @@ Some usage examples of the above are:
 
 <h3 id="logbook-20221227">On using mpv together with the fzf fuzzy finder, 27 Dec 2022</h3>
 <p>
-I discovered fzf while adding support for selecting and playing YT videos <a href="#logbook-20221219">#logbook-20221219</a>, so I'm quite a newbie on fzf. Still I've been playing with fzf+mpvc to get them working together. So far I've focused on 3 points:
+I discovered fzf while adding support for selecting and playing YT videos <a href="#logbook-20221219">#logbook-20221219</a>, so I'm quite a newbie on fzf. Still I've been playing with fzf+mpvc to get them working together. So far I've focused on 4 points:
 </p>
 <ul>
 <li><code>mpvc-fzf -p</code>: For searching/playing Internet media from YouTube.</li>
 <li><code>mpvc-fzf -l</code>: For searching/playing Local media from your file-system.</li>
 <li><code>mpvc-fzf -f</code>: For managing the mpv status and playlist: say mpvc play, pause, seek etc.</li>
+<li><code>mpvc-fzf -F</code>: For searching/playing through mpvc data: gets data from stdin, and outputs the selection on stdout. One of the many examples where this comes handy is to search chapters like: <code>mvpc-chapter list | mpvc-fzf -F | mpvc-fzf -1 | xargs mpvc-chapter play</code></li>
 </ul>
 <p>
 This is still on a very preliminary state, but it's amazing what fzf can do, and so far, seems to fit very well with mpvc.
@@ -383,7 +384,7 @@ Check the <a href="now/">Now Playing @ now/</a> that builds upon <code>mpvc-tui<
 <hr/>
 <p>
 <span>
-    <em>Last-Modified: Friday, 21 July 2023 by <a href="https://gmt4.github.io">gmt4</a></em>
+    <em>Last-Modified: Tuesday, 12 September 2023 by <a href="https://gmt4.github.io">gmt4</a></em>
 </span>
 <span style="float: right;">
     <em>Powered by #HTML 🧡 💚 💙 </em>
