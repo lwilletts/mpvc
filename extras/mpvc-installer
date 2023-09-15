@@ -17,7 +17,7 @@ PREFIX="${PREFIX:-/usr/local}"
 BINDIR="${BINDIR:-$PREFIX/bin}"
 MPV_CONFDIR="${CONFIGDIR:-$HOME/.config/mpv}"
 
-SCRIPT="mpvc extras/mpvc-tui extras/mpvc-fzf extras/mpvc-chapter extras/mpvc-mpris extras/mpvc-equalizer extras/mpvc-web extras/mpvc-installer"
+SCRIPT="mpvc extras/mpvc-tui extras/mpvc-fzf extras/mpvc-chapter extras/mpvc-mpris extras/mpvc-equalizer extras/mpvc-web extras/mpvc-autostart extras/mpvc-installer"
 CONFIG="docs/mpv.conf"
 
 set -euf
