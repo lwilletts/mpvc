@@ -226,6 +226,7 @@ optflags="01cCd:DfFg:G:hn:s:p:P:lxv"
 mpvctui_usage()
 {
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
+    echo "  -c : Start fzf to manage the current mpv chapterlist (fzf*)"
     echo "  -d : Set the WD to the media directory given as argument"
     echo "  -D : Search & play media using DuckDuckGo (fzf*)"
     echo "  -f : Start fzf to manage the current mpv playist (fzf*)"
