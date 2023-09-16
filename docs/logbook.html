@@ -223,7 +223,7 @@ I discovered fzf while adding support for selecting and playing YT videos <a hre
 <li><code>mpvc-fzf -p</code>: For searching/playing Internet media from YouTube.</li>
 <li><code>mpvc-fzf -l</code>: For searching/playing Local media from your file-system.</li>
 <li><code>mpvc-fzf -f</code>: For managing the mpv status and playlist: say mpvc play, pause, seek etc.</li>
-<li><code>mpvc-fzf -F</code>: For searching/playing through mpvc data: gets data from stdin, and outputs the selection on stdout. One of the many examples where this comes handy is to search chapters like: <code>mpvc-chapter list | mpvc-fzf -F | mpvc-fzf -1 | xargs mpvc-chapter play</code></li>
+<li><code>mpvc-fzf -F</code>: For searching/playing through mpvc data: gets data from stdin, and outputs the selection on stdout. One example where this comes handy is to search chapters like: <code>mpvc-chapter list | mpvc-fzf -F | mpvc-fzf -1 | xargs mpvc-chapter play</code> (shortcut <code>mpvc-fzf -c</code>).</li>
 </ul>
 <p>
 This is still on a very preliminary state, but it's amazing what fzf can do, and so far, seems to fit very well with mpvc.
