@@ -30,8 +30,7 @@ mpvc_config()
     do
         local="$MPV_CONFDIR/$(basename "$config")"
         echo "Fetch $local"
-        if [ -e "$local" ];
-        then
+        if [ -e "$local" ]; then
             echo "$PROGNAME: $local exists. Not overwriting."
         else
             curl -fsSL -o "$local" "$PROGURL/raw/master/$config"
