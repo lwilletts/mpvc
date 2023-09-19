@@ -100,6 +100,11 @@ mpvc_web_index()
             mpvc
             <a href="?cmd=mpvc repeat">repeat</a>
             <a href="?cmd=mpvc single">single</a>
+            <a href="?cmd=mpvc cmd ab-loop">ab-loop</a>
+        </li>
+        <li>
+            mpvc
+            <a href="?cmd=mpvc playlist-shuffle">playlist</a>
             <a href="?cmd=mpvc shuffle">shuffle</a>
             <a href="?cmd=mpvc unshuffle">unshuffle</a>
         </li>
@@ -127,6 +132,7 @@ mpvc_web_index()
             <a href="#" title="theme 8" onclick="document.body.style.WebkitFilter='invert(0.8)';">th8</a> |
             <a href="." title="reset">rst</a>
         </li>
+<!--
         <li>
             mpvc
             <a href="?cmd=mpvc stop" title="mpvc stop" >⏹️</a>
@@ -138,6 +144,7 @@ mpvc_web_index()
             <a href="?cmd=mpvc next" title="mpvc next">⏭️</a> |
             <a href="?cmd=mpvc single" title="mpvc single">🔄</a>
         </li>
+-->
         </ul>
         [ <a href="#mpvc-web-status" name="mpvc-web-status">Status</a> ] <hr>
         <iframe name="mpvc-status" width="100%" height="100%" frameborder="0" src="/cgi-bin/mpvc?status" allowtransparency="true" ></iframe>
