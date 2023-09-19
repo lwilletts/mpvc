@@ -11,7 +11,7 @@ PROGVERSION="v1.4"
 PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
 
-#set -euf
+set -euf
 
 quiet()  { "$@" > /dev/null 2>&1; }
 mpvctui_warn() { echo "$@" >&2; }
@@ -115,7 +115,7 @@ mpvctui_fzf_icache()
     do
         url=$(echo "$line" | awk '{ gsub("watch\\?v=",""); print $1 }')
         vid=$(basename "$url")
-        file=$(ls $ytdl_dir/*$vid* 2>/dev/null)
+        file=$(find $ytdl_dir/ 2>/dev/null | awk "/$vid/ { print; exit }")
         if [ -e "$file" ]; then # quiet grep -q "$vid" $ytdl_archive
             echo "$file"
         else
@@ -149,7 +149,7 @@ mpvctui_fzf_fetch()
             ytdl_opts="$ytdl_opts --$option"
         fi
     done
-    "$ytdlp" $ytdl_opts $YTDL_OPTS "$@"
+    "$ytdlp" $ytdl_opts ${YTDL_OPTS:-} "$@"
 }
 
 mpvctui_fzf_iplay()
@@ -171,6 +171,14 @@ mpvctui_fzf_playlist()
     len=$(mpvc gets playlist-count)
     ( if [ -z "$len" ]; then echo; else mpvc fullplaylist; fi) |
         mpvctui_fzf_preview --prompt="(playlist) "
+}
+
+mpvctui_fzf_chapterlist()
+{
+    len=$(mpvc gets chapter-list/count)
+    ( if [ -z "$len" ]; then echo; else mpvc-chapter list; fi) |
+        mpvctui_fzf_preview --prompt="(chapter) " \
+        --bind='ctrl-o:execute-silent(mpvc-chapter play {n} &)'
 }
 
 mpvctui_fzf_ddg()
@@ -214,10 +222,11 @@ mpvctui_version()
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
 }
 
-optflags="1cCd:DfFg:G:hn:s:p:P:lxv"
+optflags="01cCd:DfFg:G:hn:s:p:P:lxv"
 mpvctui_usage()
 {
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
+    echo "  -c : Start fzf to manage the current mpv chapterlist (fzf*)"
     echo "  -d : Set the WD to the media directory given as argument"
     echo "  -D : Search & play media using DuckDuckGo (fzf*)"
     echo "  -f : Start fzf to manage the current mpv playist (fzf*)"
@@ -239,8 +248,9 @@ main()
     while getopts "$optflags" flag;
     do
         case "$flag" in
+        0) shift; awk '{print $NF}';;
         1) shift; awk '{print $1}';;
-        c) shift; mpvctui_fzf_icache;;
+        c) mpvctui_fzf_chapterlist ;;
         C) shift; mpvctui_fzf_icache;;
         d) MPVC_DIR="$OPTARG"; cd "$MPVC_DIR" || return;;
         D) shift; mpvctui_ddg_play "$@";;

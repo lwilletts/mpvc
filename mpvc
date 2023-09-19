@@ -12,7 +12,7 @@ PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
 SITEURL="https://gmt4.github.io/mpvc"
 
-set -euf # TBD
+set -euf
 
 usage() {
     cat >&2 << EOF
@@ -130,6 +130,7 @@ mpvc_defaults()
     MPVC_SOCAT="${MPVC_SOCAT:-socat}"
 
     QUIETFLAG="${QUIETFLAG:-}"
+    MPVC_LOCAL_CACHE="${MPVC_LOCAL_CACHE:-false}"
     FORMATSTRING="${FORMATSTRING:-}"
 
     # print default status of mpv instance
@@ -184,7 +185,7 @@ mpvc_curl_cache()
 
 mpvc_curl_cache_json()
 {
-    # query invidi.us API TBD
+    # query invidi.us API
     mpvc_curl_cache -sL "https://youtube.com/oembed?url=$1"
 }
 
@@ -217,7 +218,7 @@ mpvc_curl_cache_title_clean() {
             [ -e "$filename" ] && result=${filename##*/} || result=${filename##*/}
             ;;
     esac
-    printf "$result"
+    printf "$result\n"
 }
 
 mpvc_getjson() {
@@ -324,6 +325,8 @@ mpvc_get_playlist() {
             gsub("\\\\x26", "\x26", ytitle)
             gsub("\\\\x27", "\x27", ytitle)
             gsub("\\\\xa0", "\xa0", ytitle)
+            gsub("\\\\u[0-9a-f]{4}", "", ytitle)
+
             return ytitle
         }
 
@@ -407,13 +410,14 @@ mpvc_stash() {
     case "$cmd" in
         list) ls -ltr "$MPVC_STASH_DIR" ;;
         show) cat "$MPVC_STASH_DIR/$1" ;;
+        edit) ${EDITOR:-vi} "$MPVC_STASH_DIR/$1" ;;
         drop) rm -i "$MPVC_STASH_DIR/$1" ;;
         push)
             if [ -e "$MPVC_STASH_DIR/$1" ]; then
                 warn "$PROGNAME: Warn Existing $1 stash found, drop it first. Quitting"
                 return
             fi
-            mpvc_stash current > "$MPVC_STASH_DIR/$1"
+            mpvc_stash current "$1" > "$MPVC_STASH_DIR/$1"
             ;;
         apply) # if no stash given, default to stdin
             if [ -z "$1" ]; then
@@ -467,7 +471,7 @@ mpvc_stash() {
             #echo "mpvc set working-directory $(mpvc_get working-directory)"
             ;;
         help)
-            echo "usage: $PROGNAME stash [list|current|show|push|drop|apply]"
+            echo "usage: $PROGNAME stash [list|current|edit|show|push|drop|apply]"
             ;;
         *)
             warn "$PROGNAME stash: error: unknown subcommand $cmd (see $PROGNAME stash help)."
@@ -500,25 +504,20 @@ mpvc_appendtrack() {
         *.png|*.jpg|*.jpeg|*.gif|*.psd|*.pdf) [ "$IMAGEFLAG" != "true" ] && return ;;
     esac
     if [ -n "$filename" ]; then
-        # cache media here if a match is found TBD
-        #filename=$(echo "$filename" | mpvc-fzf -c)
+        # cache media here if media is found in local storage
+        if [ "$MPVC_LOCAL_CACHE" = "true" ]; then filename=$(echo "$filename" | mpvc-fzf -C); fi
         echo "Adding: $(mpvc_curl_cache_title_clean "$filename")"
         quiet mpvc_cmd "loadfile" "$filename" "append-play"
     fi
 }
 
 mpvc_appendtracks() {
-    shiftcount=0
     QUIETFLAG="true"
     mpvc_startmpv --really-quiet --idle=once
     for arg in "$@"; do
-        case "$arg" in
-        ???????????) mpvc_appendtrack "$arg"; _=$((shiftcount+=1)) ;; # ytid videoid [A-Za-z-]{11}
-        http*)       mpvc_appendtrack "$arg"; _=$((shiftcount+=1)) ;;
-        *)           if [ -e "$arg" ]; then mpvc_appendtrack "$arg"; _=$((shiftcount+=1)); fi
-        esac
+        mpvc_appendtrack "$arg"
+        shift
     done
-    #return $shiftcount
 }
 
 mpvc_play_next() {
@@ -695,12 +694,13 @@ mpvc_clear_playlist() {
 # formats and prints according to $FORMATSTRING
 mpvc_print_status() {
     # not that nice, in fact way more ugly, but also way faster
-    RE='year\|genre\|artist\|album\|comment\|volume\|path\|height\|width\|playback-time\|ab-loop-[ab]\|speed\|force-window\|video\|aspect\|idle\|fullscreen\|chapter\|chapters\|=chapter'
+    RE='year\|genre\|album\|comment\|volume\|path\|height\|width\|playback-time\|ab-loop-[ab]\|speed\|force-window\|video\|aspect\|idle\|fullscreen\|chapter\|chapters\|=chapter'
     F=$(echo "$FORMATSTRING" |
         sed \
             -e "s/%\(${RE}\)%/\${\1:NA}/g" \
             -e "s/%title%/\${media-title}/g" \
-            -e "s/%albumartist%/\${album_artist}/g" \
+            -e "s/%artist%/\${?metadata\/by-key\/artist:\${metadata\/by-key\/artist}}\${!metadata\/by-key\/artist:NA}/g" \
+            -e "s/%albumartist%/\${?metadata\/by-key\/album:\${metadata\/by-key\/album}}\${!metadata\/by-key\/album:NA}/g" \
             -e "s/%muted%/\${mute}/g" \
             -e "s/%percentage%/\${percent-pos}/g" \
             -e "s/%name%/\${filename}/g" \
@@ -860,8 +860,8 @@ main() {
             pretty)     die 1 "$PROGNAME: $* not implemented" ;;
             find)       die 1 "$PROGNAME: $* not implemented" ;;
 
-            add|-a|--append) mpvc_appendtracks "$@"; shift "$((shiftcount+1))" ;;
-            #replace|--replace) replaceTracks "$@"; shift "$((shiftcount+1))" ;;
+            add|-a|--append)    shift; mpvc_appendtracks "$@"; ;;
+            #replace|--replace) mpvc_replacetracks "$@" ;;
 
             # consume) to implement # add on|off toggle
             # random) MPV doesn't have this control option!

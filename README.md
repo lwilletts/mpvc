@@ -71,8 +71,14 @@ Recommended extras:
 
 To install mpvc:
 
-- curl based install: as in in [QuickInstall](#quickinstall-%EF%B8%8F).
+- curl based install: as in [QuickInstall](#quickinstall-%EF%B8%8F).
 - git based install: as in [QuickStart](#quickstart).
+
+Distro packages:
+
+- Arch Linux package: `pacaur -y mpvc-git` [mpvc-git](https://aur.archlinux.org/packages/mpvc-git)
+- Gentoo Linux package: `emerge mpvc` [mpvc](https://gitlab.com/xy2_/osman)
+- Nix package: `nix-env -i mpvc` [mpvc](http://github.com/nixos/nixpkgs/applications/misc/mpvc)
 
 ## Usage
 
@@ -110,7 +116,7 @@ Some basic tricks are provided in [QuickStart](#quickstart). For more tips on lo
 - mpvc executes faster ~4x faster when using dash symlinked to /bin/sh instead
 of bash. Another faster alternative is mksh.
 - mpvc should be fully POSIX compliant, meaning it should run on any UNIX-like
-variant. Please report an issue if you experience trouble.
+variant. Please report an [issue](../../issues) if you experience trouble.
 
 ## Limitations
 
@@ -123,4 +129,4 @@ Like any piece of software, mpvc is not perfect:
   unusual variants of basic UNIX tools, mpvc is not guaranteed to work. However,
   all effort has been made to make mpvc as POSIX compliant as possible.
 
-Check out the Issue Tracker for further improvements to be made.
+Check out the [Issue Tracker](../../issues) for further improvements to be made.

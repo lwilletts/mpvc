@@ -81,6 +81,8 @@ Logbook Entries
     <li> <a href="#logbook-20230425">#20230425 Introducing mpvc-equalizer: a basic mpv equalizer for the CLI</a></li>
     <li> <a href="#logbook-20230602">#20230602 On applying ffmpeg AV filters using the MPV JSON IPC</a></li>
     <li> <a href="#logbook-20230721">#20230721 Introducing mpvc-web: a mpvc-tui like hack for the web/browser</a></li>
+    <li> <a href="#logbook-20230915">#20230915 Introducing mpvc-autostart: automatic start/stop based on presence</a></li>
+    <li> <a href="#logbook-20230916">#20230916 On mpvc usage patterns for playing music/videos</a></li>
 </ul>
 
 <hr />
@@ -217,12 +219,13 @@ Some usage examples of the above are:
 
 <h3 id="logbook-20221227">On using mpv together with the fzf fuzzy finder, 27 Dec 2022</h3>
 <p>
-I discovered fzf while adding support for selecting and playing YT videos <a href="#logbook-20221219">#logbook-20221219</a>, so I'm quite a newbie on fzf. Still I've been playing with fzf+mpvc to get them working together. So far I've focused on 3 points:
+I discovered fzf while adding support for selecting and playing YT videos <a href="#logbook-20221219">#logbook-20221219</a>, so I'm quite a newbie on fzf. Still I've been playing with fzf+mpvc to get them working together. So far I've focused on 4 points:
 </p>
 <ul>
 <li><code>mpvc-fzf -p</code>: For searching/playing Internet media from YouTube.</li>
 <li><code>mpvc-fzf -l</code>: For searching/playing Local media from your file-system.</li>
 <li><code>mpvc-fzf -f</code>: For managing the mpv status and playlist: say mpvc play, pause, seek etc.</li>
+<li><code>mpvc-fzf -F</code>: For searching/playing through mpvc data: gets data from stdin, and outputs the selection on stdout. One example where this comes handy is to search chapters like: <code>mpvc-chapter list | mpvc-fzf -F | mpvc-fzf -1 | xargs mpvc-chapter play</code> (shortcut <code>mpvc-fzf -c</code>).</li>
 </ul>
 <p>
 This is still on a very preliminary state, but it's amazing what fzf can do, and so far, seems to fit very well with mpvc.
@@ -313,7 +316,7 @@ Continuing with the topic of the previous post about mpvc-equalizer, one reason 
 </p>
 
 <p>
-Instead of that, for quickly testing combinations of filters, I was looking for something more CLI oriented: apply the filters using the MPV JSON IPC. That's what happens under the hood when a command `mpvc cmdr af ...` runs, for example:
+Instead of that, for quickly testing combinations of filters, I was looking for something more CLI oriented: apply the filters using the MPV JSON IPC. That's what happens under the hood when a command <code>mpvc-cmdr af ...</code> is run, for example:
 
 <pre>
 # start adding a rubberband filter
@@ -359,13 +362,18 @@ Check <a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-web">extras/
 As a minor thing I've started aliasing <code>mpvc</code> commands that I use frequently to their "m" counterparts in bash, not perfect, but handy enough, and saves some typing:
 <pre>
 $ grep mpvc ~/.bashrc
-alias m="mpvc"
-alias mi="mpvc -i"
-alias mI="mpvc -I"
-#alias mf="mpvc-fzf"
-alias mt="mpvc-tui"
-alias mc="mpvc-chapter"
-alias me="mpvc-equalizer"
+    alias m="mpvc"
+    alias mh="alias | grep mpvc"
+    alias mi="mpvc -i"
+    alias mI="mpvc -I"
+    alias mc="mpvc-chapter"
+    alias mci="mpvc-chapter -i"
+    alias me="mpvc-equalizer"
+    #alias mf="mpvc-fzf"
+    alias mff="mpvc-fzf -f"
+    alias mfl="mpvc-fzf -l"
+    alias mfp="mpvc-fzf -p"
+    alias mfc="mpvc-fzf -c"
 </pre>
 </p>
 
@@ -373,12 +381,92 @@ alias me="mpvc-equalizer"
 Check the <a href="now/">Now Playing @ now/</a> that builds upon <code>mpvc-tui</code> scrobbling code to generate a simple list of the most played media. The <a href="https://en.wikipedia.org/wiki/Anti_EP">Anti EP</a> by <a href="https://en.wikipedia.org/wiki/Autechre">Autechre</a> has raised to the top position.
 </p>
 
+<h3 id="logbook-20230915">Introducing mpvc-autostart: automatic start/stop based on presence, 15 Sep 2023</h3>
+<p>
+A simple need to have some background music automatically playing while I'm near the device where <code>mpvc</code> is running, lets say, in media center mode, and, pausing the audio when I'm away.
+A solution for this was to write a small script in <a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-autostart">extras/mpvc-autostart</a> that periodically pings an IP (for example your phone LAN IP, or alternatively detecting the presence of a Bluetooth device you carry with yourself), then, if the presence of the device is detected, the audio is resumed, otherwise, the audio is paused.
+<p>
+For an example of its usage, just run <code>PERIOD=300 NCHECK=3 mpvc-autostart 192.168.0.2</code> where <code>192.168.0.2</code> must be replaced by the LAN IP of your phone. The listing below show the output <code>mpvc-autostart</code> doing periodic pings at 300 sec (5 minutes) intervals. When NCHECK=3 consecutive ping checks fail to detect the device, the audio is paused (pause=true). As soon as one ping check succeeds, the audio is resumed (pause=false). This means that each 300 * 3 seconds (15 minutes) the audio can be paused, and in 5 minutes resumed. Personally I prefer to raise NCHECKS=6, to have about 30 minutes of audio without pauses, anyway, the parameters are there for catter for your needs, just play with them.
+<pre>
+user@box mpvc $ PERIOD=300 NCHECK=3 mpvc-autostart 192.168.0.2
+# mpvc-autostart mpvc pingscan PERIOD=300 NCHECK=3 192.168.0.2
+# 2023-09-15T19:26+00:00 mpvc-autostart PERIOD=300 NCHECK=6 pause=false c=0 n=0
+# 2023-09-15T19:31+00:00 mpvc-autostart PERIOD=300 NCHECK=6 pause=false c=0 n=-1
+# 2023-09-15T19:36+00:00 mpvc-autostart PERIOD=300 NCHECK=6 pause=false c=0 n=-2
+# 2023-09-15T19:42+00:00 mpvc-autostart PERIOD=300 NCHECK=6 pause=false c=0 n=-3
+# 2023-09-15T19:47+00:00 mpvc-autostart PERIOD=300 NCHECK=6 pause=true  c=0 n=0
+# 2023-09-15T19:52+00:00 mpvc-autostart PERIOD=300 NCHECK=6 pause=false c=59 n=0 64 bytes from 192.168.0.2: icmp_seq=1 ttl=64 time=104 ms
+</pre>
+
+<p>
+This approach has some limitations, lets say, sometimes you want to fully disable mpvc-autostart for a time, because:
+<ol>
+    <li>
+    Disable mpvc-autostart from resuming audio, because you want to concentrate and don't want music messing around.
+    <br>
+    Solution: just use the phone to access <code>mpvc-web</code> and set <code>mpvc vol 0</code> for a time.
+    </li>
+    <li>
+    Disable mpvc-autostart from pausing audio, because your phone disables wifi, so the audio gets paused when you don't want.
+    <br>
+    Solution: as explained above playing with PERIOD and NCHECK parameters, increase the time without pauses, for example NCHECK=6 or NCHECK=12 will pause audio when the device is not seen for 30 or 60 minutes, respectively.
+    </li>
+</ol>
+
+<h3 id="logbook-20230916">On mpvc usage patterns for playing music/videos, 16 Sep 2023</h3>
+<p>
+    This entry aims to provide a comprehensive view of the usage patterns of <a href="https://github.com/gmt4/mpvc/">mpvc</a>.
+    Several of the usage patterns have been already covered in the previous entries of the logbook, like: searching online media, manipulating the playlist or playing state, or, using <code>mpvc-stash(1)</code> for storing/replaying the mpv playing state.
+    This entry focuses on combining the previous individual usages into an overall usage pattern for using <code>mpvc</code> for listening music, viewing videos,podcasts, etc.
+    for this <code>mpvc</code> has to carry the following tasks:
+</p>
+
+<ul>
+<li>
+    Search music/videos, for that using Invidious search from <code>mpvc-fzf</code> closed the gap, for example using <code>mpvc-fzf -p 'rolling stones'</code> and choosing the songs to add to the playlist from the results.
+</li>
+<li>
+    Playing searched URLs, this is where the combo <code>mpv</code> + <code>yt-dlp</code> shines
+</li>
+<li>
+    Managing URLs, for managing a playlist of URLs <code>mpvc stash</code> is used
+    <ul>
+        <li>First, add the media using any mean, such as <code>mpvc add</code>, <code>mpvc-fzf -p query</code>, or directly</li>
+        <li>Second, order the playlist using <code>mpvc mv</code> or <code>mpvc rm</code> or its counterparts <code>mpvc searchmv</code> and <code>mpvc searchrm</code> modify the playlist of the running mpv.</li>
+        <li>Third, set the <code>mpvc</code> parameters like repeat, single, volume, idle, video, aspect, full screen, etc.</li>
+        <li>Fourth, once this is done review the current mpvc-stash with: <code>mpvc stash current</code> and store it with <code>mpvc stash push</code></li>
+        <li>Last, when the <code>mpvc stash</code> has to be replayed use <code>mpvc stash apply</code>, or <code>mpvc stash edit</code> to modify it</li>
+    </ul>
+</li>
+
+<li>
+    Storing URLs media locally, some URLs are played frequently that makes sense to cache them.
+    At this point, <code>yt-dlp</code> has <code>--download-archive</code> functionality that is useful (this can be enabled in <a href="https://github.com/gmt4/mpvc/blob/master/docs/mpv.conf">docs/mpv.conf</a>).
+    This works as follows:
+    <ul>
+    <li>First, <code>mpvc-fzf -g URL</code>, with get the URL and download it where <code>mpv.conf</code> defines.</li>
+    <li>Then, a mean for <code>mpvc</code> to resolve a downloaded URL to the corresponding local file was needed.
+         For this when <code>MPVC_LOCAL_CACHE=1</code> is enabled, <code>mpvc</code> provides functionality to do that local cache search.
+    </li>
+    </ul>
+</li>
+
+<li>
+    Parallel to the above, grew the need to manage mpvc from other devices that lack a comfortable terminal, this motivated hacking on <code>mpvc-web</code> that mimics <code>mpvc-tui</code> but allows to manage mpvc from a mobile phone, tablet or Windows machine.
+</li>
+</ul>
+
+    Some of the above usage patterns are shown in the asciinerama cast at <a href="casts/">mpvc casts</a> and captures a video of a live session using mpvc commands to search and play online media and manage the playlist, so probably is worth watching to show the workings.
+
+    <em>Note</em> that, as always, this is only a personal take on mpvc usage patterns at a point in time, that will probably evolve, and is limited to a personal take on this topic, since others can have completely different usage patterns.
+</p>
+
 <!-- SOF -->
 
 <hr/>
 <p>
 <span>
-    <em>Last-Modified: Friday, 21 July 2023 by <a href="https://gmt4.github.io">gmt4</a></em>
+    <em>Last-Modified: Saturday, 16 September 2023 by <a href="https://gmt4.github.io">gmt4</a></em>
 </span>
 <span style="float: right;">
     <em>Powered by #HTML 🧡 💚 💙 </em>
