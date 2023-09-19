@@ -30,7 +30,12 @@ mpvc_config()
     do
         local="$MPV_CONFDIR/$(basename "$config")"
         echo "Fetch $local"
-        curl -fsSL -o "$local" "$PROGURL/raw/master/$config"
+        if [ -e "$local" ];
+        then
+            echo "$PROGNAME: $local exists. Not overwriting."
+        else
+            curl -fsSL -o "$local" "$PROGURL/raw/master/$config"
+        fi
     done
 
     echo "Fetch yt-dlp"
