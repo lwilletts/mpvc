@@ -635,10 +635,18 @@ mpvc_set_volume() {
     esac
 }
 
+mpvc_nocolor()
+{
+    NO_COLOR_BAK=${NO_COLOR:-}
+    export NO_COLOR=true
+    "$@"
+    NO_COLOR=${NO_COLOR_BAK}
+}
+
 mpvc_search() {
     [ $# -lt 2 ] && return
     mode=$1; shift;
-    mpvc_get_playlist "$mode" | awk '/'"$*"'/ { print $0 }';
+    mpvc_nocolor mpvc_get_playlist "$mode" | awk '/'"$*"'/ { print $0 }';
 }
 
 mpvc_search_play() {
