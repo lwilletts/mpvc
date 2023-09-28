@@ -16,6 +16,7 @@ mpris_defaults()
 {
     DBUS=$(command -v dbus-send)
     PACTL=$(command -v pactl)
+    # PACTL_OPTS=--server=unix:/run/user/$(id -u)/pulse/native
     playerPath=org.mpris.MediaPlayer2.Player
     MPVC_MPRIS_PLAYERS=${MPVC_MPRIS_PLAYERS:-"mpv mpd vlc"}
 
@@ -120,11 +121,11 @@ main()
     open)      shift; mpris_method OpenUri "string:$1" ;;
     #loop)      shift; mpris_get "string:LoopStatus" ;;
 
-    volon)     pactl set-sink-mute @DEFAULT_SINK@ off ;;
-    voloff)    pactl set-sink-mute @DEFAULT_SINK@ on  ;;
-    volmute)   pactl set-sink-mute @DEFAULT_SINK@ toggle || mpris_set_volume "$cmd" ;;
-    voldown)   pactl set-sink-volume @DEFAULT_SINK@ -250 || mpris_set_volume "$cmd" ;;
-    volup)     pactl set-sink-volume @DEFAULT_SINK@ +250 || mpris_set_volume "$cmd" ;;
+    volon)     $PACTL set-sink-mute @DEFAULT_SINK@ off ;;
+    voloff)    $PACTL set-sink-mute @DEFAULT_SINK@ on  ;;
+    volmute)   $PACTL set-sink-mute @DEFAULT_SINK@ toggle || mpris_set_volume "$cmd" ;;
+    voldown)   $PACTL set-sink-volume @DEFAULT_SINK@ -250 || mpris_set_volume "$cmd" ;;
+    volup)     $PACTL set-sink-volume @DEFAULT_SINK@ +250 || mpris_set_volume "$cmd" ;;
 
     *) usage "$PROGNAME: unknown command: $cmd" ;;
     esac
