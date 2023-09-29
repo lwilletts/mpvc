@@ -16,7 +16,12 @@ mpris_defaults()
 {
     DBUS=$(command -v dbus-send)
     PACTL=$(command -v pactl)
-    # PACTL_OPTS=--server=unix:/run/user/$(id -u)/pulse/native
+
+    PULSE_SOCKET="/run/user/$(id -u)/pulse/native"
+    if [ -z "${PULSE_SERVER:-}" ] && [ -S "$PULSE_SOCKET" ]
+    then
+        export PULSE_SERVER="unix:$PULSE_SOCKET"
+    fi
     playerPath=org.mpris.MediaPlayer2.Player
     MPVC_MPRIS_PLAYERS=${MPVC_MPRIS_PLAYERS:-"mpv mpd vlc"}
 
