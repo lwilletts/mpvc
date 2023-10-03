@@ -139,16 +139,12 @@ mpvc_chapter_list()
 
 mpvc_chapter_next()
 {
-    chapter=$(mpvc get chapter)
-    chapters=$(mpvc get chapters)
-    mpvc_chapter_set $(( ( chapter + 1 )  % chapters ))
+    mpvc_chapter_set $(( ( $(mpvc get chapter) + 1 ) % $(mpvc get chapters) ))
 }
 
 mpvc_chapter_prev()
 {
-    chapter=$(mpvc get chapter)
-    chapters=$(mpvc get chapters)
-    mpvc_chapter_set $(( ( chapter - 1 )  % chapters ))
+    mpvc_chapter_set $(( ( $(mpvc get chapter) - 1 ) % $(mpvc get chapters) ))
 }
 
 mpvc_chapter_set()
