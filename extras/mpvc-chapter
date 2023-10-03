@@ -14,7 +14,7 @@ PROGURL="https://github.com/gmt4/mpvc"
 set -euf
 
 mpvc() { "$MPVC_BIN" "$@"; } # TBD
-chapter_defaults()
+mpvc_chapter_defaults()
 {
     # config defaults
     NO_COLOR="${NO_COLOR:-}"
@@ -22,7 +22,7 @@ chapter_defaults()
 }
 
 # See https://ffmpeg.org/ffmpeg-formats.html#Metadata-1
-chapter_file()
+mpvc_chapter_file()
 {
     chaptersdir="$HOME/.config/mpvc/chapters/"
     chaptersfile="$chaptersdir/$(mpvc get path | sed 's/\//-/g; s/ /_/g; s/[&]//')"
@@ -32,9 +32,9 @@ chapter_file()
 
 # generate a ffmpeg metadata file with chapters
 # loadable with: mpvc set chapters-file chapters.txt
-chapter_add()
+mpvc_chapter_add()
 {
-    chaptersfile=$(chapter_file)
+    chaptersfile=$(mpvc_chapter_file)
 
     path=$(mpvc get path)
     timepos=$(mpvc get time-pos)
@@ -78,16 +78,16 @@ EOF
     #cat "$chaptersfile"
 }
 
-chapter_load()
+mpvc_chapter_load()
 {
     track=$(mpvc get playlist-pos)
     timepos=$(mpvc get time-pos)
-    mpvc set chapters-file "$(chapter_file)"
+    mpvc set chapters-file "$(mpvc_chapter_file)"
     mpvc play "$track"
     mpvc delay set time-pos "$timepos"
 }
 
-chapter_info()
+mpvc_chapter_info()
 {
     echo "mpvc set chapter $(mpvc gets chapter)"
     echo "mpvc set chapters $(mpvc gets chapters)"
@@ -96,7 +96,7 @@ chapter_info()
     echo "mpvc set chapters-file $(mpvc gets chapters-file)"
 }
 
-chapter_list_json()
+mpvc_chapter_list_json()
 {
      mpvc getr chapter-list |
          grep -o '"data":\[.*\]' |
@@ -106,12 +106,12 @@ chapter_list_json()
          #    -e 's/","/", "/g; s/":/": /g'
 }
 
-chapter_list()
+mpvc_chapter_list()
 {
     numbered="${1:-}"
     cchapter=$(mpvc get chapter)
 
-    chapter_list_json |
+    mpvc_chapter_list_json |
         grep -o '"title":"[^"]*' | sed 's/"title":"//;' |
         awk -v no_color="$NO_COLOR" -v numbered="$numbered" -v cchapter="$cchapter" '
         {
@@ -137,45 +137,45 @@ chapter_list()
         }'
 }
 
-chapter_next()
+mpvc_chapter_next()
 {
     chapter=$(mpvc get chapter)
     chapters=$(mpvc get chapters)
-    chapter_set $(( ( chapter + 1 )  % chapters ))
+    mpvc_chapter_set $(( ( chapter + 1 )  % chapters ))
 }
 
-chapter_prev()
+mpvc_chapter_prev()
 {
     chapter=$(mpvc get chapter)
     chapters=$(mpvc get chapters)
-    chapter_set $(( ( chapter - 1 )  % chapters ))
+    mpvc_chapter_set $(( ( chapter - 1 )  % chapters ))
 }
 
-chapter_set()
+mpvc_chapter_set()
 {
     chapters=$(mpvc get chapters)
     if [ "$chapters" -eq 0 ]; then return; fi
     mpvc set "chapter" "$1"
 }
 
-chapter_replay()
+mpvc_chapter_replay()
 {
-    chapter_set "$(mpvc gets chapter)"
+    mpvc_chapter_set "$(mpvc gets chapter)"
 }
 
-chapter_search()
+mpvc_chapter_search()
 {
-    chapter_list | awk "/$*/ {print NR-1; exit}"
+    mpvc_chapter_list | awk "/$*/ {print NR-1; exit}"
 }
 
-chapter_search_play()
+mpvc_chapter_search_play()
 {
-    chapter=$(chapter_search "$@")
+    chapter=$(mpvc_chapter_search "$@")
     if [ -z "$chapter" ]; then return; fi
     mpvc set "chapter" "$chapter"
 }
 
-chapter_status()
+mpvc_chapter_status()
 {
     mpvc cmd expand-text '${chapter} (${=chapter:NA}/${chapters:NA})'
 }
@@ -200,26 +200,26 @@ usage()
 
 main()
 {
-    chapter_defaults
+    mpvc_chapter_defaults
     if [ $# -lt 1 ]; then usage; fi
 
     case "$1" in
 
-    -i | list)       shift; chapter_list "numbered" "$@";;
-    -I | listnum)    shift; chapter_list "numbered" "$@";;
-    -c | search)     shift; chapter_search "$@";;
-    -C | searchplay) shift; chapter_search_play "$@";;
+    -i | list)       shift; mpvc_chapter_list "numbered" "$@";;
+    -I | listnum)    shift; mpvc_chapter_list "numbered" "$@";;
+    -c | search)     shift; mpvc_chapter_search "$@";;
+    -C | searchplay) shift; mpvc_chapter_search_play "$@";;
 
-    json)   shift; chapter_list_json "$@";;
-    file)   shift; chapter_file "$@";;
-    load)   shift; chapter_load "$@";;
-    add)    shift; chapter_add "$@";;
-    info)   shift; chapter_info "$@";;
-    next)   shift; chapter_next "$@";;
-    prev)   shift; chapter_prev "$@";;
-    play)   shift; chapter_set "$@";;
-    replay) shift; chapter_replay "$@";;
-    status) shift; chapter_status "$@";;
+    json)   shift; mpvc_chapter_list_json "$@";;
+    file)   shift; mpvc_chapter_file "$@";;
+    load)   shift; mpvc_chapter_load "$@";;
+    add)    shift; mpvc_chapter_add "$@";;
+    info)   shift; mpvc_chapter_info "$@";;
+    next)   shift; mpvc_chapter_next "$@";;
+    prev)   shift; mpvc_chapter_prev "$@";;
+    play)   shift; mpvc_chapter_set "$@";;
+    replay) shift; mpvc_chapter_replay "$@";;
+    status) shift; mpvc_chapter_status "$@";;
     help) usage;;
     *) usage;;
     esac
