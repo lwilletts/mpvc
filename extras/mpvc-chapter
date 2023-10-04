@@ -149,8 +149,7 @@ mpvc_chapter_prev()
 
 mpvc_chapter_set()
 {
-    chapters=$(mpvc get chapters)
-    if [ "$chapters" -eq 0 ]; then return; fi
+    #[ "$(mpvc get chapters)" -eq 0 ] && return
     mpvc set "chapter" "$1"
 }
 
