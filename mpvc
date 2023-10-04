@@ -83,6 +83,7 @@ EOF
 
     chapter-prev        : Jump to previous entry in the chapter-list
     chapter-next        : Jump to next entry in the chapter-list
+    chapter-play        : Play the given chapter
     chapter-replay      : Replay current chapter
     chapter-list        : Output current chapter-list
     chapter-list-json   : Output current chapter-list (json)
@@ -257,6 +258,9 @@ mpvc_add()   { mpvc_cmd "add" "$@"; }
 mpvc_get()   { mpvc_cmd "get_property_string" "$1"; }
 mpvc_set()   { mpvc_cmd "set_property_string" "$@"; }
 mpvc_cycle() { quiet mpvc_cmd "cycle" "$1"; }
+
+mpvc_getr()  { mpvc_cmdr "get_property" "$1"; }
+mpvc_setr()  { mpvc_cmdr "set_property" "$@"; }
 
 mpvc_get_pause_status() {
     case "$(mpvc_get pause)" in
@@ -705,11 +709,11 @@ mpvc_clear_playlist() {
     echo "Playlist cleared."
 }
 
-## Chapters ###################################################################
+## Chapter functions ##########################################################
 
 mpvc_chapter_list_json()
 {
-     mpvc getr chapter-list |
+     mpvc_getr chapter-list |
          grep -o '"data":\[.*\]' |
          sed -e 's/^"data"://;' \
              -e 's|{"title"|\n    {"title"|g;' \
@@ -723,7 +727,7 @@ mpvc_chapter_list()
     cchapter=$(mpvc get chapter)
 
     mpvc_chapter_list_json |
-        grep -o '"title":"[^"]*' | sed 's/"title":"//;' |
+        grep -o '"title":".*' | sed 's/"title":"//; s/,"time":.*$//' |
         awk -v no_color="${NO_COLOR:-}" -v numbered="$numbered" -v cchapter="$cchapter" '
         {
             chapternr = NR-1
@@ -750,18 +754,18 @@ mpvc_chapter_list()
 
 mpvc_chapter_next()
 {
-    mpvc_chapter_set $(( ( $(mpvc get chapter) + 1 ) % $(mpvc get chapters) ))
+    mpvc_chapter_set $(( ( $(mpvc_get chapter) + 1 ) % $(mpvc_get chapter-list/count) ))
 }
 
 mpvc_chapter_prev()
 {
-    mpvc_chapter_set $(( ( $(mpvc get chapter) - 1 ) % $(mpvc get chapters) ))
+    mpvc_chapter_set $(( ( $(mpvc_get chapter) - 1 ) % $(mpvc_get chapter-list/count) ))
 }
 
 mpvc_chapter_set()
 {
-    #[ "$(mpvc get chapters)" -eq 0 ] && return
-    mpvc set "chapter" "$1"
+    #[ "$(mpvc_get "chapters")" -eq 0 ] && return
+    mpvc_set "chapter" "$1"
 }
 
 mpvc_chapter_search()
@@ -773,7 +777,7 @@ mpvc_chapter_search_play()
 {
     chapter=$(mpvc_chapter_search "$@")
     if [ -z "$chapter" ]; then return; fi
-    mpvc set "chapter" "$chapter"
+    mpvc_chapter_set "$chapter"
 }
 
 mpvc_chapter_replay()
@@ -986,8 +990,8 @@ main() {
             --get|get|g)                     shift; mpvc_cmd get_property "${1:-}"; QUIETFLAG=true;;
             --sets|sets|ss)                  shift; mpvc_cmd set_property_string "$@"; return;;
             --gets|gets|gs)                  shift; mpvc_cmd get_property_string "${1:-}"; QUIETFLAG=true;;
-            --setr|setr|sr)                  shift; mpvc_cmdr set_property "$@"; return;;
-            --getr|getr|gr)                  shift; mpvc_cmdr get_property "${1:-}"; QUIETFLAG=true;;
+            --setr|setr|sr)                  shift; mpvc_setr "$@"; return;;
+            --getr|getr|gr)                  shift; mpvc_getr "${1:-}"; QUIETFLAG=true;;
             --togglec|togglec)               shift; mpvc_cycle "cache" ;;
             --togglev|togglev)               shift; mpvc_cycle "video" ;;
             --togglew|togglew)               shift; mpvc_cycle "force-window" ;;
@@ -1017,6 +1021,7 @@ main() {
 
             --chapter-prev|chapter-prev)              mpvc_chapter_prev ;;
             --chapter-next|chapter-next)              mpvc_chapter_next ;;
+            --chapter-play|chapter-play)              shift; mpvc_chapter_set "${1:-}" ;;
             --chapter-replay|chapter-replay)          mpvc_chapter_replay ;;
             --chapter-list|chapter-list)              mpvc_chapter_list "numbered"; QUIETFLAG=true;;
             --chapter-list-json|chapter-list-json)    mpvc_chapter_list_json; QUIETFLAG=true;;
