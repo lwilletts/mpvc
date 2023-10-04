@@ -727,7 +727,7 @@ mpvc_chapter_list()
     cchapter=$(mpvc get chapter)
 
     mpvc_chapter_list_json |
-        grep -o '"title":".*' | sed 's/"title":"//; s/,"time":.*$//' |
+        grep -o '"title":".*' | sed 's/"title":"//; s/","time":.*$//' |
         awk -v no_color="${NO_COLOR:-}" -v numbered="$numbered" -v cchapter="$cchapter" '
         {
             chapternr = NR-1
