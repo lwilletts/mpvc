@@ -697,6 +697,82 @@ mpvc_clear_playlist() {
     echo "Playlist cleared."
 }
 
+## Chapters ###################################################################
+
+mpvc_chapter_list_json()
+{
+     mpvc getr chapter-list |
+         grep -o '"data":\[.*\]' |
+         sed -e 's/^"data"://;' \
+             -e 's|{"title"|\n    {"title"|g;' \
+             -e '/^\[\]$/ !s/]$/\n]/;'
+         #    -e 's/","/", "/g; s/":/": /g'
+}
+
+mpvc_chapter_list()
+{
+    numbered="${1:-}"
+    cchapter=$(mpvc get chapter)
+
+    mpvc_chapter_list_json |
+        grep -o '"title":"[^"]*' | sed 's/"title":"//;' |
+        awk -v no_color="${NO_COLOR:-}" -v numbered="$numbered" -v cchapter="$cchapter" '
+        {
+            chapternr = NR-1
+            if (cchapter == chapternr)
+            {
+                if (no_color)
+                {
+                    if (numbered) printf("%2d  %s\n", chapternr, $0);
+                    else printf("%s\n", $0);
+                }
+                else
+                {
+                    if (numbered) printf("%2d  \033[7m%s\033[0m\n", chapternr, $0);
+                    else printf("\033[7m%s\033[0m\n", $0);
+                }
+            }
+            else
+            {
+                if (numbered) printf("%2d  %s\n", chapternr, $0);
+                else printf("%s\n", $0);
+            }
+        }'
+}
+
+mpvc_chapter_next()
+{
+    mpvc_chapter_set $(( ( $(mpvc get chapter) + 1 ) % $(mpvc get chapters) ))
+}
+
+mpvc_chapter_prev()
+{
+    mpvc_chapter_set $(( ( $(mpvc get chapter) - 1 ) % $(mpvc get chapters) ))
+}
+
+mpvc_chapter_set()
+{
+    #[ "$(mpvc get chapters)" -eq 0 ] && return
+    mpvc set "chapter" "$1"
+}
+
+mpvc_chapter_search()
+{
+    mpvc_nocolor mpvc_chapter_list | awk "/$*/ {print NR-1; exit}"
+}
+
+mpvc_chapter_search_play()
+{
+    chapter=$(mpvc_chapter_search "$@")
+    if [ -z "$chapter" ]; then return; fi
+    mpvc set "chapter" "$chapter"
+}
+
+mpvc_chapter_replay()
+{
+    mpvc_chapter_set "$(mpvc gets chapter)"
+}
+
 ## Formatting and Printing Functions ##########################################
 
 # formats and prints according to $FORMATSTRING
@@ -930,6 +1006,14 @@ main() {
             ytquery)                         shift; mpvc_curl_cache_title_clean "$@"; return;;
             ytqueryjson)                     shift; mpvc_curl_cache_json "$@"; return;;
             filename)                        shift; mpvc_get_playlist_filename "$@"; return;;
+
+            --chapter-prev|chapter-prev)              mpvc_chapter_prev ;;
+            --chapter-next|chapter-next)              mpvc_chapter_next ;;
+            --chapter-replay|chapter-replay)          mpvc_chapter_replay ;;
+            --chapter-list|chapter-list)              mpvc_chapter_list "numbered"; QUIETFLAG=true;;
+            --chapter-list-json|chapter-list-json)    mpvc_chapter_list_json; QUIETFLAG=true;;
+            --chapter-search|chapter-search)          shift; mpvc_chapter_search "$1"; QUIETFLAG=true;;
+            --chapter-searchplay|chapter-searchplay)  shift; mpvc_chapter_search_play "$1"; QUIETFLAG=true;;
 
             -k|--kill|kill)                  quiet mpvc_cmd "quit"; QUIETFLAG=true ;;
             -K|--killall|killall)            quiet pkill -9 -f "$MPVC_MPV "; QUIETFLAG=true ;;
