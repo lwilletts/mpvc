@@ -110,9 +110,9 @@ mpvc_web_index()
         </li>
         <li>
             mpvc chapter
-            <a href="?cmd=mpvc-chapter replay">replay</a>
-            <a href="?cmd=mpvc-chapter prev">prev</a>
-            <a href="?cmd=mpvc-chapter next">next</a>
+            <a href="?cmd=mpvc chapter-replay">replay</a>
+            <a href="?cmd=mpvc chapter-prev">prev</a>
+            <a href="?cmd=mpvc chapter-next">next</a>
         </li>
         <li>
             mpvc vol
@@ -172,7 +172,6 @@ EOF
 mpvc_web_cgi()
 {
     MPVC=$(command -v mpvc)
-    MPVC_CHAPTER=$(command -v mpvc-chapter)
     cat <<EOF
 #!/bin/sh
 set -euf
@@ -240,18 +239,17 @@ mpvc_web()
         /GET \/\?cmd=mpvc%20repeat/       { system("mpvc -q repeat") }
         /GET \/\?cmd=mpvc%20single/       { system("mpvc -q single") }
 
-        /GET \/\?cmd=mpvc-chapter%20prev/ { system("mpvc-chapter prev") }
-        /GET \/\?cmd=mpvc-chapter%20next/ { system("mpvc-chapter next") }
+        /GET \/\?cmd=mpvc%20chapter-prev/ { system("mpvc chapter-prev") }
+        /GET \/\?cmd=mpvc%20chapter-next/ { system("mpvc chapter-next") }
 
         /GET \/\?cli=mpvc/                {
             r=$0;
             gsub("HTTP.*$", "", r);
             gsub("^.*GET \\/\\?cli=mpvc\\+", "mpvc ", r);
-            gsub("^.*GET \\/\\?cli=mpvc-chapter\\+", "mpvc-chapter ", r);
 
             if (ENVIRON["MPVC_WEB_DEV"] && match(r, "^mpvc"))
             {
-                gsub("(mpvc|mpvc-chapter) [^a-zA-Z0-9 ]", "", r);
+                gsub("(mpvc) [^a-zA-Z0-9 ]", "", r);
                 gsub("\\+", " ", r);
                 system(r); # XXX
             }
