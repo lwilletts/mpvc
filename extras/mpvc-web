@@ -188,7 +188,7 @@ main()
         playlist)     $MPVC playlist | mpvc_strip_escapes ;;
         fullplaylist) $MPVC fullplaylist | mpvc_strip_escapes ;;
         rawplaylist)  $MPVC saven | mpvc_strip_escapes ;;
-        chapterlist)  $MPVC_CHAPTER list | mpvc_strip_escapes ;;
+        chapterlist)  $MPVC chapter-list | mpvc_strip_escapes ;;
         *) $MPVC ;;
     esac
 }
