@@ -149,7 +149,6 @@ mpvctui_input()
         'mpvc '*) QUIETFLAG=true $cmd;;
         'mpvc-tui '*) $cmd;;
         'mpvc-fzf '*) $cmd;;
-        'mpvc-chapter '*) $cmd;;
         exit|quit|q) exit;;
         *) echo 'mpvc: Type commands at "mpvc:" prompt, "q" to quit';;
     esac
@@ -233,9 +232,9 @@ mpvctui_mouse_events()
             9,$offsety) mpvc -q play "$(mpvc get playlist-pos)";;
            10,$offsety) mpvc -q next;;
 
-           12,$offsety) mpvc-chapter prev;;
-           13,$offsety) mpvc-chapter replay;;
-           14,$offsety) mpvc-chapter next;;
+           12,$offsety) mpvc chapter-prev;;
+           13,$offsety) mpvc chapter-replay;;
+           14,$offsety) mpvc chapter-next;;
 
            16,$offsety) mpvc -q seek -30;;
            17,$offsety) mpvc -q time 0;;
