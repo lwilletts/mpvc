@@ -81,6 +81,14 @@ EOF
     stash               : Manage mpv playing state as in git-stash(1)
     delay               : Sleep delay, as in: $PROGNAME play 0 delay seek 20% vol 60
 
+    chapter-prev        : Jump to previous entry in the chapter-list
+    chapter-next        : Jump to next entry in the chapter-list
+    chapter-replay      : Replay current chapter
+    chapter-list        : Output current chapter-list
+    chapter-list-json   : Output current chapter-list (json)
+    chapter-search      : Search current chapter-list
+    chapter-searchplay  : Search and play the current chapter-list
+
 Formatting:
     \`$PROGNAME --format\` will interpret the following delimiters if they are found:
 
