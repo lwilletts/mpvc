@@ -752,7 +752,7 @@ mpvc_chapter_list()
         }'
 }
 
-mpvc_chapter_replay() { mpvc_chapter_set "$(mpvc gets chapter)"; }
+mpvc_chapter_replay() { mpvc_chapter_set "$(mpvc_get chapter)"; }
 mpvc_chapter_next()   { mpvc_chapter_set $(( ( $(mpvc_get chapter) + 1 ) % $(mpvc_get chapter-list/count) )); }
 mpvc_chapter_prev()   { mpvc_chapter_set $(( ( $(mpvc_get chapter) - 1 ) % $(mpvc_get chapter-list/count) )); }
 mpvc_chapter_set()    { [ "$(mpvc_get "chapter-list/count")" -gt 0 ] && mpvc_set "chapter" "$1"; }
