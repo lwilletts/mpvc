@@ -22,13 +22,13 @@ mpvc_pingscan()
     NCHECK=${NCHECK:-3}
     ncheck=0
 
-    echo "# $PROGNAME mpvc pingscan PERIOD=$PERIOD NCHECK=$NCHECK $@"
+    echo "# $PROGNAME pingscan $@ PERIOD=$PERIOD NCHECK=$NCHECK"
     while sleep ${PERIOD}
     do
         hour=$(date +%_H)
         pause=$(mpvc -q get pause || true)
         check=$(ping -w 5 -c 5 $target | awk 'NR == 2 && /time=/ {print}')
-        echo "# $(date -Imin) $PROGNAME PERIOD=$PERIOD NCHECK=$NCHECK pause=$pause c=${#check} n=${ncheck} $check"
+        echo "# $(date -Imin) $PROGNAME $@ PERIOD=$PERIOD NCHECK=$NCHECK pause=$pause c=${#check} n=${ncheck} $check"
         if [ "$hour" -ge 5 -a "$hour" -lt 20 ]
         then
             ncheck=$(( ( $ncheck $(if [ -n "$check" ]; then echo +; else echo -; fi) 1 ) % ( $NCHECK + 1 ) ))
