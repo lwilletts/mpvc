@@ -724,7 +724,7 @@ mpvc_chapter_list_json()
 mpvc_chapter_list()
 {
     numbered="${1:-}"
-    cchapter=$(mpvc get chapter)
+    cchapter=$(mpvc_get chapter)
 
     mpvc_chapter_list_json |
         grep -o '"title":".*' | sed 's/"title":"//; s/","time":.*$//' |
