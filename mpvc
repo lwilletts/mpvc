@@ -999,8 +999,8 @@ main() {
             ytqueryjson)                     shift; mpvc_curl_cache_json "$@"; return;;
             filename)                        shift; mpvc_get_playlist_filename "$@"; return;;
 
-            cnext|--chapter-prev|chapter-prev)            mpvc_chapter_prev ;;
-            cprev|--chapter-next|chapter-next)            mpvc_chapter_next ;;
+            cprev|--chapter-prev|chapter-prev)            mpvc_chapter_prev ;;
+            cnext|--chapter-next|chapter-next)            mpvc_chapter_next ;;
             cplay|--chapter-play|chapter-play)            shift; mpvc_chapter_set "${1:-}" ;;
             creplay|--chapter-replay|chapter-replay)      mpvc_chapter_replay ;;
             clist|--chapter-list|chapter-list)            mpvc_chapter_list "numbered"; QUIETFLAG=true;;
