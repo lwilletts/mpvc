@@ -31,64 +31,64 @@ usage: $PROGNAME args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
 EOF
 
     [ $# -gt 0 ] && cat >&2 << EOF
-    -f | --format       : Enter a formatting string.
-    -j | --track        : Go forwards/backwards through the playlist queue.
-    -J | --tracknum     : Jump to playlist item number.
-    -A | --playnext     : Add files to playlist after the current track.
-    -o | --save         : Save current playlist to given path.
-    -l | --load         : Load playlist from given path (stdin if none is specified).
-    -o | --autosave     : Auto save current playlist to ${MPVC_PLAYLIST##$HOME/}.
-    -l | --autoload     : Auto load playlist from ${MPVC_PLAYLIST##$HOME/}.
-    -l | --lsplaylists  : List playlist from ${MPVC_PLAYLIST##$HOME/}.
-    -c | --crop         : Clear the playlist except for the file currently playing.
-    -z | --shuffle      : Shuffle the current playlist.
-    -l | --loop         : Loop currently playing playlist.
-    -L | --loopfile     : Loop currently playing file.
-    -m | --mute         : Toggle sound.
-    -t | --seek         : Increase/decrease playback time relatively, accepts % values.
-    -T | --time         : Set absolute playback time.
-    -x | --speed        : Increase/decrease speed relative to the current speed.
-    -X | --speedval     : Set absolute speed.
-    -I | --image        : Enable adding of images to the queue.
-    -k | --kill         : Kill the mpv process controlling the given socket.
-    -K | --killall      : Kill all mpv processes indiscriminately.
-    -S | --socket       : Set mpv socket [default: $MPVC_SOCKET].
-    -q | --quiet        : Suppress all text output.
-    -V | --volume       : Set absolute volume.
-    -Q | --vid=no       : Start mpv with video output disabled.
-    -- |                : After adding files options after -- are passed to mpv.
-       | --version      : Prints the $PROGNAME version.
+    -f | --format           : Enter a formatting string.
+    -j | --track            : Go forwards/backwards through the playlist queue.
+    -J | --tracknum         : Jump to playlist item number.
+    -A | --playnext         : Add files to playlist after the current track.
+    -o | --save             : Save current playlist to given path.
+    -l | --load             : Load playlist from given path (stdin if none is specified).
+    -o | --autosave         : Auto save current playlist to ${MPVC_PLAYLIST##$HOME/}.
+    -l | --autoload         : Auto load playlist from ${MPVC_PLAYLIST##$HOME/}.
+    -l | --lsplaylists      : List playlist from ${MPVC_PLAYLIST##$HOME/}.
+    -c | --crop             : Clear the playlist except for the file currently playing.
+    -z | --shuffle          : Shuffle the current playlist.
+    -l | --loop             : Loop currently playing playlist.
+    -L | --loopfile         : Loop currently playing file.
+    -m | --mute             : Toggle sound.
+    -t | --seek             : Increase/decrease playback time relatively, accepts % values.
+    -T | --time             : Set absolute playback time.
+    -x | --speed            : Increase/decrease speed relative to the current speed.
+    -X | --speedval         : Set absolute speed.
+    -I | --image            : Enable adding of images to the queue.
+    -k | --kill             : Kill the mpv process controlling the given socket.
+    -K | --killall          : Kill all mpv processes indiscriminately.
+    -S | --socket           : Set mpv socket [default: $MPVC_SOCKET].
+    -q | --quiet            : Suppress all text output.
+    -V | --volume           : Set absolute volume.
+    -Q | --vid=no           : Start mpv with video output disabled.
+    -- |                    : After adding files options after -- are passed to mpv.
+       | --version          : Prints the $PROGNAME version.
 
-    get                 : Get MPV property from $PROGNAME socket.
-    set                 : Set MPV property from $PROGNAME socket.
-    getr                : Get JSON MPV property from $PROGNAME socket.
-    setr                : Set JSON MPV property from $PROGNAME socket.
-    cmd                 : Send command to $PROGNAME socket.
-    cmdr                : Send command to $PROGNAME socket & retrieve raw JSON.
-    sockcmd             : Send MPV JSON IPC command to $PROGNAME socket.
-    socklist            : List $PROGNAME sockets.
-    togglec             : Toggle MPV cache property.
-    togglev             : Toggle MPV video property.
-    togglew             : Toggle MPV window property.
-    togglei             : Toggle MPV idle property.
-    cycle               : Toggle/Cycle through MPV property values.
-    idleloop            : Listen to MPV player events on $PROGNAME socket.
-    search              : Search the playlist by filename/url.
-    -n | --searchplay   : Search the playlist by filename and play the first match.
-    -N | --searchPlay   : Search the playlist by title and play the first match.
-    -R | --searchrm     : Search the playlist and remove matching entries.
-    -M | --searchmv     : Search the playlist and move matching entries.
-    stash               : Manage mpv playing state as in git-stash(1)
-    delay               : Sleep delay, as in: $PROGNAME play 0 delay seek 20% vol 60
+    get                     : Get MPV property from $PROGNAME socket.
+    set                     : Set MPV property from $PROGNAME socket.
+    getr                    : Get JSON MPV property from $PROGNAME socket.
+    setr                    : Set JSON MPV property from $PROGNAME socket.
+    cmd                     : Send command to $PROGNAME socket.
+    cmdr                    : Send command to $PROGNAME socket & retrieve raw JSON.
+    sockcmd                 : Send MPV JSON IPC command to $PROGNAME socket.
+    socklist                : List $PROGNAME sockets.
+    togglec                 : Toggle MPV cache property.
+    togglev                 : Toggle MPV video property.
+    togglew                 : Toggle MPV window property.
+    togglei                 : Toggle MPV idle property.
+    cycle                   : Toggle/Cycle through MPV property values.
+    idleloop                : Listen to MPV player events on $PROGNAME socket.
+    search                  : Search the playlist by filename/url.
+    -n | --searchplay       : Search the playlist by filename and play the first match.
+    -N | --searchPlay       : Search the playlist by title and play the first match.
+    -R | --searchrm         : Search the playlist and remove matching entries.
+    -M | --searchmv         : Search the playlist and move matching entries.
+    stash                   : Manage mpv playing state as in git-stash(1)
+    delay                   : Sleep delay, as in: $PROGNAME play 0 delay seek 20% vol 60
 
-    chapter-prev        : Jump to previous entry in the chapter-list
-    chapter-next        : Jump to next entry in the chapter-list
-    chapter-play        : Play the given chapter
-    chapter-replay      : Replay current chapter
-    chapter-list        : Output current chapter-list
-    chapter-list-json   : Output current chapter-list (json)
-    chapter-search      : Search current chapter-list
-    chapter-searchplay  : Search and play the current chapter-list
+    cprev | chapter-prev    : Jump to previous entry in the chapter-list
+    cnext | chapter-next    : Jump to next entry in the chapter-list
+    cplay | chapter-play    : Play the given chapter
+    creplay | chapter-replay: Replay current chapter
+    clist | chapter-list    : Output current chapter-list
+    chapter-list-json       : Output current chapter-list (json)
+    csearch | chapter-search: Search current chapter-list
+    chapter-searchplay      : Search and play the current chapter-list
 
 Formatting:
     \`$PROGNAME --format\` will interpret the following delimiters if they are found:
@@ -999,13 +999,13 @@ main() {
             ytqueryjson)                     shift; mpvc_curl_cache_json "$@"; return;;
             filename)                        shift; mpvc_get_playlist_filename "$@"; return;;
 
-            --chapter-prev|chapter-prev)              mpvc_chapter_prev ;;
-            --chapter-next|chapter-next)              mpvc_chapter_next ;;
-            --chapter-play|chapter-play)              shift; mpvc_chapter_set "${1:-}" ;;
-            --chapter-replay|chapter-replay)          mpvc_chapter_replay ;;
-            --chapter-list|chapter-list)              mpvc_chapter_list "numbered"; QUIETFLAG=true;;
+            cnext|--chapter-prev|chapter-prev)        mpvc_chapter_prev ;;
+            cprev|--chapter-next|chapter-next)        mpvc_chapter_next ;;
+            cplay|--chapter-play|chapter-play)        shift; mpvc_chapter_set "${1:-}" ;;
+            creplay|--chapter-replay|chapter-replay)  mpvc_chapter_replay ;;
+            clist|--chapter-list|chapter-list)        mpvc_chapter_list "numbered"; QUIETFLAG=true;;
             --chapter-list-json|chapter-list-json)    mpvc_chapter_list_json; QUIETFLAG=true;;
-            --chapter-search|chapter-search)          shift; mpvc_chapter_search "$1"; QUIETFLAG=true;;
+            csearch|--chapter-search|chapter-search)  shift; mpvc_chapter_search "$1"; QUIETFLAG=true;;
             --chapter-searchplay|chapter-searchplay)  shift; mpvc_chapter_search_play "$1"; QUIETFLAG=true;;
 
             -k|--kill|kill)                  quiet mpvc_cmd "quit"; QUIETFLAG=true ;;
