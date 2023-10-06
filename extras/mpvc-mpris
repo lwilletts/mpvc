@@ -58,6 +58,7 @@ mpris_set_volume()
     volmute) pVolume=$(awk "END { print ($pVolume == 0)? 0.5: 0; }" /dev/null );;
     voldown) pVolume=$(awk "END { print $cVolume - 0.02 }" /dev/null );;
     volup)   pVolume=$(awk "END { print $cVolume + 0.02 }" /dev/null );;
+    volset)  pVolume=$2;;
     *)       usage;;
     esac
 
@@ -105,7 +106,7 @@ main()
     if [ $# -lt 1 ]; then usage; fi
 
     mpris_name=$(mpris_detect_player)
-    if [ -z "${mpris_name}" ] && ! [ "$1" = "vol" -o "$1" = "volup" -o "$1" = "voldown" -o "$1" = "volon" -o "$1" = "voloff" -o "$1" = "volmute" ]; then
+    if [ -z "${mpris_name}" ] && ! [ "$1" = "volup" -o "$1" = "voldown" -o "$1" = "volon" -o "$1" = "voloff" -o "$1" = "volmute" ]; then
         usage "$PROGNAME: Error no player found that speaks MPRIS. Check that you started mpv with mpris.so in ~/.config/mpv/scripts/";
     fi
 
@@ -121,7 +122,7 @@ main()
     stop)      shift; mpris_method Pause ;;
     seek)      shift; mpris_method Seek "int64:$1"; ;;
     status)    shift; mpris_get_status ;;
-    vol)       shift; if [ -n "${1:-}" ]; then mpris_set_volume "$1"; else mpvc_get_volume; fi ;;
+    vol)       shift; mpris_get_volume ;;
     shuffle)   shift; mpris_set_shuffle "$*" ;;
     open)      shift; mpris_method OpenUri "string:$1" ;;
     #loop)      shift; mpris_get "string:LoopStatus" ;;
@@ -131,6 +132,8 @@ main()
     volmute)   $PACTL set-sink-mute @DEFAULT_SINK@ toggle || mpris_set_volume "$cmd" ;;
     voldown)   $PACTL set-sink-volume @DEFAULT_SINK@ -250 || mpris_set_volume "$cmd" ;;
     volup)     $PACTL set-sink-volume @DEFAULT_SINK@ +250 || mpris_set_volume "$cmd" ;;
+    volset)    $PACTL set-sink-volume @DEFAULT_SINK@ "${2:-}" || mpris_set_volume "$cmd" "${2:-}";;
+    volget)    $PACTL list sinks | awk '/^\s*Volume:/{print}';;
 
     *) usage "$PROGNAME: unknown command: $cmd" ;;
     esac
