@@ -999,14 +999,14 @@ main() {
             ytqueryjson)                     shift; mpvc_curl_cache_json "$@"; return;;
             filename)                        shift; mpvc_get_playlist_filename "$@"; return;;
 
-            cnext|--chapter-prev|chapter-prev)        mpvc_chapter_prev ;;
-            cprev|--chapter-next|chapter-next)        mpvc_chapter_next ;;
-            cplay|--chapter-play|chapter-play)        shift; mpvc_chapter_set "${1:-}" ;;
-            creplay|--chapter-replay|chapter-replay)  mpvc_chapter_replay ;;
-            clist|--chapter-list|chapter-list)        mpvc_chapter_list "numbered"; QUIETFLAG=true;;
-            --chapter-list-json|chapter-list-json)    mpvc_chapter_list_json; QUIETFLAG=true;;
-            csearch|--chapter-search|chapter-search)  shift; mpvc_chapter_search "$1"; QUIETFLAG=true;;
-            --chapter-searchplay|chapter-searchplay)  shift; mpvc_chapter_search_play "$1"; QUIETFLAG=true;;
+            cnext|--chapter-prev|chapter-prev)            mpvc_chapter_prev ;;
+            cprev|--chapter-next|chapter-next)            mpvc_chapter_next ;;
+            cplay|--chapter-play|chapter-play)            shift; mpvc_chapter_set "${1:-}" ;;
+            creplay|--chapter-replay|chapter-replay)      mpvc_chapter_replay ;;
+            clist|--chapter-list|chapter-list)            mpvc_chapter_list "numbered"; QUIETFLAG=true;;
+            clistj|--chapter-list-json|chapter-list-json) mpvc_chapter_list_json; QUIETFLAG=true;;
+            csearch|--chapter-search|chapter-search)      shift; mpvc_chapter_search "$1"; QUIETFLAG=true;;
+            --chapter-searchplay|chapter-searchplay)      shift; mpvc_chapter_search_play "$1"; QUIETFLAG=true;;
 
             -k|--kill|kill)                  quiet mpvc_cmd "quit"; QUIETFLAG=true ;;
             -K|--killall|killall)            quiet pkill -9 -f "$MPVC_MPV "; QUIETFLAG=true ;;
