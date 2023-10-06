@@ -13,7 +13,7 @@ PROGURL="https://github.com/gmt4/mpvc"
 
 set -euf
 
-mpvc_pingcheck() { ping -w 5 -c 5 $@ | awk 'NR == 2 && /time=/ {print}'; }
+mpvc_pingcheck() { ping -w 5 -c 5 $@ | awk 'NR == 2 && /time=/ { sub(":.*time=",": time="); print }'; }
 mpvc_btcheck()   { hcitool scan | awk "/$@/ {print}"; }
 
 # monitor presence of your phone (eg LAN IP/BT): if device is present resume audio, otherwise, pause audio.
