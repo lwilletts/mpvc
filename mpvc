@@ -393,26 +393,18 @@ mpvc_save_playlist() {
     QUIETFLAG="true"
 }
 
-mpvc_autosave_playlist() {
-    mpvc_save_playlist "$MPVC_PLAYLIST/${1:-$(date -Imin)}"
-}
+mpvc_lsplaylists() { ls -1d "$@" "$MPVC_PLAYLIST"/*; }
+mpvc_autosave_playlist() { mpvc_save_playlist "$MPVC_PLAYLIST/${1:-$(date -Imin)}"; }
+mpvc_autoload_playlist() { mpvc_load_playlist < "$MPVC_PLAYLIST/${1:-$(date -Imin)}"; }
 
-mpvc_autoload_playlist() {
-    mpvc_load_playlist < "$MPVC_PLAYLIST/${1:-$(date -Imin)}"
-}
-
-mpvc_lsplaylists() {
-    ls -1d "$@" "$MPVC_PLAYLIST"/*
-}
-
-# loads a playlist from stdin. Note the buffer trick to avoid clear wiping the playlist.
+# loads a playlist from stdin. Note $buffer trick to avoid clear wiping the playlist
 mpvc_load_playlist() {
     QUIETFLAG="true"
     buffer=""
     while read -r line; do buffer="${buffer}\n${line}"; done
     [ -z "$buffer" ] && return
     [ "${1:-}" = "clear" ] && mpvc_clear_playlist
-    printf "$buffer\n" | while read -r line; do mpvc_appendtracks "$line"; done
+    printf "%s\n" "$buffer" | while read -r line; do mpvc_appendtracks "$line"; done
 }
 
 # mpvc stash [list|show|push|drop|apply]
@@ -493,8 +485,7 @@ mpvc_stash() {
 
 mpvc_dbinit() {
     locate -b '*.mp3' '*.mp4' '*.ogg' '*.opus' |
-        sed 's|^\(/.*/\).*|\1|' | sort | uniq |
-        tee "$MPVC_DATABASE"
+        sed 's|^\(/.*/\).*|\1|' | sort | uniq | tee "$MPVC_DATABASE"
 }
 
 mpvc_dblist() {
