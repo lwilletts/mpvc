@@ -133,7 +133,7 @@ main()
     voldown)   $PACTL set-sink-volume @DEFAULT_SINK@ -250 || mpris_set_volume "$cmd" ;;
     volup)     $PACTL set-sink-volume @DEFAULT_SINK@ +250 || mpris_set_volume "$cmd" ;;
     volset)    $PACTL set-sink-volume @DEFAULT_SINK@ "${2:-}" || mpris_set_volume "$cmd" "${2:-}";;
-    volget)    $PACTL list sinks | awk '/^\s*Volume:/{print}';;
+    volget)    $PACTL list sinks | awk '/^\s*Volume:/{print $5}';;
 
     *) usage "$PROGNAME: unknown command: $cmd" ;;
     esac
