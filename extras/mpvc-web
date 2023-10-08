@@ -45,8 +45,8 @@ mpvc_web_index()
     <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
     <meta http-equiv="pragma" content="no-cache" />
     <!-- <meta http-equiv="refresh" content="60"> -->
-    <link rel="IconFile" href="mpvc-favicon.svg" sizes="32x32">
-    <link rel="apple-touch-icon" href="mpvc-favicon.svg">
+    <link rel="IconFile" href="apple-touch-icon.svg" sizes="64x64">
+    <link rel="apple-touch-icon" href="apple-touch-icon.svg">
     <title>$PROGNAME @ $(hostname) 🎧</title>
     </head>
     <style type="text/css" media="all">
@@ -201,7 +201,7 @@ EOF
 mpvc_web_favicon()
 {
     cat <<EOF
-<svg viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg"> <text x="0" y="15">🎧</text> </svg>
+<svg viewBox="0 0 192 80" xmlns="http://www.w3.org/2000/svg" > <text x="0" y="30" font-size="45px" >🎧</text> </svg> <!-- mpvc -->
 EOF
 }
 
@@ -219,7 +219,7 @@ mpvc_web()
         mpvc_web_index > "$MPVC_WEB_ROOT/index.html"
         [ ! -e "$MPVC_WEB_ROOT/style.css" ] && mpvc_web_style > "$MPVC_WEB_ROOT/style.css"
         mpvc_web_cgi > "$MPVC_WEB_ROOT/cgi-bin/mpvc"
-        mpvc_web_favicon > "$MPVC_WEB_ROOT/mpvc-favicon.svg"
+        mpvc_web_favicon > "$MPVC_WEB_ROOT/apple-touch-icon.svg"
 
         chmod u+x "$MPVC_WEB_ROOT/cgi-bin/mpvc"
         chmod a-w -R "$MPVC_WEB_ROOT/"
