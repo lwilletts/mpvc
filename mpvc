@@ -435,20 +435,20 @@ mpvc_stash() {
             do
                 case "$line" in
                     "# $PROGNAME "*) echo "$line";;
-                    "mpvc --mpv")  $line;;
-                    "mpvc --wait") $line;;
-                    "mpvc cmd "*)  $line;;
-                    "mpvc set "*)  $line;;
-                    "mpvc add "*)  mpvc add "${line##mpvc add }";;
+                    "mpvc --mpv")  mpvc_mpv;;
+                    "mpvc --wait") mpvc_wait;;
+                    "mpvc mpv")    mpvc_mpv;;
+                    "mpvc wait")   mpvc_wait;;
+                    "mpvc cmd "*)  mpvc_cmd ${line##mpvc cmd };;
+                    "mpvc set "*)  mpvc_set ${line##mpvc set };;
+                    "mpvc add "*)  mpvc_appendtrack "${line##mpvc add }";;
                 esac
             done
             ;;
         current)
             echo "# $PROGNAME stash $MPVC_STASH_DIR/$1 # $PROGURL @version $PROGVERSION"
-            echo "mpvc --mpv"
-            echo "mpvc --wait"
-            #echo "mpvc set video no"
-            #echo "mpvc set mute yes"
+            echo "mpvc mpv"
+            echo "mpvc wait"
             echo "mpvc set pause yes"
             echo "mpvc cmd playlist-clear"
             echo "mpvc cmd playlist-remove 0"
@@ -516,7 +516,7 @@ mpvc_appendtrack() {
 
 mpvc_appendtracks() {
     QUIETFLAG="true"
-    mpvc_startmpv --really-quiet --idle=once
+    mpvc_mpv
     for arg in "$@"; do
         mpvc_appendtrack "$arg"
         shift
@@ -554,9 +554,8 @@ mpvc_set_track() {
     lcount=$(mpvc_get playlist-count)
     [ "$lpos" = "null" ] && lpos=0
     case "$2" in
-        absolute) newpos=$(( $1 % lcount ));;
-        relative) newpos=$(( (lpos + $1) % lcount ))
-        ;;
+        absolute) newpos=$(( $1 % lcount )) ;;
+        relative) newpos=$(( (lpos + $1) % lcount )) ;;
     esac
     quiet mpvc_set "playlist-pos" "$newpos"
 }
@@ -875,7 +874,8 @@ mpvc_idleloop() {
 
 mpvc_delay() { sleep "${1:-0.1}"; }
 mpvc_wait()  { until [ -n "$(mpvc_get idle-active)" ]; do mpvc_delay "${1:-}"; done; }
-# mpvc_startmpv: exec & wait until mpv starts up
+mpvc_mpv() { mpvc_startmpv --really-quiet --idle=once; }
+# mpvc_mpv: exec & wait until mpv starts up
 mpvc_startmpv() {
     if [ -z "$(mpvc_get idle-active)" ]; then
         mpvc_delay 0.1
@@ -885,6 +885,7 @@ mpvc_startmpv() {
         mpvc_wait 0.5
     fi
 }
+
 
 main() {
     mpvc_config
@@ -947,7 +948,7 @@ main() {
             -o|--save|save)                  shift; mpvc_save_playlist "${1:-}" ;;
             --load|load)                     shift; mpvc_load_playlist      ;;
 
-            mpv|--mpv)                       mpvc_startmpv --really-quiet --idle=yes;;
+            mpv|--mpv)                       mpvc_mpv ;;
             --current|current)               ;;
             --loadc|loadc)                   shift; mpvc_load_playlist "clear"    ;;
             --saven|saven)                   shift; mpvc_get_playlist_once "numbered"; QUIETFLAG=true;;
