@@ -30,7 +30,8 @@ usage: $PROGNAME args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
     -H | --long-help    : Prints the long help.
 EOF
 
-    [ $# -gt 0 ] && cat >&2 << EOF
+    if [ $# -gt 0 ]; then
+        cat >&2 << EOF
     -f | --format           : Enter a formatting string.
     -j | --track            : Go forwards/backwards through the playlist queue.
     -J | --tracknum         : Jump to playlist item number.
@@ -110,6 +111,7 @@ Exit codes:
     3: Socket is not currently open.
     4: Dependency error.
 EOF
+    fi
 }
 
 equiet() { "$@" 2> /dev/null; }
@@ -143,12 +145,14 @@ mpvc_defaults()
     FORMATSTRING="${FORMATSTRING:-}"
 
     # print default status of mpv instance
-    [ -z "$FORMATSTRING" ] && FORMATSTRING="\
+    if [ -z "$FORMATSTRING" ]; then
+        FORMATSTRING="\
 %artist% - %title% NL\
 [%status%] #%position%/%playlistlength% %time%/%length% (%percentage%%%) NL\
 speed:%speed%x volume:%volume%%% muted:%muted% repeat:%repeat% single:%single% NL\
 video:%video% aspect:%aspect% window:%force-window% fullscreen:%fullscreen% idle:%idle% NL\
 chapter:%chapter% %=chapter%/%chapters%"
+    fi
 }
 
 # Load user config
@@ -156,12 +160,12 @@ mpvc_config()
 {
     mpvc_defaults
     # if not present, create config dir
-    [ ! -d "$MPVC_CONFIG_DIR" ] && mkdir -p "$MPVC_CONFIG_DIR"
-    [ ! -d "$MPVC_CACHE_DIR" ] && mkdir -p "$MPVC_CACHE_DIR"
-    [ ! -d "$MPVC_STASH_DIR" ] && mkdir -p "$MPVC_STASH_DIR"
-    [ ! -d "$MPVC_PLAYLIST" ] && mkdir -p "$MPVC_PLAYLIST"
+    if [ ! -d "$MPVC_CONFIG_DIR" ]; then mkdir -p "$MPVC_CONFIG_DIR"; fi
+    if [ ! -d "$MPVC_CACHE_DIR" ]; then mkdir -p "$MPVC_CACHE_DIR"; fi
+    if [ ! -d "$MPVC_STASH_DIR" ]; then mkdir -p "$MPVC_STASH_DIR"; fi
+    if [ ! -d "$MPVC_PLAYLIST" ]; then mkdir -p "$MPVC_PLAYLIST"; fi
     # if not present, create config files
-    [ ! -e "$MPVC_CURL_CACHE" ] && > "$MPVC_CURL_CACHE"
+    if [ ! -e "$MPVC_CURL_CACHE" ]; then true > "$MPVC_CURL_CACHE"; fi
     # if present load user config
     if [ -r "$MPVC_CONFIG" ]; then
         . "$MPVC_CONFIG"
@@ -224,7 +228,7 @@ mpvc_curl_cache_title_clean() {
             result="$(mpvc_curl_cache_title "$filename")"
             ;;
         *) # otherwise
-            [ -e "$filename" ] && result=${filename##*/} || result=${filename##*/}
+            if [ -e "$filename" ]; then result=${filename##*/}; else result=${filename##*/}; fi
             ;;
     esac
     printf "$result\n"
@@ -294,7 +298,7 @@ mpvc_get_playlist_filename() {
     lid="${1:-}"
     fullPath="${2:-}"
     filename=$(mpvc_get "playlist/$lid/filename")
-    [  "$fullPath" != "fullpath" ] && filename=$(mpvc_curl_cache_title_clean "$filename")
+    if [  "$fullPath" != "fullpath" ]; then filename=$(mpvc_curl_cache_title_clean "$filename"); fi
     echo "$filename"
 }
 
@@ -385,7 +389,7 @@ mpvc_save_playlist() {
     else
         if [ -e "$output" ]; then
             echo "Playlist $output exists! Overwrite? [Y/n] "; read -r key
-            [ "$key" != "Y" ] && return
+            if [ "$key" != "Y" ]; then return; fi
         fi
         echo "Adding files to $output ..."
     fi
@@ -402,8 +406,8 @@ mpvc_load_playlist() {
     QUIETFLAG="true"
     buffer=""
     while read -r line; do buffer="${buffer}\n${line}"; done
-    [ -z "$buffer" ] && return
-    [ "${1:-}" = "clear" ] && mpvc_clear_playlist
+    if [ -z "$buffer" ]; then return; fi
+    if [ "${1:-}" = "clear" ]; then mpvc_clear_playlist; fi
     printf "$buffer\n" | while read -r line; do mpvc_appendtracks "$line"; done
 }
 
@@ -499,12 +503,12 @@ mpvc_appendtrack() {
     filename="$*"
     # require absolute paths
     case "$filename" in
-        /*) ;; *) [ -e "$filename" ] && filename="$(pwd)/$filename" ;;
+        /*) ;; *) if [ -e "$filename" ]; then filename="$(pwd)/$filename"; fi ;;
     esac
     # skip over various other filetypes and images unless wanted
     case "$filename" in
         *.txt|*.log|*.cue) return ;;
-        *.png|*.jpg|*.jpeg|*.gif|*.psd|*.pdf) [ "$IMAGEFLAG" != "true" ] && return ;;
+        *.png|*.jpg|*.jpeg|*.gif|*.psd|*.pdf) if [ "$IMAGEFLAG" != "true" ]; then return; fi ;;
     esac
     if [ -n "$filename" ]; then
         # cache media here if media is found in local storage
@@ -552,7 +556,7 @@ mpvc_set_track() {
     isInt "$1" || return 1
     lpos=$(mpvc_get playlist-pos)
     lcount=$(mpvc_get playlist-count)
-    [ "$lpos" = "null" ] && lpos=0
+    if [ "$lpos" = "null" ]; then lpos=0; fi
     case "$2" in
         absolute) newpos=$(( $1 % lcount )) ;;
         relative) newpos=$(( (lpos + $1) % lcount )) ;;
@@ -569,17 +573,16 @@ mpvc_move_track() {
         dstpos=$1
     else
         srcpos=$1
-        [ "$1" = "$" ] && srcpos="$lcount"
+        if [ "$1" = "$" ]; then srcpos="$lcount"; fi
         dstpos=$2
-        [ "$2" = "$" ] && dstpos="$lcount"
+        if [ "$2" = "$" ]; then dstpos="$lcount"; fi
         if [ "$srcpos" -lt 0 ] || [ "$srcpos" -gt "$lcount" ]; then
             die 1 "Item $srcpos is out of range of playlist."
         fi
     fi
 
-    [ "$dstpos" -lt 0 ] &&
-        die 1 "Position $dstpos is out of range of playlist."
-    #[ "$dstpos" -eq 1 ] && dstpos=0
+    if [ "$dstpos" -lt 0 ]; then die 1 "Position $dstpos is out of range of playlist."; fi
+    #if [ "$dstpos" -eq 1 ]; then dstpos=0; fi
     quiet mpvc_cmd "playlist-move" "$srcpos" "$dstpos"
     quietcheck mpvc_get_playlist
 }
@@ -612,7 +615,7 @@ mpvc_set_pause() {
 }
 
 mpvc_toggle_mute() {
-    [ $# -gt 0 ] && quiet mpvc_set "mute" "${1:-}" && return
+    if [ $# -gt 0 ]; then quiet mpvc_set "mute" "${1:-}"; return; fi
     quiet mpvc_cmd "cycle" "mute"
 }
 
@@ -646,33 +649,33 @@ mpvc_nocolor()
 }
 
 mpvc_search() {
-    [ $# -lt 2 ] && return
+    if [ $# -lt 2 ]; then return; fi
     mode=$1; shift;
     mpvc_nocolor mpvc_get_playlist "$mode" | awk '/'"$*"'/ { print $0 }';
 }
 
 mpvc_search_play() {
-    [ $# -lt 2 ] && return
+    if [ $# -lt 2 ]; then return; fi
     mode=$1; shift
     lid=$(mpvc_search "$mode" "$1" | awk '{print $1; exit}')
-    [ -z "$lid" ] && warn "$PROGNAME: Searching for $*, nothing found."
+    if [ -z "$lid" ]; then warn "$PROGNAME: Searching for $*, nothing found."; fi
     mpvc_set_track "$lid" absolute
 }
 
 mpvc_search_remove() {
-    [ $# -lt 2 ] && return
+    if [ $# -lt 2 ]; then return; fi
     mode=$1; shift
     list=$(mpvc_search "$mode" "$1" | awk '{print $1}' | mpvc_tac )
-    [ -z "$list" ] && warn "$PROGNAME: Searching for $*, nothing found."
+    if [ -z "$list" ]; then warn "$PROGNAME: Searching for $*, nothing found."; fi
     for i in $list; do mpvc_remove_track "$i"; done
     QUIETFLAG="true"
 }
 
 mpvc_search_move() {
-    [ $# -lt 2 ] && return
+    if [ $# -lt 2 ]; then return; fi
     mode=$1; shift
     list=$(mpvc_search "$mode" "$1" | awk '{print $1}' | mpvc_tac )
-    [ -z "$list" ] && warn "$PROGNAME: Searching for $*, nothing found."
+    if [ -z "$list" ]; then warn "$PROGNAME: Searching for $*, nothing found."; fi
     for i in $list; do mpvc_move_track "$i" "$2"; done
     QUIETFLAG="true"
 }
@@ -683,7 +686,7 @@ mpvc_shuffle_playlist() {
         *) return;;
     esac
     echo "Playlist $1."
-    [ "$(mpvc_get loop-playlist)" = "no" ] && mpvc_toggle_loop "loop-playlist" yes
+    if [ "$(mpvc_get loop-playlist)" = "no" ]; then mpvc_toggle_loop "loop-playlist" yes; fi
 }
 
 mpvc_crop_playlist() {
@@ -693,7 +696,7 @@ mpvc_crop_playlist() {
 
 mpvc_clear_playlist() {
     # kill any running process of mpvc add
-    #quiet pgrep -f "mpvc add" && pkill -f "mpvc add"
+    #if quiet pgrep -f "mpvc add"; then pkill -f "mpvc add"; fi
     mpvc_crop_playlist
     mpvc_remove_track 0
     echo "Playlist cleared."
@@ -745,7 +748,7 @@ mpvc_chapter_list()
 mpvc_chapter_replay() { mpvc_chapter_set "$(mpvc_get chapter)"; }
 mpvc_chapter_next()   { mpvc_chapter_set $(( ( $(mpvc_get chapter) + 1 ) % $(mpvc_get chapter-list/count) )); }
 mpvc_chapter_prev()   { mpvc_chapter_set $(( ( $(mpvc_get chapter) - 1 ) % $(mpvc_get chapter-list/count) )); }
-mpvc_chapter_set()    { [ "$(mpvc_get "chapter-list/count")" -gt 0 ] && mpvc_set "chapter" "$1"; }
+mpvc_chapter_set()    { if [ "$(mpvc_get "chapter-list/count")" -gt 0 ]; then mpvc_set "chapter" "$1"; fi; }
 
 mpvc_chapter_search() { mpvc_nocolor mpvc_chapter_list | awk "/$*/ {print NR-1; exit};"; }
 mpvc_chapter_search_play()
@@ -787,7 +790,7 @@ mpvc_print_status() {
 }
 
 mpvc_print_status_final() {
-    [ "$QUIETFLAG" = "true" ] && return
+    if [ "$QUIETFLAG" = "true" ]; then return; fi
     # catches if mpv is idle or not
     if [ "$(mpvc_get idle-active)" = "true" ]; then
         warn "MPV on ${MPVC_SOCKET##$HOME/} is currently idle."; return
@@ -809,7 +812,7 @@ mpvc_tty_lines() {
 mpvc_get_terminal_height() {
     plpos="$1"
     lcount="$2"
-    [ "$plpos" = "null" ] && plpos=0
+    if [ "$plpos" = "null" ]; then plpos=0; fi
     lines=$(mpvc_tty_lines)
     rows=$((lines - ${MPVC_CLINE:-3}))
     half=$((rows / 2))
@@ -879,7 +882,7 @@ mpvc_mpv() { mpvc_startmpv --really-quiet --idle=once; }
 mpvc_startmpv() {
     if [ -z "$(mpvc_get idle-active)" ]; then
         mpvc_delay 0.1
-        [ -n "$(mpvc_get idle-active)" ] && return
+        if [ -n "$(mpvc_get idle-active)" ]; then return; fi
         echo "$PROGNAME: No running mpv found, starting mpv now"
         exec "$MPVC_MPV" --input-ipc-server="$MPVC_SOCKET" $MPVOPTIONS "$@" &
         mpvc_wait 0.5
@@ -896,15 +899,15 @@ main() {
     -c|--crop|crop|-C|--clear|clear|cmd|sockcmd|socklist|--socklist) ;;
     -a|add|append|-A|playnext|--playnext|mpv|--mpv|stash|--stash|--toggle|toggle|-q|--quiet) ;;
     load|--load|autoload|--autoload|lsplaylists|--lsplaylists|dbinit|--dbinit|dblist|--dblist) ;;
-    version|--version|-Q|--vid=no|-S) ;;
+    version|--version|-Q|--vid=no|-S|--socket) ;;
     help|--help|-h|long-help|--long-help|-H|--list-options) ;;
     *) mpvc_validate_socket;; # otherwise, validate socket
     esac
     for arg in "$@"; do
         # grab mpv options first if any
-        [ "$arg" = "--" ] && { MPVFLAG=true; shift; continue; }
-        [ "${MPVFLAG:-}" = "true" ] && { MPVOPTIONS="$MPVOPTIONS $arg"; shift; continue; }
-        [ $# -eq 0 ] && break
+        if [ "$arg" = "--" ]; then MPVFLAG=true; shift; continue; fi
+        if [ "${MPVFLAG:-}" = "true" ]; then MPVOPTIONS="$MPVOPTIONS $arg"; shift; continue; fi
+        if [ $# -eq 0 ]; then break; fi
         case "${1:-}" in
             # mpc compatibility layer
             play|start|resume)
@@ -912,7 +915,7 @@ main() {
                 case "${1:-}" in
                     '') ;;
                     $) mpvc_set_track "$(( $(mpvc_get playlist-count) - 1 ))" absolute;;
-                    *) isInt "${1:-}" && mpvc_set_track "$1" absolute;;
+                    *) if isInt "${1:-}"; then mpvc_set_track "$1" absolute; fi;;
                 esac
                 mpvc_always_play
             ;;
