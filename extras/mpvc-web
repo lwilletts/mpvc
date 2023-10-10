@@ -112,9 +112,9 @@ mpvc_web_index()
         </li>
         <li>
             mpvc chapter
-            <a href="?cmd=mpvc chapter-replay">replay</a>
-            <a href="?cmd=mpvc chapter-prev">prev</a>
-            <a href="?cmd=mpvc chapter-next">next</a>
+            <a href="?cmd=mpvc creplay">creplay</a>
+            <a href="?cmd=mpvc cprev">cprev</a>
+            <a href="?cmd=mpvc cnext">cnext</a>
         </li>
         <li>
             mpvc vol
@@ -247,8 +247,9 @@ mpvc_web()
         /GET \/\?cmd=mpvc%20repeat/       { system("mpvc -q repeat") }
         /GET \/\?cmd=mpvc%20single/       { system("mpvc -q single") }
 
-        /GET \/\?cmd=mpvc%20chapter-prev/ { system("mpvc chapter-prev") }
-        /GET \/\?cmd=mpvc%20chapter-next/ { system("mpvc chapter-next") }
+        /GET \/\?cmd=mpvc%20creplay/      { system("mpvc creplay") }
+        /GET \/\?cmd=mpvc%20cprev/        { system("mpvc cprev") }
+        /GET \/\?cmd=mpvc%20cnext/        { system("mpvc cnext") }
 
         /GET \/\?cli=mpvc/                {
             r=$0;
