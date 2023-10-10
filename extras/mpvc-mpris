@@ -106,7 +106,7 @@ main()
     if [ $# -lt 1 ]; then usage; fi
 
     mpris_name=$(mpris_detect_player)
-    if [ -z "${mpris_name}" ] && ! [ "$1" = "volget" -o "$1" = "volset" -o "$1" = "volup" -o "$1" = "voldown" -o "$1" = "volon" -o "$1" = "voloff" -o "$1" = "volmute" ]; then
+    if [ -z "${mpris_name}" ] && ! [ "$1" = "volstatus" -o "$1" = "volget" -o "$1" = "volset" -o "$1" = "volup" -o "$1" = "voldown" -o "$1" = "volon" -o "$1" = "voloff" -o "$1" = "volmute" ]; then
         usage "$PROGNAME: Error no player found that speaks MPRIS. Check that you started mpv with mpris.so in ~/.config/mpv/scripts/";
     fi
 
@@ -134,6 +134,7 @@ main()
     volup)     $PACTL set-sink-volume @DEFAULT_SINK@ +250 || mpris_set_volume "$cmd" ;;
     volset)    $PACTL set-sink-volume @DEFAULT_SINK@ "${2:-}" || mpris_set_volume "$cmd" "${2:-}";;
     volget)    $PACTL list sinks | awk '/^\s*Volume:/{print $5}';;
+    volstatus) $PACTL list sinks | awk '/^\s*Mute:/{print "mute:"$2}';;
 
     *) usage "$PROGNAME: unknown command: $cmd" ;;
     esac
