@@ -803,7 +803,7 @@ mpvc_print_status_final() {
 isInt() { printf '%d' "$1" >/dev/null 2>&1 && [ -n "$1" ]; }
 
 mpvc_tty_lines() {
-    tty=$(tty -s && tty || ps -hp $$ -o tty | sed 's|^|/dev/|' ) # sorry XXX
+    tty=$(if tty -s; then tty; else ps -hp $$ -o tty | sed 's|^|/dev/|'; fi) # sorry XXX
     lines=$(stty size -F "$tty")
     lines=${lines%% *}
     echo "$lines"
@@ -915,7 +915,7 @@ main() {
                 case "${1:-}" in
                     '') ;;
                     $) mpvc_set_track "$(( $(mpvc_get playlist-count) - 1 ))" absolute;;
-                    *) if isInt "${1:-}"; then mpvc_set_track "$1" absolute; fi;;
+                    *) mpvc_set_track "${1:-}" absolute;;
                 esac
                 mpvc_always_play
             ;;
