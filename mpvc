@@ -259,7 +259,7 @@ mpvc_cmdr() {
 
 mpvc_ecmdr() {
     ret=$(mpvc_cmdr "$@")
-    case "$ret" in *"success"*) ;; *) echo "$ret" ;; esac
+    case "$ret" in *"success"*) ;; *) echo "$ret"; return 1 ;; esac
 }
 
 mpvc_cmd()   { mpvc_cmdr "$@" | mpvc_getjson 'data'; }
@@ -518,8 +518,8 @@ mpvc_appendtrack() {
     if [ -n "$filename" ]; then
         # cache media here if media is found in local storage
         if [ "$MPVC_LOCAL_CACHE" = "true" ]; then filename=$(echo "$filename" | mpvc-fzf -C); fi
+        mpvc_ecmdr "loadfile" "$filename" "append-play" || return 1
         echo "Adding: $(mpvc_curl_cache_title_clean "$filename")"
-        quiet mpvc_cmd "loadfile" "$filename" "append-play"
     fi
 }
 
@@ -574,28 +574,19 @@ mpvc_move_track() {
     lpos=$(mpvc_get playlist-pos)
     lcount=$(mpvc_get playlist-count)
     if [ -z "${2:-}" ]; then srcpos=$lpos; dstpos=$1; else srcpos=$1; dstpos=$2; fi
-    if [ "$srcpos" = "$" ]; then srcpos="$lcount"; fi
     if [ "$dstpos" = "$" ]; then dstpos="$lcount"; fi
     #isInt "$srcpos" && isInt "$dstpos" || return 1
 
-    mpvc_ecmdr "playlist-move" "$srcpos" "$dstpos"
+    mpvc_ecmdr "playlist-move" "$srcpos" "$dstpos" || return 1
     #quietcheck mpvc_get_playlist
 }
 
 mpvc_remove_track() {
     lid=$1
-    if [ "$lid" = "current" ]; then
-        oquiet mpvc_cmd "playlist-remove" "$lid"
-        return;
-    fi
-    isInt "$lid" || return 1
-    lcount=$(mpvc_get playlist-count)
-    if [ -z "$lcount" ] || [ "$lid" -lt 0 ] || [ "$lid" -ge "$lcount" ]; then
-        warn "Item $lid is out of range of playlist."
-    fi
+    if [ "$lid" = "current" ]; then lid=$(mpvc_get playlist-pos); fi
     filename="$(mpvc_get_playlist_filename "$lid")"
-    oquiet mpvc_cmd "playlist-remove" "$lid"
-    quietcheck warn "$filename has been removed from the playlist."
+    mpvc_ecmdr "playlist-remove" "$lid" || return 1
+    quietcheck warn "$filename removed from playlist."
 }
 
 mpvc_always_play() {
@@ -611,7 +602,7 @@ mpvc_set_pause() {
 
 mpvc_toggle_mute() {
     if [ $# -gt 0 ]; then quiet mpvc_set "mute" "${1:-}"; return; fi
-    quiet mpvc_cmd "cycle" "mute"
+    mpvc_ecmdr "cycle" "mute"
 }
 
 mpvc_toggle_loop() {
@@ -676,8 +667,9 @@ mpvc_search_move() {
 }
 
 mpvc_shuffle_playlist() {
+    QUIETFLAG=true
     case "$1" in
-        shuffle|unshuffle) quiet mpvc_cmd "playlist-$1";;
+        shuffle|unshuffle) mpvc_ecmdr "playlist-$1" || return 1;;
         *) return;;
     esac
     echo "Playlist $1."
@@ -685,7 +677,7 @@ mpvc_shuffle_playlist() {
 }
 
 mpvc_crop_playlist() {
-    quiet mpvc_cmd "playlist-clear"
+    quiet mpvc_ecmdr "playlist-clear" || return 1
     quietcheck mpvc_get_playlist
 }
 
@@ -998,7 +990,7 @@ main() {
             csearch|--chapter-search|chapter-search)      shift; mpvc_chapter_search "${1:-}"; QUIETFLAG=true;;
             csearchplay|--chapter-searchplay|chapter-searchplay)      shift; mpvc_chapter_search_play "${1:-}"; QUIETFLAG=true;;
 
-            -k|--kill|kill)                  quiet mpvc_cmd "quit"; QUIETFLAG=true ;;
+            -k|--kill|kill)                  mpvc_ecmdr "quit"; QUIETFLAG=true ;;
             -K|--killall|killall)            quiet pkill -9 -f "$MPVC_MPV "; QUIETFLAG=true ;;
             -s|--stop|stop)                  mpvc_set_pause "yes"; mpvc_set_time "absolute" 0 ;;
             -P|--play)                       mpvc_always_play ;;
@@ -1009,8 +1001,8 @@ main() {
                --playlistjson|playlistjson)  mpvc_get_playlist_json ""        ;;
             -L|--loop|loop)                  mpvc_toggle_loop "loop-playlist" ;;
             -l|--loopfile|loopfile)          mpvc_toggle_loop "loop-file"     ;;
-            -z|--shuffle|shuffle)            mpvc_shuffle_playlist shuffle; QUIETFLAG=true;;
-            -Z|--unshuffle|unshuffle)        mpvc_shuffle_playlist unshuffle; QUIETFLAG=true;;
+            -z|--shuffle|shuffle)            mpvc_shuffle_playlist shuffle;;
+            -Z|--unshuffle|unshuffle)        mpvc_shuffle_playlist unshuffle;;
             -c|--crop|crop)                  mpvc_crop_playlist; QUIETFLAG=true;;
             -C|--clear|clear)                mpvc_clear_playlist; QUIETFLAG=true;;
             --delay|delay)                   mpvc_delay;;
