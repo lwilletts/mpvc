@@ -13,14 +13,6 @@ PROGURL="https://github.com/gmt4/mpvc"
 
 set -euf
 
-mpvc() { "$MPVC_BIN" "$@"; } # TBD
-mpvc_chapter_defaults()
-{
-    # config defaults
-    NO_COLOR="${NO_COLOR:-}"
-    MPVC_BIN="${0%%-chapter}"
-}
-
 # See https://ffmpeg.org/ffmpeg-formats.html#Metadata-1
 mpvc_chapter_file()
 {
@@ -98,7 +90,6 @@ usage()
 
 main()
 {
-    mpvc_chapter_defaults
     if [ $# -lt 1 ]; then usage; fi
 
     case "$1" in
