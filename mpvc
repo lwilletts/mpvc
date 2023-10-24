@@ -609,7 +609,7 @@ mpvc_toggle_loop() {
     property=${1:-}
     value=${2:-}
     case "$value" in
-        '')      quiet mpvc_cmd "cycle-values" "$property" "yes" "no" ;;
+        '')      mpvc_ecmdr "cycle-values" "$property" "yes" "no" ;;
         on|yes)  quiet mpvc_set "$property" yes ;;
         off|no)  quiet mpvc_set "$property" no  ;;
         *)       quiet mpvc_set "$property" "$value";;
@@ -857,8 +857,8 @@ mpvc_get_version() {
 }
 
 mpvc_idleloop() {
-    mpvc_cmd "unobserve_property" 1
-    mpvc_cmd "observe_property" 1 "$@"
+    #mpvc_ecmdr "unobserve_property" 1
+    #mpvc_ecmdr "observe_property" 1 "$@"
     $MPVC_SOCAT -t0 -,ignoreeof "$MPVC_SOCKET"
 }
 
@@ -948,8 +948,8 @@ main() {
             --dblist|dblist)                 shift; mpvc_dblist; return ;;
             --dbinit|dbinit)                 shift; mpvc_dbinit; return ;;
             --cycle|cycle)                   shift; mpvc_cycle "$@"; QUIETFLAG=true;;
-            --set|set|s)                     shift; mpvc_cmd set_property "$@"; return;;
-            --get|get|g)                     shift; mpvc_cmd get_property "${1:-}"; QUIETFLAG=true;;
+            --set|set|s)                     shift; mpvc_set "$@"; return;;
+            --get|get|g)                     shift; mpvc_get "${1:-}"; QUIETFLAG=true;;
             --sets|sets|ss)                  shift; mpvc_set "$@"; return;;
             --gets|gets|gs)                  shift; mpvc_get "${1:-}"; QUIETFLAG=true;;
             --setr|setr|sr)                  shift; mpvc_setr "$@"; return;;
