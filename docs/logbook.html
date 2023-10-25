@@ -83,6 +83,7 @@ Logbook Entries
     <li> <a href="#logbook-20230721">#20230721 Introducing mpvc-web: a mpvc-tui like hack for the web/browser</a></li>
     <li> <a href="#logbook-20230915">#20230915 Introducing mpvc-autostart: automatic start/stop based on presence</a></li>
     <li> <a href="#logbook-20230916">#20230916 On mpvc usage patterns for playing music/videos</a></li>
+    <li> <a href="#logbook-20231026">#20231026 On observing mpv property changes</a></li>
 </ul>
 
 <hr />
@@ -215,7 +216,7 @@ Some usage examples of the above are:
 <li><code>mpvc idleloop | awk '/playback-restart/ {system("notify-send -u normal -i dialog-warning \"$(mpvc)\"");print}'</code>: Send a notification when the track changes.</li>
 </ul>
 
-The <code>mpvc idleloop</code> is used by <code>mpvc-tui -n</code>, to react to mpv events and raise <code>libnotify</code> desktop notifications on track changes as shown in the example above.
+The <code>mpvc-tui -n</code> uses <code>mpvc idleloop</code> to raise desktop notifications, as shown above.
 </p>
 
 <h3 id="logbook-20221227">On using mpv together with the fzf fuzzy finder, 27 Dec 2022</h3>
@@ -465,12 +466,22 @@ This approach has some limitations, lets say, sometimes you want to fully disabl
     <em>Note</em> that, as always, this is only a personal take on mpvc usage patterns at a point in time, that will probably evolve, and is limited to a personal take on this topic, since others can have completely different usage patterns.
 </p>
 
+<h3 id="logbook-20231026">On observing mpv property changes, 26 Oct 2023</h3>
+<p>
+Recently basic support for <code>mpvc observe</code> landed on <code>mpvc</code>, to observe mpv property changes. This can be used as show below to watch for volume changes:
+<pre>
+$ mpvc observe volume | awk '/property-change/'
+{"event":"property-change","id":1,"name":"volume","data":"20.000000"}
+{"event":"property-change","id":1,"name":"volume","data":"21.000000"}
+</pre>
+</p>
+
 <!-- SOF -->
 
 <hr/>
 <p>
 <span>
-    <em>Last-Modified: Saturday, 16 September 2023 by <a href="https://gmt4.github.io">gmt4</a></em>
+    <em>Last-Modified: Thursday, 26 Octorber 2023 by <a href="https://gmt4.github.io">gmt4</a></em>
 </span>
 <span style="float: right;">
     <em>Powered by #HTML 🧡 💚 💙 </em>
