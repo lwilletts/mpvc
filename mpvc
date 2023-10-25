@@ -567,7 +567,7 @@ mpvc_set_track() {
         absolute) newpos=$(( $1 % lcount )) ;;
         relative) newpos=$(( (lpos + $1) % lcount )) ;;
     esac
-    quiet mpvc_set "playlist-pos" "$newpos"
+    mpvc_set "playlist-pos" "$newpos"
 }
 
 mpvc_move_track() {
@@ -594,15 +594,11 @@ mpvc_always_play() {
     if [ "$(mpvc_get playlist-pos)" = "null" ]; then
         mpvc_set_track 0 absolute; return
     fi
-    mpvc_set_pause "no"
-}
-
-mpvc_set_pause() {
-    quiet mpvc_set "pause" "${1:-}"
+    mpvc_set "pause" "no"
 }
 
 mpvc_toggle_mute() {
-    if [ $# -gt 0 ]; then quiet mpvc_set "mute" "${1:-}"; return; fi
+    if [ $# -gt 0 ]; then mpvc_set "mute" "${1:-}"; return; fi
     mpvc_ecmdr "cycle" "mute"
 }
 
@@ -611,9 +607,9 @@ mpvc_toggle_loop() {
     value=${2:-}
     case "$value" in
         '')      mpvc_ecmdr "cycle-values" "$property" "yes" "no" ;;
-        on|yes)  quiet mpvc_set "$property" yes ;;
-        off|no)  quiet mpvc_set "$property" no  ;;
-        *)       quiet mpvc_set "$property" "$value";;
+        on|yes)  mpvc_set "$property" yes ;;
+        off|no)  mpvc_set "$property" no  ;;
+        *)       mpvc_set "$property" "$value";;
     esac
 }
 
@@ -678,7 +674,7 @@ mpvc_shuffle_playlist() {
 }
 
 mpvc_crop_playlist() {
-    quiet mpvc_ecmdr "playlist-clear" || return 1
+    mpvc_ecmdr "playlist-clear" || return 1
     quietcheck mpvc_get_playlist
 }
 
@@ -907,17 +903,17 @@ main() {
             vol|volume)     shift; mpvc_set_volume "${1:-}" ;;
             repeat)         shift; mpvc_toggle_loop "loop-playlist" "${1:-}" ;;
             single)         shift; mpvc_toggle_loop "loop-file" "${1:-}" ;;
-            pause)          mpvc_set_pause "yes"       ;;
+            pause)          mpvc_set "pause" "yes" ;;
             next|--next)    mpvc_set_track 1 relative ;;
             prev|--prev)    mpvc_set_track -1 relative;;
             move|mv)        shift; mpvc_move_track "${1:-}" "${2:-}" ;;
-            mute)           mpvc_toggle_mute yes     ;;
-            unmute)         mpvc_toggle_mute no      ;;
+            mute)           mpvc_toggle_mute yes ;;
+            unmute)         mpvc_toggle_mute no ;;
             pretty)         die 1 "$PROGNAME: $* not implemented" ;;
             find)           die 1 "$PROGNAME: $* not implemented" ;;
 
             add|-a|--append)    shift; mpvc_appendtracks "$@"; ;;
-            #replace|--replace) mpvc_replacetracks "$@" ;;
+            #replace|--replace) shift; mpvc_replacetracks "$@" ;;
 
             # consume) to implement # add on|off toggle
             # random) MPV doesn't have this control option!
@@ -991,7 +987,7 @@ main() {
 
             -k|--kill|kill)                  mpvc_ecmdr "quit"; QUIETFLAG=true ;;
             -K|--killall|killall)            quiet pkill -9 -f "$MPVC_MPV "; QUIETFLAG=true ;;
-            -s|--stop|stop)                  mpvc_set_pause "yes"; mpvc_set_time "absolute" 0 ;;
+            -s|--stop|stop)                  mpvc_set "pause" "yes"; mpvc_set_time "absolute" 0 ;;
             -P|--play)                       mpvc_always_play ;;
             -p|--toggle|toggle)              mpvc_cycle "pause" ;;
             -m|--mute)                       mpvc_toggle_mute                 ;;
