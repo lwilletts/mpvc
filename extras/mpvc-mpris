@@ -11,6 +11,8 @@ PROGVERSION="v1.4"
 PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
 
+set -euf
+
 # globals really
 mpris_defaults()
 {
@@ -25,11 +27,9 @@ mpris_defaults()
     playerPath=org.mpris.MediaPlayer2.Player
     MPVC_MPRIS_PLAYERS=${MPVC_MPRIS_PLAYERS:-"mpv mpd vlc"}
 
-    if [ -z "$DBUS" ]; then usage "$PROGNAME: Error no dbus-send found (required)"; fi
-    if [ -z "$PACTL" ]; then usage "$PROGNAME: Error no pactl found (required)"; fi
+    if [ -z "${DBUS:-}" ]; then usage "$PROGNAME: Error no dbus-send found (required)"; fi
+    if [ -z "${PACTL:-}" ]; then usage "$PROGNAME: Error no pactl found (required)"; fi
 }
-
-set -euf
 
 mpris_cmd()
 {
