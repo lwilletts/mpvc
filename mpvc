@@ -254,11 +254,10 @@ mpvc_socklist() {
 }
 
 mpvc_cmdr_() {
-    command=$(for i in "$@"; do printf "$q$i$q, "; done)
+    command=$(for i in "$@"; do printf "$q$i$q, "; done);
     echo "{ \"command\": [ $command ] }";
 }
 mpvc_cmdr() { equiet mpvc_sockcmd_ "$(q='"' mpvc_cmdr_ "$@")"; }
-
 mpvc_ecmdr() {
     ret=$(mpvc_cmdr "$@")
     case "$ret" in *"success"*) ;; *) echo "$ret"; return 1 ;; esac
@@ -858,14 +857,8 @@ mpvc_get_version() {
     "$MPVC_MPV" --version
 }
 
-mpvc_idleloop() {
-    $MPVC_SOCAT -t0 -,ignoreeof "$MPVC_SOCKET"
-}
-
-mpvc_observe_property() {
-    #mpvc_ecmdr "unobserve_property" 1
-    q='' mpvc_cmdr_ "\"observe_property\"" 1 "\"$@\"" | mpvc_idleloop
-}
+mpvc_idleloop() { $MPVC_SOCAT -t0 -,ignoreeof "$MPVC_SOCKET"; }
+mpvc_observe_property() { q='' mpvc_cmdr_ '"observe_property_string"' 1 "\"$1\"" | mpvc_idleloop; }
 
 mpvc_delay() { sleep "${1:-0.1}"; }
 mpvc_wait()  { until [ -n "$(mpvc_get idle-active)" ]; do mpvc_delay "${1:-}"; done; }
