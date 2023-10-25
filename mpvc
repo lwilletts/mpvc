@@ -73,7 +73,8 @@ EOF
     togglew                 : Toggle MPV window property.
     togglei                 : Toggle MPV idle property.
     cycle                   : Toggle/Cycle through MPV property values.
-    idleloop                : Listen to MPV player events on $PROGNAME socket.
+    idleloop                : Listen to MPV events on $PROGNAME socket.
+    observe                 : Observe property in MPV events on $PROGNAME socket.
     search                  : Search the playlist by filename/url.
     -n | --searchplay       : Search the playlist by filename and play the first match.
     -N | --searchPlay       : Search the playlist by title and play the first match.
@@ -252,10 +253,11 @@ mpvc_socklist() {
     done;
 }
 
-mpvc_cmdr() {
-    command=$(for i in "$@"; do printf "\"$i\", "; done)
-    equiet mpvc_sockcmd_ "{ \"command\": [ $command ] }"
+mpvc_cmdr_() {
+    command=$(for i in "$@"; do printf "$q$i$q, "; done)
+    echo "{ \"command\": [ $command ] }";
 }
+mpvc_cmdr() { equiet mpvc_sockcmd_ "$(q='"' mpvc_cmdr_ "$@")"; }
 
 mpvc_ecmdr() {
     ret=$(mpvc_cmdr "$@")
@@ -857,9 +859,12 @@ mpvc_get_version() {
 }
 
 mpvc_idleloop() {
-    #mpvc_ecmdr "unobserve_property" 1
-    #mpvc_ecmdr "observe_property" 1 "$@"
     $MPVC_SOCAT -t0 -,ignoreeof "$MPVC_SOCKET"
+}
+
+mpvc_observe_property() {
+    #mpvc_ecmdr "unobserve_property" 1
+    q='' mpvc_cmdr_ "\"observe_property\"" 1 "\"$@\"" | mpvc_idleloop
 }
 
 mpvc_delay() { sleep "${1:-0.1}"; }
@@ -959,6 +964,7 @@ main() {
             --togglew|togglew)               shift; mpvc_cycle "force-window" ;;
             --togglei|togglei)               shift; mpvc_cycle "idle" ;;
             --idleloop|idleloop)             shift; mpvc_idleloop "${1:-}"; QUIETFLAG=true ;;
+            --observe|observe)               shift; mpvc_observe_property "${1:-}"; QUIETFLAG=true ;;
             --cmd|cmd)                       shift; mpvc_cmd "$@"; return ;;
             --cmdr|cmdr)                     shift; mpvc_cmdr "$@"; return ;;
             --sockcmd|sockcmd)               shift; mpvc_sockcmd_ "${1:-}"; QUIETFLAG=true ;;
