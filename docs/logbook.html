@@ -214,6 +214,8 @@ Some usage examples of the above are:
 <li><code>mpvc idleloop | awk '/playback-restart/ {print}'</code>: select only the "playback-restart" mpv events.</li>
 <li><code>mpvc idleloop | awk '/playback-restart/ {system("notify-send -u normal -i dialog-warning \"$(mpvc)\"");print}'</code>: Send a notification when the track changes.</li>
 </ul>
+
+The <code>mpvc idleloop</code> is used by <code>mpvc-tui -n</code>, to react to mpv events and raise <code>libnotify</code> desktop notifications on track changes as shown in the example above.
 </p>
 
 <h3 id="logbook-20221227">On using mpv together with the fzf fuzzy finder, 27 Dec 2022</h3>
