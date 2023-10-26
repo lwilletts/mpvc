@@ -343,13 +343,20 @@ mpvc setr msg-level all=error
 mpvc setr msg-level all=warn
 mpvc setr msg-level all=info
 
-# Some cools af filters
+# Some af filters
 mpvc cmdr af toggle "@flanger:lavfi=[flanger=delay=1]"
 mpvc cmdr af toggle "@tremolo:lavfi=[tremolo]"
 mpvc cmdr af toggle "@vibrato:lavfi=[vibrato]"
 mpvc cmdr af toggle "@apulsator:lavfi=[apulsator]"
 mpvc cmdr af toggle "@aphaser:lavfi=[aphaser]"
 mpvc cmdr af toggle "@aecho:lavfi=[aecho=in_gain=0.9:out_gain=0.9:delays=1:decays=0.9]"
+
+# Some vf filters
+mpvc cmdr vf toggle "@life:lavfi=[life]"
+mpvc cmdr vf toggle "@showvolume:lavfi=[showvolume]"
+mpvc cmdr vf toggle "@showwaves:lavfi=[showwaves]"
+mpvc cmdr vf toggle "@showspectrum:lavfi=[showspectrum]"
+mpvc cmdr vf toggle "@avectorscope:lavfi=[avectorscope]"
 </pre>
 </p>
 
