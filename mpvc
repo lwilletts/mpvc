@@ -983,7 +983,7 @@ main() {
             clist|--chapter-list|chapter-list)            mpvc_chapter_list "numbered"; QUIETFLAG=true;;
             clistj|--chapter-list-json|chapter-list-json) mpvc_chapter_list_json; QUIETFLAG=true;;
             csearch|--chapter-search|chapter-search)      shift; mpvc_chapter_search "${1:-}"; QUIETFLAG=true;;
-            csearchplay|--chapter-searchplay|chapter-searchplay)      shift; mpvc_chapter_search_play "${1:-}"; QUIETFLAG=true;;
+            csplay|csearchplay|--chapter-searchplay|chapter-searchplay)      shift; mpvc_chapter_search_play "${1:-}"; QUIETFLAG=true;;
 
             -k|--kill|kill)                  mpvc_ecmdr "quit"; QUIETFLAG=true ;;
             -K|--killall|killall)            quiet pkill -9 -f "$MPVC_MPV "; QUIETFLAG=true ;;
