@@ -199,7 +199,6 @@ mpvc_curl_cache()
 
 mpvc_curl_cache_json()
 {
-    # query invidi.us API
     mpvc_curl_cache -sL "https://youtube.com/oembed?url=$1"
 }
 
@@ -291,7 +290,7 @@ mpvc_get_playlist_once() {
         awk -v numbered="${1:-}" '
         {
             gsub("^[ \t]*", " ")
-            if (length(numbered)>0)
+            if (length(numbered) > 0)
                 printf "%2d %s\n", NR-1, $0
             else
                 print
@@ -787,7 +786,7 @@ mpvc_print_status_final() {
 isInt() { printf '%d' "$1" >/dev/null 2>&1 && [ -n "$1" ]; }
 
 mpvc_tty_lines() {
-    tty=$(if tty -s; then tty; else ps -hp $$ -o tty | sed 's|^|/dev/|'; fi) # sorry XXX
+    tty=$(if tty -s; then tty; else ps -hp $$ -o tty | sed 's|^|/dev/|'; fi)
     lines=$(stty size -F "$tty")
     lines=${lines%% *}
     echo "$lines"
