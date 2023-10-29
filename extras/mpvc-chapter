@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # @file mpvc-chapter
-# @description mpvc chapter
+# @description mpvc chapter auxiliar cmds (see mpvc chapter-list instead) 
 # @author gmt4 <gmt4 at github.com> (c) Copyright 2022 MIT
 # @url github.com/gmt4/mpvc
 #
@@ -13,16 +13,8 @@ PROGURL="https://github.com/gmt4/mpvc"
 
 set -euf
 
-mpvc() { "$MPVC_BIN" "$@"; } # TBD
-chapter_defaults()
-{
-    # config defaults
-    NO_COLOR="${NO_COLOR:-}"
-    MPVC_BIN="${0%%-chapter}"
-}
-
 # See https://ffmpeg.org/ffmpeg-formats.html#Metadata-1
-chapter_file()
+mpvc_chapter_file()
 {
     chaptersdir="$HOME/.config/mpvc/chapters/"
     chaptersfile="$chaptersdir/$(mpvc get path | sed 's/\//-/g; s/ /_/g; s/[&]//')"
@@ -32,9 +24,9 @@ chapter_file()
 
 # generate a ffmpeg metadata file with chapters
 # loadable with: mpvc set chapters-file chapters.txt
-chapter_add()
+mpvc_chapter_add()
 {
-    chaptersfile=$(chapter_file)
+    chaptersfile=$(mpvc_chapter_file)
 
     path=$(mpvc get path)
     timepos=$(mpvc get time-pos)
@@ -78,148 +70,32 @@ EOF
     #cat "$chaptersfile"
 }
 
-chapter_load()
+mpvc_chapter_load()
 {
     track=$(mpvc get playlist-pos)
     timepos=$(mpvc get time-pos)
-    mpvc set chapters-file "$(chapter_file)"
+    mpvc set chapters-file "$(mpvc_chapter_file)"
     mpvc play "$track"
     mpvc delay set time-pos "$timepos"
-}
-
-chapter_info()
-{
-    echo "mpvc set chapter $(mpvc gets chapter)"
-    echo "mpvc set chapters $(mpvc gets chapters)"
-    echo "mpvc set ordered-chapters $(mpvc gets ordered-chapters)"
-    echo "mpvc set ordered-chapters-files $(mpvc gets ordered-chapters-files)"
-    echo "mpvc set chapters-file $(mpvc gets chapters-file)"
-}
-
-chapter_list_json()
-{
-     mpvc getr chapter-list |
-         grep -o '"data":\[.*\]' |
-         sed -e 's/^"data"://;' \
-             -e 's|{"title"|\n    {"title"|g;' \
-             -e '/^\[\]$/ !s/]$/\n]/;'
-         #    -e 's/","/", "/g; s/":/": /g'
-}
-
-chapter_list()
-{
-    numbered="${1:-}"
-    cchapter=$(mpvc get chapter)
-
-    chapter_list_json |
-        grep -o '"title":"[^"]*' | sed 's/"title":"//;' |
-        awk -v no_color="$NO_COLOR" -v numbered="$numbered" -v cchapter="$cchapter" '
-        {
-            chapternr = NR-1
-            if (cchapter == chapternr)
-            {
-                if (no_color)
-                {
-                    if (numbered) printf("%2d  %s\n", chapternr, $0);
-                    else printf("%s\n", $0);
-                }
-                else
-                {
-                    if (numbered) printf("%2d  \033[7m%s\033[0m\n", chapternr, $0);
-                    else printf("\033[7m%s\033[0m\n", $0);
-                }
-            }
-            else
-            {
-                if (numbered) printf("%2d  %s\n", chapternr, $0);
-                else printf("%s\n", $0);
-            }
-        }'
-}
-
-chapter_next()
-{
-    chapter=$(mpvc get chapter)
-    chapters=$(mpvc get chapters)
-    chapter_set $(( ( chapter + 1 )  % chapters ))
-}
-
-chapter_prev()
-{
-    chapter=$(mpvc get chapter)
-    chapters=$(mpvc get chapters)
-    chapter_set $(( ( chapter - 1 )  % chapters ))
-}
-
-chapter_set()
-{
-    chapters=$(mpvc get chapters)
-    if [ "$chapters" -eq 0 ]; then return; fi
-    mpvc set "chapter" "$1"
-}
-
-chapter_replay()
-{
-    chapter_set "$(mpvc gets chapter)"
-}
-
-chapter_search()
-{
-    chapter_list | awk "/$*/ {print NR-1; exit}"
-}
-
-chapter_search_play()
-{
-    chapter=$(chapter_search "$@")
-    if [ -z "$chapter" ]; then return; fi
-    mpvc set "chapter" "$chapter"
-}
-
-chapter_status()
-{
-    mpvc cmd expand-text '${chapter} (${=chapter:NA}/${chapters:NA})'
 }
 
 usage()
 {
     echo "usage: $PROGNAME args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
-    echo "  status    : Show chapters status"
-    echo "  list      : List chapters (property chapter-file)"
-    echo "  info      : Show chapters info"
     echo "  file      : Show current ffmetadata chapter-file"
     echo "  load      : Load current ffmetadata chapter-file"
     echo "  add       : Add new chapter to current ffmetadata chapter-file"
-    echo "  play      : Play the given chapter number (property chapter)"
-    echo "  replay    : Replay the current chapter number (property chapter)"
-    echo "  next      : Jump to next chapter (property chapter)"
-    echo "  prev      : Jump to prev chapter (property chapter)"
-    echo "  search    : Search the chapterlist."
-    echo "  searchplay: Search the chapterlist and play the first match."
     exit;
 }
 
 main()
 {
-    chapter_defaults
     if [ $# -lt 1 ]; then usage; fi
 
     case "$1" in
-
-    -i | list)       shift; chapter_list "numbered" "$@";;
-    -I | listnum)    shift; chapter_list "numbered" "$@";;
-    -c | search)     shift; chapter_search "$@";;
-    -C | searchplay) shift; chapter_search_play "$@";;
-
-    json)   shift; chapter_list_json "$@";;
-    file)   shift; chapter_file "$@";;
-    load)   shift; chapter_load "$@";;
-    add)    shift; chapter_add "$@";;
-    info)   shift; chapter_info "$@";;
-    next)   shift; chapter_next "$@";;
-    prev)   shift; chapter_prev "$@";;
-    play)   shift; chapter_set "$@";;
-    replay) shift; chapter_replay "$@";;
-    status) shift; chapter_status "$@";;
+    file)   shift; mpvc_chapter_file "$@";;
+    load)   shift; mpvc_chapter_load "$@";;
+    add)    shift; mpvc_chapter_add "$@";;
     help) usage;;
     *) usage;;
     esac

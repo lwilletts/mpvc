@@ -37,12 +37,12 @@ mpvc_config()
         fi
     done
 
-    echo "Fetch yt-dlp"
-    (
-        cd "$BINDIR"
-        curl -fsSL -O "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp"
-        chmod a+rx yt-dlp
-    )
+    for bin in "yt-dlp"
+    do
+        echo "Fetch $bin"
+        curl -fsSL -o "$BINDIR/$bin" "https://github.com/$bin/$bin/releases/latest/download/$bin"
+        chmod a+rx "$BINDIR/$bin"
+    done
 }
 
 mpvc_fetch()

@@ -176,9 +176,9 @@ mpvctui_fzf_playlist()
 mpvctui_fzf_chapterlist()
 {
     len=$(mpvc gets chapter-list/count)
-    ( if [ -z "$len" ]; then echo; else mpvc-chapter list; fi) |
+    ( if [ -z "$len" ]; then echo; else mpvc chapter-list; fi) |
         mpvctui_fzf_preview --prompt="(chapter) " \
-        --bind='ctrl-o:execute-silent(mpvc-chapter play {n} &)'
+        --bind='ctrl-o:execute-silent(mpvc set chapter {n} &)'
 }
 
 mpvctui_fzf_ddg()

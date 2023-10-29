@@ -78,7 +78,7 @@ Distro packages:
 
 - Arch Linux package: `pacaur -y mpvc-git` [mpvc-git](https://aur.archlinux.org/packages/mpvc-git)
 - Gentoo Linux package: `emerge mpvc` [mpvc](https://gitlab.com/xy2_/osman)
-- Nix package: `nix-env -i mpvc` [mpvc](http://github.com/nixos/nixpkgs/applications/misc/mpvc)
+- Nix package: `nix-env -i mpvc` [mpvc](http://github.com/nixos/nixpkgs/tree/master/pkgs/applications/misc/mpvc)
 
 ## Usage
 

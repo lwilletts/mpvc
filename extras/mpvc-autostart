@@ -13,30 +13,35 @@ PROGURL="https://github.com/gmt4/mpvc"
 
 set -euf
 
-# monitor the LAN IP of a device (eg your phone): so if device is present audio is resumed, otherwise, audio is paused.
-mpvc_pingscan()
+mpvc_pingcheck() { ping -w 5 -c 5 $@ | awk 'NR == 2 && /time=/ { sub(":.*time=",": time="); print }'; }
+mpvc_btcheck()   { hcitool scan | awk "/$@/ {print}"; }
+
+# monitor presence of your phone (eg LAN IP/BT): if device is present resume audio, otherwise, pause audio.
+mpvc_autoscan()
 {
     [ $# -le 0 ] && exit
     target="$1"
+    CHECK=${CHECK:-mpvc_pingcheck}
     PERIOD=${PERIOD:-300}
     NCHECK=${NCHECK:-3}
+    MPVC_HOURMIN=${MPVC_HOURMIN:-4}
+    MPVC_HOURMAX=${MPVC_HOURMAX:-20}
     ncheck=0
 
-    echo "# $PROGNAME mpvc pingscan PERIOD=$PERIOD NCHECK=$NCHECK $@"
+    echo "# $PROGNAME $@ CHECK=$CHECK PERIOD=$PERIOD NCHECK=$NCHECK"
     while sleep ${PERIOD}
     do
         hour=$(date +%_H)
         pause=$(mpvc -q get pause || true)
-        check=$(ping -w 5 -c 5 $target | awk 'NR == 2 && /time=/ {print}')
-        echo "# $(date -Imin) $PROGNAME PERIOD=$PERIOD NCHECK=$NCHECK pause=$pause c=${#check} n=${ncheck} $check"
-        if [ "$hour" -ge 5 -a "$hour" -lt 20 ]
+        check=$($CHECK $target)
+        echo "# $(date -Imin) PERIOD=$PERIOD NCHECK=$NCHECK pause=$pause c=${#check} n=${ncheck} $check" # $@
+        if [ "$hour" -ge ${MPVC_HOURMIN} -a "$hour" -lt ${MPVC_HOURMAX} ]
         then
             ncheck=$(( ( $ncheck $(if [ -n "$check" ]; then echo +; else echo -; fi) 1 ) % ( $NCHECK + 1 ) ))
             case "$ncheck" in
             $NCHECK|2|1) mpvc -q resume;; # +n pings up: resume
             -$NCHECK)    mpvc -q pause ;; # -n pings down: pause
             esac
-            #[ "$ncheck" -eq "-$NCHECK" -a "$pause" = "true" ] && ncheck=0
         fi
     done
 }
@@ -44,7 +49,7 @@ mpvc_pingscan()
 usage()
 {
     echo "usage: $PROGNAME args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
-    echo "example: $PROGNAME 192.168.0.2 # the LAN IP of your tablet/phone";
+    echo "example: $PROGNAME 192.168.0.2 # your tablet/phone LAN IP";
     exit;
 }
 
@@ -52,7 +57,7 @@ main()
 {
     [ $# -lt 1 ] && usage
 
-    mpvc_pingscan "$@"
+    mpvc_autoscan "$@"
 }
 
 main "$@"

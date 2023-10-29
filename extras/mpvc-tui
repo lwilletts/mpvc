@@ -149,7 +149,6 @@ mpvctui_input()
         'mpvc '*) QUIETFLAG=true $cmd;;
         'mpvc-tui '*) $cmd;;
         'mpvc-fzf '*) $cmd;;
-        'mpvc-chapter '*) $cmd;;
         exit|quit|q) exit;;
         *) echo 'mpvc: Type commands at "mpvc:" prompt, "q" to quit';;
     esac
@@ -180,6 +179,7 @@ mpvctui_mouse()
         mpvctui_mouse_buttons
     done
 }
+
 mpvctui_mouse_buttons()
 {
     # groups: flags play chapter seek volume
@@ -198,7 +198,6 @@ mpvctui_mouse_events()
 {
     # check if $TERM supports mouse
 
-    #stty -echo
     stty -icanon
     printf "\e[?1002h"
 
@@ -211,6 +210,8 @@ mpvctui_mouse_events()
     line=$(xxd -l 6 -g 2 -p)
     case "$line" in
     1b5b4d20*) # btn1 press
+        offsetx=0
+        offsety=0
         coords=${line##1b5b4d20}
         coordx=${coords%%??}
         coordy=${coords##??}
@@ -219,29 +220,29 @@ mpvctui_mouse_events()
         posy=$((0x${coordy} - 0x21))
         #echo "posxy $posx/$(tput cols) $posy/$(tput lines)"
         case "$posx,$posy" in
-            0,0) mpvc -q --mute;;
-            1,0) mpvc -q toggle;;
-            2,0) mpvc -q cycle video;;
-            3,0) mpvc -q cycle cache;;
-            4,0) mpvc -q repeat;;
-            5,0) mpvc -q single;;
-            6,0) mpvc -q cycle idle;;
+            0,$offsety) mpvc -q --mute;;
+            1,$offsety) mpvc -q toggle;;
+            2,$offsety) mpvc -q cycle video;;
+            3,$offsety) mpvc -q cycle cache;;
+            4,$offsety) mpvc -q repeat;;
+            5,$offsety) mpvc -q single;;
+            6,$offsety) mpvc -q cycle idle;;
 
-            8,0) mpvc -q prev;;
-            9,0) mpvc -q play "$(mpvc get playlist-pos)";;
-           10,0) mpvc -q next;;
+            8,$offsety) mpvc -q prev;;
+            9,$offsety) mpvc -q play "$(mpvc get playlist-pos)";;
+           10,$offsety) mpvc -q next;;
 
-           12,0) mpvc-chapter prev;;
-           13,0) mpvc-chapter replay;;
-           14,0) mpvc-chapter next;;
+           12,$offsety) mpvc chapter-prev;;
+           13,$offsety) mpvc chapter-replay;;
+           14,$offsety) mpvc chapter-next;;
 
-           16,0) mpvc -q seek -30;;
-           17,0) mpvc -q time 0;;
-           18,0) mpvc -q seek +60;;
+           16,$offsety) mpvc -q seek -30;;
+           17,$offsety) mpvc -q time 0;;
+           18,$offsety) mpvc -q seek +60;;
 
-           20,0) mpvc -q vol -10;;
-           21,0) mpvc -q vol 70;;
-           22,0) mpvc -q vol +10;;
+           20,$offsety) mpvc -q vol -10;;
+           21,$offsety) mpvc -q vol 70;;
+           22,$offsety) mpvc -q vol +10;;
         esac
     ;;
     1b5b4d23*) # btn1 release
