@@ -36,7 +36,7 @@ EOF
     -j | --track            : Go forwards/backwards through the playlist queue.
     -J | --tracknum         : Jump to playlist item number.
     -A | --playnext         : Add media to playlist after the current track.
-    -N | --playnow          : Add media to playlist after the current track, and play it.
+    -n | --playnow          : Add media to playlist after the current track, and play it.
     -o | --save             : Save current playlist to given path.
     -l | --load             : Load playlist from given path (stdin if none is specified).
     -o | --autosave         : Auto save current playlist to ${MPVC_PLAYLIST##$HOME/}.
@@ -77,8 +77,8 @@ EOF
     idleloop                : Listen to MPV events on $PROGNAME socket.
     observe                 : Observe property in MPV events on $PROGNAME socket.
     search                  : Search the playlist by filename/url.
-    -n | --searchplay       : Search the playlist by filename and play the first match.
-    -N | --searchPlay       : Search the playlist by title and play the first match.
+    searchplay|--searchplay : Search the playlist by filename and play the first match.
+    searchPlay|--searchPlay : Search the playlist by title and play the first match.
     -R | --searchrm         : Search the playlist and remove matching entries.
     -M | --searchmv         : Search the playlist and move matching entries.
     stash                   : Manage mpv playing state as in git-stash(1)
@@ -883,7 +883,7 @@ main() {
     ytquery*) ;;
     -k|--kill|kill|-K|--killall|killall) ;;
     -c|--crop|crop|-C|--clear|clear|cmd|sockcmd|socklist|--socklist) ;;
-    -a|add|append|-A|playnext|--playnext|-N|playnow|--playnow|mpv|--mpv|stash|--stash|--toggle|toggle|-q|--quiet) ;;
+    -a|add|append|-A|playnext|--playnext|-n|playnow|--playnow|mpv|--mpv|stash|--stash|--toggle|toggle|-q|--quiet) ;;
     load|--load|autoload|--autoload|lsplaylists|--lsplaylists|dbinit|--dbinit|dblist|--dblist) ;;
     version|--version|-Q|--vid=no|-S|--socket) ;;
     help|--help|-h|long-help|--long-help|-H|--list-options) ;;
@@ -934,7 +934,7 @@ main() {
             -J|--tracknum|tracknum)          shift; mpvc_set_track "${1:-}" absolute  ;;
             -r|--remove|rm|remove|del)       shift; mpvc_remove_track "${1:-}"; QUIETFLAG=true;;
             -A|--playnext|playnext)          shift; mpvc_play_next "${1:-}" ;;
-            -N|--playnow|playnow)            shift; mpvc_play_now "${1:-}" ;;
+            -n|--playnow|playnow)            shift; mpvc_play_now "${1:-}" ;;
             -o|--save|save)                  shift; mpvc_save_playlist "${1:-}" ;;
             --load|load)                     shift; mpvc_load_playlist      ;;
 
