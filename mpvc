@@ -35,13 +35,14 @@ EOF
     -f | --format           : Enter a formatting string.
     -j | --track            : Go forwards/backwards through the playlist queue.
     -J | --tracknum         : Jump to playlist item number.
-    -A | --playnext         : Add files to playlist after the current track.
+    -A | --playnext         : Add media to playlist after the current track.
+    -N | --playnow          : Add media to playlist after the current track, and play it.
     -o | --save             : Save current playlist to given path.
     -l | --load             : Load playlist from given path (stdin if none is specified).
     -o | --autosave         : Auto save current playlist to ${MPVC_PLAYLIST##$HOME/}.
     -l | --autoload         : Auto load playlist from ${MPVC_PLAYLIST##$HOME/}.
     -l | --lsplaylists      : List playlist from ${MPVC_PLAYLIST##$HOME/}.
-    -c | --crop             : Clear the playlist except for the file currently playing.
+    -c | --crop             : Clear the playlist except for the media currently playing.
     -z | --shuffle          : Shuffle the current playlist.
     -l | --loop             : Loop currently playing playlist.
     -L | --loopfile         : Loop currently playing file.
@@ -532,6 +533,11 @@ mpvc_appendtracks() {
     done
 }
 
+mpvc_play_now() {
+    mpvc_play_next "$@"
+    mpvc_set_track 1 relative
+}
+
 mpvc_play_next() {
     QUIETFLAG="true"
     # add track to the playlist & move to next position
@@ -877,7 +883,7 @@ main() {
     ytquery*) ;;
     -k|--kill|kill|-K|--killall|killall) ;;
     -c|--crop|crop|-C|--clear|clear|cmd|sockcmd|socklist|--socklist) ;;
-    -a|add|append|-A|playnext|--playnext|mpv|--mpv|stash|--stash|--toggle|toggle|-q|--quiet) ;;
+    -a|add|append|-A|playnext|--playnext|-N|playnow|--playnow|mpv|--mpv|stash|--stash|--toggle|toggle|-q|--quiet) ;;
     load|--load|autoload|--autoload|lsplaylists|--lsplaylists|dbinit|--dbinit|dblist|--dblist) ;;
     version|--version|-Q|--vid=no|-S|--socket) ;;
     help|--help|-h|long-help|--long-help|-H|--list-options) ;;
@@ -927,7 +933,8 @@ main() {
             -j|--track|track)                shift; mpvc_set_track "${1:-}" relative  ;;
             -J|--tracknum|tracknum)          shift; mpvc_set_track "${1:-}" absolute  ;;
             -r|--remove|rm|remove|del)       shift; mpvc_remove_track "${1:-}"; QUIETFLAG=true;;
-            -A|--playnext|playnext)          shift; mpvc_play_next "${1:-}"           ;;
+            -A|--playnext|playnext)          shift; mpvc_play_next "${1:-}" ;;
+            -N|--playnow|playnow)            shift; mpvc_play_now "${1:-}" ;;
             -o|--save|save)                  shift; mpvc_save_playlist "${1:-}" ;;
             --load|load)                     shift; mpvc_load_playlist      ;;
 
@@ -965,8 +972,8 @@ main() {
                --searchRm|searchRm)          shift; mpvc_search_remove "numbered" "${1:-}";;
             -M|--searchmv|searchmv)          shift; mpvc_search_move "full" "${1:-}" "${2:-}";;
                --searchMv|searchMv)          shift; mpvc_search_move "numbered" "${1:-}" "${2:-}";;
-            -N|--searchplay|searchplay)      shift; mpvc_search_play "full" "${1:-}" ;;
-            -n|--searchPlay|searchPlay)      shift; mpvc_search_play "numbered" "${1:-}" ;;
+               --searchplay|searchplay)      shift; mpvc_search_play "full" "${1:-}" ;;
+               --searchPlay|searchPlay)      shift; mpvc_search_play "numbered" "${1:-}" ;;
             --stash|stash)                   shift; mpvc_stash "${1:-}" "${2:-}";;
             expand-text)                     shift; mpvc_cmd expand-text "$@"; return;;
             metadata)                        shift; mpvc_cmdr get_property metadata "$@"; return;;
