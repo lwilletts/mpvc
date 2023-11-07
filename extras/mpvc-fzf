@@ -49,7 +49,7 @@ mpvctui_fzf_preview()
         --bind='ctrl-o:execute-silent(mpvc play {n} &)' \
         --bind='ctrl-r:reload(mpvc fullplaylist)' \
         --bind='ctrl-s:execute-silent(mpvc seek +20 &)' \
-        --bind='ctrl-t:reload(mpvc searchrm {}; mpvc fullplaylist)' \
+        --bind='ctrl-t:reload(mpvc remove {+1}; mpvc fullplaylist)' \
         \
         --bind='ctrl-x:execute(mpvc-fzf -f {q})' \
         --bind='ctrl-v:execute(mpvc-fzf -p {q})' \
