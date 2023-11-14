@@ -47,7 +47,7 @@ mpvc_web_index()
     <!-- <meta http-equiv="refresh" content="60"> -->
     <link rel="IconFile" href="apple-touch-icon.svg" sizes="64x64">
     <link rel="apple-touch-icon" href="apple-touch-icon.svg">
-    <title>$PROGNAME @ $(hostname) 🎧</title>
+    <title>$PROGNAME @ ${HOSTNAME:-localhost} 🎧</title>
     </head>
     <style type="text/css" media="all">
     :root { --body-bg: #fff; --body-color: #111; --pre-bg:#eee; --link-color:#00f; } /* Light mode */
@@ -209,6 +209,12 @@ mpvc_web()
 {
     echo "# $PROGNAME $PROGINFO"
     MPVC_WEB_ROOT=/tmp/mpvc-web
+
+    if ! command -v python3 >/dev/null; then
+        echo "$PROGNAME: Error: No python3 found, install to continue."
+        exit
+    fi
+
     (
         mkdir -p "$MPVC_WEB_ROOT" || return
         mkdir -p "$MPVC_WEB_ROOT/cgi-bin/" || return
