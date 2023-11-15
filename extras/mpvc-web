@@ -110,7 +110,8 @@ mpvc_web_index()
             <a href="?cmd=mpvc unshuffle">unshuffle</a>
         </li>
         <li>
-            mpvc chapter
+            mpvc ch
+            <a href="?cmd=mpvc cstart">cstart</a>
             <a href="?cmd=mpvc creplay">creplay</a>
             <a href="?cmd=mpvc cprev">cprev</a>
             <a href="?cmd=mpvc cnext">cnext</a>
@@ -230,7 +231,7 @@ mpvc_web()
     MPVC_WEB_HOST=${MPVC_WEB_HOST:-localhost}
     MPVC_WEB_PORT=${MPVC_WEB_PORT:-8000}
     MPVC_WEB_ROOT=${MPVC_WEB_ROOT:-/tmp/mpvc-web}
-    MPVC_WEB_SSL_PORT=${MPVC_WEB_SSL_PORT:-8001}
+    MPVC_WEB_SSL_PORT=${MPVC_WEB_SSL_PORT:-8443}
     MPVC_WEB_SSL_CERT=$MPVC_WEB_ROOT/stunnel.pem
     MPVC_WEB_SSL_CFG=$MPVC_WEB_ROOT/stunnel.cfg
     MPVC_WEB_SSL_PID=$MPVC_WEB_ROOT/stunnel.pid
@@ -262,7 +263,9 @@ mpvc_web()
             if [ ! -e "$MPVC_WEB_SSL_CERT" ]; then
                 openssl req -new -x509 -days 365 -nodes -out "$MPVC_WEB_SSL_CERT" -keyout "$MPVC_WEB_SSL_CERT" -subj "/C=CN/ST=ST/O=O/CN=CN"
             fi
-            kill "$(cat "$MPVC_WEB_SSL_PID")" || true
+            if [ -e "$MPVC_WEB_SSL_PID" ]; then
+                kill "$(cat "$MPVC_WEB_SSL_PID")" || true
+            fi
             stunnel "$MPVC_WEB_SSL_CFG"
         fi
         chmod a-w -R "$MPVC_WEB_ROOT/"
@@ -290,6 +293,7 @@ mpvc_web()
         /GET \/\?cmd=mpvc%20repeat/       { system("mpvc -q repeat") }
         /GET \/\?cmd=mpvc%20single/       { system("mpvc -q single") }
 
+        /GET \/\?cmd=mpvc%20cstart/       { system("mpvc -q cplay 0") }
         /GET \/\?cmd=mpvc%20creplay/      { system("mpvc -q chapter-replay") }
         /GET \/\?cmd=mpvc%20cprev/        { system("mpvc -q chapter-prev") }
         /GET \/\?cmd=mpvc%20cnext/        { system("mpvc -q chapter-next") }
