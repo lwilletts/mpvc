@@ -43,7 +43,7 @@ mpvc_web_index()
     <meta http-equiv="cache-control" content="no-cache" />
     <meta http-equiv="expires" content="0" />
     <meta http-equiv="pragma" content="no-cache" />
-    $(if [ -n "${REFRESH:-}" ]; then echo "<meta http-equiv=refresh content=$REFRESH>"; fi)
+    $(if [ -n "${MPVC_WEB_REFRESH:-}" ]; then echo "<meta http-equiv=refresh content=$MPVC_WEB_REFRESH>"; fi)
     <link rel="IconFile" href="apple-touch-icon.svg" sizes="64x64">
     <link rel="apple-touch-icon" href="apple-touch-icon.svg">
     <title>$PROGNAME @ ${HOSTNAME:-localhost} 🎧</title>
@@ -204,34 +204,71 @@ mpvc_web_favicon()
 EOF
 }
 
+mpvc_web_stunnel_cfg()
+{
+    cat <<EOF
+#
+cert = ${MPVC_WEB_SSL_CERT}
+key  = ${MPVC_WEB_SSL_CERT}
+sslVersion = all
+options = NO_SSLv2
+options = NO_SSLv3
+
+socket = l:TCP_NODELAY=1
+socket = r:TCP_NODELAY=1
+pid=$MPVC_WEB_SSL_PID
+
+[mpvc-web]
+accept = $MPVC_WEB_HOST:$MPVC_WEB_SSL_PORT
+connect = $MPVC_WEB_HOST:$MPVC_WEB_PORT
+TIMEOUTclose = 0
+EOF
+}
+
 mpvc_web()
 {
+    MPVC_WEB_HOST=${MPVC_WEB_HOST:-localhost}
+    MPVC_WEB_PORT=${MPVC_WEB_PORT:-8000}
     MPVC_WEB_ROOT=${MPVC_WEB_ROOT:-/tmp/mpvc-web}
-    echo "# $PROGNAME $PROGINFO"
+    MPVC_WEB_SSL_PORT=${MPVC_WEB_SSL_PORT:-8001}
+    MPVC_WEB_SSL_CERT=$MPVC_WEB_ROOT/stunnel.pem
+    MPVC_WEB_SSL_CFG=$MPVC_WEB_ROOT/stunnel.cfg
+    MPVC_WEB_SSL_PID=$MPVC_WEB_ROOT/stunnel.pid
+    MPVC_WEB_SSL_ENABLE=${MPVC_WEB_SSL_ENABLE:-}
+    echo "# $PROGNAME $PROGVERSION running (beta version: might contain bugs!)"
 
     if ! command -v python3 >/dev/null; then
         echo "$PROGNAME: Error: No python3 found, install to continue."
         exit
     fi
-    #openssl req -new -x509 -days 365 -nodes -out "$CERTFILE" -keyout "$CERTFILE" -subj "/C=C/ST=ST/O=O/CN=CN"
 
     (
         mkdir -p "$MPVC_WEB_ROOT" || return
         mkdir -p "$MPVC_WEB_ROOT/cgi-bin/" || return
         cd "$MPVC_WEB_ROOT" || return
 
+        # setup http webroot
         chmod u+w -R "$MPVC_WEB_ROOT/"
-
         mpvc_web_index > "$MPVC_WEB_ROOT/index.html"
+        mpvc_web_favicon > "$MPVC_WEB_ROOT/apple-touch-icon.svg"
         [ ! -e "$MPVC_WEB_ROOT/style.css" ] && mpvc_web_style > "$MPVC_WEB_ROOT/style.css"
         mpvc_web_cgi > "$MPVC_WEB_ROOT/cgi-bin/mpvc"
-        mpvc_web_favicon > "$MPVC_WEB_ROOT/apple-touch-icon.svg"
-
         chmod u+x "$MPVC_WEB_ROOT/cgi-bin/mpvc"
+
+        # setup https stunnel if requested
+        if [ -n "${MPVC_WEB_SSL_ENABLE:-}" ]; then
+            echo "# Serving HTTPS on https://$MPVC_WEB_HOST:$MPVC_WEB_SSL_PORT"
+            mpvc_web_stunnel_cfg > "$MPVC_WEB_SSL_CFG"
+            if [ ! -e "$MPVC_WEB_SSL_CERT" ]; then
+                openssl req -new -x509 -days 365 -nodes -out "$MPVC_WEB_SSL_CERT" -keyout "$MPVC_WEB_SSL_CERT" -subj "/C=CN/ST=ST/O=O/CN=CN"
+            fi
+            kill "$(cat "$MPVC_WEB_SSL_PID")" || true
+            stunnel "$MPVC_WEB_SSL_CFG"
+        fi
         chmod a-w -R "$MPVC_WEB_ROOT/"
 
         # XXX handle cli commands, rewrite this mess
-        python3 -u -m http.server --cgi "$@" 2>&1 | awk \
+        python3 -u -m http.server --cgi --bind "$MPVC_WEB_HOST" "$MPVC_WEB_PORT" "$@" 2>&1 | awk \
         '
         /GET \/\?cmd=mpvc%20mpv/          { system("mpvc -q mpv") }
         /GET \/\?cmd=mpvc%20clear/        { system("mpvc -q clear") }
@@ -283,7 +320,7 @@ usage()
 
 main()
 {
-    [ $# -lt 1 ] && usage
+    [ $# -lt 0 ] && usage
 
     mpvc_web "$@"
 }
