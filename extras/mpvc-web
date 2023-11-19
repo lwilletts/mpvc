@@ -49,9 +49,11 @@ mpvc_web_index()
     <title>$PROGNAME @ $MPVC_WEB_HOSTNAME 🎧</title>
     </head>
     <style type="text/css" media="all">
-    :root { --body-bg: #fff; --body-color: #111; --pre-bg:#eee; --link-color:#00f; } /* Light mode */
+    @media (prefers-color-scheme: light) {
+        :root { --body-bg: #fff; --body-color: #111; --pre-bg:#eee; --link-color:#00f; }
+    }
     @media (prefers-color-scheme: dark) {
-       :root { --body-bg: #222; --body-color: #eee; --pre-bg:#333; --link-color:#07f; } /* Dark mode */
+       :root { --body-bg: #222; --body-color: #eee; --pre-bg:#333; --link-color:#07f; }
     }
     body { background: var(--body-bg); color: var(--body-color); font-family: monospace; }
     code { background: var(--pre-bg); }
@@ -59,6 +61,7 @@ mpvc_web_index()
     a    { color: var(--link-color); padding: 0.05rem 0.05rem; }
     </style>
     <link rel="stylesheet" href="style.css" />
+    <script type="text/javascript" src="index.js"></script>
 
     <body>
         [ <a href="." name="mpvc-web">$PROGNAME</a> ] <hr>
@@ -136,10 +139,10 @@ mpvc_web_index()
         </li>
         <li>
         theme
-            <a href="#" title="theme 0" onclick="document.body.style.WebkitFilter='invert(0)';">th0</a> |
             <a href="#" title="theme 4" onclick="document.body.style.WebkitFilter='invert(0.4)';">th4</a> |
             <a href="#" title="theme 6" onclick="document.body.style.WebkitFilter='invert(0.6)';">th6</a> |
             <a href="#" title="theme 8" onclick="document.body.style.WebkitFilter='invert(0.8)';">th8</a> |
+            <a href="#" title="toggle" onclick="toggleColorScheme()">toggle</a> |
             <a href="." title="reset">rst</a>
         </li>
 <!--
@@ -176,6 +179,46 @@ mpvc_web_index()
         🎧 <a href="$PROGURL">$PROGNAME</a> $PROGVERSION, mpvc-tui for the web
     </body>
 </html>
+EOF
+}
+
+mpvc_web_index_js()
+{
+    cat <<EOF
+function toggleColorScheme(mode="dark")
+{
+    var i = 0;
+    var mode = window.localStorage.getItem("prefers-color-scheme");
+    mode = (mode != "light") ? "light" : "dark";
+    window.localStorage.setItem("prefers-color-scheme", mode);
+
+    for (i = document.styleSheets[0].rules.length - 1; i >= 0; i--)
+    {
+        rule = document.styleSheets[0].rules[i]
+        if (!("media" in rule))
+            continue;
+        rule = document.styleSheets[0].rules[i].media;
+        if (! rule.mediaText.includes("prefers-color-scheme"))
+            continue;
+        switch (mode) {
+        case "light":
+            rule.appendMedium("original-prefers-color-scheme");
+            if (rule.mediaText.includes("light")) rule.deleteMedium("(prefers-color-scheme: light)");
+            if (rule.mediaText.includes("dark")) rule.deleteMedium("(prefers-color-scheme: dark)");
+            break;
+        case "dark":
+            rule.appendMedium("(prefers-color-scheme: light)");
+            rule.appendMedium("(prefers-color-scheme: dark)");
+            if (rule.mediaText.includes("original")) rule.deleteMedium("original-prefers-color-scheme");
+            break;
+        default:
+            rule.appendMedium("(prefers-color-scheme: dark)");
+            if (rule.mediaText.includes("light")) rule.deleteMedium("(prefers-color-scheme: light)");
+            if (rule.mediaText.includes("original")) rule.deleteMedium("original-prefers-color-scheme");
+        }
+        break;
+    }
+}
 EOF
 }
 
@@ -264,6 +307,7 @@ mpvc_web()
         cd "$MPVC_WEB_ROOT" || return
 
         mpvc_web_index > "$MPVC_WEB_ROOT/index.html"
+        mpvc_web_index_js > "$MPVC_WEB_ROOT/index.js"
         mpvc_web_favicon > "$MPVC_WEB_ROOT/apple-touch-icon.svg"
         [ ! -e "$MPVC_WEB_ROOT/style.css" ] && mpvc_web_style > "$MPVC_WEB_ROOT/style.css"
         mpvc_web_cgi > "$MPVC_WEB_ROOT/cgi-bin/mpvc"
