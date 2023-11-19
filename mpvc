@@ -1011,7 +1011,7 @@ main() {
 
             # global argument parsing
             -f|--format)                     shift; FORMATSTRING="${1:-}"       ;;
-            -S|--socket)                     shift; MPVC_SOCKET="${1:-}"; mpvc_config ;;
+            -S|--socket)                     shift; MPVC_SOCKET="${1:-}"; mpvc_config; mpvc_validate_socket ;;
             -Q|--vid=no)                     MPVOPTIONS="$MPVOPTIONS --vid=no"; ;;
             --image)                         IMAGEFLAG=true;                ;;
             -q|--quiet)                      QUIETFLAG=true;                ;;
