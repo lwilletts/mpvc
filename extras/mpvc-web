@@ -113,7 +113,7 @@ mpvc_web_index()
             <a href="?cmd=mpvc unshuffle">unshuffle</a>
         </li>
         <li>
-            mpvc vd
+            mpvc vid
             <a href="?cmd=mpvc togglev">video</a>
             <a href="?cmd=mpvc aspect">aspect</a>
             <a href="?cmd=mpvc togglew">win</a>
@@ -140,7 +140,6 @@ mpvc_web_index()
         <li>
         theme
             <a href="#" title="theme 4" onclick="document.body.style.WebkitFilter='invert(0.4)';">th4</a> |
-            <a href="#" title="theme 6" onclick="document.body.style.WebkitFilter='invert(0.6)';">th6</a> |
             <a href="#" title="theme 8" onclick="document.body.style.WebkitFilter='invert(0.8)';">th8</a> |
             <a href="#" title="toggle" onclick="toggleColorScheme()">toggle</a> |
             <a href="." title="reset">rst</a>
