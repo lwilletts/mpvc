@@ -620,7 +620,7 @@ mpvc_toggle_loop() {
 
 mpvc_set_volume() {
     case "$1" in
-        '') die 1 "Specify volume in/decrease amount or absolute amount." ;;
+        '') die 1 "$PROGNAME: Error: Missing volume." ;;
         +*) mpvc_add "volume" "$1"  ;;
         -*) mpvc_add "volume" "$1"  ;;
         *%) mpvc_set "volume" "${1%%%}";;
@@ -857,9 +857,9 @@ mpvc_validate_socket() {
     quiet command -v "$MPVC_MPV" || die 4 "$PROGNAME: Error: No mpv found. Install to continue."
     quiet command -v "$MPVC_SOCAT" || quiet command -v nc || die 4 "$PROGNAME: Error: No socat/nc found. Install one"
     # test if socket exists
-    if [ ! -S "$MPVC_SOCKET" ]; then die 2 "Socket ${MPVC_SOCKET##$HOME/} does not exist. Use mpvc --mpv to start one."; fi
+    if [ ! -S "$MPVC_SOCKET" ]; then die 2 "$PROGNAME: Error: Socket ${MPVC_SOCKET##$HOME/} does not exist. Use mpvc --mpv to start one."; fi
     # test if socket is open
-    if [ "$(mpvc_get pause)" = "" ]; then die 3 "No files added to ${MPVC_SOCKET##$HOME/}."; fi
+    if [ "$(mpvc_get pause)" = "" ]; then die 3 "$PROGNAME: Error: No files added to ${MPVC_SOCKET##$HOME/}."; fi
 }
 
 mpvc_get_version() {
@@ -925,8 +925,8 @@ main() {
             move|mv)        shift; mpvc_move_track "${1:-}" "${2:-}" ;;
             mute)           mpvc_toggle_mute yes ;;
             unmute)         mpvc_toggle_mute no ;;
-            pretty)         die 1 "$PROGNAME: $* not implemented" ;;
-            find)           die 1 "$PROGNAME: $* not implemented" ;;
+            pretty)         die 1 "$PROGNAME: Error $* not implemented" ;;
+            find)           die 1 "$PROGNAME: Error $* not implemented" ;;
 
             add|-a|--append)    shift; mpvc_appendtracks "$@"; ;;
             #replace|--replace) shift; mpvc_replacetracks "$@" ;;
