@@ -841,6 +841,17 @@ mpvc_parse_time() {
     printf "%d" "$timeInt"
 }
 
+mpvc_handle_socket() {
+    if [ $# -eq 0 ];
+    then
+        echo "$MPVC_SOCKET"
+    else
+        MPVC_SOCKET="${1:-}"
+        mpvc_config
+        mpvc_validate_socket
+    fi
+}
+
 mpvc_validate_socket() {
     # validate deps
     quiet command -v "$MPVC_MPV" || die 4 "$PROGNAME: Error: No mpv found. Install to continue."
@@ -1011,7 +1022,7 @@ main() {
 
             # global argument parsing
             -f|--format)                     shift; FORMATSTRING="${1:-}"       ;;
-            -S|--socket)                     shift; MPVC_SOCKET="${1:-}"; mpvc_config; mpvc_validate_socket ;;
+            -S|--socket)                     shift; mpvc_handle_socket "${1:-}";;
             -Q|--vid=no)                     MPVOPTIONS="$MPVOPTIONS --vid=no"; ;;
             --image)                         IMAGEFLAG=true;                ;;
             -q|--quiet)                      QUIETFLAG=true;                ;;
