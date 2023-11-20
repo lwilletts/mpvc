@@ -279,7 +279,7 @@ TIMEOUTclose = 0
 EOF
 }
 
-mpvc_web()
+mpvc_web_defaults()
 {
     MPVC_WEB_HOST=${MPVC_WEB_HOST:-localhost}
     MPVC_WEB_PORT=${MPVC_WEB_PORT:-8000}
@@ -291,12 +291,22 @@ mpvc_web()
     MPVC_WEB_SSL_PID=$MPVC_WEB_ROOT/../stunnel.pid
     MPVC_WEB_SSL_ENABLE=${MPVC_WEB_SSL_ENABLE:-}
     MPVC_WEB_SSL_VERIFY=${MPVC_WEB_SSL_VERIFY:-0}
-    echo "# $PROGNAME $PROGVERSION running (beta version: might contain bugs!)"
+}
+
+mpvc_web_config()
+{
+    mpvc_web_defaults
 
     if ! command -v python3 >/dev/null; then
         echo "$PROGNAME: Error: No python3 found, install to continue."
         exit
     fi
+}
+
+mpvc_web()
+{
+    mpvc_web_config
+    echo "# $PROGNAME $PROGVERSION running (beta version: might contain bugs!)"
 
     (
         # setup http webroot
@@ -382,7 +392,7 @@ mpvc_web()
 
 usage()
 {
-    echo "usage: $PROGNAME 8000 # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
+    echo "usage: $PROGNAME args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
     exit
 }
 
