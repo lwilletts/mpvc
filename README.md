@@ -46,13 +46,13 @@ mpvc-tui -T: running the mpvc TUI
 ![mpvc-tui -T screenshot](../../blob/master/docs/assets/mpvc-tui.png)
 
 <details>
-<summary>mpvc-fzf -f: running with fzf to manage the playlist</summary>
+<summary>mpvc-fzf -f: running with fzf to manage the playlist (screenshot click to view)</summary>
  
 ![mpvc-fzf screenshot](../../blob/master/docs/assets/mpvc-tui-arch.png)
 </details>
 
 <details>
-<summary>mpvc-tui -n: running with mpvc-fzf and desktop notifications on the upper-right corner</summary>
+<summary>mpvc-tui -n: running with mpvc-fzf and desktop notifications on the upper-right corner (screenshot click to view)</summary>
 
 ![mpvc tui+fzf+notifications screenshot](../../blob/master/docs/assets/mpvc-tui-fzf.png)
 </details>
