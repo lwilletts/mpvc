@@ -45,14 +45,18 @@ mpvc-tui -T: running the mpvc TUI
 
 ![mpvc-tui -T screenshot](../../blob/master/docs/assets/mpvc-tui.png)
 
-mpvc-fzf -f: running with fzf to manage the playlist
-
+<details>
+<summary>mpvc-fzf -f: running with fzf to manage the playlist</summary>
+ 
 ![mpvc-fzf screenshot](../../blob/master/docs/assets/mpvc-tui-arch.png)
+</details>
 
-mpvc-tui -n: running with mpvc-fzf and desktop notifications on the upper-right corner
+<details>
+<summary>mpvc-tui -n: running with mpvc-fzf and desktop notifications on the upper-right corner</summary>
 
 ![mpvc tui+fzf+notifications screenshot](../../blob/master/docs/assets/mpvc-tui-fzf.png)
-
+</details>
+ 
 ## Dependencies
 
 Required:
