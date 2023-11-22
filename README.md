@@ -41,7 +41,7 @@ Have a look at the [casts/](https://gmt4.github.io/mpvc/casts/) to watch screenc
  (cd mpvc; extras/mpvc-installer link-user)
 
  <b># use mpvc-fzf to search and play youtube media</b>
- mpvc-fzf -p kupla mirage
+ mpvc-fzf -p 'kupla mirage'
  <b># use mpvc to add/load/save media files or online YT URLs</b>
  mpvc add /path/to/your/*.mp3 # or your URLs
  find . -type f -name | mpvc load
