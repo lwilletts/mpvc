@@ -195,10 +195,10 @@ Mpv already plays URLs (both video and audio) from streaming platforms as youtub
 </ol>
 Some usage examples of the above are:
 <ul>
-<li> <code>mpvc-fzf -s rolling stones</code>: Search and return the list of URLs found.</li>
-<li> <code>mpvc-fzf -s rolling stones | fzf -m</code>: Search, Select and return the list of URLs selected.</li>
-<li> <code>mpvc-fzf -s rolling stones | fzf -m | awk '{print $1}' | mpvc load</code>: Search, Select, Enqueue and play the list of URLs selected.</li>
-<li> <code>mpvc-fzf -p rolling stones</code>: Is a shortcut of the last command that does the whole thing.</li>
+<li> <code>mpvc-fzf -s 'rolling stones'</code>: Search and return the list of URLs found.</li>
+<li> <code>mpvc-fzf -s 'rolling stones' | fzf -m</code>: Search, Select and return the list of URLs selected.</li>
+<li> <code>mpvc-fzf -s 'rolling stones' | fzf -m | awk '{print $1}' | mpvc load</code>: Search, Select, Enqueue and play the list of URLs selected.</li>
+<li> <code>mpvc-fzf -p 'rolling stones'</code>: Is a shortcut of the last command that does the whole thing.</li>
 </ul>
 Note, that you can use this command from inside mpvc-tui too, by hitting Control+C and then typing "!mpvc-fzf -p rolling stones"
 </p>
