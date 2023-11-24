@@ -12,6 +12,20 @@ addition to GNU style arguments.
 This forks [lwillets/mpvc](https://github.com/lwilletts/mpvc) providing some extra goodies such as: improved CLI, TUI, FZF & playing media from YouTube & streaming services.
 Check the [Wiki](../../wiki) & [Casts](https://gmt4.github.io/mpvc/casts/) for a detailed view of the extra features of this fork.
 
+## Overview
+
+[mpvc](https://github.com/gmt4/mpvc/) functionality is split in a few pieces/files:
+
+- [mpvc](../../blob/master/mpvc): provides the mpvc core CLI commands
+- [extras/mpvc-tui](../../blob/master/extras/mpvc-tui): provides a console TUI, using mpvc underneath
+- [extras/mpvc-fzf](../../blob/master/extras/mpvc-fzf): provides FZF integration to mpvc.
+- [extras/mpvc-web](../../blob/master/extras/mpvc-web): a hack to remotely control mpvc from web
+- [extras/mpvc-mpris](../../blob/master/extras/mpvc-mpris): speaks MPRIS to control mpv player through key-bindings.
+- [extras/mpvc-equalizer](../../blob/master/extras/mpvc-equalizer): provides a basic mpv equalizer for the CLI.
+- [extras/mpvc-installer](../../blob/master/extras/mpvc-installer): provides an installer to install/update mpvc.
+
+Have a look at the [casts/](https://gmt4.github.io/mpvc/casts/) to watch screencasts of mpvc in action.
+
 ## QuickInstall ▶️
 
 [mpvc-installer](../../blob/master/extras/mpvc-installer) fetch-user: installs mpvc under BINDIR=~/bin/
@@ -27,7 +41,7 @@ Check the [Wiki](../../wiki) & [Casts](https://gmt4.github.io/mpvc/casts/) for a
  (cd mpvc; extras/mpvc-installer link-user)
 
  <b># use mpvc-fzf to search and play youtube media</b>
- mpvc-fzf -p kupla mirage
+ mpvc-fzf -p 'kupla mirage'
  <b># use mpvc to add/load/save media files or online YT URLs</b>
  mpvc add /path/to/your/*.mp3 # or your URLs
  find . -type f -name | mpvc load
@@ -45,14 +59,18 @@ mpvc-tui -T: running the mpvc TUI
 
 ![mpvc-tui -T screenshot](../../blob/master/docs/assets/mpvc-tui.png)
 
-mpvc-fzf -f: running with fzf to manage the playlist
-
+<details>
+<summary>mpvc-fzf -f: running with fzf to manage the playlist <i>(screenshot click to view)</i></summary>
+ 
 ![mpvc-fzf screenshot](../../blob/master/docs/assets/mpvc-tui-arch.png)
+</details>
 
-mpvc-tui -n: running with mpvc-fzf and desktop notifications on the upper-right corner
+<details>
+<summary>mpvc-tui -n: running with mpvc-fzf and desktop notifications on the upper-right corner <i>(screenshot click to view)</i></summary>
 
 ![mpvc tui+fzf+notifications screenshot](../../blob/master/docs/assets/mpvc-tui-fzf.png)
-
+</details>
+ 
 ## Dependencies
 
 Required:

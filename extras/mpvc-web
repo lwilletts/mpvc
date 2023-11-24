@@ -42,17 +42,18 @@ mpvc_web_index()
     <meta http-equiv="cache-control" content="max-age=0" />
     <meta http-equiv="cache-control" content="no-cache" />
     <meta http-equiv="expires" content="0" />
-    <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
     <meta http-equiv="pragma" content="no-cache" />
-    <!-- <meta http-equiv="refresh" content="60"> -->
+    $(if [ -n "${MPVC_WEB_REFRESH:-}" ]; then echo "<meta http-equiv=refresh content=$MPVC_WEB_REFRESH>"; fi)
     <link rel="IconFile" href="apple-touch-icon.svg" sizes="64x64">
     <link rel="apple-touch-icon" href="apple-touch-icon.svg">
-    <title>$PROGNAME @ $(hostname) 🎧</title>
+    <title>$PROGNAME @ $MPVC_WEB_HOSTNAME 🎧</title>
     </head>
     <style type="text/css" media="all">
-    :root { --body-bg: #fff; --body-color: #111; --pre-bg:#eee; --link-color:#00f; } /* Light mode */
+    @media (prefers-color-scheme: light) {
+        :root { --body-bg: #fff; --body-color: #111; --pre-bg:#eee; --link-color:#00f; }
+    }
     @media (prefers-color-scheme: dark) {
-       :root { --body-bg: #222; --body-color: #eee; --pre-bg:#333; --link-color:#07f; } /* Dark mode */
+       :root { --body-bg: #222; --body-color: #eee; --pre-bg:#333; --link-color:#07f; }
     }
     body { background: var(--body-bg); color: var(--body-color); font-family: monospace; }
     code { background: var(--pre-bg); }
@@ -60,6 +61,7 @@ mpvc_web_index()
     a    { color: var(--link-color); padding: 0.05rem 0.05rem; }
     </style>
     <link rel="stylesheet" href="style.css" />
+    <script type="text/javascript" src="index.js"></script>
 
     <body>
         [ <a href="." name="mpvc-web">$PROGNAME</a> ] <hr>
@@ -111,7 +113,16 @@ mpvc_web_index()
             <a href="?cmd=mpvc unshuffle">unshuffle</a>
         </li>
         <li>
-            mpvc chapter
+            mpvc vid
+            <a href="?cmd=mpvc togglev">video</a>
+            <a href="?cmd=mpvc aspect">aspect</a>
+            <a href="?cmd=mpvc togglew">win</a>
+            <a href="?cmd=mpvc togglef">fs</a>
+            <a href="?cmd=mpvc togglei">idle</a>
+        </li>
+        <li>
+            mpvc ch
+            <a href="?cmd=mpvc cstart">cstart</a>
             <a href="?cmd=mpvc creplay">creplay</a>
             <a href="?cmd=mpvc cprev">cprev</a>
             <a href="?cmd=mpvc cnext">cnext</a>
@@ -128,10 +139,9 @@ mpvc_web_index()
         </li>
         <li>
         theme
-            <a href="#" title="theme 0" onclick="document.body.style.WebkitFilter='invert(0)';">th0</a> |
             <a href="#" title="theme 4" onclick="document.body.style.WebkitFilter='invert(0.4)';">th4</a> |
-            <a href="#" title="theme 6" onclick="document.body.style.WebkitFilter='invert(0.6)';">th6</a> |
             <a href="#" title="theme 8" onclick="document.body.style.WebkitFilter='invert(0.8)';">th8</a> |
+            <a href="#" title="toggle" onclick="toggleColorScheme()">toggle</a> |
             <a href="." title="reset">rst</a>
         </li>
 <!--
@@ -171,6 +181,46 @@ mpvc_web_index()
 EOF
 }
 
+mpvc_web_index_js()
+{
+    cat <<EOF
+function toggleColorScheme(mode="dark")
+{
+    var i = 0;
+    var mode = window.localStorage.getItem("prefers-color-scheme");
+    mode = (mode != "light") ? "light" : "dark";
+    window.localStorage.setItem("prefers-color-scheme", mode);
+
+    for (i = document.styleSheets[0].rules.length - 1; i >= 0; i--)
+    {
+        rule = document.styleSheets[0].rules[i]
+        if (!("media" in rule))
+            continue;
+        rule = document.styleSheets[0].rules[i].media;
+        if (! rule.mediaText.includes("prefers-color-scheme"))
+            continue;
+        switch (mode) {
+        case "light":
+            rule.appendMedium("original-prefers-color-scheme");
+            if (rule.mediaText.includes("light")) rule.deleteMedium("(prefers-color-scheme: light)");
+            if (rule.mediaText.includes("dark")) rule.deleteMedium("(prefers-color-scheme: dark)");
+            break;
+        case "dark":
+            rule.appendMedium("(prefers-color-scheme: light)");
+            rule.appendMedium("(prefers-color-scheme: dark)");
+            if (rule.mediaText.includes("original")) rule.deleteMedium("original-prefers-color-scheme");
+            break;
+        default:
+            rule.appendMedium("(prefers-color-scheme: dark)");
+            if (rule.mediaText.includes("light")) rule.deleteMedium("(prefers-color-scheme: light)");
+            if (rule.mediaText.includes("original")) rule.deleteMedium("original-prefers-color-scheme");
+        }
+        break;
+    }
+}
+EOF
+}
+
 mpvc_web_cgi()
 {
     MPVC=$(command -v mpvc)
@@ -205,27 +255,91 @@ mpvc_web_favicon()
 EOF
 }
 
+mpvc_web_stunnel_cfg()
+{
+    cat <<EOF
+# stunnel.cfg for $PROGNAME $PROGVERSION $PROGURL
+sslVersion = all
+options = NO_SSLv2
+options = NO_SSLv3
+
+socket = l:TCP_NODELAY=1
+socket = r:TCP_NODELAY=1
+pid=$MPVC_WEB_SSL_PID
+
+[mpvc-web]
+accept = $MPVC_WEB_HOST:$MPVC_WEB_SSL_PORT
+connect = $MPVC_WEB_HOST:$MPVC_WEB_PORT
+
+cert = ${MPVC_WEB_SSL_PEM}
+key  = ${MPVC_WEB_SSL_PEM}
+cafile = ${MPVC_WEB_SSL_PEM}
+verify=$MPVC_WEB_SSL_VERIFY
+TIMEOUTclose = 0
+EOF
+}
+
+mpvc_web_defaults()
+{
+    MPVC_WEB_HOST=${MPVC_WEB_HOST:-localhost}
+    MPVC_WEB_PORT=${MPVC_WEB_PORT:-8000}
+    MPVC_WEB_ROOT=${MPVC_WEB_ROOT:-/tmp/mpvc-web/root}
+    MPVC_WEB_HOSTNAME=$(hostname)
+    MPVC_WEB_SSL_PORT=${MPVC_WEB_SSL_PORT:-8443}
+    MPVC_WEB_SSL_PEM=$MPVC_WEB_ROOT/../stunnel.pem
+    MPVC_WEB_SSL_CFG=$MPVC_WEB_ROOT/../stunnel.cfg
+    MPVC_WEB_SSL_PID=$MPVC_WEB_ROOT/../stunnel.pid
+    MPVC_WEB_SSL_ENABLE=${MPVC_WEB_SSL_ENABLE:-}
+    MPVC_WEB_SSL_VERIFY=${MPVC_WEB_SSL_VERIFY:-0}
+}
+
+mpvc_web_config()
+{
+    mpvc_web_defaults
+
+    if ! command -v python3 >/dev/null; then
+        echo "$PROGNAME: Error: No python3 found, install to continue."
+        exit
+    fi
+}
+
 mpvc_web()
 {
-    echo "# $PROGNAME $PROGINFO"
-    MPVC_WEB_ROOT=/tmp/mpvc-web
+    mpvc_web_config
+    echo "# $PROGNAME $PROGVERSION running (beta version: might contain bugs!)"
+
     (
+        # setup http webroot
+        chmod u+w -R "${MPVC_WEB_ROOT%/*}"
         mkdir -p "$MPVC_WEB_ROOT" || return
         mkdir -p "$MPVC_WEB_ROOT/cgi-bin/" || return
         cd "$MPVC_WEB_ROOT" || return
 
-        chmod u+w -R "$MPVC_WEB_ROOT/"
-
         mpvc_web_index > "$MPVC_WEB_ROOT/index.html"
+        mpvc_web_index_js > "$MPVC_WEB_ROOT/index.js"
+        mpvc_web_favicon > "$MPVC_WEB_ROOT/apple-touch-icon.svg"
         [ ! -e "$MPVC_WEB_ROOT/style.css" ] && mpvc_web_style > "$MPVC_WEB_ROOT/style.css"
         mpvc_web_cgi > "$MPVC_WEB_ROOT/cgi-bin/mpvc"
-        mpvc_web_favicon > "$MPVC_WEB_ROOT/apple-touch-icon.svg"
-
         chmod u+x "$MPVC_WEB_ROOT/cgi-bin/mpvc"
+
+        # setup https stunnel if requested
+        if [ -n "${MPVC_WEB_SSL_ENABLE:-}" ]; then
+            echo "# Serving HTTPS on https://$MPVC_WEB_HOST:$MPVC_WEB_SSL_PORT"
+            mpvc_web_stunnel_cfg > "$MPVC_WEB_SSL_CFG"
+            if [ ! -e "$MPVC_WEB_SSL_PEM" ]; then
+                MPVC_WEB_SSL_SUBJ="/C=CN/ST=ST/O=$PROGNAME/CN=$PROGNAME-$MPVC_WEB_HOSTNAME"
+                openssl req -new -x509 -days 365 -nodes -out "$MPVC_WEB_SSL_PEM" -keyout "$MPVC_WEB_SSL_PEM" -subj "$MPVC_WEB_SSL_SUBJ"
+                openssl pkcs12 -export -passout "pass:" -in "$MPVC_WEB_SSL_PEM" -out "$MPVC_WEB_SSL_PEM.p12"
+            fi
+            if [ -e "$MPVC_WEB_SSL_PID" ]; then
+                kill "$(cat "$MPVC_WEB_SSL_PID")" || true
+            fi
+            stunnel "$MPVC_WEB_SSL_CFG"
+        fi
         chmod a-w -R "$MPVC_WEB_ROOT/"
 
         # XXX handle cli commands, rewrite this mess
-        python3 -u -m http.server --cgi "$@" 2>&1 | awk \
+        python3 -u -m http.server --cgi --bind "$MPVC_WEB_HOST" "$MPVC_WEB_PORT" "$@" 2>&1 | awk \
         '
         /GET \/\?cmd=mpvc%20mpv/          { system("mpvc -q mpv") }
         /GET \/\?cmd=mpvc%20clear/        { system("mpvc -q clear") }
@@ -247,6 +361,13 @@ mpvc_web()
         /GET \/\?cmd=mpvc%20repeat/       { system("mpvc -q repeat") }
         /GET \/\?cmd=mpvc%20single/       { system("mpvc -q single") }
 
+        /GET \/\?cmd=mpvc%20togglev/      { system("mpvc -q togglev") }
+        /GET \/\?cmd=mpvc%20aspect/       { system("mpvc -q aspect") }
+        /GET \/\?cmd=mpvc%20togglew/      { system("mpvc -q togglew") }
+        /GET \/\?cmd=mpvc%20togglef/      { system("mpvc -q togglef") }
+        /GET \/\?cmd=mpvc%20togglei/      { system("mpvc -q togglei") }
+
+        /GET \/\?cmd=mpvc%20cstart/       { system("mpvc -q cplay 0") }
         /GET \/\?cmd=mpvc%20creplay/      { system("mpvc -q chapter-replay") }
         /GET \/\?cmd=mpvc%20cprev/        { system("mpvc -q chapter-prev") }
         /GET \/\?cmd=mpvc%20cnext/        { system("mpvc -q chapter-next") }
@@ -271,13 +392,13 @@ mpvc_web()
 
 usage()
 {
-    echo "usage: $PROGNAME 8000 # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
+    echo "usage: $PROGNAME args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
     exit
 }
 
 main()
 {
-    [ $# -lt 1 ] && usage
+    [ $# -lt 0 ] && usage
 
     mpvc_web "$@"
 }

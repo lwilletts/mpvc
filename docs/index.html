@@ -36,9 +36,9 @@
 <body>
 <h1 id="gmt4-mpvc-fork"><a href="/">@gmt4</a> mpvc 🎧</h1>
 <ul>
-    <li><strong>about</strong> A minimal mpc-like CLI and TUI for controlling mpv from the shell.</li>
-    <li><strong>tags</strong> cli music-player terminal minimal mpv tui media-player mplayer posix-sh mpv-player mpvc mpvc-tui</li>
-    <li><strong>goodies</strong> Support TUI, FZF, WEB, CLI, play/manage URLs to youtube &amp; streaming services (<a href="logbook.html#logbook-20221219">See #20221219</a>)</li>
+    <li><strong>about</strong> A minimal mpc-like interface for controlling <a href="https://mpv.io">mpv</a> from the shell.</li>
+    <li><strong>goodies</strong> Support TUI, FZF, WEB, CLI, playing youtube &amp; streaming services (<a href="logbook.html#logbook-20221219">See #20221219</a>)</li>
+    <li><strong>tags</strong> music-player terminal minimal mpv tui media-player mplayer posix-sh mpv-player mpvc mpvc-tui</li>
     <li><strong>github</strong> <a href="https://github.com/gmt4/mpvc/" class="uri">https://github.com/gmt4/mpvc/</a></li>
     <li><strong>promote</strong> Star, share, and promote our work through the buttons below if you find it useful. Thanks!</li>
 </ul>
@@ -69,11 +69,11 @@
 <a href="https://github.com/gmt4/mpvc/">mpvc</a> functionality is split in a few pieces/files:
 
 <ul>
-    <li> <a href="https://github.com/gmt4/mpvc/blob/master/mpvc">mpvc</a>: provides the mpc CLI commands</li>
+    <li> <a href="https://github.com/gmt4/mpvc/blob/master/mpvc">mpvc</a>: provides the <a href="https://linux.die.net/man/1/mpc">mpc</a> interface commands</li>
     <li> <a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-tui">extras/mpvc-tui</a>: provides a console TUI, using mpvc underneath</li>
-    <li> <a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-fzf">extras/mpvc-fzf</a>: provides FZF integration to mpvc.</li>
+    <li> <a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-fzf">extras/mpvc-fzf</a>: provides <a href="https://github.com/junegunn/fzf">fzf</a> integration to mpvc.</li>
     <li> <a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-web">extras/mpvc-web</a>: a hack to remotely control mpvc from web</li>
-    <li> <a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-mpris">extras/mpvc-mpris</a>: speaks MPRIS to control mplayer through key-bindings.</li>
+    <li> <a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-mpris">extras/mpvc-mpris</a>: speaks <a href="https://github.com/hoyon/mpv-mpris">MPRIS</a> to control mplayer through key-bindings.</li>
     <li> <a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-equalizer">extras/mpvc-equalizer</a>: provides a basic mpv equalizer for the CLI.</li>
     <li> <a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-installer">extras/mpvc-installer</a>: provides an installer to install/update mpvc.</li>
 </ul>
@@ -114,15 +114,15 @@ curl -fsSL -o mpvc-installer https://github.com/gmt4/mpvc/raw/master/extras/mpvc
 <h2 id="gmt4-mpvc-shots">Screenshots</h2>
 
 <p>
-    <code>mpvc-tui -T: running the mpvc TUI</code><br/>
+    mpvc-tui -T: running the mpvc TUI<br/>
     <img src="assets/mpvc-tui.png" alt="mpvc-tui -T screenshot" width="95%" />
 </p>
 <p>
-    <code>mpvc-tui -f: running with fzf</code><br/>
+    mpvc-tui -f: running with fzf (screenshot click to view)<br/>
     <img src="assets/mpvc-tui-arch.png" alt="mpvc-tui fzf screenshot" width="95%" />
 </p>
 <p>
-    <code>mpvc-tui: running with fzf and desktop notifications on the upper-right corner</code><br/>
+    mpvc-tui: running with fzf and desktop notifications on the upper-right corner (screenshot click to view)<br/>
     <img src="assets/mpvc-tui-fzf.png" alt="mpvc-tui fzf+notify screenshot" width="95%" />
 </p>
 

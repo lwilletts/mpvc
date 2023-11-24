@@ -36,9 +36,9 @@
 <body>
 <h1 id="gmt4-mpvc-fork"><a href="/">@gmt4</a> mpvc logbook</h1>
 <ul>
-    <li><strong>about</strong> A minimal mpc-like CLI and TUI for controlling mpv from the shell.</li>
-    <li><strong>tags</strong> cli music-player terminal minimal mpv tui media-player mplayer posix-sh mpv-player mpvc mpvc-tui</li>
-    <li><strong>goodies</strong> Support TUI, FZF, WEB, CLI, play/manage URLs to youtube and streaming services (<a href="#logbook-20221219">See #20221219</a>)</li>
+    <li><strong>about</strong> A minimal mpc-like interface for controlling <a href="https://mpv.io">mpv</a> from the shell.</li>
+    <li><strong>goodies</strong> Support TUI, FZF, WEB, CLI, playing youtube &amp; streaming services (<a href="logbook.html#logbook-20221219">See #20221219</a>)</li>
+    <li><strong>tags</strong> music-player terminal minimal mpv tui media-player mplayer posix-sh mpv-player mpvc mpvc-tui</li>
     <li><strong>github</strong> <a href="https://github.com/gmt4/mpvc/" class="uri">https://github.com/gmt4/mpvc/</a></li>
     <li><strong>promote</strong> Star, share, and promote our work through the buttons below if you find it useful. Thanks!</li>
 </ul>
@@ -84,6 +84,7 @@ Logbook Entries
     <li> <a href="#logbook-20230915">#20230915 Introducing mpvc-autostart: automatic start/stop based on presence</a></li>
     <li> <a href="#logbook-20230916">#20230916 On mpvc usage patterns for playing music/videos</a></li>
     <li> <a href="#logbook-20231026">#20231026 On observing mpv property changes</a></li>
+    <li> <a href="#logbook-20231117">#20231117 On the security of mpvc-web</a></li>
 </ul>
 
 <hr />
@@ -194,10 +195,10 @@ Mpv already plays URLs (both video and audio) from streaming platforms as youtub
 </ol>
 Some usage examples of the above are:
 <ul>
-<li> <code>mpvc-fzf -s rolling stones</code>: Search and return the list of URLs found.</li>
-<li> <code>mpvc-fzf -s rolling stones | fzf -m</code>: Search, Select and return the list of URLs selected.</li>
-<li> <code>mpvc-fzf -s rolling stones | fzf -m | awk '{print $1}' | mpvc load</code>: Search, Select, Enqueue and play the list of URLs selected.</li>
-<li> <code>mpvc-fzf -p rolling stones</code>: Is a shortcut of the last command that does the whole thing.</li>
+<li> <code>mpvc-fzf -s 'rolling stones'</code>: Search and return the list of URLs found.</li>
+<li> <code>mpvc-fzf -s 'rolling stones' | fzf -m</code>: Search, Select and return the list of URLs selected.</li>
+<li> <code>mpvc-fzf -s 'rolling stones' | fzf -m | awk '{print $1}' | mpvc load</code>: Search, Select, Enqueue and play the list of URLs selected.</li>
+<li> <code>mpvc-fzf -p 'rolling stones'</code>: Is a shortcut of the last command that does the whole thing.</li>
 </ul>
 Note, that you can use this command from inside mpvc-tui too, by hitting Control+C and then typing "!mpvc-fzf -p rolling stones"
 </p>
@@ -263,7 +264,7 @@ A work in progress update, in no particular order, but, mostly focused on using 
         <code>mpvc -q play $(( $RANDOM % $(mpvc get playlist-count) )</code>)
     </li>
 </ul>
-This goes together with other related command as: <code>mpvc cmd/sockcmd/repl/get/set/cycle</code>. 
+This goes together with other related command as: <code>mpvc cmd/sockcmd/repl/get/set/cycle</code>.
 </p>
 
 <h3 id="logbook-20230219">On stashing mpv media player state to restore later, 19 Feb 2023</h3>
@@ -279,7 +280,7 @@ Something experimental I've been testing lately is using: <code>mpvc stash</code
 </ul>
 </p>
 
-This is different from <code>mpvc load/save</code> that only loads/saves the playlist, as <code>mpvc stash</code> saves the current playing settings including: <code>playlist-pos, playback-time, volume, mute, pause, etc.</code> together with the playlist. 
+This is different from <code>mpvc load/save</code> that only loads/saves the playlist, as <code>mpvc stash</code> saves the current playing settings including: <code>playlist-pos, playback-time, volume, mute, pause, etc.</code> together with the playlist.
 
 <h3 id="logbook-20230331">CSS, RSS &amp; casts updates on the gmt4.github.io/mpvc site, 31 Mar 2023</h3>
 <p>
@@ -296,7 +297,7 @@ Keep posted.
 
 <h3 id="logbook-20230425">Introducing mpvc-equalizer: a basic mpv equalizer for the CLI, 25 Apr 2023</h3>
 <p>
-This entry introduces <a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-equalizer">mpvc-equalizer</a> a Linear Phase 15-Bands Equalizer for the CLI/shell based on the <a href="#">firequalizer15.lua</a> mpv-script. 
+This entry introduces <a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-equalizer">mpvc-equalizer</a> a Linear Phase 15-Bands Equalizer for the CLI/shell based on the <a href="#">firequalizer15.lua</a> mpv-script.
 The basic operations that are available in <code>mpvc-equalizer</code> are:
 </p>
 <ul>
@@ -483,12 +484,81 @@ $ mpvc observe volume | awk '/property-change/'
 </pre>
 </p>
 
+<h3 id="logbook-20231117">On the security of mpvc-web, 17 Nov 2023</h3>
+
+<p>
+Besides the standard fixes, new functionality, and, performance improvements to the core
+functionality of mpvc, a few tools under extras/ have also received additional attention.
+</p>
+<p>
+One of the tools is <a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-web">extras/mpvc-web</a>,
+that as said before, is just "mpvc-tui for the web",
+that is, a web interface for managing mpvc from a browser, when no
+terminal is available, this fits a common usage, for example when you
+are at home, away from the computer, with the phone or tablet at hand
+and want to manage music playing through mpvc, this is where mpvc-web shines.
+</p>
+
+<p>
+However, mpvc-web was and continues being a hack, which is good for
+development purposes and my current usage, but that also means that
+security-wise some decisions are questionable in a home LAN, since uses plain HTTP,
+without authentication nor HTTPS security, and allows running mpvc shell commands
+as your user!!, that are controlled by making HTTP requests coming the home LAN.
+So this has been irking me for a time, to a point I was using it less,
+and, last I've come to a compromise solution that think easily addresses
+the limitations in authentication and HTTPS security.
+</p>
+<p>
+The solution has been to change the defaults: so now mpvc-web runs by
+default on localhost, and, a new option: `MPVC_WEB_SSL_ENABLE=1 mpvc-web`
+setups a `stunnel(1)` HTTPS connection, this allows to address the HTTPS security part.
+Next, to address the authentication part, `stunnel(1)` provides peer
+certificate verification, so using the new option `MPVC_WEB_SSL_ENABLE=1 MPVC_WEB_SSL_VERIFY=2 mpvc-web`
+only clients that provide a valid peer certificate can connect to mpvc-web.
+</p>
+<p>
+So, now the following alternatives are available, ordered from less to more secure:
+<ol>
+    <li>
+	For local purposes, just run mpvc-web that defaults to `localhost` with: `mpvc-web`.
+    </li>
+    <li>
+	If its safe running plain HTTP on the home LAN, then use: `MPVC_WEB_HOST=0 mpvc-web`.
+    </li>
+    <li>
+	Otherwise, if its not safe for running plain HTTP on the LAN, then use:
+   `MPVC_WEB_HOST=0 MPVC_WEB_SSL_ENABLE=1 mpvc-web` to require HTTPS.
+    </li>
+    <li>
+   If additionally, the environment can get attacks from malicious users, then
+   require the use of peer certificates, therefore, limiting access only to those
+   clients/peers that have present  valid `stunnel(1)` certificate with:
+   `MPVC_WEB_HOST=0 MPVC_WEB_SSL_ENABLE=1 MPVC_WEB_SSL_VERIFY=2 mpvc-web`
+    <li>
+</ol>
+
+The latter means that the `mpvc-web.p12` peer certificates have to be installed
+in the client phones/browsers to access mpvc-web from the network, however,
+is easily accomplished in modern browsers that allow easy import of P12 certs.
+
+<p>
+So with this security issue addressed, I can keep on using and improving mpvc-web.
+</p>
+
+<!--
+<p>
+One thing missing on the wishlist, is isolating mpvc/mpvc-web so it only has access to what it needs to work. 
+In the most basic sense, this would mean allowing mpvc-web only to access a locked down mpv IPC socket, and even this has to be used carefully as stated in <a href="https://mpv.io/manual/stable/#json-ipc">mpv(1)</a> the JSON IPC socket allows running arbitrary system commands
+</p>
+-->
+
 <!-- SOF -->
 
 <hr/>
 <p>
 <span>
-    <em>Last-Modified: Thursday, 26 Octorber 2023 by <a href="https://gmt4.github.io">gmt4</a></em>
+    <em>Last-Modified: Friday, 17 November 2023 by <a href="https://gmt4.github.io">gmt4</a></em>
 </span>
 <span style="float: right;">
     <em>Powered by #HTML 🧡 💚 💙 </em>
