@@ -16,10 +16,12 @@ SHELL="${SHELL:-/bin/sh}"
 PREFIX="${PREFIX:-/usr/local}"
 BINDIR="${BINDIR:-$PREFIX/bin}"
 DOCDIR="${DOCDIR:-$PREFIX/docs}"
+LICDIR="${LICDIR:-$PREFIX/licenses}"
 
 MPV_CONFDIR="${CONFIGDIR:-$HOME/.config/mpv}"
 
 DOCS="README.md"
+LICENSES="LICENSE.md"
 SCRIPT="mpvc extras/mpvc-tui extras/mpvc-fzf extras/mpvc-chapter extras/mpvc-mpris extras/mpvc-equalizer extras/mpvc-web extras/mpvc-autostart extras/mpvc-installer"
 CONFIG="docs/mpv.conf"
 
@@ -66,7 +68,16 @@ mpvc_docs()
     mkdir -p "$DOCDIR"
     for doc in ${DOCS};
     do
-        ln -svfn "$(pwd)/$doc" "$DOCDIR";
+        install -Dvm640 "$(pwd)/$doc" "$DOCDIR";
+    done
+}
+
+mpvc_licenses()
+{
+    mkdir -p "$LICDIR"
+    for lic in ${LICENSES};
+    do
+        install -Dvm644 "$(pwd)/$lic" "$LICDIR";
     done
 }
 
@@ -150,6 +161,7 @@ main()
     check-update)    shift; mpvc_check_update;;
     config)          shift; mpvc_config "$@";;
     docs)            shift; mpvc_docs "$@";;
+    licenses)        shift; mpvc_licenses "$@";;
     fetch)           shift; mpvc_fetch "$@";;
     link)            shift; mpvc_link "$@";;
     install)         shift; mpvc_install "$@";;
