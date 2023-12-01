@@ -144,19 +144,6 @@ mpvc_web_index()
             <a href="#" title="toggle" onclick="toggleColorScheme()">toggle</a> |
             <a href="." title="reset">rst</a>
         </li>
-<!--
-        <li>
-            mpvc
-            <a href="?cmd=mpvc stop" title="mpvc stop" >⏹️</a>
-            <a href="?cmd=mpvc play" title="mpvc play">▶️</a>
-            <a href="?cmd=mpvc toggle" title="mpvc toggle">⏸️</a> |
-            <a href="?cmd=mpvc seek -60" title="mpvc seek-60">⏪</a>
-            <a href="?cmd=mpvc seek +60" title="mpvc seek+60">⏩</a> |
-            <a href="?cmd=mpvc prev" title="mpvc prev">⏮️</a>
-            <a href="?cmd=mpvc next" title="mpvc next">⏭️</a> |
-            <a href="?cmd=mpvc single" title="mpvc single">🔄</a>
-        </li>
--->
         </ul>
         [ <a href="#mpvc-web-status" name="mpvc-web-status">Status</a> ] <hr>
         <iframe name="mpvc-status" width="100%" height="100%" frameborder="0" src="/cgi-bin/mpvc?status" allowtransparency="true" ></iframe>
