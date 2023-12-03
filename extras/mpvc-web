@@ -223,6 +223,7 @@ mpvc_web_cgi()
 #!/bin/sh
 set -euf
 mpvc_strip_escapes(){ sed '/\x1b\[7m/ { s|\x1b\[7m||; s| |+|; }; s|\x1b\[0m||;'; }
+mpvc() { $MPVC "\$@"; }
 main()
 {
     if [ -n "\${USER:-}" ]; then
@@ -231,12 +232,12 @@ main()
     echo "Content-Type: text/plain"
     echo
     case "\${QUERY_STRING:-}" in
-        status)       $MPVC status;;
-        playlist)     $MPVC playlist | mpvc_strip_escapes ;;
-        fullplaylist) $MPVC fullplaylist | mpvc_strip_escapes ;;
-        rawplaylist)  $MPVC saven | mpvc_strip_escapes ;;
-        chapterlist)  $MPVC chapter-list | mpvc_strip_escapes ;;
-        *) $MPVC ;;
+        status)       mpvc status;;
+        playlist)     mpvc playlist | mpvc_strip_escapes ;;
+        fullplaylist) mpvc fullplaylist | mpvc_strip_escapes ;;
+        rawplaylist)  mpvc saven | mpvc_strip_escapes ;;
+        chapterlist)  mpvc chapter-list | mpvc_strip_escapes ;;
+        *)            mpvc "\$@" ;;
     esac
 }
 main "\$@"
