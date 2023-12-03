@@ -218,7 +218,6 @@ EOF
 
 mpvc_web_cgi()
 {
-    MPVC=$(command -v mpvc)
     cat <<EOF
 #!/bin/sh
 set -euf
@@ -277,6 +276,8 @@ EOF
 
 mpvc_web_defaults()
 {
+    MPVC=$(command -v mpvc)
+
     MPVC_WEB_HOST=${MPVC_WEB_HOST:-localhost}
     MPVC_WEB_PORT=${MPVC_WEB_PORT:-8000}
     MPVC_WEB_ROOT=${MPVC_WEB_ROOT:-/tmp/mpvc-web/root}
@@ -287,6 +288,8 @@ mpvc_web_defaults()
     MPVC_WEB_SSL_PID=$MPVC_WEB_ROOT/../stunnel.pid
     MPVC_WEB_SSL_ENABLE=${MPVC_WEB_SSL_ENABLE:-}
     MPVC_WEB_SSL_VERIFY=${MPVC_WEB_SSL_VERIFY:-0}
+
+    MPVC_CGI="$MPVC_WEB_ROOT/cgi-bin/mpvc"
 }
 
 mpvc_web_config()
@@ -297,12 +300,16 @@ mpvc_web_config()
         echo "$PROGNAME: Error: No python3 found, install to continue."
         exit
     fi
+    if ! command -v mpvc >/dev/null; then
+        echo "$PROGNAME: Error: No mpvc found, install to continue."
+        exit
+    fi
 }
 
 mpvc_web()
 {
     mpvc_web_config
-    echo "# $PROGNAME $PROGVERSION running (beta version: might contain bugs!) SSL=${MPVC_WEB_SSL_ENABLE}"
+    echo "# $PROGNAME $PROGVERSION running (beta version: might contain bugs!) SSL=${MPVC_WEB_SSL_ENABLE} $MPVC_WEB_HOST:$MPVC_WEB_SSL_PORT"
 
     (
         # setup http webroot
@@ -314,8 +321,8 @@ mpvc_web()
         mpvc_web_index > "$MPVC_WEB_ROOT/index.html"
         mpvc_web_favicon > "$MPVC_WEB_ROOT/apple-touch-icon.svg"
         [ ! -e "$MPVC_WEB_ROOT/style.css" ] && mpvc_web_style > "$MPVC_WEB_ROOT/style.css"
-        mpvc_web_cgi > "$MPVC_WEB_ROOT/cgi-bin/mpvc"
-        chmod u+x "$MPVC_WEB_ROOT/cgi-bin/mpvc"
+        mpvc_web_cgi > "$MPVC_CGI"
+        chmod u+x "$MPVC_CGI"
 
         # setup https stunnel if requested
         if [ -n "${MPVC_WEB_SSL_ENABLE}" ]; then
@@ -333,7 +340,8 @@ mpvc_web()
         chmod a-w -R "$MPVC_WEB_ROOT/"
 
         # XXX handle cli commands, rewrite this mess
-        python3 -u -m http.server --cgi --bind "$MPVC_WEB_HOST" "$MPVC_WEB_PORT" "$@" 2>&1 | awk -v mpvc="$MPVC" \
+        python3 -u -m http.server --cgi --bind "$MPVC_WEB_HOST" "$MPVC_WEB_PORT" "$@" 2>&1 |
+            awk -v mpvc="$MPVC_CGI" \
         '
         /GET \/\?cmd=mpvc%20mpv/          { system(mpvc" -q mpv") }
         /GET \/\?cmd=mpvc%20clear/        { system(mpvc" -q clear") }
@@ -371,7 +379,7 @@ mpvc_web()
             gsub("HTTP.*$", "", r);
             gsub("^.*GET \\/\\?cli=mpvc\\+", mpvc" ", r);
 
-            if (ENVIRON["MPVC_WEB_DEV"] && match(r, "^mpvc"))
+            if (ENVIRON["MPVC_WEB_DEV"])
             {
                 gsub("(mpvc) [^a-zA-Z0-9 ]", "", r);
                 gsub("\\+", " ", r);
