@@ -1,13 +1,13 @@
 #!/bin/sh
 #
-# @file        mpvc-mpris
+# @file mpvc-mpris
 # @description mpvc-mpris speaks MPRIS to control mplayer through key-bindings
 # @author gmt4 <gmt4 at github.com> (c) Copyright 2022 MIT
 # @url github.com/gmt4/mpvc
 #
 
 PROGNAME=${0##*/}
-PROGVERSION="v1.4"
+PROGVERSION="v1.5"
 PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
 
