@@ -223,19 +223,18 @@ mpvc_web_cgi()
 set -euf
 mpvc_strip_escapes(){ sed '/\x1b\[7m/ { s|\x1b\[7m||; s| |+|; }; s|\x1b\[0m||;'; }
 mpvc() { $MPVC "\$@"; }
+mpvc_out() { echo "Content-Type: text/plain"; echo; $MPVC "\$@"; }
 main()
 {
     if [ -n "\${USER:-}" ]; then
         env -i PATH="/usr/bin:/bin" HOME="\$HOME" TERM="\$TERM" QUERY_STRING="\${QUERY_STRING:-}" "\$0" "\$@"; exit;
     fi
-    echo "Content-Type: text/plain"
-    echo
     case "\${QUERY_STRING:-}" in
-        status)       mpvc status;;
-        playlist)     mpvc playlist | mpvc_strip_escapes ;;
-        fullplaylist) mpvc fullplaylist | mpvc_strip_escapes ;;
-        rawplaylist)  mpvc saven | mpvc_strip_escapes ;;
-        chapterlist)  mpvc chapter-list | mpvc_strip_escapes ;;
+        status)       mpvc_out status;;
+        playlist)     mpvc_out playlist | mpvc_strip_escapes ;;
+        fullplaylist) mpvc_out fullplaylist | mpvc_strip_escapes ;;
+        rawplaylist)  mpvc_out saven | mpvc_strip_escapes ;;
+        chapterlist)  mpvc_out chapter-list | mpvc_strip_escapes ;;
         *)            mpvc "\$@" ;;
     esac
 }
