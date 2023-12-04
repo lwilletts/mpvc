@@ -567,6 +567,7 @@ mpvc_set_track() {
     isInt "$1" || return 1
     lpos=$(mpvc_get playlist-pos)
     lcount=$(mpvc_get playlist-count)
+    if [ "$lcount" = "0" ]; then return; fi
     if [ "$lpos" = "null" ]; then lpos=0; fi
     case "$2" in
         absolute) newpos=$(( $1 % lcount )) ;;
