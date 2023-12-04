@@ -22,7 +22,7 @@ MPV_CONFDIR="${CONFIGDIR:-$HOME/.config/mpv}"
 
 DOCS="README.md docs/mpv.conf docs/logbook.html"
 LICENSES="LICENSE.md"
-SCRIPT="mpvc extras/mpvc-tui extras/mpvc-fzf extras/mpvc-chapter extras/mpvc-mpris extras/mpvc-equalizer extras/mpvc-web extras/mpvc-autostart extras/mpvc-installer"
+SCRIPT="mpvc extras/mpvc-tui extras/mpvc-fzf extras/mpvc-cut extras/mpvc-chapter extras/mpvc-mpris extras/mpvc-equalizer extras/mpvc-web extras/mpvc-autostart extras/mpvc-installer"
 CONFIG="docs/mpv.conf"
 
 set -euf
