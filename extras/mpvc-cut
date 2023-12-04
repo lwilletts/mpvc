@@ -1,0 +1,76 @@
+#!/usr/bin/env sh
+#
+# @file mpvc-cut
+# @description mpvc cuts playing media between ab-loop points (idea from lwillets)
+# @author gmt4 <gmt4 at github.com> (c) Copyright 2022 MIT
+# @url github.com/gmt4/mpvc
+#
+
+PROGNAME=${0##*/}
+PROGVERSION="v1.5"
+PROGAUTHOR=gmt4
+PROGURL="https://github.com/gmt4/mpvc"
+
+set -euf
+
+mpvc_cut_ffmpeg()
+{
+    ffmpeg -hide_banner -loglevel "$loglevel" -i "$path" -ss "$pointA" -to "$pointB" "$@"
+}
+
+mpvc_cutfile()
+{
+    operation="$1"
+    path="$2"
+    pointA="$3"
+    pointB="$4"
+
+    if [ -z "$path" ] || [ ! -e "$path" ]; then usage 1; fi
+    if [ -z "$pointA" ] || [ "$pointA" = "no" ]; then usage 1; fi
+    if [ -z "$pointB" ] || [ "$pointB" = "no" ]; then pointB="$(mpvc -f "%length%")"; fi
+
+    fileExt="${path#*.}"
+    infile="${path##*/}"
+    infile="${infile##$fileExt}"
+    outfile="${outfile:-$infile.$pointA$pointB}"
+    loglevel=${loglevel:-warning}
+
+    echo "# $PROGNAME $operation $path $pointA $pointB $fileExt $infile"
+
+    case "$operation" in
+    vidcord) # perform lossy transcode to x264
+        mpvc_cut_ffmpeg \
+               -max_muxing_queue_size 1024 \
+               -sws_flags lanczos -vf "scale=-1:720" \
+               -c:v libx264 -crf 25 -preset fast \
+               -c:a copy -map 0 -f mp4 "$outfile.mp4"
+    ;;
+    lossless) mpvc_cut_ffmpeg -c:v libx265 -x265-params lossless=1 "$outfile.mp4" ;;
+    lossy)    mpvc_cut_ffmpeg "$outfile.mp4" ;;
+    *)        mpvc_cut_ffmpeg -c copy -map 0 "$outfile.$fileExt" ;;
+    esac
+}
+
+usage()
+{
+    echo "usage: $PROGNAME -[vdlLh] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
+    exit "${1:-0}"
+}
+
+main()
+{
+    if ! mpvc -q; then usage 1; fi
+
+    case "${1:-}" in
+    -h|--help|help)          usage ;;
+    -l|--lossy|lossy)        operation="lossy" ;;
+    -L|--lossless|lossless)  operation="lossless" ;;
+    -v|--vidcord|vidcord)    operation="vidcord" ;;
+    -d|--default|default|'') operation="default" ;;
+    *)                       usage ;;
+    esac
+
+    mpvc_cutfile "$operation" "$(mpvc g 'path')" "$(mpvc g 'ab-loop-a')" "$(mpvc g 'ab-loop-b')"
+}
+
+main "$@"
