@@ -35,7 +35,7 @@ mpvc_cutfile()
     outfile="${outfile:-$infile.$pointA$pointB}"
     loglevel=${loglevel:-warning}
 
-    echo "# $PROGNAME $operation $path $pointA $pointB $fileExt $infile"
+    echo "# $PROGNAME $operation $pointA $pointB $fileExt in $infile out $outfile"
 
     case "$operation" in
     vidcord) # perform lossy transcode to x264
