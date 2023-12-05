@@ -849,7 +849,7 @@ mpvc_handle_socket() {
     else
         MPVC_SOCKET="${1:-}"
         mpvc_config
-        mpvc_validate_socket
+        #mpvc_validate_socket
     fi
 }
 
