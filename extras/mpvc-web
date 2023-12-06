@@ -72,7 +72,7 @@ mpvc_web_index()
         <!-- enable this optionally: only for dev/testing -->
         <form action="/" method="get">
             mpvc cli
-            <input type="text" id="cli" name="cli" placeholder="mpvc status ${MPVC_WEB_DEV:-(off)}" title="mpvc cli" onkeydown="if (event.keyCode == 13) { this.form.submit(); return false; }">
+            <input type="text" id="cli" name="cli" autocomplete="on" placeholder="mpvc status ${MPVC_WEB_DEV:-(off)}" title="mpvc cli" onkeydown="if (event.keyCode == 13) { this.form.submit(); return false; }">
         </form>
         <li>
             <form action="/" method="get">
@@ -106,6 +106,7 @@ mpvc_web_index()
             mpvc
             <a href="?cmd=mpvc repeat">repeat</a>
             <a href="?cmd=mpvc single">single</a>
+            <a href="?cmd=mpvc replay">replay</a>
             <a href="?cmd=mpvc cmd ab-loop">ab-loop</a>
         </li>
         <li>
@@ -140,10 +141,11 @@ mpvc_web_index()
             <a href="?cmd=mpvc vol +20">+20</a>
         </li>
         <li>
-        theme
-            <a href="#" title="theme 4" onclick="document.body.style.WebkitFilter='invert(0.4)';">th4</a> |
-            <a href="#" title="theme 8" onclick="document.body.style.WebkitFilter='invert(0.8)';">th8</a> |
-            <a href="#" title="toggle" onclick="toggleColorScheme()">toggle</a> |
+        mpvc theme
+            <a href="#" title="theme 2" onclick="document.body.style.WebkitFilter='invert(0.2)';">th2</a>
+            <a href="#" title="theme 4" onclick="document.body.style.WebkitFilter='invert(0.4)';">th4</a>
+            <a href="#" title="theme 8" onclick="document.body.style.WebkitFilter='invert(0.8)';">th8</a>
+            <a href="#" title="toggle" onclick="toggleColorScheme()">toggle</a>
             <a href="." title="reset">rst</a>
         </li>
         </ul>
@@ -361,6 +363,7 @@ mpvc_web()
 
         /GET \/\?cmd=mpvc%20repeat/       { system(mpvc" -q repeat") }
         /GET \/\?cmd=mpvc%20single/       { system(mpvc" -q single") }
+        /GET \/\?cmd=mpvc%20replay/       { system(mpvc" -q replay") }
 
         /GET \/\?cmd=mpvc%20togglev/      { system(mpvc" -q togglev") }
         /GET \/\?cmd=mpvc%20aspect/       { system(mpvc" -q aspect") }
