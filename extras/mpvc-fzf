@@ -7,7 +7,7 @@
 #
 
 PROGNAME=${0##*/}
-PROGVERSION="v1.4"
+PROGVERSION="v1.5"
 PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
 
@@ -99,6 +99,7 @@ mpvctui_fzf_nextvideo()
 mpvctui_fzf_icache()
 {
     # check for media present in local cache
+    quiet mpvc get ytdl-raw-options || cat
     ytdl_json=$(mpvc getr ytdl-raw-options)
     ytdl_archive=$(echo $ytdl_json | jq -r '.data."download-archive"')
     ytdl_output=$(echo $ytdl_json | jq -r ".data.output")

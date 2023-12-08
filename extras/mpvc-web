@@ -14,7 +14,7 @@
 # like a laptop, tablet, or phone.
 
 PROGNAME=${0##*/}
-PROGVERSION="v1.4"
+PROGVERSION="v1.5"
 PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
 PROGINFO="A hack to remotely control mpvc from web # DISCLAIMER * Use at Your Own Risk *"
@@ -39,10 +39,10 @@ mpvc_web_index()
 
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes" />
     <meta http-equiv="Content-Type" content="text/html">
-    <meta http-equiv="cache-control" content="max-age=0" />
-    <meta http-equiv="cache-control" content="no-cache" />
     <meta http-equiv="expires" content="0" />
     <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="Cache-Control" content="no-store" />
+
     $(if [ -n "${MPVC_WEB_REFRESH:-}" ]; then echo "<meta http-equiv=refresh content=$MPVC_WEB_REFRESH>"; fi)
     <link rel="IconFile" href="apple-touch-icon.svg" sizes="64x64">
     <link rel="apple-touch-icon" href="apple-touch-icon.svg">
@@ -61,7 +61,9 @@ mpvc_web_index()
     a    { color: var(--link-color); padding: 0.05rem 0.05rem; }
     </style>
     <link rel="stylesheet" href="style.css" />
-    <script type="text/javascript" src="index.js"></script>
+    <script type="text/javascript">
+        $(mpvc_web_index_js)
+    </script>
 
     <body>
         [ <a href="." name="mpvc-web">$PROGNAME</a> ] <hr>
@@ -70,7 +72,7 @@ mpvc_web_index()
         <!-- enable this optionally: only for dev/testing -->
         <form action="/" method="get">
             mpvc cli
-            <input type="text" id="cli" name="cli" placeholder="mpvc status ${MPVC_WEB_DEV:-(off)}" title="mpvc cli" onkeydown="if (event.keyCode == 13) { this.form.submit(); return false; }">
+            <input type="text" id="cli" name="cli" autocomplete="on" placeholder="mpvc status ${MPVC_WEB_DEV:-(off)}" title="mpvc cli" onkeydown="if (event.keyCode == 13) { this.form.submit(); return false; }">
         </form>
         <li>
             <form action="/" method="get">
@@ -104,6 +106,7 @@ mpvc_web_index()
             mpvc
             <a href="?cmd=mpvc repeat">repeat</a>
             <a href="?cmd=mpvc single">single</a>
+            <a href="?cmd=mpvc replay">replay</a>
             <a href="?cmd=mpvc cmd ab-loop">ab-loop</a>
         </li>
         <li>
@@ -138,29 +141,23 @@ mpvc_web_index()
             <a href="?cmd=mpvc vol +20">+20</a>
         </li>
         <li>
-        theme
-            <a href="#" title="theme 4" onclick="document.body.style.WebkitFilter='invert(0.4)';">th4</a> |
-            <a href="#" title="theme 8" onclick="document.body.style.WebkitFilter='invert(0.8)';">th8</a> |
-            <a href="#" title="toggle" onclick="toggleColorScheme()">toggle</a> |
+        mpvc theme
+            <a href="#" title="theme 2" onclick="document.body.style.WebkitFilter='invert(0.2)';">th2</a>
+            <a href="#" title="theme 4" onclick="document.body.style.WebkitFilter='invert(0.4)';">th4</a>
+            <a href="#" title="theme 8" onclick="document.body.style.WebkitFilter='invert(0.8)';">th8</a>
+            <a href="#" title="toggle" onclick="toggleColorScheme()">toggle</a>
             <a href="." title="reset">rst</a>
         </li>
-<!--
-        <li>
-            mpvc
-            <a href="?cmd=mpvc stop" title="mpvc stop" >⏹️</a>
-            <a href="?cmd=mpvc play" title="mpvc play">▶️</a>
-            <a href="?cmd=mpvc toggle" title="mpvc toggle">⏸️</a> |
-            <a href="?cmd=mpvc seek -60" title="mpvc seek-60">⏪</a>
-            <a href="?cmd=mpvc seek +60" title="mpvc seek+60">⏩</a> |
-            <a href="?cmd=mpvc prev" title="mpvc prev">⏮️</a>
-            <a href="?cmd=mpvc next" title="mpvc next">⏭️</a> |
-            <a href="?cmd=mpvc single" title="mpvc single">🔄</a>
-        </li>
--->
         </ul>
         [ <a href="#mpvc-web-status" name="mpvc-web-status">Status</a> ] <hr>
         <iframe name="mpvc-status" width="100%" height="100%" frameborder="0" src="/cgi-bin/mpvc?status" allowtransparency="true" ></iframe>
-        [ <a href="#mpvc-web-playlist" name="mpvc-web-playlist">Playlist</a> <a href="#mpvc-web-fullplaylist" name="mpvc-web-fullplaylist">full</a> <a href="#mpvc-web-rawplaylist" name="mpvc-web-rawplaylist">raw</a> <a href="#mpvc-web-chapterlist" name="mpvc-web-chapterlist">chapters</a> <a href="." >clear</a> ] <hr>
+        [
+          <a href="#mpvc-web-playlist" name="mpvc-web-playlist">Playlist</a>
+          <a href="#mpvc-web-fullplaylist" name="mpvc-web-fullplaylist">full</a>
+          <a href="#mpvc-web-rawplaylist" name="mpvc-web-rawplaylist">raw</a>
+          <a href="#mpvc-web-chapterlist" name="mpvc-web-chapterlist">chapters</a>
+          <a href="javascript:window.location.reload()" >load</a>
+        ] <hr>
         <div style="display:flex">
         <iframe name="mpvc-playlist" width="100%" frameborder="0" src="/cgi-bin/mpvc?playlist" allowtransparency="true" style="margin:auto" ></iframe>
         <script>
@@ -223,25 +220,24 @@ EOF
 
 mpvc_web_cgi()
 {
-    MPVC=$(command -v mpvc)
     cat <<EOF
 #!/bin/sh
 set -euf
 mpvc_strip_escapes(){ sed '/\x1b\[7m/ { s|\x1b\[7m||; s| |+|; }; s|\x1b\[0m||;'; }
+mpvc() { $MPVC "\$@"; }
+mpvc_out() { echo "Content-Type: text/plain"; echo; $MPVC "\$@"; }
 main()
 {
     if [ -n "\${USER:-}" ]; then
         env -i PATH="/usr/bin:/bin" HOME="\$HOME" TERM="\$TERM" QUERY_STRING="\${QUERY_STRING:-}" "\$0" "\$@"; exit;
     fi
-    echo "Content-Type: text/plain"
-    echo
     case "\${QUERY_STRING:-}" in
-        status)       $MPVC status;;
-        playlist)     $MPVC playlist | mpvc_strip_escapes ;;
-        fullplaylist) $MPVC fullplaylist | mpvc_strip_escapes ;;
-        rawplaylist)  $MPVC saven | mpvc_strip_escapes ;;
-        chapterlist)  $MPVC chapter-list | mpvc_strip_escapes ;;
-        *) $MPVC ;;
+        status)       mpvc_out status;;
+        playlist)     mpvc_out playlist | mpvc_strip_escapes ;;
+        fullplaylist) mpvc_out fullplaylist | mpvc_strip_escapes ;;
+        rawplaylist)  mpvc_out saven | mpvc_strip_escapes ;;
+        chapterlist)  mpvc_out chapter-list | mpvc_strip_escapes ;;
+        *)            mpvc "\$@" ;;
     esac
 }
 main "\$@"
@@ -281,6 +277,8 @@ EOF
 
 mpvc_web_defaults()
 {
+    MPVC=$(command -v mpvc)
+
     MPVC_WEB_HOST=${MPVC_WEB_HOST:-localhost}
     MPVC_WEB_PORT=${MPVC_WEB_PORT:-8000}
     MPVC_WEB_ROOT=${MPVC_WEB_ROOT:-/tmp/mpvc-web/root}
@@ -291,6 +289,8 @@ mpvc_web_defaults()
     MPVC_WEB_SSL_PID=$MPVC_WEB_ROOT/../stunnel.pid
     MPVC_WEB_SSL_ENABLE=${MPVC_WEB_SSL_ENABLE:-}
     MPVC_WEB_SSL_VERIFY=${MPVC_WEB_SSL_VERIFY:-0}
+
+    MPVC_CGI="$MPVC_WEB_ROOT/cgi-bin/mpvc"
 }
 
 mpvc_web_config()
@@ -301,12 +301,16 @@ mpvc_web_config()
         echo "$PROGNAME: Error: No python3 found, install to continue."
         exit
     fi
+    if ! command -v mpvc >/dev/null; then
+        echo "$PROGNAME: Error: No mpvc found, install to continue."
+        exit
+    fi
 }
 
 mpvc_web()
 {
     mpvc_web_config
-    echo "# $PROGNAME $PROGVERSION running (beta version: might contain bugs!)"
+    echo "# $PROGNAME $PROGVERSION running (beta version: might contain bugs!) SSL=${MPVC_WEB_SSL_ENABLE} $MPVC_WEB_HOST:$MPVC_WEB_SSL_PORT"
 
     (
         # setup http webroot
@@ -316,15 +320,13 @@ mpvc_web()
         cd "$MPVC_WEB_ROOT" || return
 
         mpvc_web_index > "$MPVC_WEB_ROOT/index.html"
-        mpvc_web_index_js > "$MPVC_WEB_ROOT/index.js"
         mpvc_web_favicon > "$MPVC_WEB_ROOT/apple-touch-icon.svg"
         [ ! -e "$MPVC_WEB_ROOT/style.css" ] && mpvc_web_style > "$MPVC_WEB_ROOT/style.css"
-        mpvc_web_cgi > "$MPVC_WEB_ROOT/cgi-bin/mpvc"
-        chmod u+x "$MPVC_WEB_ROOT/cgi-bin/mpvc"
+        mpvc_web_cgi > "$MPVC_CGI"
+        chmod u+x "$MPVC_CGI"
 
         # setup https stunnel if requested
-        if [ -n "${MPVC_WEB_SSL_ENABLE:-}" ]; then
-            echo "# Serving HTTPS on https://$MPVC_WEB_HOST:$MPVC_WEB_SSL_PORT"
+        if [ -n "${MPVC_WEB_SSL_ENABLE}" ]; then
             mpvc_web_stunnel_cfg > "$MPVC_WEB_SSL_CFG"
             if [ ! -e "$MPVC_WEB_SSL_PEM" ]; then
                 MPVC_WEB_SSL_SUBJ="/C=CN/ST=ST/O=$PROGNAME/CN=$PROGNAME-$MPVC_WEB_HOSTNAME"
@@ -339,45 +341,47 @@ mpvc_web()
         chmod a-w -R "$MPVC_WEB_ROOT/"
 
         # XXX handle cli commands, rewrite this mess
-        python3 -u -m http.server --cgi --bind "$MPVC_WEB_HOST" "$MPVC_WEB_PORT" "$@" 2>&1 | awk \
+        python3 -u -m http.server --cgi --bind "$MPVC_WEB_HOST" "$MPVC_WEB_PORT" "$@" 2>&1 |
+            awk -v mpvc="$MPVC_CGI" \
         '
-        /GET \/\?cmd=mpvc%20mpv/          { system("mpvc -q mpv") }
-        /GET \/\?cmd=mpvc%20clear/        { system("mpvc -q clear") }
-        /GET \/\?cmd=mpvc%20kill/         { system("mpvc -q kill") }
+        /GET \/\?cmd=mpvc%20mpv/          { system(mpvc" -q mpv") }
+        /GET \/\?cmd=mpvc%20clear/        { system(mpvc" -q clear") }
+        /GET \/\?cmd=mpvc%20kill/         { system(mpvc" -q kill") }
 
-        /GET \/\?cmd=mpvc%20toggle/       { system("mpvc -q toggle") }
-        /GET \/\?cmd=mpvc%20play/         { system("mpvc -q play") }
-        /GET \/\?cmd=mpvc%20start%200/    { system("mpvc -q start 0") }
-        /GET \/\?cmd=mpvc%20start%20$/    { system("mpvc -q start $") }
-        /GET \/\?cmd=mpvc%20stop/         { system("mpvc -q stop") }
-        /GET \/\?cmd=mpvc%20prev/         { system("mpvc -q prev") }
-        /GET \/\?cmd=mpvc%20next/         { system("mpvc -q next") }
+        /GET \/\?cmd=mpvc%20toggle/       { system(mpvc" -q toggle") }
+        /GET \/\?cmd=mpvc%20play/         { system(mpvc" -q play") }
+        /GET \/\?cmd=mpvc%20start%200/    { system(mpvc" -q start 0") }
+        /GET \/\?cmd=mpvc%20start%20$/    { system(mpvc" -q start $") }
+        /GET \/\?cmd=mpvc%20stop/         { system(mpvc" -q stop") }
+        /GET \/\?cmd=mpvc%20prev/         { system(mpvc" -q prev") }
+        /GET \/\?cmd=mpvc%20next/         { system(mpvc" -q next") }
 
-        /GET \/\?cmd=mpvc%20shuffle/      { system("mpvc -q shuffle") }
-        /GET \/\?cmd=mpvc%20unshuffle/    { system("mpvc -q unshuffle") }
+        /GET \/\?cmd=mpvc%20shuffle/      { system(mpvc" -q shuffle") }
+        /GET \/\?cmd=mpvc%20unshuffle/    { system(mpvc" -q unshuffle") }
 
-        /GET \/\?cmd=mpvc%20vol%20.*/     { gsub("%20", " "); system("mpvc -q vol "$(NF-3)); }
+        /GET \/\?cmd=mpvc%20vol%20[+-]?[0-9]+/ { gsub("%20", " "); system(mpvc" -q vol "$(NF-3)); }
 
-        /GET \/\?cmd=mpvc%20repeat/       { system("mpvc -q repeat") }
-        /GET \/\?cmd=mpvc%20single/       { system("mpvc -q single") }
+        /GET \/\?cmd=mpvc%20repeat/       { system(mpvc" -q repeat") }
+        /GET \/\?cmd=mpvc%20single/       { system(mpvc" -q single") }
+        /GET \/\?cmd=mpvc%20replay/       { system(mpvc" -q replay") }
 
-        /GET \/\?cmd=mpvc%20togglev/      { system("mpvc -q togglev") }
-        /GET \/\?cmd=mpvc%20aspect/       { system("mpvc -q aspect") }
-        /GET \/\?cmd=mpvc%20togglew/      { system("mpvc -q togglew") }
-        /GET \/\?cmd=mpvc%20togglef/      { system("mpvc -q togglef") }
-        /GET \/\?cmd=mpvc%20togglei/      { system("mpvc -q togglei") }
+        /GET \/\?cmd=mpvc%20togglev/      { system(mpvc" -q togglev") }
+        /GET \/\?cmd=mpvc%20aspect/       { system(mpvc" -q aspect") }
+        /GET \/\?cmd=mpvc%20togglew/      { system(mpvc" -q togglew") }
+        /GET \/\?cmd=mpvc%20togglef/      { system(mpvc" -q togglef") }
+        /GET \/\?cmd=mpvc%20togglei/      { system(mpvc" -q togglei") }
 
-        /GET \/\?cmd=mpvc%20cstart/       { system("mpvc -q cplay 0") }
-        /GET \/\?cmd=mpvc%20creplay/      { system("mpvc -q chapter-replay") }
-        /GET \/\?cmd=mpvc%20cprev/        { system("mpvc -q chapter-prev") }
-        /GET \/\?cmd=mpvc%20cnext/        { system("mpvc -q chapter-next") }
+        /GET \/\?cmd=mpvc%20cstart/       { system(mpvc" -q cplay 0") }
+        /GET \/\?cmd=mpvc%20creplay/      { system(mpvc" -q chapter-replay") }
+        /GET \/\?cmd=mpvc%20cprev/        { system(mpvc" -q chapter-prev") }
+        /GET \/\?cmd=mpvc%20cnext/        { system(mpvc" -q chapter-next") }
 
         /GET \/\?cli=mpvc/                {
             r=$0;
             gsub("HTTP.*$", "", r);
-            gsub("^.*GET \\/\\?cli=mpvc\\+", "mpvc ", r);
+            gsub("^.*GET \\/\\?cli=mpvc\\+", mpvc" ", r);
 
-            if (ENVIRON["MPVC_WEB_DEV"] && match(r, "^mpvc"))
+            if (ENVIRON["MPVC_WEB_DEV"] && match(r, "^"mpvc))
             {
                 gsub("(mpvc) [^a-zA-Z0-9 ]", "", r);
                 gsub("\\+", " ", r);
