@@ -154,10 +154,10 @@ mpvc_defaults()
     # print default status of mpv instance
     if [ -z "$FORMATSTRING" ]; then
         FORMATSTRING="\
-%artist% - %title% NL\
-[%status%] #%position%/%playlistlength% %time%/%length% (%percentage%%%) NL\
-speed:%speed%x volume:%volume%%% muted:%muted% repeat:%repeat% single:%single% NL\
-video:%video% aspect:%aspect% win:%force-window% fs:%fullscreen% idle:%idle% NL\
+%artist% - %title% \r\
+[%status%] #%position%/%playlistlength% %time%/%length% (%percentage%%%) \r\
+speed:%speed%x volume:%volume%%% muted:%muted% repeat:%repeat% single:%single% \r\
+video:%video% aspect:%aspect% win:%force-window% fs:%fullscreen% idle:%idle% \r\
 chapter:%chapter% %=chapter%/%chapters%"
     fi
 }
@@ -783,7 +783,7 @@ mpvc_print_status() {
             -e "s/%status%/$(mpvc_get_pause_status)/g" \
             -e ''
     )
-    mpvc_cmd "expand-text" "${F}" | sed 's/NL/\n/g'
+    mpvc_cmd "expand-text" "${F}" | sed 's/ \\r/\n/g'
 }
 
 mpvc_print_status_final() {
