@@ -84,6 +84,11 @@ EOF
     stash                   : Manage mpv playing state as in git-stash(1)
     delay                   : Sleep delay, as in: $PROGNAME play 0 delay seek 20% vol 60
 
+    (--)?expand-text        : Expand text as documented in mpv(1) Property Expansion
+    (--)?metadata           : Retrieve current playing media metadata
+    (--)?filename           : Retrieve current playing media filename
+    (--)?replay             : Replay current playing media
+
     cprev | chapter-prev    : Jump to previous entry in the chapter-list
     cnext | chapter-next    : Jump to next entry in the chapter-list
     cplay | chapter-play    : Play the given chapter
@@ -989,11 +994,11 @@ main() {
             --stash|stash)                   shift; mpvc_stash "${1:-}" "${2:-}";;
             --expand-text|expand-text)       shift; mpvc_cmd expand-text "$@"; return;;
             --metadata|metadata)             shift; mpvc_cmdr get_property metadata "$@"; return;;
+            --filename|filename)             shift; mpvc_get_playlist_filename "$@"; return;;
             --replay|replay)                 mpvc_set_time "absolute" 0 ;;
 
             ytquery)                         shift; mpvc_curl_cache_title_clean "$@"; return;;
             ytqueryjson)                     shift; mpvc_curl_cache_json "$@"; return;;
-            filename)                        shift; mpvc_get_playlist_filename "$@"; return;;
 
             cprev|--chapter-prev|chapter-prev)            mpvc_chapter_prev ;;
             cnext|--chapter-next|chapter-next)            mpvc_chapter_next ;;
