@@ -265,7 +265,7 @@ mpvc_cmdr_() {
 mpvc_cmdr() { equiet mpvc_sockcmd_ "$(q='"' mpvc_cmdr_ "$@")"; }
 mpvc_ecmdr() {
     ret=$(mpvc_cmdr "$@")
-    case "$ret" in *"success"*) ;; *) echo "$ret"; return 1 ;; esac
+    case "$ret" in *"success"*|'') ;; *) echo "$ret"; return 1 ;; esac
 }
 
 mpvc_cmd()   { mpvc_cmdr "$@" | mpvc_getjson 'data'; }
