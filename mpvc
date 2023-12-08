@@ -546,10 +546,12 @@ mpvc_play_now() {
 mpvc_play_next() {
     QUIETFLAG="true"
     # add track to the playlist & move to next position
-    mpvc_appendtracks "$1"
+    mpvc_appendtracks "$@"
     lid_last="$(( $(mpvc_get playlist-count) - 1 ))"
     lid_next="$(( $(mpvc_get playlist-pos) + 1 ))"
-    mpvc_move_track "$lid_last" "$lid_next"
+    for f in "$@"; do
+        mpvc_move_track "$lid_last" "$lid_next"
+    done
 }
 
 mpvc_set_time() {
@@ -934,7 +936,9 @@ main() {
             pretty)         die 1 "$PROGNAME: Error $* not implemented" ;;
             find)           die 1 "$PROGNAME: Error $* not implemented" ;;
 
-            add|-a|--append)    shift; mpvc_appendtracks "$@"; ;;
+            -a|add|--append)         shift; mpvc_appendtracks "$@"; ;;
+            -A|--playnext|playnext)  shift; mpvc_play_next "$@" ;;
+            -n|--playnow|playnow)    shift; mpvc_play_now "$@" ;;
             #replace|--replace) shift; mpvc_replacetracks "$@" ;;
 
             # consume) to implement # add on|off toggle
@@ -950,8 +954,6 @@ main() {
             -j|--track|track)                shift; mpvc_set_track "${1:-}" relative  ;;
             -J|--tracknum|tracknum)          shift; mpvc_set_track "${1:-}" absolute  ;;
             -r|--remove|rm|remove|del)       shift; mpvc_remove_track "${1:-}"; QUIETFLAG=true;;
-            -A|--playnext|playnext)          shift; mpvc_play_next "${1:-}" ;;
-            -n|--playnow|playnow)            shift; mpvc_play_now "${1:-}" ;;
             -o|--save|save)                  shift; mpvc_save_playlist "${1:-}" ;;
             --load|load)                     shift; mpvc_load_playlist      ;;
 
