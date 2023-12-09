@@ -878,6 +878,7 @@ mpvc_get_version() {
 }
 
 mpvc_idleloop() { $MPVC_SOCAT -t0 -,ignoreeof "$MPVC_SOCKET"; }
+mpvc_idle() { mpvc_observe_property "$1" | awk "/$1/ { print; exit }"; }
 mpvc_observe_property() { q='' mpvc_cmdr_ '"observe_property_string"' 1 "\"$1\"" | mpvc_idleloop; }
 
 mpvc_delay() { sleep "${1:-0.1}"; }
@@ -977,6 +978,7 @@ main() {
             --togglev|togglev)               shift; mpvc_cycle "video" ;;
             --togglew|togglew)               shift; mpvc_cycle "force-window" ;;
             --togglei|togglei)               shift; mpvc_cycle "idle" ;;
+            --idle|idle)                     shift; mpvc_idle "${1:-}"; QUIETFLAG=true ;;
             --idleloop|idleloop)             shift; mpvc_idleloop "${1:-}"; QUIETFLAG=true ;;
             --observe|observe)               shift; mpvc_observe_property "${1:-}"; QUIETFLAG=true ;;
             --cmd|cmd)                       shift; mpvc_cmd "$@"; return ;;
