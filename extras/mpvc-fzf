@@ -114,10 +114,10 @@ mpvctui_fzf_icache()
 
     while read -r line
     do
-        url=$(echo "$line" | awk '{ gsub("watch\\?v=",""); print $1 }')
+        url=$(echo "$line" | awk '/https:/ { gsub("watch\\?v=",""); print $1 }')
         vid=$(basename "$url")
         file=$(find $ytdl_dir/ 2>/dev/null | awk "/$vid/ { print; exit }")
-        if [ -e "$file" ]; then # quiet grep -q "$vid" $ytdl_archive
+        if [ -n "$url" -a -e "$file" ]; then # quiet grep -q "$vid" $ytdl_archive
             echo "$file"
         else
             echo "$line"
