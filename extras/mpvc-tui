@@ -268,6 +268,12 @@ mpvctui_notify()
         } '
 }
 
+mpvctui_notify_loop()
+{
+    # mpvc idleloop | mpvctui_notify "$@"
+    while sleep 10; do mpvc idleloop | mpvctui_notify "$@"; done
+}
+
 mpvctui_suggest()
 {
     awk '
@@ -324,8 +330,8 @@ mpvctui_main()
                   mpvctui_watch
                   ;;
         m) shift; mpvctui_mouse "$OPTARG" ;;
-        n) shift; mpvc idleloop | mpvctui_notify ;;
-        N) shift; mpvc idleloop | mpvctui_notify "$OPTARG" ;;
+        n) shift; mpvctui_notify_loop ;;
+        N) shift; mpvctui_notify_loop "$OPTARG" ;;
         s) shift; mpvctui_suggest ;;
         x) shift; if quiet command -v $MPVC_TERM; then $MPVC_TERM -e "$0" "$@"; fi; exit;;
         *) mpvctui_usage;;
