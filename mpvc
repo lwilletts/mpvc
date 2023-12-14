@@ -94,7 +94,7 @@ EOF
     cplay | chapter-play    : Play the given chapter
     creplay | chapter-replay: Replay current chapter
     clist | chapter-list    : Output current chapter-list
-    chapter-list-json       : Output current chapter-list (json)
+    clistj|chapter-list-json: Output current chapter-list (json)
     csearch | chapter-search: Search current chapter-list
     chapter-searchplay      : Search and play the current chapter-list
 
