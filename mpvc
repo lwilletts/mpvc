@@ -538,6 +538,9 @@ mpvc_appendtracks() {
     done
 }
 
+mpvc_get_random() { od -vAn -N2 -tu2 < /dev/urandom; }
+mpvc_play_random() { mpvc_set_track "$(mpvc_get_random)" "absolute"; }
+
 mpvc_play_now() {
     mpvc_play_next "$@"
     mpvc_set_track 1 relative
@@ -747,6 +750,7 @@ mpvc_chapter_next()   { mpvc_chapter_set $(( ( $(mpvc_get chapter) + 1 ) % $(mpv
 mpvc_chapter_prev()   { mpvc_chapter_set $(( ( $(mpvc_get chapter) - 1 ) % $(mpvc_get chapter-list/count) )); }
 mpvc_chapter_set()    { if [ "$(mpvc_get "chapter-list/count")" -gt 0 ]; then mpvc_set "chapter" "$1"; fi; }
 
+mpvc_chapter_play_random() { mpvc_chapter_set "$(mpvc_get_random)" ; }
 mpvc_chapter_search() { mpvc_nocolor mpvc_chapter_list | awk "/$*/ {print NR-1; exit};"; }
 mpvc_chapter_search_play()
 {
@@ -940,6 +944,7 @@ main() {
             -a|add|--append)         shift; mpvc_appendtracks "$@"; ;;
             -A|--playnext|playnext)  shift; mpvc_play_next "$@" ;;
             -n|--playnow|playnow)    shift; mpvc_play_now "$@" ;;
+               --playrand|playrand)  shift; mpvc_play_random "$@" ;;
             #replace|--replace) shift; mpvc_replacetracks "$@" ;;
 
             # consume) to implement # add on|off toggle
@@ -1007,6 +1012,7 @@ main() {
             cprev|--chapter-prev|chapter-prev)            mpvc_chapter_prev ;;
             cnext|--chapter-next|chapter-next)            mpvc_chapter_next ;;
             cplay|--chapter-play|chapter-play)            shift; mpvc_chapter_set "${1:-}" ;;
+            cplayrand|--cplayrand)                        shift; mpvc_chapter_play_random "$@" ;;
             creplay|--chapter-replay|chapter-replay)      mpvc_chapter_replay ;;
             clist|--chapter-list|chapter-list)            mpvc_chapter_list "numbered"; QUIETFLAG=true;;
             clistj|--chapter-list-json|chapter-list-json) mpvc_chapter_list_json; QUIETFLAG=true;;
