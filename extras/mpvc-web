@@ -98,7 +98,7 @@ mpvc_web_index()
             <a href="?cmd=mpvc play">play</a>
             <a href="?cmd=mpvc start 0">start</a>
             <a href="?cmd=mpvc start $">end</a>
-            <a href="?cmd=mpvc stop">stop</a>
+            <a href="?cmd=mpvc playrand">rand</a>
             <a href="?cmd=mpvc prev">prev</a>
             <a href="?cmd=mpvc next">next</a>
         </li>
@@ -125,7 +125,7 @@ mpvc_web_index()
         </li>
         <li>
             mpvc ch
-            <a href="?cmd=mpvc cstart">cstart</a>
+            <a href="?cmd=mpvc cplayrand">crand</a>
             <a href="?cmd=mpvc creplay">creplay</a>
             <a href="?cmd=mpvc cprev">cprev</a>
             <a href="?cmd=mpvc cnext">cnext</a>
@@ -364,6 +364,7 @@ mpvc_web()
         /GET \/\?cmd=mpvc%20stop/         { system(mpvc" -q stop") }
         /GET \/\?cmd=mpvc%20prev/         { system(mpvc" -q prev") }
         /GET \/\?cmd=mpvc%20next/         { system(mpvc" -q next") }
+        /GET \/\?cmd=mpvc%20playrand/     { system(mpvc" -q playrand") }
 
         /GET \/\?cmd=mpvc%20shuffle/      { system(mpvc" -q shuffle") }
         /GET \/\?cmd=mpvc%20unshuffle/    { system(mpvc" -q unshuffle") }
@@ -385,6 +386,7 @@ mpvc_web()
         /GET \/\?cmd=mpvc%20creplay/      { system(mpvc" -q chapter-replay") }
         /GET \/\?cmd=mpvc%20cprev/        { system(mpvc" -q chapter-prev") }
         /GET \/\?cmd=mpvc%20cnext/        { system(mpvc" -q chapter-next") }
+        /GET \/\?cmd=mpvc%20cplayrand/    { system(mpvc" -q cplayrand") }
 
         /GET \/\?cli=mpvc/                {
             r=$0;
