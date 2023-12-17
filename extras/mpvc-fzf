@@ -96,6 +96,11 @@ mpvctui_fzf_nextvideo()
     echo "$next_url"
 }
 
+mpvctui_fzf_icache_ytdlro() { mpvc getr ytdl-raw-options; }
+mpvctui_fzf_icache_output() { mpvctui_fzf_icache_ytdlro | jq -r ".data.output"; }
+mpvctui_fzf_icache_output_dir() { eval echo $( dirname $(mpvctui_fzf_icache_output) ); }
+mpvctui_fzf_icache_archive() { mpvctui_fzf_icache_ytdlro | jq -r ".data.download-archive"; }
+
 mpvctui_fzf_icache()
 {
     # check for media present in local cache
@@ -223,7 +228,7 @@ mpvctui_version()
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
 }
 
-optflags="01cCd:DfFg:G:hn:s:p:P:lxv"
+optflags="01cCd:DfFg:G:hn:s:p:P:oOlxv"
 mpvctui_usage()
 {
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
@@ -263,6 +268,8 @@ main()
         h) mpvctui_usage ;;
         l) mpvctui_fzf_local;;
         n) mpvctui_fzf_nextvideo "$OPTARG" ;;
+        o) mpvctui_fzf_icache_output_dir;;
+        O) mpvctui_fzf_icache_output ;;
         p) mpvctui_fzf_iplay "$OPTARG" | mpvc load ;;
         P) mpvctui_fzf_iplay "$OPTARG" | mpvc loadc ;;
         s) mpvctui_fzf_isearch "$OPTARG";;
