@@ -748,9 +748,9 @@ mpvc_chapter_list()
 mpvc_chapter_replay() { mpvc_chapter_set "$(mpvc_get chapter)"; }
 mpvc_chapter_next()   { mpvc_chapter_set $(( ( $(mpvc_get chapter) + 1 ) % $(mpvc_get chapter-list/count) )); }
 mpvc_chapter_prev()   { mpvc_chapter_set $(( ( $(mpvc_get chapter) - 1 ) % $(mpvc_get chapter-list/count) )); }
-mpvc_chapter_set()    { if [ "$(mpvc_get "chapter-list/count")" -gt 0 ]; then mpvc_set "chapter" "$1"; fi; }
+mpvc_chapter_set()    { if [ "$(mpvc_get "chapters")" -gt 0 ]; then mpvc_set "chapter" "$1"; fi; }
 
-mpvc_chapter_play_random() { mpvc_chapter_set "$(mpvc_get_random)" ; }
+mpvc_chapter_play_random() { mpvc_chapter_set "$(( $(mpvc_get_random) % $(mpvc_get "chapters") ))" ; }
 mpvc_chapter_search() { mpvc_nocolor mpvc_chapter_list | awk "/$*/ {print NR-1; exit};"; }
 mpvc_chapter_search_play()
 {
