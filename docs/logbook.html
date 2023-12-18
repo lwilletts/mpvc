@@ -375,16 +375,22 @@ $ grep mpvc ~/.bashrc
     alias mh="alias | grep mpvc"
     alias mi="mpvc -i"
     alias mI="mpvc -I"
+    alias mc="mpvc-chapter"
     alias mci="mpvc chapter-list"
     alias me="mpvc-equalizer"
-    alias mff="mpvc-fzf"
-    alias mfff="mpvc-fzf -f"
-    alias mffl="mpvc-fzf -l"
-    alias mffp="mpvc-fzf -p"
-    alias mffc="mpvc-fzf -c"
+    alias mtt="mpvc-tui"
     alias mm="mpvc-mpris"
-    alias mt="mpvc-tui"
     alias mw="mpvc-web"
+    alias mff="mpvc-fzf"
+    alias mffc="mpvc-fzf -c"
+    alias mfff="mpvc-fzf -f"
+    alias mffg="mpvc-fzf -g"
+    alias mffG="mpvc-fzf -G"
+    alias mffl="mpvc-fzf -l"
+    alias mffo="mpvc-fzf -o"
+    alias mffp="mpvc-fzf -p"
+    alias xargn="xargs -n1"    # xargn mpvc
+    rseq() { seq "$@" | tac; } # rseq | xargn mpvc cmd
 </pre>
 </p>
 
