@@ -158,6 +158,32 @@ mpvctui_fzf_fetch()
     "$ytdlp" $ytdl_opts ${YTDL_OPTS:-} "$@"
 }
 
+mpvctui_fzf_fetch_remove()
+{
+    if [ -z "$1" ]
+    then
+        mpvctui_warn "$PROGNAME: Error missing ytdl-video-id to remove"
+        return
+    fi
+    ytdl_id="$1"
+
+    ytdl_json=$(mpvc getr ytdl-raw-options)
+    ytdl_archive=$(echo $ytdl_json | jq -r '.data."download-archive"')
+    ytdl_output=$(echo $ytdl_json | jq -r ".data.output")
+    ytdl_archive=$(eval echo $ytdl_archive)
+    ytdl_dir=$(dirname $ytdl_output)
+    ytdl_dir=$(eval echo $ytdl_dir)
+
+    if [ -z "$ytdl_json" -o ! -r "$ytdl_archive" -o ! -n "$ytdl_output" ]
+    then
+        mpvctui_warn "$PROGNAME: Error cache not enabled: undefined ytdl-raw-options"
+        return
+    fi
+
+    rm -i "$(find "$ytdl_dir" | grep "$ytdl_id")"
+    sed -i "/$ytdl_id/ s|^|#|" "$ytdl_archive"
+}
+
 mpvctui_fzf_iplay()
 {
     mpvctui_fzf_isearch "$1" |
@@ -228,7 +254,7 @@ mpvctui_version()
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
 }
 
-optflags="01cCd:DfFg:G:hn:s:p:P:oOlxv"
+optflags="01cCd:DfFg:G:hn:s:p:P:oOr:lxv"
 mpvctui_usage()
 {
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
@@ -237,7 +263,7 @@ mpvctui_usage()
     echo "  -D : Search & play media using DuckDuckGo (fzf*)"
     echo "  -f : Start fzf to manage the current mpv playist (fzf*)"
     echo "  -g : Fetch provided YT URL, and store locally (fzf*)"
-    echo "  -G : Search for provided query , fetch, and store locally (fzf*)"
+    echo "  -G : Search for provided query, fetch, and store locally (fzf*)"
     echo "  -l : Search & play local media (fzf*)"
     echo "  -s : Search for media using Invidious (fzf*)"
     echo "  -p : Search & play media found using Invidious (fzf*)"
@@ -270,6 +296,7 @@ main()
         n) mpvctui_fzf_nextvideo "$OPTARG" ;;
         o) mpvctui_fzf_icache_output_dir;;
         O) mpvctui_fzf_icache_output ;;
+        r) mpvctui_fzf_fetch_remove "$OPTARG" ;;
         p) mpvctui_fzf_iplay "$OPTARG" | mpvc load ;;
         P) mpvctui_fzf_iplay "$OPTARG" | mpvc loadc ;;
         s) mpvctui_fzf_isearch "$OPTARG";;
