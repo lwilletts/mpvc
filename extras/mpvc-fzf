@@ -109,8 +109,7 @@ mpvctui_fzf_icache()
     ytdl_archive=$(echo $ytdl_json | jq -r '.data."download-archive"')
     ytdl_output=$(echo $ytdl_json | jq -r ".data.output")
     ytdl_archive=$(eval echo $ytdl_archive)
-    if [ -z "$ytdl_json" -o ! -r "$ytdl_archive" -o ! -n "$ytdl_output" ]
-    then
+    if [ -z "$ytdl_json" -o ! -r "$ytdl_archive" -o ! -n "$ytdl_output" ]; then
         mpvctui_warn "$PROGNAME: Error cache not enabled: undefined ytdl-raw-options"
         if cat; then return; fi
     fi
@@ -137,8 +136,10 @@ mpvctui_fzf_fetch()
     ytdl_opts=""
     ytdlp=$(command -v youtube-dl || command -v yt-dlp)
     if [ ! -x "$ytdlp" ]; then
-        mpvctui_warn "$PROGNAME: Warning: No yt-dlp, Install to get support!"
+        mpvctui_warn "$PROGNAME: Warning: No yt-dlp, Install to get ytdl support!"
     fi
+
+    mpvc -q --mpv
 
     ytdl_json=$(mpvc getr ytdl-raw-options)
     if [ -z "$ytdl_json" ]; then
@@ -160,8 +161,7 @@ mpvctui_fzf_fetch()
 
 mpvctui_fzf_fetch_remove()
 {
-    if [ -z "$1" ]
-    then
+    if [ -z "$1" ]; then
         mpvctui_warn "$PROGNAME: Error missing ytdl-video-id to remove"
         return
     fi
@@ -174,8 +174,7 @@ mpvctui_fzf_fetch_remove()
     ytdl_dir=$(dirname $ytdl_output)
     ytdl_dir=$(eval echo $ytdl_dir)
 
-    if [ -z "$ytdl_json" -o ! -r "$ytdl_archive" -o ! -n "$ytdl_output" ]
-    then
+    if [ -z "$ytdl_json" -o ! -r "$ytdl_archive" -o ! -n "$ytdl_output" ]; then
         mpvctui_warn "$PROGNAME: Error cache not enabled: undefined ytdl-raw-options"
         return
     fi
@@ -289,7 +288,7 @@ main()
         #D) shift; mpvctui_fzf_ddg "$@";;
         f) mpvctui_fzf_playlist ;;
         F) shift; mpvctui_fzf_preview "$@" ;;
-        g) mpvc -q --mpv && mpvctui_fzf_fetch "$OPTARG";;
+        g) mpvctui_fzf_fetch "$OPTARG";;
         G) mpvctui_fzf_fetch $(mpvctui_fzf_iplay "$OPTARG");;
         h) mpvctui_usage ;;
         l) mpvctui_fzf_local;;
