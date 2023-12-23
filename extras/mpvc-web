@@ -314,6 +314,9 @@ mpvc_web_config()
         echo "$PROGNAME: Error: No mpvc found, install to continue."
         exit
     fi
+    if ! command -v stunnel >/dev/null; then
+        echo "$PROGNAME: Warning: No stunnel found, install to support SSL."
+    fi
 }
 
 mpvc_web()
@@ -323,10 +326,10 @@ mpvc_web()
 
     (
         # setup http webroot
-        chmod u+w -R "${MPVC_WEB_ROOT%/*}"
         mkdir -p "$MPVC_WEB_ROOT" || return
         mkdir -p "$MPVC_WEB_ROOT/cgi-bin/" || return
         cd "$MPVC_WEB_ROOT" || return
+        chmod u+w -R "${MPVC_WEB_ROOT%/*}"
 
         mpvc_web_index > "$MPVC_WEB_ROOT/index.html"
         mpvc_web_favicon > "$MPVC_WEB_ROOT/apple-touch-icon.svg"
