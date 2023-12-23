@@ -164,19 +164,18 @@ mpvc_web_index()
           <a href="#mpvc-web-playlist" name="mpvc-web-playlist">Playlist</a>
           <a href="#mpvc-web-fullplaylist" name="mpvc-web-fullplaylist">full</a>
           <a href="#mpvc-web-rawplaylist" name="mpvc-web-rawplaylist">raw</a>
-          <a href="#mpvc-web-chapterlist" name="mpvc-web-chapterlist">chapters</a>
+          <a href="#mpvc-web-chapter-list-full" name="mpvc-web-chapter-list-full">chapters</a>
           <a href="javascript:window.location.reload()" >load</a>
         ] <hr>
         <div style="display:flex">
         <iframe name="mpvc-playlist" width="100%" frameborder="0" src="/cgi-bin/mpvc?playlist" allowtransparency="true" style="margin:auto" ></iframe>
         <script>
-        var playlist = document.getElementsByName('mpvc-playlist')[0];
-        switch (window.location.hash)
-        {
-            case '#mpvc-web-playlist':      { playlist.src='/cgi-bin/mpvc?playlist'; break; }
-            case '#mpvc-web-fullplaylist':  { playlist.src='/cgi-bin/mpvc?fullplaylist'; break; }
-            case '#mpvc-web-rawplaylist':   { playlist.src='/cgi-bin/mpvc?rawplaylist'; break; }
-            case '#mpvc-web-chapterlist':   { playlist.src='/cgi-bin/mpvc?chapterlist'; break; }
+        var pl = document.getElementsByName('mpvc-playlist')[0];
+        switch (window.location.hash) {
+        case '#mpvc-web-playlist':           { pl.src='/cgi-bin/mpvc?playlist'; break; }
+        case '#mpvc-web-fullplaylist':       { pl.src='/cgi-bin/mpvc?fullplaylist'; break; }
+        case '#mpvc-web-rawplaylist':        { pl.src='/cgi-bin/mpvc?rawplaylist'; break; }
+        case '#mpvc-web-chapter-list-full':  { pl.src='/cgi-bin/mpvc?chapter-list-full'; break; }
         }
         </script>
         </div>
@@ -241,11 +240,12 @@ main()
         env -i PATH="/usr/bin:/bin" HOME="\$HOME" TERM="\$TERM" QUERY_STRING="\${QUERY_STRING:-}" "\$0" "\$@"; exit;
     fi
     case "\${QUERY_STRING:-}" in
-        status)       mpvc_out status;;
-        playlist)     mpvc_out playlist | mpvc_strip_escapes ;;
-        fullplaylist) mpvc_out fullplaylist | mpvc_strip_escapes ;;
-        rawplaylist)  mpvc_out saven | mpvc_strip_escapes ;;
-        chapterlist)  mpvc_out chapter-list | mpvc_strip_escapes ;;
+        status)           mpvc_out status;;
+        playlist)         mpvc_out playlist | mpvc_strip_escapes ;;
+        fullplaylist)     mpvc_out fullplaylist | mpvc_strip_escapes ;;
+        rawplaylist)      mpvc_out saven | mpvc_strip_escapes ;;
+        chapter-list)      mpvc_out chapter-list | mpvc_strip_escapes ;;
+        chapter-list-full) mpvc_out chapter-list-full | mpvc_strip_escapes ;;
         *)            mpvc "\$@" ;;
     esac
 }
