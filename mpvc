@@ -716,33 +716,41 @@ mpvc_chapter_list_json()
 
 mpvc_chapter_list()
 {
-    numbered="${1:-}"
-    cchapter=$(mpvc_get chapter)
+    mode="${1:-}"
+    chapter_pos=$(mpvc_get chapter)
+    chapter_count=$(mpvc_get chapters)
 
+    FIRSTLAST=$(mpvc_get_terminal_height "$chapter_pos" "$chapter_count")
     mpvc_chapter_list_json |
         grep -o '"title":".*' | sed 's/"title":"//; s/","time":.*$//' |
-        awk -v no_color="${NO_COLOR:-}" -v numbered="$numbered" -v cchapter="$cchapter" '
+        awk -v mode="$mode" -v chapter_pos="$chapter_pos" -v first="${FIRSTLAST%% *}" -v last="${FIRSTLAST##* }" '
         {
             chapternr = NR-1
-            if (cchapter == chapternr)
+            if (!(first <= chapternr && chapternr <= last) && (mode == "short"))
             {
-                if (no_color)
+                next
+            }
+
+            if (chapter_pos == chapternr)
+            {
+                if (ENVIRON["NO_COLOR"])
                 {
-                    if (numbered) printf("%2d  %s\n", chapternr, $0);
+                    if (mode == "numbered") printf("%2d  %s\n", chapternr, $0);
                     else printf("%s\n", $0);
                 }
                 else
                 {
-                    if (numbered) printf("%2d  \033[7m%s\033[0m\n", chapternr, $0);
+                    if (mode == "numbered") printf("%2d  \033[7m%s\033[0m\n", chapternr, $0);
                     else printf("\033[7m%s\033[0m\n", $0);
                 }
             }
             else
             {
-                if (numbered) printf("%2d  %s\n", chapternr, $0);
+                if (mode == "numbered") printf("%2d  %s\n", chapternr, $0);
                 else printf("%s\n", $0);
             }
         }'
+        QUIETFLAG=true
 }
 
 mpvc_chapter_replay() { mpvc_chapter_set "$(mpvc_get chapter)"; }
@@ -751,7 +759,7 @@ mpvc_chapter_prev()   { mpvc_chapter_set $(( ( $(mpvc_get chapter) - 1 ) % $(mpv
 mpvc_chapter_set()    { if [ "$(mpvc_get "chapters")" -gt 0 ]; then mpvc_set "chapter" "$1"; fi; }
 
 mpvc_chapter_play_random() { mpvc_chapter_set "$(( $(mpvc_get_random) % $(mpvc_get "chapters") ))" ; }
-mpvc_chapter_search() { mpvc_nocolor mpvc_chapter_list | awk "/$*/ {print NR-1; exit};"; }
+mpvc_chapter_search() { mpvc_nocolor mpvc_chapter_list "full" | awk "/$*/ {print NR-1; exit};"; }
 mpvc_chapter_search_play()
 {
     chapter=$(mpvc_chapter_search "$@")
@@ -1014,7 +1022,9 @@ main() {
             cplay|--chapter-play|chapter-play)            shift; mpvc_chapter_set "${1:-}" ;;
             cplayrand|--cplayrand)                        shift; mpvc_chapter_play_random "$@" ;;
             creplay|--chapter-replay|chapter-replay)      mpvc_chapter_replay ;;
-            clist|--chapter-list|chapter-list)            mpvc_chapter_list "numbered"; QUIETFLAG=true;;
+            clist|--chapter-list|chapter-list)            mpvc_chapter_list "short";;
+            clistf|--chapter-list-full|chapter-list-full) mpvc_chapter_list "full";;
+            clistn|--chapter-list-nr|chapter-list-nr)     mpvc_chapter_list "numbered";;
             clistj|--chapter-list-json|chapter-list-json) mpvc_chapter_list_json; QUIETFLAG=true;;
             csearch|--chapter-search|chapter-search)      shift; mpvc_chapter_search "${1:-}"; QUIETFLAG=true;;
             csplay|csearchplay|--chapter-searchplay|chapter-searchplay)      shift; mpvc_chapter_search_play "${1:-}"; QUIETFLAG=true;;
