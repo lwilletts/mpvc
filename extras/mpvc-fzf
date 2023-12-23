@@ -7,6 +7,7 @@
 #
 
 PROGNAME=${0##*/}
+PROGDIR=${0%/*}
 PROGVERSION="v1.5"
 PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
@@ -15,6 +16,7 @@ set -euf
 
 quiet()  { "$@" > /dev/null 2>&1; }
 mpvctui_warn() { echo "$@" >&2; }
+mpvc() { $PROGDIR/mpvc "$@"; }
 
 # Set defaults
 mpvctui_defaults()
