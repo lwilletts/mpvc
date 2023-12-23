@@ -717,8 +717,8 @@ mpvc_chapter_list_json()
 mpvc_chapter_list()
 {
     mode="${1:-}"
-    chapter_pos=$(mpvc_get chapter)
-    chapter_count=$(mpvc_get chapters)
+    chapter_pos=$(mpvc_get "chapter")
+    chapter_count=$(mpvc_get "chapter-list/count")
 
     FIRSTLAST=$(mpvc_get_terminal_height "$chapter_pos" "$chapter_count")
     mpvc_chapter_list_json |
@@ -756,7 +756,7 @@ mpvc_chapter_list()
 mpvc_chapter_replay() { mpvc_chapter_set "$(mpvc_get chapter)"; }
 mpvc_chapter_next()   { mpvc_chapter_set $(( ( $(mpvc_get chapter) + 1 ) % $(mpvc_get chapter-list/count) )); }
 mpvc_chapter_prev()   { mpvc_chapter_set $(( ( $(mpvc_get chapter) - 1 ) % $(mpvc_get chapter-list/count) )); }
-mpvc_chapter_set()    { if [ "$(mpvc_get "chapters")" -gt 0 ]; then mpvc_set "chapter" "$1"; fi; }
+mpvc_chapter_set()    { if [ "$(mpvc_get "chapter-list/count")" -gt 0 ]; then mpvc_set "chapter" "$1"; fi; }
 
 mpvc_chapter_play_random() { mpvc_chapter_set "$(( $(mpvc_get_random) % $(mpvc_get "chapters") ))" ; }
 mpvc_chapter_search() { mpvc_nocolor mpvc_chapter_list "full" | awk "/$*/ {print NR-1; exit};"; }
