@@ -7,6 +7,7 @@
 #
 
 PROGNAME=${0##*/}
+PROGDIR=${0%/*}
 PROGVERSION="v1.5"
 PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
@@ -523,7 +524,7 @@ mpvc_appendtrack() {
     esac
     if [ -n "$filename" ]; then
         # cache media here if media is found in local storage
-        if [ "$MPVC_LOCAL_CACHE" = "true" ]; then filename=$(echo "$filename" | mpvc-fzf -C); fi
+        if [ "$MPVC_LOCAL_CACHE" = "true" ]; then filename=$(echo "$filename" | $PROGDIR/mpvc-fzf -C); fi
         mpvc_ecmdr "loadfile" "$filename" "append-play" || return 1
         echo "Adding: $(mpvc_curl_cache_title_clean "$filename")"
     fi
