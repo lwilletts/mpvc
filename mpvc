@@ -229,7 +229,7 @@ mpvc_curl_cache_metadata_json() {
             result="$(mpvc_curl_cache_json "$filename")"
             ;;
         *) # otherwise, assume its a local file
-            result="{ \"title\": \"${filename##*/}\" }";
+            result="{ \"title\":${filename##*/}, }";
             ;;
     esac
     printf "$result\n"
