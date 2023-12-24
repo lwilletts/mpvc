@@ -209,36 +209,35 @@ mpvc_curl_cache_json()
     mpvc_curl_cache -sL "https://youtube.com/oembed?url=$1"
 }
 
-mpvc_curl_cache_title()
-{
-    mpvc_curl_cache_json "$@" | mpvc_getjson 'title'
-}
-
-# fn args: given a file/url return its title (may use curl to query YT)
-mpvc_curl_cache_title_clean() {
+mpvc_curl_cache_metadata_json() {
     filename="${1:-}"
     result="${1:-}"
     case "$filename" in
         https://youtu.be/watch*)
             filename="$(echo "$filename" | sed 's|/watch?v=|/|')"
-            result="$(mpvc_curl_cache_title "$filename")"
+            result="$(mpvc_curl_cache_json "$filename")"
             ;;
         https://youtu.be/*|https://youtube.com/*|https://www.youtube.com/*)
-            result="$(mpvc_curl_cache_title "$filename")"
+            result="$(mpvc_curl_cache_json "$filename")"
             ;;
         https://yewtu.be/watch*)
             filename="$(echo "$filename" | sed 's|://yewtu.be|://youtu.be|; s|/watch?v=|/|')"
-            result="$(mpvc_curl_cache_title "$filename")"
+            result="$(mpvc_curl_cache_json "$filename")"
             ;;
         https://yewtu.be/*)
             filename="$(echo "$filename" | sed 's|://yewtu.be|://youtu.be|')"
-            result="$(mpvc_curl_cache_title "$filename")"
+            result="$(mpvc_curl_cache_json "$filename")"
             ;;
-        *) # otherwise
-            if [ -e "$filename" ]; then result=${filename##*/}; else result=${filename##*/}; fi
+        *) # otherwise, assume its a local file
+            result="{ \"title\": \"${filename##*/}\" }";
             ;;
     esac
     printf "$result\n"
+}
+
+# fn args: given a file/url return its title (may use curl to query YT)
+mpvc_curl_cache_title_clean() {
+    mpvc_curl_cache_metadata_json "$@" | mpvc_getjson 'title'
 }
 
 mpvc_getjson() {
@@ -1016,7 +1015,7 @@ main() {
             --replay|replay)                 mpvc_set_time "absolute" 0 ;;
 
             ytquery)                         shift; mpvc_curl_cache_title_clean "$@"; return;;
-            ytqueryjson)                     shift; mpvc_curl_cache_json "$@"; return;;
+            ytqueryjson)                     shift; mpvc_curl_cache_metadata_json "$@"; return;;
 
             cprev|--chapter-prev|chapter-prev)            mpvc_chapter_prev ;;
             cnext|--chapter-next|chapter-next)            mpvc_chapter_next ;;
