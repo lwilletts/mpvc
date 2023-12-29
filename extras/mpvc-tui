@@ -311,7 +311,7 @@ mpvctui_usage()
     exit;
 }
 
-optflags="d:htTm:nN:sP:x"
+optflags="d:hHtTm:nN:sP:x"
 mpvctui_main()
 {
     mpvctui_config
@@ -322,6 +322,7 @@ mpvctui_main()
         case "$flag" in
         d) MPVC_DIR="$OPTARG"; cd "$MPVC_DIR" || return;;
         h) shift; mpvctui_usage ;;
+        H) shift; cat $MPVC_SCROBBLER ;;
         t) shift; mpvctui_watch ;;
         T) shift;
                   mpvc -q --mpv &
