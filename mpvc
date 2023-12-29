@@ -601,6 +601,7 @@ mpvc_move_track() {
 mpvc_remove_track() {
     lid=$1
     if [ "$lid" = "current" ]; then lid=$(mpvc_get playlist-pos); fi
+    if [ "$lid" = "$" ]; then lid=$(( $(mpvc_get playlist-count) - 1 )); fi
     filename="$(mpvc_get_playlist_filename "$lid")"
     mpvc_ecmdr "playlist-remove" "$lid" || return 1
     quietcheck warn "$filename removed from playlist."
