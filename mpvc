@@ -1003,10 +1003,10 @@ main() {
 
             --search|search)                 shift; mpvc_search "full" "$@"; QUIETFLAG=true ;;
             --Search|Search)                 shift; mpvc_search "numbered" "$@"; QUIETFLAG=true ;;
-            -R|--searchrm|searchrm)          shift; mpvc_search_remove "full" "${1:-}";;
-               --searchRm|searchRm)          shift; mpvc_search_remove "numbered" "${1:-}";;
-            -M|--searchmv|searchmv)          shift; mpvc_search_move "full" "${1:-}" "${2:-}";;
-               --searchMv|searchMv)          shift; mpvc_search_move "numbered" "${1:-}" "${2:-}";;
+            -R|--searchrm|searchrm|srm)      shift; mpvc_search_remove "full" "${1:-}";;
+               --searchRm|searchRm|sRm)      shift; mpvc_search_remove "numbered" "${1:-}";;
+            -M|--searchmv|searchmv|smv)      shift; mpvc_search_move "full" "${1:-}" "${2:-}";;
+               --searchMv|searchMv|sMv)      shift; mpvc_search_move "numbered" "${1:-}" "${2:-}";;
                --searchplay|searchplay|splay)shift; mpvc_search_play "full" "${1:-}" ;;
                --searchPlay|searchPlay|sPlay)shift; mpvc_search_play "numbered" "${1:-}" ;;
             --stash|stash)                   shift; mpvc_stash "${1:-}" "${2:-}";;
