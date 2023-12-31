@@ -357,7 +357,7 @@ mpvc_web()
         # setup streamable mpvc archive if requested
         if [ -n "${MPVC_WEB_ARCHIVE_ENABLE}" ]; then
             echo "# $PROGNAME Setup $MPVC_WEB_ROOT/ytdl-archive/"
-            ln -s $HOME/.config/mpvc/ytdl-archive $MPVC_WEB_ROOT/
+            ln -f -s $HOME/.config/mpvc/ytdl-archive "$MPVC_WEB_ROOT/"
         fi
 
         chmod a-w -R "$MPVC_WEB_ROOT/"
