@@ -298,6 +298,7 @@ mpvc_web_defaults()
     MPVC_WEB_SSL_PID=$MPVC_WEB_ROOT/../stunnel.pid
     MPVC_WEB_SSL_ENABLE=${MPVC_WEB_SSL_ENABLE:-}
     MPVC_WEB_SSL_VERIFY=${MPVC_WEB_SSL_VERIFY:-0}
+    MPVC_WEB_ARCHIVE_ENABLE=${MPVC_WEB_ARCHIVE_ENABLE:-}
 
     MPVC_CGI="$MPVC_WEB_ROOT/cgi-bin/mpvc"
 }
@@ -326,6 +327,7 @@ mpvc_web()
 
     (
         # setup http webroot
+        echo "# $PROGNAME Setup $MPVC_WEB_ROOT"
         mkdir -p "$MPVC_WEB_ROOT" || return
         mkdir -p "$MPVC_WEB_ROOT/cgi-bin/" || return
         cd "$MPVC_WEB_ROOT" || return
@@ -339,6 +341,7 @@ mpvc_web()
 
         # setup https stunnel if requested
         if [ -n "${MPVC_WEB_SSL_ENABLE}" ]; then
+            echo "# $PROGNAME Setup $MPVC_WEB_SSL_CFG"
             mpvc_web_stunnel_cfg > "$MPVC_WEB_SSL_CFG"
             if [ ! -e "$MPVC_WEB_SSL_PEM" ]; then
                 MPVC_WEB_SSL_SUBJ="/C=CN/ST=ST/O=$PROGNAME/CN=$PROGNAME-$MPVC_WEB_HOSTNAME"
@@ -350,6 +353,13 @@ mpvc_web()
             fi
             stunnel "$MPVC_WEB_SSL_CFG"
         fi
+
+        # setup streamable mpvc archive if requested
+        if [ -n "${MPVC_WEB_ARCHIVE_ENABLE}" ]; then
+            echo "# $PROGNAME Setup $MPVC_WEB_ROOT/ytdl-archive/"
+            ln -s $HOME/.config/mpvc/ytdl-archive $MPVC_WEB_ROOT/
+        fi
+
         chmod a-w -R "$MPVC_WEB_ROOT/"
 
         # XXX handle cli commands, rewrite this mess
