@@ -483,6 +483,7 @@ mpvc_stash() {
             echo "mpvc set volume-max $(mpvc_get volume-max)"
             echo "mpvc set video-zoom $(mpvc_get video-zoom)"
             echo "mpvc set video $(mpvc_get video)"
+            echo "mpvc wait"
             echo "mpvc set playback-time $(mpvc_get playback-time)"
             echo "mpvc set pause $(mpvc_get pause)"
             #echo "mpvc set msg-level $(mpvc_get msg-level)"
