@@ -58,7 +58,7 @@ mpvctui_config()
 {
     mpvctui_defaults
     XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}
-    MPVC_CONFIG="${MPVC_CONFIG:-$XDG_CONFIG_HOME/mpvc/mpvc-tui.conf}"
+    MPVC_CONFIG="${MPVC_CONFIG:-$XDG_CONFIG_HOME/mpvc/mpvc.conf}"
     MPVC_HISTORY="${MPVC_HISTORY:-$XDG_CONFIG_HOME/mpvc/mpvc-tui.history}"
     MPVC_SCROBBLER="${MPVC_SCROBBLER:-$XDG_CONFIG_HOME/mpvc/mpvc-tui.scb}"
     # if not present, create config dir
