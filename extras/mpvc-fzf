@@ -32,7 +32,7 @@ mpvctui_config()
         sleep 1
     fi
     XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}
-    MPVC_CONFIG="${MPVC_CONFIG:-$XDG_CONFIG_HOME/mpvc/mpvc-tui.conf}"
+    MPVC_CONFIG="${MPVC_CONFIG:-$XDG_CONFIG_HOME/mpvc/mpvc.conf}"
     # if present load user config
     if [ -r "$MPVC_CONFIG" ];
     then
@@ -106,17 +106,23 @@ mpvctui_fzf_icache_archive() { mpvctui_fzf_icache_ytdlro | jq -r ".data.download
 mpvctui_fzf_icache()
 {
     # check for media present in local cache
-    quiet mpvc get ytdl-raw-options || cat
-    ytdl_json=$(mpvc getr ytdl-raw-options)
-    ytdl_archive=$(echo $ytdl_json | jq -r '.data."download-archive"')
-    ytdl_output=$(echo $ytdl_json | jq -r ".data.output")
-    ytdl_archive=$(eval echo $ytdl_archive)
-    if [ -z "$ytdl_json" -o ! -r "$ytdl_archive" -o ! -n "$ytdl_output" ]; then
+    if [ -n "$MPVC_YTDL_ARCHIVE" -a -n "$MPVC_YTDL_OUTPUT" ]; then
+        ytdl_archive="$MPVC_YTDL_ARCHIVE"
+        ytdl_output="$MPVC_YTDL_OUTPUT"
+        ytdl_dir="$MPVC_YTDL_OUTPUT"
+    else
+        quiet mpvc get ytdl-raw-options || cat
+        ytdl_json=$(mpvc getr ytdl-raw-options)
+        ytdl_archive=$(echo $ytdl_json | jq -r '.data."download-archive"')
+        ytdl_output=$(echo $ytdl_json | jq -r ".data.output")
+        ytdl_archive=$(eval echo $ytdl_archive)
+        ytdl_dir=$(dirname $ytdl_output)
+        ytdl_dir=$(eval echo $ytdl_dir)
+    fi
+    if [ ! -n "$ytdl_output" -o ! -r "$ytdl_archive" -o ! -n "$ytdl_output" ]; then
         mpvctui_warn "$PROGNAME: Error cache not enabled: undefined ytdl-raw-options"
         if cat; then return; fi
     fi
-    ytdl_dir=$(dirname $ytdl_output)
-    ytdl_dir=$(eval echo $ytdl_dir)
 
     while read -r line
     do
