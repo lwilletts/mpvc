@@ -22,6 +22,8 @@ mpvc() { $PROGDIR/mpvc "$@"; }
 mpvctui_defaults()
 {
     MPVC_TERM=xterm
+    MPVC_YTDL_ARCHIVE=${MPVC_YTDL_ARCHIVE:-}
+    MPVC_YTDL_OUTPUT=${MPVC_YTDL_OUTPUT:-}
 }
 
 mpvctui_config()
