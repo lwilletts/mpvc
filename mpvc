@@ -177,6 +177,8 @@ mpvc_config()
     # if present load user config
     if [ -r "$MPVC_CONFIG" ]; then
         . "$MPVC_CONFIG"
+    else
+        echo "${MPVC_CONFIG##*/}" > "${MPVC_CONFIG}"
     fi
 }
 
