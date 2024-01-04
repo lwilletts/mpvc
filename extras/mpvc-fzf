@@ -21,11 +21,11 @@ mpvc() { $PROGDIR/mpvc "$@"; }
 # Set defaults
 mpvctui_defaults()
 {
-    MPVC_TERM=xterm
-    MPVC_YTDL_ARCHIVE=${MPVC_YTDL_ARCHIVE:-}
-    MPVC_YTDL_OUTPUT=${MPVC_YTDL_OUTPUT:-}
     XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}
     MPVC_CONFIG="${MPVC_CONFIG:-$XDG_CONFIG_HOME/mpvc/mpvc.conf}"
+    MPVC_YTDL_ARCHIVE=${MPVC_YTDL_ARCHIVE:-}
+    MPVC_YTDL_OUTPUT=${MPVC_YTDL_OUTPUT:-}
+    MPVC_TERM=${MPVC_TERM:-xterm}
 }
 
 mpvctui_config()
