@@ -47,8 +47,9 @@ mpvctui_defaults()
     MPVC_COLOR2="$MPVC_CYELLOW"
     MPVC_UPDATEC=1
     MPVC_CLEARC=4
-    MPVC_TERM=xterm
+
     MPVC_TIPS=true
+    MPVC_TERM=${MPVC_TERM:-xterm}
     MPVC_SHELL=$(readlink -f /proc/$$/exe)
     export MPVC_CLINE=11
 }
