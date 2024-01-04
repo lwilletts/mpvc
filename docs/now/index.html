@@ -64,20 +64,29 @@
     <h1 id="mpvc-fork">
         <a href="https://gmt4.github.io/mpvc/">gmt4</a> mpvc now
     </h1>
+
     <h2>Now Listening</h2>
-    <div class="container">
-        <div class="item"> <iframe src="https://www.youtube.com/embed/ssDzysKLlpY" frameborder="0" allowfullscreen=""></iframe> </div>
-        <div class="item"> <iframe src="https://www.youtube.com/embed/667dtK7O89k" frameborder="0" allowfullscreen=""></iframe> </div>
-        <div class="item"> <iframe src="https://www.youtube.com/embed/mEkZbWYUego" frameborder="0" allowfullscreen=""></iframe> </div>
-        <div class="item"> <iframe src="https://www.youtube.com/embed/UzRFQ6pDqhk" frameborder="0" allowfullscreen=""></iframe> </div>
-
-        <div class="item"> <iframe src="https://www.youtube.com/embed/TCckoybjos8" frameborder="0" allowfullscreen=""></iframe> </div>
-        <div class="item"> <iframe src="https://www.youtube.com/embed/ypAIWyH13aM" frameborder="0" allowfullscreen=""></iframe> </div>
-        <div class="item"> <iframe src="https://www.youtube.com/embed/Jls9wXOSjl4" frameborder="0" allowfullscreen=""></iframe> </div>
-
-        <div class="item"> <iframe src="https://www.youtube.com/embed/Hwg7hJrDiRg" frameborder="0" allowfullscreen=""></iframe> </div>
-        <div class="item"> <iframe src="https://www.youtube.com/embed/6FJ7F6trvBc" frameborder="0" allowfullscreen=""></iframe> </div>
+    <div id=container class="container">
     </div>
+
+    <script charset="utf-8">
+    const urlp = new URL(window.location.href).searchParams;
+    const dflt = [ 'ssDzysKLlpY', '667dtK7O89k', 'mEkZbWYUego', 'UzRFQ6pDqhk', '_nl3Oo4-IQ4', 'ypAIWyH13aM', 'Jls9wXOSjl4', 'Hwg7hJrDiRg', '6FJ7F6trvBc' ];
+    const vids = urlp.getAll('v').length > 0 ? urlp.getAll('v') : dflt;
+    const cont = document.getElementById('container');
+    for(i in vids)
+    {
+        if (/^([-_a-zA-Z0-9]{11})$/.test(vids[i]))
+        {
+            const video = vids[i]
+            const html='<iframe src="https://www.youtube.com/embed/'+video+'" frameborder="0" allowfullscreen=""></iframe>'
+            const node = document.createElement('div');
+            node.setAttribute('class', 'item')
+            node.innerHTML = html
+            cont.appendChild(node)
+        }
+    }
+    </script>
 
     <h2>Scrobbling Code</h2>
     <pre>
