@@ -24,21 +24,21 @@ mpvctui_defaults()
     MPVC_TERM=xterm
     MPVC_YTDL_ARCHIVE=${MPVC_YTDL_ARCHIVE:-}
     MPVC_YTDL_OUTPUT=${MPVC_YTDL_OUTPUT:-}
+    XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}
+    MPVC_CONFIG="${MPVC_CONFIG:-$XDG_CONFIG_HOME/mpvc/mpvc.conf}"
 }
 
 mpvctui_config()
 {
     mpvctui_defaults
-    if ! quiet command -v fzf; then
-        mpvctui_warn "$PROGNAME: Warning: No fzf, Install to get fuzzy media search & play support!"
-        sleep 1
-    fi
-    XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}
-    MPVC_CONFIG="${MPVC_CONFIG:-$XDG_CONFIG_HOME/mpvc/mpvc.conf}"
     # if present load user config
     if [ -r "$MPVC_CONFIG" ];
     then
         . "$MPVC_CONFIG"
+    fi
+    if ! quiet command -v fzf; then
+        mpvctui_warn "$PROGNAME: Warning: No fzf, Install to get fuzzy media search & play support!"
+        sleep 1
     fi
 }
 
