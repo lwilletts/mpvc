@@ -260,7 +260,7 @@ mpvctui_notify()
 
     cmd="${1:-$cmd_default}"
     awk -v cmd="$cmd" '
-        /playback-restart/ {
+        /playback-restart|metadata-update/ {
             t=systime()
             if (t - ot > 1)
                 system(cmd);
