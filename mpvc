@@ -434,17 +434,23 @@ mpvc_stash() {
         edit) ${EDITOR:-vi} "$MPVC_STASH_DIR/$1" ;;
         drop) rm -i "$MPVC_STASH_DIR/$1" ;;
         push)
-            if [ -e "$MPVC_STASH_DIR/$1" ]; then
-                warn "$PROGNAME: Warn Existing $1 stash found, drop it first. Quitting"
+            stashid="${1:-}"
+            if [ -z "$stashid" ]; then
+                stashid="${1:-stash-$(date -Imin)}"
+                warn "$PROGNAME: $stashid created, use $PROGNAME stash apply $stashid"
+            fi
+            if [ -e "$MPVC_STASH_DIR/$stashid" ]; then
+                warn "$PROGNAME: Warn Existing $stashid stash found, drop it first. Quitting"
                 return
             fi
-            mpvc_stash current "$1" > "$MPVC_STASH_DIR/$1"
+            mpvc_stash current "$stashid" > "$MPVC_STASH_DIR/$stashid"
             ;;
         apply) # if no stash given, default to stdin
-            if [ -z "$1" ]; then
+            stashid="${1:-}"
+            if [ -z "$stashid" ]; then
                 mpvc_stash apply_current
             else
-                mpvc_stash apply_current "$1" < "$MPVC_STASH_DIR/$1"
+                mpvc_stash apply_current "$stashid" < "$MPVC_STASH_DIR/$stashid"
             fi
             ;;
         apply_current)
