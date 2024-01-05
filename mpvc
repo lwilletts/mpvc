@@ -17,7 +17,7 @@ set -euf
 
 usage() {
     cat >&2 << EOF
-usage: $PROGNAME args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
+usage: $PROGNAME opts # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
     -a | --add          : Add media to playlist (see --load for stdin).
     -s | --stop         : Always stop playback.
     -P | --play         : Always start playback.
@@ -120,6 +120,9 @@ Exit codes:
     4: Dependency error.
 EOF
     fi
+
+    echo
+    echo "*tips: If unsure about where to begin, have a look at $SITEURL"
 }
 
 equiet() { "$@" 2> /dev/null; }
