@@ -178,7 +178,7 @@ mpvc_config()
     if [ -r "$MPVC_CONFIG" ]; then
         . "$MPVC_CONFIG"
     else
-        echo "${MPVC_CONFIG##*/}" > "${MPVC_CONFIG}"
+        echo "# ${MPVC_CONFIG##*/} $PROGNAME $PROGVERSION" > "${MPVC_CONFIG}"
     fi
 }
 
