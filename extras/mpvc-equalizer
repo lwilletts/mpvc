@@ -148,7 +148,7 @@ mpvc_json()   { mpvc getr af | jq -C .data | sed '/graph/ s/:/:\n\t/g'; }
 
 usage()
 {
-    echo "usage: $PROGNAME [save|load|reset] # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
+    echo "usage: $PROGNAME [save|load|reset|clear] # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
     exit;
 }
 

@@ -47,8 +47,9 @@ mpvctui_defaults()
     MPVC_COLOR2="$MPVC_CYELLOW"
     MPVC_UPDATEC=1
     MPVC_CLEARC=4
-    MPVC_TERM=xterm
+
     MPVC_TIPS=true
+    MPVC_TERM=${MPVC_TERM:-xterm}
     MPVC_SHELL=$(readlink -f /proc/$$/exe)
     export MPVC_CLINE=11
 }
@@ -58,7 +59,7 @@ mpvctui_config()
 {
     mpvctui_defaults
     XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}
-    MPVC_CONFIG="${MPVC_CONFIG:-$XDG_CONFIG_HOME/mpvc/mpvc-tui.conf}"
+    MPVC_CONFIG="${MPVC_CONFIG:-$XDG_CONFIG_HOME/mpvc/mpvc.conf}"
     MPVC_HISTORY="${MPVC_HISTORY:-$XDG_CONFIG_HOME/mpvc/mpvc-tui.history}"
     MPVC_SCROBBLER="${MPVC_SCROBBLER:-$XDG_CONFIG_HOME/mpvc/mpvc-tui.scb}"
     # if not present, create config dir
@@ -268,6 +269,12 @@ mpvctui_notify()
         } '
 }
 
+mpvctui_notify_loop()
+{
+    # mpvc idleloop | mpvctui_notify "$@"
+    while sleep 10; do mpvc idleloop | mpvctui_notify "$@"; done
+}
+
 mpvctui_suggest()
 {
     awk '
@@ -305,7 +312,7 @@ mpvctui_usage()
     exit;
 }
 
-optflags="d:htTm:nN:sP:x"
+optflags="d:hHtTm:nN:sP:x"
 mpvctui_main()
 {
     mpvctui_config
@@ -316,6 +323,7 @@ mpvctui_main()
         case "$flag" in
         d) MPVC_DIR="$OPTARG"; cd "$MPVC_DIR" || return;;
         h) shift; mpvctui_usage ;;
+        H) shift; cat $MPVC_SCROBBLER ;;
         t) shift; mpvctui_watch ;;
         T) shift;
                   mpvc -q --mpv &
@@ -324,8 +332,8 @@ mpvctui_main()
                   mpvctui_watch
                   ;;
         m) shift; mpvctui_mouse "$OPTARG" ;;
-        n) shift; mpvc idleloop | mpvctui_notify ;;
-        N) shift; mpvc idleloop | mpvctui_notify "$OPTARG" ;;
+        n) shift; mpvctui_notify_loop ;;
+        N) shift; mpvctui_notify_loop "$OPTARG" ;;
         s) shift; mpvctui_suggest ;;
         x) shift; if quiet command -v $MPVC_TERM; then $MPVC_TERM -e "$0" "$@"; fi; exit;;
         *) mpvctui_usage;;

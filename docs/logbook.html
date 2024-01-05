@@ -162,7 +162,7 @@ The above enables to arrange a playlist, and once we are happy with it, save it 
 
 <h3 id="logbook-20221216">On customizing mpvc-tui look and feel, 16 Dec 2022</h3>
 <p>
-While using <code>mpvc-tui</code>, one ends up wanting to configure the minimal look and feel that mpvc-tui provides. To this end the file <code>mpvc-tui.conf</code> under $XDG_CONFIG_HOME/mpvc/ provides a place to overwrite the look and feel default settings of mpvc-tui.
+While using <code>mpvc-tui</code>, one ends up wanting to configure the minimal look and feel that mpvc-tui provides. To this end the file <code>mpvc.conf</code> under $XDG_CONFIG_HOME/mpvc/ provides a place to overwrite the default settings of mpvc-tui.
 </p>
 
 <h3 id="logbook-20221216">Show HN: mpvc-tui – A minimal mpc-like CLI and TUI for controlling mpv, 16 Dec 2022</h3>
@@ -375,16 +375,23 @@ $ grep mpvc ~/.bashrc
     alias mh="alias | grep mpvc"
     alias mi="mpvc -i"
     alias mI="mpvc -I"
+    alias mc="mpvc-chapter"
     alias mci="mpvc chapter-list"
+    alias mcI="mpvc chapter-list-full"
     alias me="mpvc-equalizer"
-    alias mff="mpvc-fzf"
-    alias mfff="mpvc-fzf -f"
-    alias mffl="mpvc-fzf -l"
-    alias mffp="mpvc-fzf -p"
-    alias mffc="mpvc-fzf -c"
+    alias mtt="mpvc-tui"
     alias mm="mpvc-mpris"
-    alias mt="mpvc-tui"
     alias mw="mpvc-web"
+    alias mff="mpvc-fzf"
+    alias mffc="mpvc-fzf -c"
+    alias mfff="mpvc-fzf -f"
+    alias mffg="mpvc-fzf -g"
+    alias mffG="mpvc-fzf -G"
+    alias mffl="mpvc-fzf -l"
+    alias mffo="mpvc-fzf -o"
+    alias mffp="mpvc-fzf -p"
+    alias xargn="xargs -n1"    # xargn mpvc cmd
+    rseq() { seq "$@" | tac; } # rseq | xargn mpvc cmd
 </pre>
 </p>
 
@@ -558,7 +565,7 @@ In the most basic sense, this would mean allowing mpvc-web only to access a lock
 <hr/>
 <p>
 <span>
-    <em>Last-Modified: Friday, 17 November 2023 by <a href="https://gmt4.github.io">gmt4</a></em>
+    <em>Last-Modified: Monday, 18 December 2023 by <a href="https://gmt4.github.io">gmt4</a></em>
 </span>
 <span style="float: right;">
     <em>Powered by #HTML 🧡 💚 💙 </em>

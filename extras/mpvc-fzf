@@ -7,6 +7,7 @@
 #
 
 PROGNAME=${0##*/}
+PROGDIR=${0%/*}
 PROGVERSION="v1.5"
 PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
@@ -15,26 +16,29 @@ set -euf
 
 quiet()  { "$@" > /dev/null 2>&1; }
 mpvctui_warn() { echo "$@" >&2; }
+mpvc() { $PROGDIR/mpvc "$@"; }
 
 # Set defaults
 mpvctui_defaults()
 {
-    MPVC_TERM=xterm
+    XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}
+    MPVC_CONFIG="${MPVC_CONFIG:-$XDG_CONFIG_HOME/mpvc/mpvc.conf}"
+    MPVC_YTDL_ARCHIVE=${MPVC_YTDL_ARCHIVE:-}
+    MPVC_YTDL_OUTPUT=${MPVC_YTDL_OUTPUT:-}
+    MPVC_TERM=${MPVC_TERM:-xterm}
 }
 
 mpvctui_config()
 {
     mpvctui_defaults
-    if ! quiet command -v fzf; then
-        mpvctui_warn "$PROGNAME: Warning: No fzf, Install to get fuzzy media search & play support!"
-        sleep 1
-    fi
-    XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}
-    MPVC_CONFIG="${MPVC_CONFIG:-$XDG_CONFIG_HOME/mpvc/mpvc-tui.conf}"
     # if present load user config
     if [ -r "$MPVC_CONFIG" ];
     then
         . "$MPVC_CONFIG"
+    fi
+    if ! quiet command -v fzf; then
+        mpvctui_warn "$PROGNAME: Warning: No fzf, Install to get fuzzy media search & play support!"
+        sleep 1
     fi
 }
 
@@ -96,28 +100,38 @@ mpvctui_fzf_nextvideo()
     echo "$next_url"
 }
 
+mpvctui_fzf_icache_ytdlro() { mpvc getr ytdl-raw-options; }
+mpvctui_fzf_icache_output() { mpvctui_fzf_icache_ytdlro | jq -r ".data.output"; }
+mpvctui_fzf_icache_output_dir() { eval echo $( dirname $(mpvctui_fzf_icache_output) ); }
+mpvctui_fzf_icache_archive() { mpvctui_fzf_icache_ytdlro | jq -r ".data.download-archive"; }
+
 mpvctui_fzf_icache()
 {
     # check for media present in local cache
-    quiet mpvc get ytdl-raw-options || cat
-    ytdl_json=$(mpvc getr ytdl-raw-options)
-    ytdl_archive=$(echo $ytdl_json | jq -r '.data."download-archive"')
-    ytdl_output=$(echo $ytdl_json | jq -r ".data.output")
-    ytdl_archive=$(eval echo $ytdl_archive)
-    if [ -z "$ytdl_json" -o ! -r "$ytdl_archive" -o ! -n "$ytdl_output" ]
-    then
+    if [ -n "$MPVC_YTDL_ARCHIVE" -a -n "$MPVC_YTDL_OUTPUT" ]; then
+        ytdl_archive="$MPVC_YTDL_ARCHIVE"
+        ytdl_output="$MPVC_YTDL_OUTPUT"
+        ytdl_dir="$MPVC_YTDL_OUTPUT"
+    else
+        quiet mpvc get ytdl-raw-options || cat
+        ytdl_json=$(mpvc getr ytdl-raw-options)
+        ytdl_archive=$(echo $ytdl_json | jq -r '.data."download-archive"')
+        ytdl_output=$(echo $ytdl_json | jq -r ".data.output")
+        ytdl_archive=$(eval echo $ytdl_archive)
+        ytdl_dir=$(dirname $ytdl_output)
+        ytdl_dir=$(eval echo $ytdl_dir)
+    fi
+    if [ ! -n "$ytdl_output" -o ! -r "$ytdl_archive" -o ! -n "$ytdl_output" ]; then
         mpvctui_warn "$PROGNAME: Error cache not enabled: undefined ytdl-raw-options"
         if cat; then return; fi
     fi
-    ytdl_dir=$(dirname $ytdl_output)
-    ytdl_dir=$(eval echo $ytdl_dir)
 
     while read -r line
     do
-        url=$(echo "$line" | awk '{ gsub("watch\\?v=",""); print $1 }')
+        url=$(echo "$line" | awk '/https:/ { gsub("watch\\?v=",""); print $1 }')
         vid=$(basename "$url")
         file=$(find $ytdl_dir/ 2>/dev/null | awk "/$vid/ { print; exit }")
-        if [ -e "$file" ]; then # quiet grep -q "$vid" $ytdl_archive
+        if [ -n "$url" -a -e "$file" ]; then # quiet grep -q "$vid" $ytdl_archive
             echo "$file"
         else
             echo "$line"
@@ -132,8 +146,10 @@ mpvctui_fzf_fetch()
     ytdl_opts=""
     ytdlp=$(command -v youtube-dl || command -v yt-dlp)
     if [ ! -x "$ytdlp" ]; then
-        mpvctui_warn "$PROGNAME: Warning: No yt-dlp, Install to get support!"
+        mpvctui_warn "$PROGNAME: Warning: No yt-dlp, Install to get ytdl support!"
     fi
+
+    mpvc -q --mpv
 
     ytdl_json=$(mpvc getr ytdl-raw-options)
     if [ -z "$ytdl_json" ]; then
@@ -151,6 +167,30 @@ mpvctui_fzf_fetch()
         fi
     done
     "$ytdlp" $ytdl_opts ${YTDL_OPTS:-} "$@"
+}
+
+mpvctui_fzf_fetch_remove()
+{
+    if [ -z "$1" ]; then
+        mpvctui_warn "$PROGNAME: Error missing ytdl-video-id to remove"
+        return
+    fi
+    ytdl_id="$1"
+
+    ytdl_json=$(mpvc getr ytdl-raw-options)
+    ytdl_archive=$(echo $ytdl_json | jq -r '.data."download-archive"')
+    ytdl_output=$(echo $ytdl_json | jq -r ".data.output")
+    ytdl_archive=$(eval echo $ytdl_archive)
+    ytdl_dir=$(dirname $ytdl_output)
+    ytdl_dir=$(eval echo $ytdl_dir)
+
+    if [ -z "$ytdl_json" -o ! -r "$ytdl_archive" -o ! -n "$ytdl_output" ]; then
+        mpvctui_warn "$PROGNAME: Error cache not enabled: undefined ytdl-raw-options"
+        return
+    fi
+
+    rm -i "$(find "$ytdl_dir" | grep "$ytdl_id")"
+    sed -i "/$ytdl_id/ s|^|#|" "$ytdl_archive"
 }
 
 mpvctui_fzf_iplay()
@@ -177,7 +217,7 @@ mpvctui_fzf_playlist()
 mpvctui_fzf_chapterlist()
 {
     len=$(mpvc gets chapter-list/count)
-    ( if [ -z "$len" ]; then echo; else mpvc chapter-list; fi) |
+    ( if [ -z "$len" ]; then echo; else mpvc chapter-list-full; fi) |
         mpvctui_fzf_preview --prompt="(chapter) " \
         --bind='ctrl-o:execute-silent(mpvc set chapter {n} &)'
 }
@@ -223,7 +263,7 @@ mpvctui_version()
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
 }
 
-optflags="01cCd:DfFg:G:hn:s:p:P:lxv"
+optflags="01cCd:DfFg:G:hn:s:p:P:oOr:lxv"
 mpvctui_usage()
 {
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
@@ -232,7 +272,7 @@ mpvctui_usage()
     echo "  -D : Search & play media using DuckDuckGo (fzf*)"
     echo "  -f : Start fzf to manage the current mpv playist (fzf*)"
     echo "  -g : Fetch provided YT URL, and store locally (fzf*)"
-    echo "  -G : Search for provided query , fetch, and store locally (fzf*)"
+    echo "  -G : Search for provided query, fetch, and store locally (fzf*)"
     echo "  -l : Search & play local media (fzf*)"
     echo "  -s : Search for media using Invidious (fzf*)"
     echo "  -p : Search & play media found using Invidious (fzf*)"
@@ -258,11 +298,14 @@ main()
         #D) shift; mpvctui_fzf_ddg "$@";;
         f) mpvctui_fzf_playlist ;;
         F) shift; mpvctui_fzf_preview "$@" ;;
-        g) mpvc -q --mpv && mpvctui_fzf_fetch "$OPTARG";;
+        g) mpvctui_fzf_fetch "$OPTARG";;
         G) mpvctui_fzf_fetch $(mpvctui_fzf_iplay "$OPTARG");;
         h) mpvctui_usage ;;
         l) mpvctui_fzf_local;;
         n) mpvctui_fzf_nextvideo "$OPTARG" ;;
+        o) mpvctui_fzf_icache_output_dir;;
+        O) mpvctui_fzf_icache_output ;;
+        r) mpvctui_fzf_fetch_remove "$OPTARG" ;;
         p) mpvctui_fzf_iplay "$OPTARG" | mpvc load ;;
         P) mpvctui_fzf_iplay "$OPTARG" | mpvc loadc ;;
         s) mpvctui_fzf_isearch "$OPTARG";;

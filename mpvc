@@ -7,6 +7,7 @@
 #
 
 PROGNAME=${0##*/}
+PROGDIR=${0%/*}
 PROGVERSION="v1.5"
 PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
@@ -94,7 +95,7 @@ EOF
     cplay | chapter-play    : Play the given chapter
     creplay | chapter-replay: Replay current chapter
     clist | chapter-list    : Output current chapter-list
-    chapter-list-json       : Output current chapter-list (json)
+    clistj|chapter-list-json: Output current chapter-list (json)
     csearch | chapter-search: Search current chapter-list
     chapter-searchplay      : Search and play the current chapter-list
 
@@ -154,10 +155,10 @@ mpvc_defaults()
     # print default status of mpv instance
     if [ -z "$FORMATSTRING" ]; then
         FORMATSTRING="\
-%artist% - %title% NL\
-[%status%] #%position%/%playlistlength% %time%/%length% (%percentage%%%) NL\
-speed:%speed%x volume:%volume%%% muted:%muted% repeat:%repeat% single:%single% NL\
-video:%video% aspect:%aspect% win:%force-window% fs:%fullscreen% idle:%idle% NL\
+%artist% - %title% \r\
+[%status%] #%position%/%playlistlength% %time%/%length% (%percentage%%%) \r\
+speed:%speed%x volume:%volume%%% muted:%muted% repeat:%repeat% single:%single% \r\
+video:%video% aspect:%aspect% win:%force-window% fs:%fullscreen% idle:%idle% \r\
 chapter:%chapter% %=chapter%/%chapters%"
     fi
 }
@@ -176,6 +177,8 @@ mpvc_config()
     # if present load user config
     if [ -r "$MPVC_CONFIG" ]; then
         . "$MPVC_CONFIG"
+    else
+        echo "${MPVC_CONFIG##*/}" > "${MPVC_CONFIG}"
     fi
 }
 
@@ -208,36 +211,35 @@ mpvc_curl_cache_json()
     mpvc_curl_cache -sL "https://youtube.com/oembed?url=$1"
 }
 
-mpvc_curl_cache_title()
-{
-    mpvc_curl_cache_json "$@" | mpvc_getjson 'title'
-}
-
-# fn args: given a file/url return its title (may use curl to query YT)
-mpvc_curl_cache_title_clean() {
+mpvc_curl_cache_metadata_json() {
     filename="${1:-}"
     result="${1:-}"
     case "$filename" in
         https://youtu.be/watch*)
             filename="$(echo "$filename" | sed 's|/watch?v=|/|')"
-            result="$(mpvc_curl_cache_title "$filename")"
+            result="$(mpvc_curl_cache_json "$filename")"
             ;;
         https://youtu.be/*|https://youtube.com/*|https://www.youtube.com/*)
-            result="$(mpvc_curl_cache_title "$filename")"
+            result="$(mpvc_curl_cache_json "$filename")"
             ;;
         https://yewtu.be/watch*)
             filename="$(echo "$filename" | sed 's|://yewtu.be|://youtu.be|; s|/watch?v=|/|')"
-            result="$(mpvc_curl_cache_title "$filename")"
+            result="$(mpvc_curl_cache_json "$filename")"
             ;;
         https://yewtu.be/*)
             filename="$(echo "$filename" | sed 's|://yewtu.be|://youtu.be|')"
-            result="$(mpvc_curl_cache_title "$filename")"
+            result="$(mpvc_curl_cache_json "$filename")"
             ;;
-        *) # otherwise
-            if [ -e "$filename" ]; then result=${filename##*/}; else result=${filename##*/}; fi
+        *) # otherwise, assume its a local file
+            result="{ \"title\":${filename##*/}, }";
             ;;
     esac
     printf "$result\n"
+}
+
+# fn args: given a file/url return its title (may use curl to query YT)
+mpvc_curl_cache_title_clean() {
+    mpvc_curl_cache_metadata_json "$@" | mpvc_getjson 'title'
 }
 
 mpvc_getjson() {
@@ -432,17 +434,23 @@ mpvc_stash() {
         edit) ${EDITOR:-vi} "$MPVC_STASH_DIR/$1" ;;
         drop) rm -i "$MPVC_STASH_DIR/$1" ;;
         push)
-            if [ -e "$MPVC_STASH_DIR/$1" ]; then
-                warn "$PROGNAME: Warn Existing $1 stash found, drop it first. Quitting"
+            stashid="${1:-}"
+            if [ -z "$stashid" ]; then
+                stashid="${1:-stash-$(date -Imin)}"
+                warn "$PROGNAME: $stashid created, use $PROGNAME stash apply $stashid"
+            fi
+            if [ -e "$MPVC_STASH_DIR/$stashid" ]; then
+                warn "$PROGNAME: Warn Existing $stashid stash found, drop it first. Quitting"
                 return
             fi
-            mpvc_stash current "$1" > "$MPVC_STASH_DIR/$1"
+            mpvc_stash current "$stashid" > "$MPVC_STASH_DIR/$stashid"
             ;;
         apply) # if no stash given, default to stdin
-            if [ -z "$1" ]; then
+            stashid="${1:-}"
+            if [ -z "$stashid" ]; then
                 mpvc_stash apply_current
             else
-                mpvc_stash apply_current "$1" < "$MPVC_STASH_DIR/$1"
+                mpvc_stash apply_current "$stashid" < "$MPVC_STASH_DIR/$stashid"
             fi
             ;;
         apply_current)
@@ -483,6 +491,7 @@ mpvc_stash() {
             echo "mpvc set volume-max $(mpvc_get volume-max)"
             echo "mpvc set video-zoom $(mpvc_get video-zoom)"
             echo "mpvc set video $(mpvc_get video)"
+            echo "mpvc wait"
             echo "mpvc set playback-time $(mpvc_get playback-time)"
             echo "mpvc set pause $(mpvc_get pause)"
             #echo "mpvc set msg-level $(mpvc_get msg-level)"
@@ -523,7 +532,7 @@ mpvc_appendtrack() {
     esac
     if [ -n "$filename" ]; then
         # cache media here if media is found in local storage
-        if [ "$MPVC_LOCAL_CACHE" = "true" ]; then filename=$(echo "$filename" | mpvc-fzf -C); fi
+        if [ "$MPVC_LOCAL_CACHE" = "true" ]; then filename=$(echo "$filename" | $PROGDIR/mpvc-fzf -C); fi
         mpvc_ecmdr "loadfile" "$filename" "append-play" || return 1
         echo "Adding: $(mpvc_curl_cache_title_clean "$filename")"
     fi
@@ -537,6 +546,9 @@ mpvc_appendtracks() {
         shift
     done
 }
+
+mpvc_get_random() { od -vAn -N2 -tu2 < /dev/urandom; }
+mpvc_play_random() { mpvc_set_track "$(mpvc_get_random)" "absolute"; }
 
 mpvc_play_now() {
     mpvc_play_next "$@"
@@ -598,6 +610,7 @@ mpvc_move_track() {
 mpvc_remove_track() {
     lid=$1
     if [ "$lid" = "current" ]; then lid=$(mpvc_get playlist-pos); fi
+    if [ "$lid" = "$" ]; then lid=$(( $(mpvc_get playlist-count) - 1 )); fi
     filename="$(mpvc_get_playlist_filename "$lid")"
     mpvc_ecmdr "playlist-remove" "$lid" || return 1
     quietcheck warn "$filename removed from playlist."
@@ -713,33 +726,41 @@ mpvc_chapter_list_json()
 
 mpvc_chapter_list()
 {
-    numbered="${1:-}"
-    cchapter=$(mpvc_get chapter)
+    mode="${1:-}"
+    chapter_pos=$(mpvc_get "chapter")
+    chapter_count=$(mpvc_get "chapter-list/count")
 
+    FIRSTLAST=$(mpvc_get_terminal_height "$chapter_pos" "$chapter_count")
     mpvc_chapter_list_json |
         grep -o '"title":".*' | sed 's/"title":"//; s/","time":.*$//' |
-        awk -v no_color="${NO_COLOR:-}" -v numbered="$numbered" -v cchapter="$cchapter" '
+        awk -v mode="$mode" -v chapter_pos="$chapter_pos" -v first="${FIRSTLAST%% *}" -v last="${FIRSTLAST##* }" '
         {
             chapternr = NR-1
-            if (cchapter == chapternr)
+            if (!(first <= chapternr && chapternr <= last) && (mode == "short"))
             {
-                if (no_color)
+                next
+            }
+
+            if (chapter_pos == chapternr)
+            {
+                if (ENVIRON["NO_COLOR"])
                 {
-                    if (numbered) printf("%2d  %s\n", chapternr, $0);
+                    if (mode == "numbered") printf("%2d  %s\n", chapternr, $0);
                     else printf("%s\n", $0);
                 }
                 else
                 {
-                    if (numbered) printf("%2d  \033[7m%s\033[0m\n", chapternr, $0);
+                    if (mode == "numbered") printf("%2d  \033[7m%s\033[0m\n", chapternr, $0);
                     else printf("\033[7m%s\033[0m\n", $0);
                 }
             }
             else
             {
-                if (numbered) printf("%2d  %s\n", chapternr, $0);
+                if (mode == "numbered") printf("%2d  %s\n", chapternr, $0);
                 else printf("%s\n", $0);
             }
         }'
+        QUIETFLAG=true
 }
 
 mpvc_chapter_replay() { mpvc_chapter_set "$(mpvc_get chapter)"; }
@@ -747,7 +768,8 @@ mpvc_chapter_next()   { mpvc_chapter_set $(( ( $(mpvc_get chapter) + 1 ) % $(mpv
 mpvc_chapter_prev()   { mpvc_chapter_set $(( ( $(mpvc_get chapter) - 1 ) % $(mpvc_get chapter-list/count) )); }
 mpvc_chapter_set()    { if [ "$(mpvc_get "chapter-list/count")" -gt 0 ]; then mpvc_set "chapter" "$1"; fi; }
 
-mpvc_chapter_search() { mpvc_nocolor mpvc_chapter_list | awk "/$*/ {print NR-1; exit};"; }
+mpvc_chapter_play_random() { mpvc_chapter_set "$(( $(mpvc_get_random) % $(mpvc_get "chapters") ))" ; }
+mpvc_chapter_search() { mpvc_nocolor mpvc_chapter_list "full" | awk "/$*/ {print NR-1; exit};"; }
 mpvc_chapter_search_play()
 {
     chapter=$(mpvc_chapter_search "$@")
@@ -783,7 +805,7 @@ mpvc_print_status() {
             -e "s/%status%/$(mpvc_get_pause_status)/g" \
             -e ''
     )
-    mpvc_cmd "expand-text" "${F}" | sed 's/NL/\n/g'
+    mpvc_cmd "expand-text" "${F}" | sed 's/ \\r/\n/g'
 }
 
 mpvc_print_status_final() {
@@ -878,6 +900,7 @@ mpvc_get_version() {
 }
 
 mpvc_idleloop() { $MPVC_SOCAT -t0 -,ignoreeof "$MPVC_SOCKET"; }
+mpvc_idle() { mpvc_observe_property "$1" | awk "/$1/ { print; exit }"; }
 mpvc_observe_property() { q='' mpvc_cmdr_ '"observe_property_string"' 1 "\"$1\"" | mpvc_idleloop; }
 
 mpvc_delay() { sleep "${1:-0.1}"; }
@@ -939,6 +962,7 @@ main() {
             -a|add|--append)         shift; mpvc_appendtracks "$@"; ;;
             -A|--playnext|playnext)  shift; mpvc_play_next "$@" ;;
             -n|--playnow|playnow)    shift; mpvc_play_now "$@" ;;
+               --playrand|playrand)  shift; mpvc_play_random "$@" ;;
             #replace|--replace) shift; mpvc_replacetracks "$@" ;;
 
             # consume) to implement # add on|off toggle
@@ -977,6 +1001,7 @@ main() {
             --togglev|togglev)               shift; mpvc_cycle "video" ;;
             --togglew|togglew)               shift; mpvc_cycle "force-window" ;;
             --togglei|togglei)               shift; mpvc_cycle "idle" ;;
+            --idle|idle)                     shift; mpvc_idle "${1:-}"; QUIETFLAG=true ;;
             --idleloop|idleloop)             shift; mpvc_idleloop "${1:-}"; QUIETFLAG=true ;;
             --observe|observe)               shift; mpvc_observe_property "${1:-}"; QUIETFLAG=true ;;
             --cmd|cmd)                       shift; mpvc_cmd "$@"; return ;;
@@ -987,10 +1012,10 @@ main() {
 
             --search|search)                 shift; mpvc_search "full" "$@"; QUIETFLAG=true ;;
             --Search|Search)                 shift; mpvc_search "numbered" "$@"; QUIETFLAG=true ;;
-            -R|--searchrm|searchrm)          shift; mpvc_search_remove "full" "${1:-}";;
-               --searchRm|searchRm)          shift; mpvc_search_remove "numbered" "${1:-}";;
-            -M|--searchmv|searchmv)          shift; mpvc_search_move "full" "${1:-}" "${2:-}";;
-               --searchMv|searchMv)          shift; mpvc_search_move "numbered" "${1:-}" "${2:-}";;
+            -R|--searchrm|searchrm|srm)      shift; mpvc_search_remove "full" "${1:-}";;
+               --searchRm|searchRm|sRm)      shift; mpvc_search_remove "numbered" "${1:-}";;
+            -M|--searchmv|searchmv|smv)      shift; mpvc_search_move "full" "${1:-}" "${2:-}";;
+               --searchMv|searchMv|sMv)      shift; mpvc_search_move "numbered" "${1:-}" "${2:-}";;
                --searchplay|searchplay|splay)shift; mpvc_search_play "full" "${1:-}" ;;
                --searchPlay|searchPlay|sPlay)shift; mpvc_search_play "numbered" "${1:-}" ;;
             --stash|stash)                   shift; mpvc_stash "${1:-}" "${2:-}";;
@@ -1000,13 +1025,16 @@ main() {
             --replay|replay)                 mpvc_set_time "absolute" 0 ;;
 
             ytquery)                         shift; mpvc_curl_cache_title_clean "$@"; return;;
-            ytqueryjson)                     shift; mpvc_curl_cache_json "$@"; return;;
+            ytqueryjson)                     shift; mpvc_curl_cache_metadata_json "$@"; return;;
 
             cprev|--chapter-prev|chapter-prev)            mpvc_chapter_prev ;;
             cnext|--chapter-next|chapter-next)            mpvc_chapter_next ;;
             cplay|--chapter-play|chapter-play)            shift; mpvc_chapter_set "${1:-}" ;;
+            cplayrand|--cplayrand)                        shift; mpvc_chapter_play_random "$@" ;;
             creplay|--chapter-replay|chapter-replay)      mpvc_chapter_replay ;;
-            clist|--chapter-list|chapter-list)            mpvc_chapter_list "numbered"; QUIETFLAG=true;;
+            clist|--chapter-list|chapter-list)            mpvc_chapter_list "short";;
+            clistf|--chapter-list-full|chapter-list-full) mpvc_chapter_list "full";;
+            clistn|--chapter-list-nr|chapter-list-nr)     mpvc_chapter_list "numbered";;
             clistj|--chapter-list-json|chapter-list-json) mpvc_chapter_list_json; QUIETFLAG=true;;
             csearch|--chapter-search|chapter-search)      shift; mpvc_chapter_search "${1:-}"; QUIETFLAG=true;;
             csplay|csearchplay|--chapter-searchplay|chapter-searchplay)      shift; mpvc_chapter_search_play "${1:-}"; QUIETFLAG=true;;
