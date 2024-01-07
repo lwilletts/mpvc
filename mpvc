@@ -465,7 +465,7 @@ mpvc_stash() {
                     "mpvc mpv")    mpvc_mpv;;
                     "mpvc wait")   mpvc_wait;;
                     "mpvc cmd "*)  mpvc_cmd ${line##mpvc cmd };;
-                    "mpvc set "*)  mpvc_set ${line##mpvc set };;
+                    "mpvc set "*)  mpvc_set ${line##mpvc set } || true;;
                     "mpvc add "*)  mpvc_appendtrack "${line##mpvc add }";;
                 esac
             done
