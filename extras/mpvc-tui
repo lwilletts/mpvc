@@ -254,19 +254,28 @@ mpvctui_mouse_events()
 mpvctui_notify()
 {
     # $MPVC_SCROBBLER: scrobbling file contains one entry per line with tab-separated fields
-    cmd_default='
-        notify-send -u normal -i dialog-information "$(mpvc)";
-        echo $(mpvc expand-text "$(date +%s)\t\\${=duration}\t\\${path}\t\\${media-title}") >> '"$MPVC_SCROBBLER"
+    cmd_notify='notify-send -u normal -i dialog-information "$(mpvc)";'
+    cmd_scrobble='echo $(mpvc expand-text "$(date +%s)\t\\${=duration}\t\\${path}\t\\${media-title}") >> '"$MPVC_SCROBBLER"
 
-    cmd="${1:-$cmd_default}"
-    awk -v cmd="$cmd" '
-        /playback-restart|metadata-update/ {
+    awk -v cmd_scrobble="${1:-$cmd_scrobble}" -v cmd_notify="$cmd_notify" '
+        BEGIN { ot = otn = systime(); }
+
+        /playback-restart|chapter-change|metadata-update/ {
+            tn=systime()
+            if (tn - otn > 1)
+                system(cmd_notify);
+            otn=tn
+            print tn, $0, "notify"
+        }
+
+        /playback-restart/ {
             t=systime()
             if (t - ot > 1)
-                system(cmd);
+                system(cmd_scrobble);
             ot=t
-            print t, $0
-        } '
+            print t, $0, "scrobble"
+        }
+    '
 }
 
 mpvctui_notify_loop()
