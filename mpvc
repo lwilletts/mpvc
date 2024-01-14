@@ -330,7 +330,7 @@ mpvc_get_playlist() {
     fi
 
     mpvc_get_playlist_once |
-        awk -v mpvc="$0" -v lpos="$lpos" -v first="${FIRSTLAST%% *}" -v last="${FIRSTLAST##* }" \
+        awk -v mpvc="$0" -v lpos="$lpos" -v cols="$(mpvc_tty_cols)" -v first="${FIRSTLAST%% *}" -v last="${FIRSTLAST##* }" \
         '
         function basename(url, fields, n)
         {
@@ -378,7 +378,6 @@ mpvc_get_playlist() {
                 }
                 else
                 {
-                    "tput cols" | getline cols
                     mpvc " cmd expand-text \\${percent-pos}" | getline pct
                     count=int((cols) * (pct/100))
                     title=mpvc_ytquery($0)
@@ -466,7 +465,7 @@ mpvc_stash() {
                     "mpvc mpv")    mpvc_mpv;;
                     "mpvc wait")   mpvc_wait;;
                     "mpvc cmd "*)  mpvc_cmd ${line##mpvc cmd };;
-                    "mpvc set "*)  mpvc_set ${line##mpvc set };;
+                    "mpvc set "*)  mpvc_set ${line##mpvc set } || true;;
                     "mpvc add "*)  mpvc_appendtrack "${line##mpvc add }";;
                 esac
             done
@@ -824,12 +823,9 @@ mpvc_print_status_final() {
 
 isInt() { printf '%d' "$1" >/dev/null 2>&1 && [ -n "$1" ]; }
 
-mpvc_tty_lines() {
-    tty=$(if tty -s; then tty; else ps -hp $$ -o tty | sed 's|^|/dev/|'; fi)
-    lines=$(stty size -F "$tty")
-    lines=${lines%% *}
-    echo "$lines"
-}
+mpvc_tty_size() { stty size -F "$(if tty -s; then tty; else ps -hp $$ -o tty | sed 's|^|/dev/|'; fi)"; }
+mpvc_tty_lines() { size=$(mpvc_tty_size); echo "${size%% *}"; }
+mpvc_tty_cols() { size=$(mpvc_tty_size); echo "${size##* }"; }
 
 mpvc_get_terminal_height() {
     plpos="$1"

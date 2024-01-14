@@ -65,7 +65,7 @@
         <a href="https://gmt4.github.io/mpvc/">gmt4</a> mpvc now
     </h1>
 
-    <h2>Now Listening</h2>
+    <h2 id="mpvc-now-listening">Now Listening</h2>
     <div id=container class="container">
     </div>
 
@@ -89,13 +89,10 @@
     </script>
 
     <h2>Scrobbling Code</h2>
+    This <a href="#mpvc-now-listening">Now Listening</a> is generated using the command below that queries mpvc-tui scrobling history to find recently played tracks:
     <pre>
+mpvc-tui -H | awk '/https:/ {print $3}' | tail -n 10
 
-# <b>Using mpvc-tui -n "now playing" notifications also populates mpvc-tui.scb scrobling file.</b>
-# <b>The command below generates the "now listening" list shown above this code:</b>
-
-awk '/https:/ { gsub($1,""); gsub($1,""); print }' ~/.config/mpvc/mpvc-tui.scb |
-    tac | tail -n 10 | awk '{print $1}' | tee now-listening.csv
 https://www.youtube.com/watch?v=ssDzysKLlpY
 https://www.youtube.com/watch?v=667dtK7O89k
 https://www.youtube.com/watch?v=mEkZbWYUego

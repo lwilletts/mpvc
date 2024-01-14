@@ -102,7 +102,14 @@ mpvc_web_index()
     </script>
 
     <body>
-        [ <a href="." name="mpvc-web">$PROGNAME</a> ] <hr>
+        [
+            <a href="." name="mpvc-web">$PROGNAME</a>
+            <a href="#status">#status</a>
+            <a href="#playlist">#playlist</a>
+            <a href="#prompt">#prompt</a>
+            <!-- $([ -n "$MPVC_WEB_ARCHIVE_ENABLE" ] && echo '<a href="ytdl-archive" >archive</a>'; ) -->
+        ]
+        <hr>
         <ul style="padding: 0em 1em;">
         <li>
         <!-- enable this optionally: only for dev/testing -->
