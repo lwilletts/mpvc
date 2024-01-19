@@ -283,7 +283,7 @@ mpvctui_version()
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
 }
 
-optflags="01b:cCd:DfFg:G:hn:s:p:P:oOr:lxv"
+optflags="01b:cCd:DfFg:G:hn:s:p:P:o:Or:lxv"
 mpvctui_usage()
 {
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
@@ -325,7 +325,7 @@ main()
         h) mpvctui_usage ;;
         l) mpvctui_fzf_local;;
         n) mpvctui_fzf_nextvideo "$OPTARG" ;;
-        o) mpvctui_fzf_icache_output_dir;;
+        o) mpvctui_fzf_isearch "$OPTARG" | awk 'NR==2 {print}' ;;
         O) mpvctui_fzf_icache_output ;;
         r) mpvctui_fzf_fetch_remove "$OPTARG" ;;
         p) mpvctui_fzf_iplay "$OPTARG" | mpvc load ;;
