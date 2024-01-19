@@ -261,6 +261,16 @@ mpvctui_fzf_ddg()
             }'
 }
 
+mpvctui_fzf_urlbrowse()
+{
+    url=${1:-https://localhost:8443/ytdl-archive/}
+
+    curl -k -fsSL "$url" |
+        awk '/<a href=".*">.*<\/a>/ { h=$0;sub("^.*href=\"","",h);sub("\".*$","",h);print h }' |
+        mpvctui_fzf_preview |
+        awk -v url="$url" '{ print url$0 }'
+}
+
 mpvctui_ddg_play()
 {
     mpvctui_fzf_ddg "$@" |
@@ -273,10 +283,11 @@ mpvctui_version()
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
 }
 
-optflags="01cCd:DfFg:G:hn:s:p:P:oOr:lxv"
+optflags="01b:cCd:DfFg:G:hn:s:p:P:oOr:lxv"
 mpvctui_usage()
 {
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
+    echo "  -b : Browse the provided ytdl-archive URL with fzf (fzf*)"
     echo "  -c : Start fzf to manage the current mpv chapterlist (fzf*)"
     echo "  -d : Set the WD to the media directory given as argument"
     echo "  -D : Search & play media using DuckDuckGo (fzf*)"
@@ -301,6 +312,7 @@ main()
         case "$flag" in
         0) shift; awk '{print $NF}';;
         1) shift; awk '{print $1}';;
+        b) mpvctui_fzf_urlbrowse "$OPTARG" ;;
         c) mpvctui_fzf_chapterlist ;;
         C) shift; mpvctui_fzf_icache;;
         d) MPVC_DIR="$OPTARG"; cd "$MPVC_DIR" || return;;
