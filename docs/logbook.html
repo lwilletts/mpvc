@@ -564,10 +564,21 @@ In the most basic sense, this would mean allowing mpvc-web only to access a lock
 
 <h3 id="logbook-20240116">On http-streaming media using mpvc-web, 16 Jan 2024</h3>
 <p>
-A few changes have been going on `mpvc-web`, most relevant, is that a new option `MPVC_WEB_ARCHIVE_ENABLE` serves the mpvc ytdl-archive/ dir by mpvc-web. Yeah, that's  hacky and a kludge, but its also quite handy. As it means that the full archive can be reachable from the LAN over HTTP/S, so if mpvc is running on an central audio/media center, then besides controlling with mpvc-web, you can also easily fetch the archive media files over HTTP/S to share/store them to mobile devices like laptop/tablet/phone.
-
-This also means that you can play that media from a separate device running mpvc, like a laptop, by using <code>mpvc add https://mediacenter/archive/url</code>
 <p>
+A few changes have been going on <a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-web">extras/mpvc-web</a>
+, latest changes add the option <code>MPVC_WEB_ARCHIVE_ENABLE</code> to serve the mpvc ytdl-archive/ dir over HTTP/S
+</p>
+
+<p>
+Yeah, that's  hacky and a kludge, but its also quite handy. As it means that the full archive can be reachable from the LAN over HTTP/S, so if mpvc is running on an central audio/media center, then besides controlling with mpvc-web, you can also easily fetch the archive media files over HTTP/S to share/store them to mobile devices like laptop/tablet/phone.
+</p>
+
+<p>
+This also means that you can play that media from a separate device running mpvc, like a laptop, by adding files from the ytdl-archive URL, to browse the ytdl-archive using fzf use <code>mpvc-fzf -b ""</code>, this by default queries <code>https://localhost:8443/ytdl-archive/</code>, use <code>mpvc-fzf -b https://your-mediacenter:8443/ytdl-archive/</code> or any other URL to query other archives.
+</p>
+
+Stay tuned
+</p>
 
 <!-- SOF -->
 
