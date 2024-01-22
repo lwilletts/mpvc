@@ -643,7 +643,7 @@ mpvc_toggle_loop() {
 
 mpvc_set_volume() {
     volumemax=$(mpvc_get volume-max)
-    if [ "$1" -ge ${volumemax%.*} ]; then
+    if [ "${1%.*}" -ge ${volumemax%.*} ]; then
         QUIETFLAG="true"
         warn "$PROGNAME: Error: volume $1 above volume-max"
         return
