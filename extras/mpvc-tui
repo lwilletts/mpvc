@@ -280,7 +280,7 @@ mpvctui_notify()
 
 mpvctui_notify_loop_cli()
 {
-    scrobler_cli='echo $(date +"T%H:%M") $(mpvc -f "[%status%] #%position%/%playlistlength% %length% %artist% - %title%")'
+    scrobler_cli='echo $(date +"T%H:%M") $(mpvc -f "[%status%] #%position%/%playlistlength% %time% %artist% - %title%")'
     mpvctui_notify_loop "${1:-$scrobler_cli}" | grep -v event
 }
 
