@@ -18,17 +18,17 @@ set -euf
 usage() {
     cat >&2 << EOF
 usage: $PROGNAME opts # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
-    -a | --add          : Add media to playlist (see --load for stdin).
-    -s | --stop         : Always stop playback.
-    -P | --play         : Always start playback.
-    -p | --toggle       : Toggle playback.
-       | --next         : Jump to next entry in the playlist
-       | --prev         : Jump to previous entry in the playlist
-    -i | --playlist     : Print filenames of tracks to fit within terminal.
-    -I | --fullplaylist : Print all filenames of tracks in current playlist.
-    -v | --vol          : Increase/decrease volume relative to current volume.
-    -h | --help         : Prints the short help.
-    -H | --long-help    : Prints the long help.
+    -a | --add              : Add media to playlist (see --load for stdin).
+    -s | --stop             : Always stop playback.
+    -P | --play             : Always start playback.
+    -p | --toggle           : Toggle playback.
+       | --next             : Jump to next entry in the playlist
+       | --prev             : Jump to previous entry in the playlist
+    -i | --playlist         : Print filenames of tracks to fit within terminal.
+    -I | --fullplaylist     : Print all filenames of tracks in current playlist.
+    -v | --vol              : Increase/decrease volume relative to current volume.
+    -h | --help             : Prints the short help.
+    -H | --long-help        : Prints the long help.
 EOF
 
     if [ $# -gt 0 ]; then
@@ -591,8 +591,8 @@ mpvc_set_track() {
     if [ "$lcount" = "0" ]; then return; fi
     if [ "$lpos" = "null" ]; then lpos=0; fi
     case "$2" in
-        absolute) newpos=$(( $1 % lcount )) ;;
-        relative) newpos=$(( (lpos + $1) % lcount )) ;;
+        absolute) newpos=$(( $1 % $lcount )) ;;
+        relative) newpos=$(( ($lpos + $1) % $lcount )) ;;
     esac
     mpvc_set "playlist-pos" "$newpos"
 }
@@ -642,6 +642,12 @@ mpvc_toggle_loop() {
 }
 
 mpvc_set_volume() {
+    volumemax=$(mpvc_get volume-max)
+    if [ "${1%.*}" -ge ${volumemax%.*} ]; then
+        QUIETFLAG="true"
+        warn "$PROGNAME: Error: volume $1 above volume-max"
+        return
+    fi
     case "$1" in
         '') die 1 "$PROGNAME: Error: Missing volume." ;;
         +*) mpvc_add "volume" "$1"  ;;

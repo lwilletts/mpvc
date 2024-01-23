@@ -85,6 +85,7 @@ Logbook Entries
     <li> <a href="#logbook-20230916">#20230916 On mpvc usage patterns for playing music/videos</a></li>
     <li> <a href="#logbook-20231026">#20231026 On observing mpv property changes</a></li>
     <li> <a href="#logbook-20231117">#20231117 On the security of mpvc-web</a></li>
+    <li> <a href="#logbook-20240116">#20240116 On http-streaming media using mpvc-web</a></li>
 </ul>
 
 <hr />
@@ -542,8 +543,9 @@ So, now the following alternatives are available, ordered from less to more secu
    require the use of peer certificates, therefore, limiting access only to those
    clients/peers that have present  valid `stunnel(1)` certificate with:
    `MPVC_WEB_HOST=0 MPVC_WEB_SSL_ENABLE=1 MPVC_WEB_SSL_VERIFY=2 mpvc-web`
-    <li>
+    </li>
 </ol>
+</p>
 
 The latter means that the `mpvc-web.p12` peer certificates have to be installed
 in the client phones/browsers to access mpvc-web from the network, however,
@@ -555,17 +557,35 @@ So with this security issue addressed, I can keep on using and improving mpvc-we
 
 <!--
 <p>
-One thing missing on the wishlist, is isolating mpvc/mpvc-web so it only has access to what it needs to work. 
+One thing missing on the wishlist, is isolating mpvc/mpvc-web so it only has access to what it needs to work.
 In the most basic sense, this would mean allowing mpvc-web only to access a locked down mpv IPC socket, and even this has to be used carefully as stated in <a href="https://mpv.io/manual/stable/#json-ipc">mpv(1)</a> the JSON IPC socket allows running arbitrary system commands
 </p>
 -->
+
+<h3 id="logbook-20240116">On http-streaming media using mpvc-web, 16 Jan 2024</h3>
+<p>
+<p>
+A few changes have been going on <a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-web">extras/mpvc-web</a>
+, latest changes add the option <code>MPVC_WEB_ARCHIVE_ENABLE</code> to serve the mpvc ytdl-archive/ dir over HTTP/S
+</p>
+
+<p>
+Yeah, that's  hacky and a kludge, but its also quite handy. As it means that the full archive can be reachable from the LAN over HTTP/S, so if mpvc is running on an central audio/media center, then besides controlling with mpvc-web, you can also easily fetch the archive media files over HTTP/S to share/store them to mobile devices like laptop/tablet/phone.
+</p>
+
+<p>
+This also means that you can play that media from a separate device running mpvc, like a laptop, by adding files from the ytdl-archive URL, to browse the ytdl-archive using fzf use <code>mpvc-fzf -b ""</code>, this by default queries <code>https://localhost:8443/ytdl-archive/</code>, use <code>mpvc-fzf -b https://your-mediacenter:8443/ytdl-archive/</code> or any other URL to query other archives.
+</p>
+
+Stay tuned
+</p>
 
 <!-- SOF -->
 
 <hr/>
 <p>
 <span>
-    <em>Last-Modified: Monday, 18 December 2023 by <a href="https://gmt4.github.io">gmt4</a></em>
+    <em>Last-Modified: Monday, 16 January 2024 by <a href="https://gmt4.github.io">gmt4</a></em>
 </span>
 <span style="float: right;">
     <em>Powered by #HTML 🧡 💚 💙 </em>

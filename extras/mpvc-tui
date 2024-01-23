@@ -257,7 +257,7 @@ mpvctui_notify()
     cmd_notify='notify-send -u normal -i dialog-information "$(mpvc)";'
     cmd_scrobble='echo $(mpvc expand-text "$(date +%s)\t\\${=duration}\t\\${path}\t\\${media-title}") >> '"$MPVC_SCROBBLER"
 
-    awk -v cmd_scrobble="${1:-$cmd_scrobble}" -v cmd_notify="$cmd_notify" '
+    awk -v cmd_scrobble="${1:-$cmd_scrobble}" -v cmd_notify="${2:-$cmd_notify}" '
         BEGIN { ot = otn = systime(); }
 
         /playback-restart|chapter-change|metadata-update/ {
@@ -268,7 +268,7 @@ mpvctui_notify()
             print tn, $0, "notify"
         }
 
-        /playback-restart/ {
+        /playback-restart|metadata-update/ {
             t=systime()
             if (t - ot > 1)
                 system(cmd_scrobble);
@@ -278,10 +278,16 @@ mpvctui_notify()
     '
 }
 
+mpvctui_notify_loop_cli()
+{
+    scrobler_cli='echo $(date +"T%H:%M") $(mpvc -f "[%status%] #%position%/%playlistlength% %length% %artist% - %title%")'
+    mpvctui_notify_loop "${1:-$scrobler_cli}" | grep -v event
+}
+
 mpvctui_notify_loop()
 {
     # mpvc idleloop | mpvctui_notify "$@"
-    while sleep 10; do mpvc idleloop | mpvctui_notify "$@"; done
+    while sleep 1; do mpvc idleloop | mpvctui_notify "$@"; sleep 10; done
 }
 
 mpvctui_suggest()
@@ -321,7 +327,7 @@ mpvctui_usage()
     exit;
 }
 
-optflags="d:hHtTm:nN:sP:x"
+optflags="d:hHtTm:nN:sS:P:x"
 mpvctui_main()
 {
     mpvctui_config
@@ -344,6 +350,7 @@ mpvctui_main()
         n) shift; mpvctui_notify_loop ;;
         N) shift; mpvctui_notify_loop "$OPTARG" ;;
         s) shift; mpvctui_suggest ;;
+        S) shift; mpvctui_notify_loop_cli "$OPTARG" ;;
         x) shift; if quiet command -v $MPVC_TERM; then $MPVC_TERM -e "$0" "$@"; fi; exit;;
         *) mpvctui_usage;;
         esac

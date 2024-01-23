@@ -69,40 +69,35 @@
     <div id=container class="container">
     </div>
 
+    <h2>Scrobbling Code</h2>
+    This <a href="#mpvc-now-listening">Now Listening</a> is generated using the command below that queries mpvc-tui scrobling history to find recently played tracks with
+    <code>mpvc-tui -H | awk '/https:/ {print $3}' | tail -n 10</code>:
+
+    <pre id=pre class="pre">
+    </pre>
+
     <script charset="utf-8">
     const urlp = new URL(window.location.href).searchParams;
     const dflt = [ 'ssDzysKLlpY', '667dtK7O89k', 'mEkZbWYUego', 'UzRFQ6pDqhk', '_nl3Oo4-IQ4', 'ypAIWyH13aM', 'Jls9wXOSjl4', 'Hwg7hJrDiRg', '6FJ7F6trvBc' ];
     const vids = urlp.getAll('v').length > 0 ? urlp.getAll('v') : dflt;
     const cont = document.getElementById('container');
+    const pre  = document.getElementById('pre');
+    pre.innerHTML = '\n'
     for(i in vids)
     {
         if (/^([-_a-zA-Z0-9]{11})$/.test(vids[i]))
         {
             const video = vids[i]
             const html='<iframe src="https://www.youtube.com/embed/'+video+'" frameborder="0" allowfullscreen=""></iframe>'
+            const url='https://www.youtube.com/watch?v='+video+'\n'
             const node = document.createElement('div');
             node.setAttribute('class', 'item')
             node.innerHTML = html
             cont.appendChild(node)
+            pre.innerHTML += url
         }
     }
     </script>
-
-    <h2>Scrobbling Code</h2>
-    This <a href="#mpvc-now-listening">Now Listening</a> is generated using the command below that queries mpvc-tui scrobling history to find recently played tracks:
-    <pre>
-mpvc-tui -H | awk '/https:/ {print $3}' | tail -n 10
-
-https://www.youtube.com/watch?v=ssDzysKLlpY
-https://www.youtube.com/watch?v=667dtK7O89k
-https://www.youtube.com/watch?v=mEkZbWYUego
-https://www.youtube.com/watch?v=Hwg7hJrDiRg
-https://www.youtube.com/watch?v=UzRFQ6pDqhk
-https://www.youtube.com/watch?v=TCckoybjos8
-https://www.youtube.com/watch?v=ypAIWyH13aM
-https://www.youtube.com/watch?v=Jls9wXOSjl4
-https://www.youtube.com/watch?v=6FJ7F6trvBc
-    </pre>
 
 <hr/>
 <p>
