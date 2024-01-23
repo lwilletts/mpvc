@@ -15,11 +15,11 @@ PROGURL="https://github.com/gmt4/mpvc"
 set -euf
 
 quiet()  { "$@" > /dev/null 2>&1; }
-mpvctui_warn() { echo "$@" >&2; }
+mpvcfzf_warn() { echo "$@" >&2; }
 mpvc() { $PROGDIR/mpvc "$@"; }
 
 # Set defaults
-mpvctui_defaults()
+mpvcfzf_defaults()
 {
     XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}
     MPVC_CONFIG="${MPVC_CONFIG:-$XDG_CONFIG_HOME/mpvc/mpvc.conf}"
@@ -28,22 +28,22 @@ mpvctui_defaults()
     MPVC_TERM=${MPVC_TERM:-xterm}
 }
 
-mpvctui_config()
+mpvcfzf_config()
 {
-    mpvctui_defaults
+    mpvcfzf_defaults
     # if present load user config
     if [ -r "$MPVC_CONFIG" ];
     then
         . "$MPVC_CONFIG"
     fi
     if ! quiet command -v fzf; then
-        mpvctui_warn "$PROGNAME: Warning: No fzf, Install to get fuzzy media search & play support!"
+        mpvcfzf_warn "$PROGNAME: Warning: No fzf, Install to get fuzzy media search & play support!"
         sleep 1
     fi
 }
 
-mpvctui_fzf_help="C-x:list C-v:yt-add C-\\:add C-o:play C-t:del C-r:reload C-s:seek C-spc:toggle"
-mpvctui_fzf_preview()
+mpvcfzf_help="C-x:list C-v:yt-add C-\\:add C-o:play C-t:del C-r:reload C-s:seek C-spc:toggle"
+mpvcfzf_preview()
 {
     # fzf keys: ctrl + [dorstxv\]
     fzf \
@@ -61,12 +61,12 @@ mpvctui_fzf_preview()
         \
         --preview-window='up:5' \
         --preview="mpvc" \
-        --header="$PROGNAME help: $mpvctui_fzf_help" \
+        --header="$PROGNAME help: $mpvcfzf_help" \
         "$@"
         #--bind='ctrl-d:execute-silent(mpvc seek -20 &)' \
 }
 
-mpvctui_fzf_isearch()
+mpvcfzf_isearch()
 {
     url_host="${url_host:-yewtu.be}"
     url_sort="sort=relevance" # relevance views date
@@ -101,7 +101,7 @@ mpvctui_fzf_isearch()
     '
 }
 
-mpvctui_fzf_nextvideo()
+mpvcfzf_nextvideo()
 {
     id="${1##https://yewtu.be/}"
     output=$(curl -fsSL -A '' "https://yewtu.be/watch?v=$id")
@@ -110,12 +110,12 @@ mpvctui_fzf_nextvideo()
     echo "$next_url"
 }
 
-mpvctui_fzf_icache_ytdlro() { mpvc getr ytdl-raw-options; }
-mpvctui_fzf_icache_output() { mpvctui_fzf_icache_ytdlro | jq -r ".data.output"; }
-mpvctui_fzf_icache_output_dir() { eval echo $( dirname $(mpvctui_fzf_icache_output) ); }
-mpvctui_fzf_icache_archive() { mpvctui_fzf_icache_ytdlro | jq -r ".data.download-archive"; }
+mpvcfzf_icache_ytdlro() { mpvc getr ytdl-raw-options; }
+mpvcfzf_icache_output() { mpvcfzf_icache_ytdlro | jq -r ".data.output"; }
+mpvcfzf_icache_output_dir() { eval echo $( dirname $(mpvcfzf_icache_output) ); }
+mpvcfzf_icache_archive() { mpvcfzf_icache_ytdlro | jq -r ".data.download-archive"; }
 
-mpvctui_fzf_icache()
+mpvcfzf_icache()
 {
     # check for media present in local cache
     if [ -n "$MPVC_YTDL_ARCHIVE" -a -n "$MPVC_YTDL_OUTPUT" ]; then
@@ -132,7 +132,7 @@ mpvctui_fzf_icache()
         ytdl_dir=$(eval echo $ytdl_dir)
     fi
     if [ ! -n "$ytdl_output" -o ! -r "$ytdl_archive" -o ! -n "$ytdl_output" ]; then
-        mpvctui_warn "$PROGNAME: Error cache not enabled: undefined ytdl-raw-options"
+        mpvcfzf_warn "$PROGNAME: Error cache not enabled: undefined ytdl-raw-options"
         if cat; then return; fi
     fi
 
@@ -149,21 +149,21 @@ mpvctui_fzf_icache()
     done
 }
 
-mpvctui_fzf_fetch()
+mpvcfzf_fetch()
 {
-    if [ $# -lt 1 ]; then mpvctui_usage; fi
+    if [ $# -lt 1 ]; then mpvcfzf_usage; fi
 
     ytdl_opts=""
     ytdlp=$(command -v youtube-dl || command -v yt-dlp)
     if [ ! -x "$ytdlp" ]; then
-        mpvctui_warn "$PROGNAME: Warning: No yt-dlp, Install to get ytdl support!"
+        mpvcfzf_warn "$PROGNAME: Warning: No yt-dlp, Install to get ytdl support!"
     fi
 
     mpvc -q --mpv
 
     ytdl_json=$(mpvc getr ytdl-raw-options)
     if [ -z "$ytdl_json" ]; then
-        mpvctui_warn "$PROGNAME: Error ytdl-raw-options not set. Check docs/mpv.conf"
+        mpvcfzf_warn "$PROGNAME: Error ytdl-raw-options not set. Check docs/mpv.conf"
         return
     fi
     for option in $(echo "$ytdl_json" | jq -r ".data | keys | .[]")
@@ -179,10 +179,10 @@ mpvctui_fzf_fetch()
     "$ytdlp" $ytdl_opts ${YTDL_OPTS:-} "$@"
 }
 
-mpvctui_fzf_fetch_remove()
+mpvcfzf_fetch_remove()
 {
     if [ -z "$1" ]; then
-        mpvctui_warn "$PROGNAME: Error missing ytdl-video-id to remove"
+        mpvcfzf_warn "$PROGNAME: Error missing ytdl-video-id to remove"
         return
     fi
     ytdl_id="$1"
@@ -195,7 +195,7 @@ mpvctui_fzf_fetch_remove()
     ytdl_dir=$(eval echo $ytdl_dir)
 
     if [ -z "$ytdl_json" -o ! -r "$ytdl_archive" -o ! -n "$ytdl_output" ]; then
-        mpvctui_warn "$PROGNAME: Error cache not enabled: undefined ytdl-raw-options"
+        mpvcfzf_warn "$PROGNAME: Error cache not enabled: undefined ytdl-raw-options"
         return
     fi
 
@@ -203,36 +203,36 @@ mpvctui_fzf_fetch_remove()
     sed -i "/$ytdl_id/ s|^|#|" "$ytdl_archive"
 }
 
-mpvctui_fzf_iplay()
+mpvcfzf_iplay()
 {
-    mpvctui_fzf_isearch "$1" |
-        mpvctui_fzf_preview --prompt="(youtube) " |
+    mpvcfzf_isearch "$1" |
+        mpvcfzf_preview --prompt="(youtube) " |
             awk '{print $1}'
 }
 
-mpvctui_fzf_local()
+mpvcfzf_local()
 {
     find . -type f,d | sort |
-        mpvctui_fzf_preview --prompt="(local) " |
+        mpvcfzf_preview --prompt="(local) " |
             mpvc load
 }
 
-mpvctui_fzf_playlist()
+mpvcfzf_playlist()
 {
     len=$(mpvc gets playlist-count)
     ( if [ -z "$len" ]; then echo; else mpvc fullplaylist; fi) |
-        mpvctui_fzf_preview --prompt="(playlist) "
+        mpvcfzf_preview --prompt="(playlist) "
 }
 
-mpvctui_fzf_chapterlist()
+mpvcfzf_chapterlist()
 {
     len=$(mpvc gets chapter-list/count)
     ( if [ -z "$len" ]; then echo; else mpvc chapter-list-full; fi) |
-        mpvctui_fzf_preview --prompt="(chapter) " \
+        mpvcfzf_preview --prompt="(chapter) " \
         --bind='ctrl-o:execute-silent(mpvc set chapter {n} &)'
 }
 
-mpvctui_fzf_ddg()
+mpvcfzf_ddg()
 {
     curl -fsSL -A 'Mozilla/5.0' "https://duckduckgo.com/html?q=$*&iax=videos&ia=videos" |
         awk  '
@@ -261,30 +261,30 @@ mpvctui_fzf_ddg()
             }'
 }
 
-mpvctui_fzf_urlbrowse()
+mpvcfzf_urlbrowse()
 {
     url=${1:-https://localhost:8443/ytdl-archive/}
 
     curl -k -fsSL "$url" |
         awk '/<a href=".*">.*<\/a>/ { h=$0;sub("^.*href=\"","",h);sub("\".*$","",h);print h }' |
-        mpvctui_fzf_preview |
+        mpvcfzf_preview |
         awk -v url="$url" '{ print url$0 }'
 }
 
-mpvctui_ddg_play()
+mpvcfzf_ddg_play()
 {
-    mpvctui_fzf_ddg "$@" |
-        mpvctui_fzf_preview |
+    mpvcfzf_ddg "$@" |
+        mpvcfzf_preview |
             awk '{print $1}' | mpvc load
 }
 
-mpvctui_version()
+mpvcfzf_version()
 {
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
 }
 
 optflags="01b:cCd:DfFg:G:hn:s:p:P:o:Or:lxv"
-mpvctui_usage()
+mpvcfzf_usage()
 {
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
     echo "  -b : Browse the provided ytdl-archive URL with fzf (fzf*)"
@@ -304,36 +304,36 @@ mpvctui_usage()
 
 main()
 {
-    mpvctui_config
-    if [ $# -lt 1 ]; then mpvctui_usage; fi
+    mpvcfzf_config
+    if [ $# -lt 1 ]; then mpvcfzf_usage; fi
 
     while getopts "$optflags" flag;
     do
         case "$flag" in
         0) shift; awk '{print $NF}';;
         1) shift; awk '{print $1}';;
-        b) mpvctui_fzf_urlbrowse "$OPTARG" ;;
-        c) mpvctui_fzf_chapterlist ;;
-        C) shift; mpvctui_fzf_icache;;
+        b) mpvcfzf_urlbrowse "$OPTARG" ;;
+        c) mpvcfzf_chapterlist ;;
+        C) shift; mpvcfzf_icache;;
         d) MPVC_DIR="$OPTARG"; cd "$MPVC_DIR" || return;;
-        D) shift; mpvctui_ddg_play "$@";;
-        #D) shift; mpvctui_fzf_ddg "$@";;
-        f) mpvctui_fzf_playlist ;;
-        F) shift; mpvctui_fzf_preview "$@" ;;
-        g) mpvctui_fzf_fetch "$OPTARG";;
-        G) mpvctui_fzf_fetch $(mpvctui_fzf_iplay "$OPTARG");;
-        h) mpvctui_usage ;;
-        l) mpvctui_fzf_local;;
-        n) mpvctui_fzf_nextvideo "$OPTARG" ;;
-        o) mpvctui_fzf_isearch "$OPTARG" | awk 'NR==2 {print}' ;;
-        O) mpvctui_fzf_icache_output ;;
-        r) mpvctui_fzf_fetch_remove "$OPTARG" ;;
-        p) mpvctui_fzf_iplay "$OPTARG" | mpvc load ;;
-        P) mpvctui_fzf_iplay "$OPTARG" | mpvc loadc ;;
-        s) mpvctui_fzf_isearch "$OPTARG";;
+        D) shift; mpvcfzf_ddg_play "$@";;
+        #D) shift; mpvcfzf_ddg "$@";;
+        f) mpvcfzf_playlist ;;
+        F) shift; mpvcfzf_preview "$@" ;;
+        g) mpvcfzf_fetch "$OPTARG";;
+        G) mpvcfzf_fetch $(mpvcfzf_iplay "$OPTARG");;
+        h) mpvcfzf_usage ;;
+        l) mpvcfzf_local;;
+        n) mpvcfzf_nextvideo "$OPTARG" ;;
+        o) mpvcfzf_isearch "$OPTARG" | awk 'NR==2 {print}' ;;
+        O) mpvcfzf_icache_output ;;
+        r) mpvcfzf_fetch_remove "$OPTARG" ;;
+        p) mpvcfzf_iplay "$OPTARG" | mpvc load ;;
+        P) mpvcfzf_iplay "$OPTARG" | mpvc loadc ;;
+        s) mpvcfzf_isearch "$OPTARG";;
         x) shift; if quiet command -v $MPVC_TERM; then $MPVC_TERM -e "$0" "$@"; fi; exit;;
-        v) mpvctui_version;;
-        *) mpvctui_usage;;
+        v) mpvcfzf_version;;
+        *) mpvcfzf_usage;;
         esac
     done
 }
