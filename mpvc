@@ -891,7 +891,7 @@ mpvc_validate_socket() {
     # validate deps
     quiet command -v "$MPVC_MPV" || die 4 "$PROGNAME: Error: No mpv found. Install to continue."
     quiet command -v "$MPVC_SOCAT" || quiet command -v nc || die 4 "$PROGNAME: Error: No socat found. Install to continue."
-    mpvc_sockcmd '{ "command": [ "get_property_string ", "idle-active" ] }' || die 4 "$PROGNAME: Error: $MPVC_SOCAT not working. Install socat to continue."
+    mpvc_sockcmd '{ "command": [ "get_property_string", "idle-active" ] }' || die 4 "$PROGNAME: Error: $MPVC_SOCAT not working. Install socat to continue."
     # test if socket exists
     if [ ! -S "$MPVC_SOCKET" ]; then die 2 "$PROGNAME: Error: Socket ${MPVC_SOCKET##$HOME/} does not exist. Use mpvc --mpv to start one."; fi
     # test if socket is open
