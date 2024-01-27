@@ -889,13 +889,25 @@ mpvc_handle_socket() {
 
 mpvc_validate_socket() {
     # validate deps
-    quiet command -v "$MPVC_MPV" || die 4 "$PROGNAME: Error: No mpv found. Install to continue."
-    quiet command -v "$MPVC_SOCAT" || quiet command -v nc || die 4 "$PROGNAME: Error: No socat found. Install to continue."
-    mpvc_sockcmd '{ "command": [ "get_property_string", "idle-active" ] }' || die 4 "$PROGNAME: Error: $MPVC_SOCAT not working. Install socat to continue."
+    if ! quiet command -v "$MPVC_MPV"; then
+        die 4 "$PROGNAME: Error: No mpv found. Install to continue."
+    fi
+    if ! quiet command -v "$MPVC_SOCAT" && ! quiet command -v nc; then
+        die 4 "$PROGNAME: Error: No socat found. Install to continue."
+    fi
+
     # test if socket exists
-    if [ ! -S "$MPVC_SOCKET" ]; then die 2 "$PROGNAME: Error: Socket ${MPVC_SOCKET##$HOME/} does not exist. Use mpvc --mpv to start one."; fi
+    if [ ! -S "$MPVC_SOCKET" ]; then
+        die 2 "$PROGNAME: Error: Socket ${MPVC_SOCKET##$HOME/} does not exist. Use mpvc --mpv to start one."
+    fi
     # test if socket is open
-    if [ "$(mpvc_get pause)" = "" ]; then die 3 "$PROGNAME: Error: No files added to ${MPVC_SOCKET##$HOME/}."; fi
+    if [ "$(mpvc_get pause)" = "" ]; then
+        die 3 "$PROGNAME: Error: No files added to ${MPVC_SOCKET##$HOME/}.";
+    fi
+    # test if socat works on socket
+    if ! mpvc_sockcmd '{ "command": [ "get_property_string", "idle-active" ] }'; then
+        die 4 "$PROGNAME: Error: $MPVC_SOCAT failed. Install socat to continue."
+    fi
 }
 
 mpvc_get_version() {
