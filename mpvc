@@ -234,7 +234,7 @@ mpvc_curl_cache_metadata_json() {
             result="$(mpvc_curl_cache_json "$filename")"
             ;;
         *) # otherwise, assume its a local file
-            result="{ \"title\":${filename##*/}, }";
+            result="{ \"title\":${filename##*/}, }"
             ;;
     esac
     printf "$result\n"
@@ -256,16 +256,16 @@ mpvc_socklist() {
     for f in $(find "$MPVC_CONFIG_DIR" -type s); do
         idle=$(MPVC_SOCKET=$f mpvc_get idle-active)
         if [ -z "$idle" ]; then
-            echo "$f:	active=no";
+            echo "$f:	active=no"
         else
-            echo "$f:	active=yes idle=$idle";
+            echo "$f:	active=yes idle=$idle"
         fi
-    done;
+    done
 }
 
 mpvc_cmdr_() {
-    command=$(for i in "$@"; do printf "$q$i$q, "; done);
-    echo "{ \"command\": [ $command ] }";
+    command=$(for i in "$@"; do printf "$q$i$q, "; done)
+    echo "{ \"command\": [ $command ] }"
 }
 mpvc_cmdr() { equiet mpvc_sockcmd_ "$(q='"' mpvc_cmdr_ "$@")"; }
 mpvc_ecmdr() {
@@ -668,7 +668,7 @@ mpvc_nocolor()
 mpvc_search() {
     if [ $# -lt 2 ]; then return; fi
     mode=$1; shift;
-    mpvc_nocolor mpvc_get_playlist "$mode" | awk '/'"$*"'/ { print $0 }';
+    mpvc_nocolor mpvc_get_playlist "$mode" | awk '/'"$*"'/ { print $0 }'
 }
 
 mpvc_search_play() {
@@ -902,7 +902,7 @@ mpvc_validate_socket() {
     fi
     # test if socket is open
     if [ "$(mpvc_get pause)" = "" ]; then
-        die 3 "$PROGNAME: Error: No files added to ${MPVC_SOCKET##$HOME/}.";
+        die 3 "$PROGNAME: Error: No files added to ${MPVC_SOCKET##$HOME/}."
     fi
     # test if socat works on socket
     if ! mpvc_sockcmd '{ "command": [ "get_property_string", "idle-active" ] }'; then
@@ -1095,4 +1095,4 @@ main() {
     quietcheck mpvc_print_status_final
 }
 
-quietcheck main "$@";
+quietcheck main "$@"
