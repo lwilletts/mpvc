@@ -151,6 +151,8 @@ mpvc_defaults()
     MPVC_MPV="${MPVC_MPV:-mpv}"
     MPVC_SOCAT="${MPVC_SOCAT:-socat}"
 
+    NO_COLOR="${NO_COLOR:-}"
+    IMAGEFLAG="${IMAGEFLAG:-}"
     QUIETFLAG="${QUIETFLAG:-}"
     MPVC_LOCAL_CACHE="${MPVC_LOCAL_CACHE:-false}"
     FORMATSTRING="${FORMATSTRING:-}"
@@ -659,7 +661,7 @@ mpvc_set_volume() {
 
 mpvc_nocolor()
 {
-    NO_COLOR_BAK=${NO_COLOR:-}
+    NO_COLOR_BAK=${NO_COLOR}
     export NO_COLOR=true
     "$@"
     NO_COLOR=${NO_COLOR_BAK}
