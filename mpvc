@@ -1075,6 +1075,10 @@ main() {
             --delay|delay)                   mpvc_delay;;
             --wait|wait)                     mpvc_wait;;
 
+            --ttysize|ttysize)               mpvc_tty_size; QUIETFLAG=true;;
+            --ttycols|ttycols)               mpvc_tty_cols; QUIETFLAG=true;;
+            --ttylines|ttylines)             mpvc_tty_lines; QUIETFLAG=true;;
+
             # global argument parsing
             -f|--format)                     shift; FORMATSTRING="${1:-}"       ;;
             -S|--socket)                     shift; mpvc_handle_socket "${1:-}";;
