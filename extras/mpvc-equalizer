@@ -111,14 +111,19 @@ mpvc_bar_line()
 {
     valf=$1
     min_val=-360
-    val=$((${valf%%.*} - $min_val))
-    x=10
+    max_val=770
+    cols=$(mpvc ttycols)
+    inc_val=$(( ( max_val - min_val ) / cols ))
+
+    inc=${inc:-$inc_val}
+    val=$((${valf%%.*} - min_val))
+    x=${inc}
 
     str=""
-    while [ $x -le $val ]
+    while [ "$x" -le $val ]
     do
         str="${str}="
-        x=$((x + 10))
+        x=$((x + inc))
     done
     echo "$str"
 }
