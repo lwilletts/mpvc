@@ -1,7 +1,7 @@
 # A tmp Makefile that just calls mpvc-installer for compat with mpvc-git Arch PKGBUILD (@gmt4)
 PREFIX ?= /usr/local
 BINDIR ?= $(PREFIX)/bin
-DOCDIR ?= $(PREFIX)/docs
+DOCDIR ?= $(PREFIX)/doc
 INSTALLER=extras/mpvc-installer
 all:
 install:

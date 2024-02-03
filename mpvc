@@ -151,6 +151,8 @@ mpvc_defaults()
     MPVC_MPV="${MPVC_MPV:-mpv}"
     MPVC_SOCAT="${MPVC_SOCAT:-socat}"
 
+    NO_COLOR="${NO_COLOR:-}"
+    IMAGEFLAG="${IMAGEFLAG:-}"
     QUIETFLAG="${QUIETFLAG:-}"
     MPVC_LOCAL_CACHE="${MPVC_LOCAL_CACHE:-false}"
     FORMATSTRING="${FORMATSTRING:-}"
@@ -234,7 +236,7 @@ mpvc_curl_cache_metadata_json() {
             result="$(mpvc_curl_cache_json "$filename")"
             ;;
         *) # otherwise, assume its a local file
-            result="{ \"title\":${filename##*/}, }";
+            result="{ \"title\":${filename##*/}, }"
             ;;
     esac
     printf "$result\n"
@@ -256,16 +258,16 @@ mpvc_socklist() {
     for f in $(find "$MPVC_CONFIG_DIR" -type s); do
         idle=$(MPVC_SOCKET=$f mpvc_get idle-active)
         if [ -z "$idle" ]; then
-            echo "$f:	active=no";
+            echo "$f:	active=no"
         else
-            echo "$f:	active=yes idle=$idle";
+            echo "$f:	active=yes idle=$idle"
         fi
-    done;
+    done
 }
 
 mpvc_cmdr_() {
-    command=$(for i in "$@"; do printf "$q$i$q, "; done);
-    echo "{ \"command\": [ $command ] }";
+    command=$(for i in "$@"; do printf "$q$i$q, "; done)
+    echo "{ \"command\": [ $command ] }"
 }
 mpvc_cmdr() { equiet mpvc_sockcmd_ "$(q='"' mpvc_cmdr_ "$@")"; }
 mpvc_ecmdr() {
@@ -643,15 +645,15 @@ mpvc_toggle_loop() {
 
 mpvc_set_volume() {
     volumemax=$(mpvc_get volume-max)
-    if [ "${1%.*}" -ge ${volumemax%.*} ]; then
+    if [ -n "$1" ] && [ "${1%.*}" -ge "${volumemax%.*}" ]; then
         QUIETFLAG="true"
         warn "$PROGNAME: Error: volume $1 above volume-max"
         return
     fi
-    case "$1" in
+    case "${1:-}" in
         '') die 1 "$PROGNAME: Error: Missing volume." ;;
-        +*) mpvc_add "volume" "$1"  ;;
-        -*) mpvc_add "volume" "$1"  ;;
+        +*) mpvc_add "volume" "$1" ;;
+        -*) mpvc_add "volume" "$1" ;;
         *%) mpvc_set "volume" "${1%%%}";;
         *)  mpvc_set "volume" "$1" ;;
     esac
@@ -659,7 +661,7 @@ mpvc_set_volume() {
 
 mpvc_nocolor()
 {
-    NO_COLOR_BAK=${NO_COLOR:-}
+    NO_COLOR_BAK=${NO_COLOR}
     export NO_COLOR=true
     "$@"
     NO_COLOR=${NO_COLOR_BAK}
@@ -668,7 +670,7 @@ mpvc_nocolor()
 mpvc_search() {
     if [ $# -lt 2 ]; then return; fi
     mode=$1; shift;
-    mpvc_nocolor mpvc_get_playlist "$mode" | awk '/'"$*"'/ { print $0 }';
+    mpvc_nocolor mpvc_get_playlist "$mode" | awk '/'"$*"'/ { print $0 }'
 }
 
 mpvc_search_play() {
@@ -889,12 +891,25 @@ mpvc_handle_socket() {
 
 mpvc_validate_socket() {
     # validate deps
-    quiet command -v "$MPVC_MPV" || die 4 "$PROGNAME: Error: No mpv found. Install to continue."
-    quiet command -v "$MPVC_SOCAT" || quiet command -v nc || die 4 "$PROGNAME: Error: No socat/nc found. Install one"
+    if ! quiet command -v "$MPVC_MPV"; then
+        die 4 "$PROGNAME: Error: No mpv found. Install to continue."
+    fi
+    if ! quiet command -v "$MPVC_SOCAT" && ! quiet command -v nc; then
+        die 4 "$PROGNAME: Error: No socat found. Install to continue."
+    fi
+
     # test if socket exists
-    if [ ! -S "$MPVC_SOCKET" ]; then die 2 "$PROGNAME: Error: Socket ${MPVC_SOCKET##$HOME/} does not exist. Use mpvc --mpv to start one."; fi
+    if [ ! -S "$MPVC_SOCKET" ]; then
+        die 2 "$PROGNAME: Error: Socket ${MPVC_SOCKET##$HOME/} does not exist. Use mpvc --mpv to start one."
+    fi
     # test if socket is open
-    if [ "$(mpvc_get pause)" = "" ]; then die 3 "$PROGNAME: Error: No files added to ${MPVC_SOCKET##$HOME/}."; fi
+    if [ "$(mpvc_get pause)" = "" ]; then
+        die 3 "$PROGNAME: Error: No files added to ${MPVC_SOCKET##$HOME/}."
+    fi
+    # test if socat works on socket
+    if ! mpvc_sockcmd '{ "command": [ "get_property_string", "idle-active" ] }'; then
+        die 4 "$PROGNAME: Error: $MPVC_SOCAT failed. Install socat to continue."
+    fi
 }
 
 mpvc_get_version() {
@@ -1062,6 +1077,10 @@ main() {
             --delay|delay)                   mpvc_delay;;
             --wait|wait)                     mpvc_wait;;
 
+            --ttysize|ttysize)               mpvc_tty_size; QUIETFLAG=true;;
+            --ttycols|ttycols)               mpvc_tty_cols; QUIETFLAG=true;;
+            --ttylines|ttylines)             mpvc_tty_lines; QUIETFLAG=true;;
+
             # global argument parsing
             -f|--format)                     shift; FORMATSTRING="${1:-}"       ;;
             -S|--socket)                     shift; mpvc_handle_socket "${1:-}";;
@@ -1082,4 +1101,4 @@ main() {
     quietcheck mpvc_print_status_final
 }
 
-quietcheck main "$@";
+quietcheck main "$@"

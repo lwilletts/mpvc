@@ -7,16 +7,16 @@
     <meta name="generator" content="#write-your-own-html" />
     <meta name="author" content="gmt4" />
     <meta name="description" content="gmt4 mpvc now" />
-    <title>gmt4.github.io/mpvc</title>
+    <title>gmt4.github.io/mpvc/now listening 🚀</title>
     <!-- SOH -->
     <link rel="canonical" href="https://gmt4.github.io/mpvc" />
     <link href="atom.xml" type="application/atom+xml" rel="alternate" title="gmt4.github.io/mpvc"/>
     <!-- Open Graph tags -->
-    <meta property="og:site_name" content="gmt4.github.io/mpvc" />
+    <meta property="og:site_name" content="gmt4.github.io/mpvc/now" />
     <meta property="og:type" content="website"/>
-    <meta property="og:title" content="gmt4 mpvc now"/>
+    <meta property="og:title" content="gmt4/mpvc now listenning 🚀"/>
     <meta property="og:url" content="https://gmt4.github.io/mpvc/now"/>
-    <meta property="og:description" content="A minimal mpc-like CLI and TUI for controlling mpv from the shell"/>
+    <meta property="og:description" content="A now listening page powered by gmt4/mpvc 🚀"/>
     <meta property="og:image" content="https://raw.githubusercontent.com/gmt4/mpvc/master/docs/mpvc-tui.png"/>
     <!-- GH stuff -->
     <script async="true" defer="true" src="https://buttons.github.io/buttons.js"></script>
@@ -77,20 +77,22 @@
     </pre>
 
     <script charset="utf-8">
-    const urlp = new URL(window.location.href).searchParams;
-    const dflt = [ 'ssDzysKLlpY', '667dtK7O89k', 'mEkZbWYUego', 'UzRFQ6pDqhk', '_nl3Oo4-IQ4', 'ypAIWyH13aM', 'Jls9wXOSjl4', 'Hwg7hJrDiRg', '6FJ7F6trvBc' ];
-    const vids = urlp.getAll('v').length > 0 ? urlp.getAll('v') : dflt;
-    const cont = document.getElementById('container');
-    const pre  = document.getElementById('pre');
+    const urlp = new URL(window.location.href).searchParams
+    const dflt = [ 'ssDzysKLlpY', '667dtK7O89k', 'mEkZbWYUego', 'UzRFQ6pDqhk', '_nl3Oo4-IQ4', 'ypAIWyH13aM', 'Jls9wXOSjl4', 'Hwg7hJrDiRg', '6FJ7F6trvBc' ]
+    const vids = urlp.getAll('v').length > 0 ? urlp.getAll('v') : dflt
+    const cont = document.getElementById('container')
+    const pre  = document.getElementById('pre')
     pre.innerHTML = '\n'
     for(i in vids)
     {
         if (/^([-_a-zA-Z0-9]{11})$/.test(vids[i]))
         {
             const video = vids[i]
-            const html='<iframe src="https://www.youtube.com/embed/'+video+'" frameborder="0" allowfullscreen=""></iframe>'
             const url='https://www.youtube.com/watch?v='+video+'\n'
-            const node = document.createElement('div');
+            const emb='https://www.youtube.com/embed/'+video
+            const html='<iframe src="'+emb+'" frameborder="0" allowfullscreen=""></iframe>'
+            const node = document.createElement('div')
+
             node.setAttribute('class', 'item')
             node.innerHTML = html
             cont.appendChild(node)

@@ -128,7 +128,7 @@ mpvctui_tips()
 
 mpvctui_watcher()
 {
-    mpvctui_header0 "${PROGNAME%%.sh}$(mpvctui_tips)"
+    mpvctui_header0 "${PROGNAME}$(mpvctui_tips)"
     mpvctui_header1 "Status"
     mpvc status
     mpvctui_header1 "Playlist"
@@ -280,7 +280,7 @@ mpvctui_notify()
 
 mpvctui_notify_loop_cli()
 {
-    scrobler_cli='echo $(date +"T%H:%M") $(mpvc -f "[%status%] #%position%/%playlistlength% %length% %artist% - %title%")'
+    scrobler_cli='echo $(date +"T%H:%M") $(mpvc -f "[%status%] #%position%/%playlistlength% %time% %artist% - %title%")'
     mpvctui_notify_loop "${1:-$scrobler_cli}" | grep -v event
 }
 
@@ -327,7 +327,7 @@ mpvctui_usage()
     exit;
 }
 
-optflags="d:hHtTm:nN:sS:P:x"
+optflags="d:hHkKtTm:nN:sS:P:x"
 mpvctui_main()
 {
     mpvctui_config
@@ -348,6 +348,8 @@ mpvctui_main()
                   ;;
         m) shift; mpvctui_mouse "$OPTARG" ;;
         n) shift; mpvctui_notify_loop ;;
+        k) shift; pkill -f "$PROGNAME -n" ;;
+        K) shift; pkill "$PROGNAME" ;;
         N) shift; mpvctui_notify_loop "$OPTARG" ;;
         s) shift; mpvctui_suggest ;;
         S) shift; mpvctui_notify_loop_cli "$OPTARG" ;;
