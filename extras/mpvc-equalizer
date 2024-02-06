@@ -112,7 +112,7 @@ mpvc_bar_line()
     valf=$1
     min_val=-360
     max_val=770
-    cols=$(mpvc ttycols)
+    cols=${cols:-$(mpvc ttycols)}
     inc_val=$(( ( max_val - min_val ) / cols ))
 
     inc=${inc:-$inc_val}
@@ -130,17 +130,20 @@ mpvc_bar_line()
 
 mpvc_bars()
 {
-    if [ -z "$(mpvc_values)" ]; then usage; fi
-    printf "# Linear Phase 15-Bands Equalizer\n"
+    mpvc_values="$(mpvc_values)"
+    if [ -z "$mpvc_values" ]; then usage; fi
     freq_table="0\n65\n157\n288\n472\n733\n1k1\n1k6\n2k4\n3k4\n4k9\n7k0\n10k\n14k\n20k\n"
-    gain_table="$(mpvc_values | sed '/^$/d')"
+    gain_table="$(printf "$mpvc_values" | sed '/^$/d')"
+    output="$(printf "# Linear Phase 15-Bands Equalizer\n")\n"
+
     for i in $(seq 1 15)
     do
         f=$(echo "$freq_table" | awk -v i=$i 'NR==i')
         g=$(echo "$gain_table" | awk -v i=$i 'NR==i')
         bar=$(mpvc_bar_line $g)
-        printf '%3s Hz: %6.1f dB %s\n' $f $g $bar
+        output="$output$(printf '%3s Hz: %6.1f dB %s\n' $f $g $bar)\n"
     done
+    printf "$output"
 }
 
 mpvc_save()   { mpvc_vals; }
@@ -148,7 +151,7 @@ mpvc_load()   { mpvc_setvals "$(cat)"; }
 mpvc_reset()  { mpvc_setvals "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"; }
 mpvc_clear()  { mpvc set af ""; }
 mpvc_change() { mpvc_setvals $(mpvc_values | sed "$@"); }
-mpvc_vals()   { echo $(mpvc_values); }
+mpvc_vals()   { echo "$(mpvc_values)"; }
 mpvc_json()   { mpvc getr af | jq -C .data | sed '/graph/ s/:/:\n\t/g'; }
 
 usage()
