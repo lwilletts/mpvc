@@ -349,7 +349,7 @@ mpvctui_main()
         m) shift; mpvctui_mouse "$OPTARG" ;;
         n) shift; mpvctui_notify_loop ;;
         k) shift; pkill -f "$PROGNAME -n" ;;
-        K) shift; pkill "$PROGNAME" ;;
+        K) shift; pkill -f "$PROGNAME" ;;
         N) shift; mpvctui_notify_loop "$OPTARG" ;;
         s) shift; mpvctui_suggest ;;
         S) shift; mpvctui_notify_loop_cli "$OPTARG" ;;
