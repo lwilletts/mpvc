@@ -232,6 +232,12 @@ mpvcfzf_chapterlist()
         --bind='ctrl-o:execute-silent(mpvc set chapter {n} &)'
 }
 
+mpvcfzf_stashlist()
+{
+    mpvc stash list | awk '{print $NF}' | mpvcfzf_preview --prompt="(stash) " \
+        --bind='ctrl-o:execute-silent(mpvc stash apply {+} &)'
+}
+
 mpvcfzf_ddg()
 {
     curl -fsSL -A 'Mozilla/5.0' "https://duckduckgo.com/html?q=$*&iax=videos&ia=videos" |
@@ -283,7 +289,7 @@ mpvcfzf_version()
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
 }
 
-optflags="01b:cCd:DfFg:G:hn:s:p:P:o:Or:lxv"
+optflags="01ab:cCd:DfFg:G:hn:s:p:P:o:Or:lxv"
 mpvcfzf_usage()
 {
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
@@ -312,6 +318,7 @@ main()
         case "$flag" in
         0) shift; awk '{print $NF}';;
         1) shift; awk '{print $1}';;
+        a) mpvcfzf_stashlist ;;
         b) mpvcfzf_urlbrowse "$OPTARG" ;;
         c) mpvcfzf_chapterlist ;;
         C) shift; mpvcfzf_icache;;
