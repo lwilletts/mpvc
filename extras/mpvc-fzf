@@ -242,9 +242,20 @@ mpvcfzf_stashlist()
         --bind='ctrl-r:reload(mpvc stash list | mpvc-fzf -0)'
 }
 
+mpvcfzf_ddg_play()
+{
+    mpvcfzf_ddg "$@" |
+        mpvcfzf_preview --prompt="(ddg) " |
+            mpvcfzf_awk1 |
+                mpvc load
+}
+
 mpvcfzf_ddg()
 {
-    curl -fsSL -A 'Mozilla/5.0' "https://duckduckgo.com/html?q=$*&iax=videos&ia=videos" |
+    url_search="https://duckduckgo.com/html?q=$*&iax=videos"
+
+    echo "$url_search"
+    curl -fsSL -A 'Mozilla/5.0' "$url_search" |
         awk  '
             function urldecode(url)
             {
@@ -281,20 +292,12 @@ mpvcfzf_urlbrowse()
         awk -v url="$url" '{ print url$0 }'
 }
 
-mpvcfzf_ddg_play()
-{
-    mpvcfzf_ddg "$@" |
-        mpvcfzf_preview |
-            mpvcfzf_awk1 |
-                mpvc load
-}
-
 mpvcfzf_version()
 {
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
 }
 
-optflags="01ab:cCd:DfFg:G:hn:s:p:P:o:Or:lxv"
+optflags="01ab:cCd:DfFg:G:hk:K:n:s:p:P:o:Or:lxv"
 mpvcfzf_usage()
 {
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
@@ -305,6 +308,8 @@ mpvcfzf_usage()
     echo "  -f : Start fzf to manage the current mpv playist (fzf*)"
     echo "  -g : Fetch provided YT URL, and store locally (fzf*)"
     echo "  -G : Search for provided query, fetch, and store locally (fzf*)"
+    echo "  -k : Search & play on DuckDuckGo videos (fzf*)"
+    echo "  -K : Search on DuckDuckGo videos (fzf*)"
     echo "  -l : Search & play local media (fzf*)"
     echo "  -s : Search for media using Invidious (fzf*)"
     echo "  -p : Search & play media found using Invidious (fzf*)"
@@ -329,12 +334,12 @@ main()
         c) mpvcfzf_chapterlist ;;
         C) shift; mpvcfzf_icache;;
         d) MPVC_DIR="$OPTARG"; cd "$MPVC_DIR" || return;;
-        D) shift; mpvcfzf_ddg_play "$@";;
-        #D) shift; mpvcfzf_ddg "$@";;
         f) mpvcfzf_playlist ;;
         F) shift; mpvcfzf_preview "$@" ;;
         g) mpvcfzf_fetch "$OPTARG";;
         G) mpvcfzf_fetch $(mpvcfzf_iplay "$OPTARG");;
+        k) shift; mpvcfzf_ddg_play "$@";;
+        K) shift; mpvcfzf_ddg "$@";;
         h) mpvcfzf_usage ;;
         l) mpvcfzf_local;;
         n) mpvcfzf_nextvideo "$OPTARG" ;;
