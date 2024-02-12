@@ -16,6 +16,8 @@ set -euf
 
 quiet()  { "$@" > /dev/null 2>&1; }
 mpvcfzf_warn() { echo "$@" >&2; }
+mpvcfzf_awk0() { awk '{print $NF}'; }
+mpvcfzf_awk1() { awk '{print $1}'; }
 mpvc() { $PROGDIR/mpvc "$@"; }
 
 # Set defaults
@@ -207,7 +209,7 @@ mpvcfzf_iplay()
 {
     mpvcfzf_isearch "$1" |
         mpvcfzf_preview --prompt="(youtube) " |
-            awk '{print $1}'
+            mvpcfzf_awk1
 }
 
 mpvcfzf_local()
@@ -229,13 +231,15 @@ mpvcfzf_chapterlist()
     len=$(mpvc gets chapter-list/count)
     ( if [ -z "$len" ]; then echo; else mpvc chapter-list-full; fi) |
         mpvcfzf_preview --prompt="(chapter) " \
-        --bind='ctrl-o:execute-silent(mpvc set chapter {n} &)'
+        --bind='ctrl-o:execute-silent(mpvc set chapter {n} &)' \
+        --bind='ctrl-r:reload(mpvc mpvc chapter-list-full)'
 }
 
 mpvcfzf_stashlist()
 {
-    mpvc stash list | awk '{print $NF}' | mpvcfzf_preview --prompt="(stash) " \
-        --bind='ctrl-o:execute-silent(mpvc stash apply {+} &)'
+    mpvc stash list | mpvcfzf_awk0 | mpvcfzf_preview --prompt="(stash) " \
+        --bind='ctrl-o:execute-silent(mpvc stash apply {+} &)' \
+        --bind='ctrl-r:reload(mpvc stash list | mpvc-fzf -0)'
 }
 
 mpvcfzf_ddg()
@@ -281,7 +285,8 @@ mpvcfzf_ddg_play()
 {
     mpvcfzf_ddg "$@" |
         mpvcfzf_preview |
-            awk '{print $1}' | mpvc load
+            mpvcfzf_awk1 |
+                mpvc load
 }
 
 mpvcfzf_version()
@@ -316,8 +321,9 @@ main()
     while getopts "$optflags" flag;
     do
         case "$flag" in
-        0) shift; awk '{print $NF}';;
-        1) shift; awk '{print $1}';;
+        0) shift; mpvcfzf_awk0;;
+        1) shift; mpvcfzf_awk1;;
+
         a) mpvcfzf_stashlist ;;
         b) mpvcfzf_urlbrowse "$OPTARG" ;;
         c) mpvcfzf_chapterlist ;;
