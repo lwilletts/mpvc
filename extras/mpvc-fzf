@@ -209,7 +209,7 @@ mpvcfzf_iplay()
 {
     mpvcfzf_isearch "$1" |
         mpvcfzf_preview --prompt="(youtube) " |
-            mvpcfzf_awk1
+            mpvcfzf_awk1
 }
 
 mpvcfzf_local()
