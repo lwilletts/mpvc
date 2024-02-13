@@ -52,8 +52,6 @@ mpvcfzf_preview()
         --ansi --reverse --no-sort \
         --multi \
         --bind='ctrl-space:execute-silent(mpvc toggle &)' \
-        --bind='ctrl-o:execute-silent(mpvc play {n} &)' \
-        --bind='ctrl-r:reload(mpvc fullplaylist)' \
         --bind='ctrl-s:execute-silent(mpvc seek +20 &)' \
         --bind='ctrl-t:reload(mpvc remove {+1}; mpvc fullplaylist)' \
         \
@@ -223,7 +221,9 @@ mpvcfzf_playlist()
 {
     len=$(mpvc gets playlist-count)
     ( if [ -z "$len" ]; then echo; else mpvc fullplaylist; fi) |
-        mpvcfzf_preview --prompt="(playlist) "
+        mpvcfzf_preview --prompt="(playlist) " \
+        --bind='ctrl-o:execute-silent(mpvc play {n} &)' \
+        --bind='ctrl-r:reload(mpvc fullplaylist)'
 }
 
 mpvcfzf_chapterlist()
@@ -237,7 +237,8 @@ mpvcfzf_chapterlist()
 
 mpvcfzf_stashlist()
 {
-    mpvc stash list | mpvcfzf_awk0 | mpvcfzf_preview --prompt="(stash) " \
+    mpvc stash list | mpvcfzf_awk0 |
+        mpvcfzf_preview --prompt="(stash) " \
         --bind='ctrl-o:execute-silent(mpvc stash apply {+} &)' \
         --bind='ctrl-r:reload(mpvc stash list | mpvc-fzf -0)'
 }
@@ -341,7 +342,7 @@ main()
         k) mpvcfzf_ddg_play "$OPTARG";;
         K) mpvcfzf_ddg "$OPTARG";;
         h) mpvcfzf_usage ;;
-        l) mpvcfzf_local;;
+        l) mpvcfzf_local ;;
         n) mpvcfzf_nextvideo "$OPTARG" ;;
         o) mpvcfzf_isearch "$OPTARG" | awk 'NR==2 {print}' ;;
         O) mpvcfzf_icache_output ;;
@@ -350,8 +351,8 @@ main()
         P) mpvcfzf_iplay "$OPTARG" | mpvc loadc ;;
         s) mpvcfzf_isearch "$OPTARG";;
         x) shift; if quiet command -v $MPVC_TERM; then $MPVC_TERM -e "$0" "$@"; fi; exit;;
-        v) mpvcfzf_version;;
-        *) mpvcfzf_usage;;
+        v) mpvcfzf_version ;;
+        *) mpvcfzf_usage ;;
         esac
     done
 }
