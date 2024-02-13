@@ -18,7 +18,7 @@ quiet()  { "$@" > /dev/null 2>&1; }
 mpvcfzf_warn() { echo "$@" >&2; }
 mpvcfzf_awk0() { awk '{print $NF}'; }
 mpvcfzf_awk1() { awk '{print $1}'; }
-mpvc() { $PROGDIR/mpvc "$@"; }
+mpvc() { "$PROGDIR/mpvc" "$@" || mpvc "$@"; }
 
 # Set defaults
 mpvcfzf_defaults()
@@ -337,9 +337,9 @@ main()
         f) mpvcfzf_playlist ;;
         F) shift; mpvcfzf_preview "$@" ;;
         g) mpvcfzf_fetch "$OPTARG";;
-        G) mpvcfzf_fetch $(mpvcfzf_iplay "$OPTARG");;
-        k) shift; mpvcfzf_ddg_play "$@";;
-        K) shift; mpvcfzf_ddg "$@";;
+        G) mpvcfzf_fetch $(mpvcfzf_iplay "$OPTARG") ;;
+        k) mpvcfzf_ddg_play "$OPTARG";;
+        K) mpvcfzf_ddg "$OPTARG";;
         h) mpvcfzf_usage ;;
         l) mpvcfzf_local;;
         n) mpvcfzf_nextvideo "$OPTARG" ;;
