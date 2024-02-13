@@ -314,7 +314,7 @@ mpvcfzf_usage()
     echo "  -s : Search for media using Invidious (fzf*)"
     echo "  -p : Search & play media found using Invidious (fzf*)"
     echo "  -x : Starts $PROGNAME in a new $MPVC_TERM (config \$MPVC_TERM) [combine -x with $optflags]"
-    echo "*tips: If unsure about where to begin, start with: $PROGNAME -p kupla mirage"
+    echo "*tips: If unsure about where to begin, start with: $PROGNAME -p 'kupla mirage'"
     exit;
 }
 
