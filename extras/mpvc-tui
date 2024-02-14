@@ -280,7 +280,7 @@ mpvctui_notify()
 
 mpvctui_notify_loop_cli()
 {
-    scrobler_cli='echo $(date +"T%H:%M") $(mpvc -f "[%status%] #%position%/%playlistlength% %time% %artist% - %title%")'
+    scrobler_cli='echo $(date +"T%H:%M") $(mpvc -f "[%status%] #%position%/%playlistlength% %time% %artist% - %title% #%chapter%")'
     mpvctui_notify_loop "${1:-$scrobler_cli}" | grep -v event
 }
 
@@ -327,7 +327,7 @@ mpvctui_usage()
     exit;
 }
 
-optflags="d:hHkKtTm:nN:sS:P:x"
+optflags="d:hHktTm:nsSP:x"
 mpvctui_main()
 {
     mpvctui_config
@@ -347,12 +347,10 @@ mpvctui_main()
                   mpvctui_watch
                   ;;
         m) shift; mpvctui_mouse "$OPTARG" ;;
-        n) shift; mpvctui_notify_loop ;;
-        k) shift; pkill -f "$PROGNAME -n" ;;
-        K) shift; pkill -f "$PROGNAME" ;;
-        N) shift; mpvctui_notify_loop "$OPTARG" ;;
+        n) shift; mpvctui_notify_loop "${1:-}" ;;
+        k) shift; pkill -f "$PROGNAME" ;;
         s) shift; mpvctui_suggest ;;
-        S) shift; mpvctui_notify_loop_cli "$OPTARG" ;;
+        S) shift; mpvctui_notify_loop_cli "${1:-}" ;;
         x) shift; if quiet command -v $MPVC_TERM; then $MPVC_TERM -e "$0" "$@"; fi; exit;;
         *) mpvctui_usage;;
         esac
