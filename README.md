@@ -22,9 +22,11 @@ Check the [Wiki](../../wiki) & [Casts](https://gmt4.github.io/mpvc/casts/) for a
 - [extras/mpvc-web](../../blob/master/extras/mpvc-web): a hack to remotely control mpvc from web
 - [extras/mpvc-mpris](../../blob/master/extras/mpvc-mpris): speaks MPRIS to control mpv player through key-bindings.
 - [extras/mpvc-equalizer](../../blob/master/extras/mpvc-equalizer): provides a basic mpv equalizer for the CLI.
+- [extras/mpvc-autostart](../../blob/master/extras/mpvc-autostart): automatic mpv start/stop based on presence.
 - [extras/mpvc-installer](../../blob/master/extras/mpvc-installer): provides an installer to install/update mpvc.
 
-Have a look at the [casts/](https://gmt4.github.io/mpvc/casts/) to watch screencasts of mpvc in action.
+For more details on how to use the above tools have a look at the [logbok.html](https://gmt4.github.io/mpvc/logbook.html).
+In addition, the [casts/](https://gmt4.github.io/mpvc/casts/) directory to shows some screencasts of mpvc in action.
 
 ## QuickInstall ▶️
 
