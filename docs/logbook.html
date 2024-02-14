@@ -86,6 +86,7 @@ Logbook Entries
     <li> <a href="#logbook-20231026">#20231026 On observing mpv property changes</a></li>
     <li> <a href="#logbook-20231117">#20231117 On the security of mpvc-web</a></li>
     <li> <a href="#logbook-20240116">#20240116 On http-streaming media using mpvc-web</a></li>
+    <li> <a href="#logbook-20240214">#20240214 On MPRIS support</a></li>
 </ul>
 
 <hr />
@@ -581,6 +582,26 @@ This also means that you can play that media from a separate device running mpvc
 </p>
 
 Stay tuned
+</p>
+
+<h3 id="logbook-20240214">On MPRIS support, 14 Feb 2024</h3>
+<p>
+
+MPRIS stands for <a href="www.freedesktop.org/wiki/Specifications/mpris-spec/">Media Player Remote Interfacing Specification</a> and its a handy thing to have, as WM have builtin support this to programmatically control media players, meaning that keyboard Media keys work directly for controlling Media players.
+
+<p>
+Check <a href="https://github.com/hoyon/mpv-mpris">mpv-mpris</a> for docs/setup, below is a quick setup:
+
+<pre>
+mkdir -p ~/.config/mpv/scripts
+curl -fsSL -o ~/.config/mpv/scripts/mpris.so https://github.com/hoyon/mpv-mpris/releases/download/1.0/mpris.so
+</pre>
+
+Then, start a new instance of mpv player that loads `mpris.so`
+<br/>
+Check that mpv speaks MPRIS by running `mpvc-mpris status`, or get <a href="https://github.com/altdesktop/playerctl">playerctl</a>
+</p>
+
 </p>
 
 <!-- SOF -->
