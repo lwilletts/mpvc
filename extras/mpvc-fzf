@@ -344,7 +344,7 @@ main()
         l) mpvcfzf_local ;;
         n) mpvcfzf_nextvideo "$OPTARG" ;;
         o) mpvcfzf_isearch "$OPTARG" | awk 'NR==2 {print}' ;;
-        O) mpvcfzf_icache_output ;;
+        O) mpvcfzf_icache_output_dir ;;
         r) mpvcfzf_fetch_remove "$OPTARG" ;;
         p) mpvcfzf_iplay "$OPTARG" | mpvc load ;;
         P) mpvcfzf_iplay "$OPTARG" | mpvc loadc ;;
