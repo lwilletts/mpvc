@@ -44,16 +44,17 @@ mpvcfzf_config()
     fi
 }
 
-mpvcfzf_help="C-x:list C-v:yt-search C-\\:/-search C-t:add C-o:play C-r:reload C-s:seek C-spc:toggle"
+mpvcfzf_help="C-x:list C-v:yt-dlp C-\\:local C-s:chapter C-t:add C-o:play C-r:reload C-spc:toggle"
 mpvcfzf_preview()
 {
+    len=$(mpvc gets chapter-list/count)
     # fzf keys: ctrl + [dorstxv\]
     fzf \
         --ansi --reverse --no-sort \
         --multi \
-        --bind='ctrl-s:execute-silent(mpvc seek +20 &)' \
-        --bind='ctrl-t:execute-silent(mpvc add {+1} &)' \
         --bind='ctrl-space:execute-silent(mpvc toggle &)' \
+        --bind='ctrl-t:execute-silent(mpvc add {+1} &)' \
+        --bind='ctrl-s:execute(mpvc-fzf -c)' \
         \
         --bind='ctrl-x:execute(mpvc-fzf -f {q})' \
         --bind='ctrl-v:execute(mpvc-fzf -p {q})' \
