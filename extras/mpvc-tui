@@ -45,13 +45,13 @@ mpvctui_defaults()
     MPVC_COLOR0="$MPVC_CGREENL"
     MPVC_COLOR1="$MPVC_CCYAN"
     MPVC_COLOR2="$MPVC_CYELLOW"
-    MPVC_UPDATEC=1
-    MPVC_CLEARC=4
+    MPVC_UPDATEC=${MPVC_UPDATEC:-2}
+    MPVC_CLEARC=${MPVC_CLEARC:-4}
 
-    MPVC_TIPS=true
+    MPVC_TIPS=${MPVC_TIPS:-true}
     MPVC_TERM=${MPVC_TERM:-xterm}
     MPVC_SHELL=$(readlink -f /proc/$$/exe)
-    export MPVC_CLINE=11
+    export MPVC_CLINE=${MPVC_CLINE:-11}
 }
 
 # Load user config
