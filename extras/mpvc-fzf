@@ -47,7 +47,6 @@ mpvcfzf_config()
 mpvcfzf_help="C-x:list C-v:yt-dlp C-\\:local C-s:chapter C-t:add C-o:play C-r:reload C-spc:toggle"
 mpvcfzf_preview()
 {
-    len=$(mpvc gets chapter-list/count)
     # fzf keys: ctrl + [dorstxv\]
     fzf \
         --ansi --reverse --no-sort \
