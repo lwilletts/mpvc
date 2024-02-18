@@ -2,7 +2,7 @@
 #
 # @file mpvc-web
 # @description mpvc web, A hack to remotely control mpvc from web/http
-# @author gmt4 <gmt4 at github.com> (c) Copyright 2022 MIT
+# @author gmt4 <gmt4 at github.com> (c) Copyright 2022 GPLv2+
 # @url github.com/gmt4/mpvc
 #
 
