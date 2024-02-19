@@ -82,9 +82,9 @@ mpvc_chapter_load()
 usage()
 {
     echo "usage: $PROGNAME args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
-    echo "  file      : Show current ffmetadata chapter-file"
-    echo "  load      : Load current ffmetadata chapter-file"
-    echo "  add       : Add new chapter to current ffmetadata chapter-file"
+    echo "  file : Show current ffmetadata chapter-file"
+    echo "  load : Load current ffmetadata chapter-file"
+    echo "  add  : Add new chapter to current ffmetadata chapter-file"
     exit;
 }
 
@@ -93,11 +93,11 @@ main()
     if [ $# -lt 1 ]; then usage; fi
 
     case "$1" in
-    file)   shift; mpvc_chapter_file "$@";;
-    load)   shift; mpvc_chapter_load "$@";;
-    add)    shift; mpvc_chapter_add "$@";;
-    help) usage;;
-    *) usage;;
+    file)   shift; mpvc_chapter_file "$@" ;;
+    load)   shift; mpvc_chapter_load "$@" ;;
+    add)    shift; mpvc_chapter_add "$@" ;;
+    help)   shift; usage "$@" ;;
+    *)      shift; usage "$@" ;;
     esac
 }
 
