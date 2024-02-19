@@ -917,8 +917,7 @@ mpvc_validate_socket() {
 }
 
 mpvc_get_version() {
-    echo "version: $PROGNAME # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
-    echo "originally forked from lwillets/mpvc"
+    echo "version: $PROGNAME # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL (forks lwillets/mpvc)"
     echo
     "$MPVC_MPV" --version
 }
