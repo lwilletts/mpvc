@@ -295,7 +295,7 @@ mpvcfzf_urlbrowse()
 
 mpvcfzf_version()
 {
-    echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
+    echo "usage: $PROGNAME -[optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
 }
 
 optflags="01ab:cCd:fFg:G:hk:K:n:s:p:P:o:Or:lxv"
