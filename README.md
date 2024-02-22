@@ -87,6 +87,16 @@ Recommended extras:
 - `fzf`
 - `notify-send`
 
+Debian (and derivatives such as Ubuntu):
+
+	apt install mpv gawk curl socat fzf rlwrap jq libnotify-bin
+     
+ Arch (and derivatives):
+
+ 	apt install mpv gawk curl socat fzf rlwrap jq libnotify-bin
+
+Check for missing dependencies using `mpvc-installer check-reqs`
+     
 ## Install
 
 To install mpvc:
