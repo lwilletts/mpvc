@@ -18,7 +18,7 @@ quiet()  { "$@" > /dev/null 2>&1; }
 mpvcfzf_warn() { echo "$@" >&2; }
 mpvcfzf_awk0() { awk '{print $NF}'; }
 mpvcfzf_awk1() { awk '{print $1}'; }
-mpvc() { "$PROGDIR/mpvc" "$@" || mpvc "$@"; }
+mpvc() { "$PROGDIR/mpvc" "$@"; } # mpvc-web?
 
 # Set defaults
 mpvcfzf_defaults()
@@ -112,27 +112,33 @@ mpvcfzf_nextvideo()
 }
 
 mpvcfzf_icache_ytdlro() { mpvc getr ytdl-raw-options; }
+mpvcfzf_icache_archive() {
+    if [ -n "$MPVC_YTDL_ARCHIVE" ]; then
+        echo "$MPVC_YTDL_ARCHIVE"
+    else
+        mpvcfzf_icache_ytdlro | jq -r ".data.download-archive"
+    fi
+}
 mpvcfzf_icache_output() { mpvcfzf_icache_ytdlro | jq -r ".data.output"; }
-mpvcfzf_icache_output_dir() { eval echo $( dirname $(mpvcfzf_icache_output) ); }
-mpvcfzf_icache_archive() { mpvcfzf_icache_ytdlro | jq -r ".data.download-archive"; }
+mpvcfzf_icache_output_dir() {
+    if [ -n "$MPVC_YTDL_OUTPUT" ]; then
+        echo "$MPVC_YTDL_OUTPUT"
+    else
+        MPVC_YTDL_OUTPUT=$(mpvcfzf_icache_output)
+        MPVC_YTDL_OUTPUT=${MPVC_YTDL_OUTPUT%/*}
+        eval echo $MPVC_YTDL_OUTPUT
+    fi
+}
 
 mpvcfzf_icache()
 {
     # check for media present in local cache
-    if [ -n "$MPVC_YTDL_ARCHIVE" -a -n "$MPVC_YTDL_OUTPUT" ]; then
-        ytdl_archive="$MPVC_YTDL_ARCHIVE"
-        ytdl_output="$MPVC_YTDL_OUTPUT"
-        ytdl_dir="$MPVC_YTDL_OUTPUT"
-    else
+    ytdl_archive="$(mpvcfzf_icache_archive)"
+    ytdl_output="$(mpvcfzf_icache_output_dir)"
+    ytdl_dir="$(mpvcfzf_icache_output_dir)"
+
+    if [ ! -n "$ytdl_output" -o ! -r "$ytdl_archive" -o  ! -n "$ytdl_output" ]; then
         quiet mpvc get ytdl-raw-options || cat
-        ytdl_json=$(mpvc getr ytdl-raw-options)
-        ytdl_archive=$(echo $ytdl_json | jq -r '.data."download-archive"')
-        ytdl_output=$(echo $ytdl_json | jq -r ".data.output")
-        ytdl_archive=$(eval echo $ytdl_archive)
-        ytdl_dir=$(dirname $ytdl_output)
-        ytdl_dir=$(eval echo $ytdl_dir)
-    fi
-    if [ ! -n "$ytdl_output" -o ! -r "$ytdl_archive" -o ! -n "$ytdl_output" ]; then
         mpvcfzf_warn "$PROGNAME: Error cache not enabled: undefined ytdl-raw-options"
         if cat; then return; fi
     fi
@@ -142,7 +148,7 @@ mpvcfzf_icache()
         url=$(echo "$line" | awk '/https:/ { gsub("watch\\?v=",""); print $1 }')
         vid=$(basename "$url")
         file=$(find $ytdl_dir/ 2>/dev/null | awk "/$vid/ { print; exit }")
-        if [ -n "$url" -a -e "$file" ]; then # quiet grep -q "$vid" $ytdl_archive
+        if [ -n "$url" -a -e "$file" ]; then
             echo "$file"
         else
             echo "$line"
