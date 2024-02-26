@@ -133,12 +133,12 @@ mpvcfzf_icache_output_dir() {
 mpvcfzf_icache()
 {
     # check for media present in local cache
-    ytdl_archive="$(mpvcfzf_icache_archive)"
+    #ytdl_archive="$(mpvcfzf_icache_archive)"
     ytdl_output="$(mpvcfzf_icache_output_dir)"
-    ytdl_dir="$(mpvcfzf_icache_output_dir)"
+    ytdl_dir="$ytdl_output"
 
-    if [ ! -n "$ytdl_output" -o ! -r "$ytdl_archive" -o  ! -n "$ytdl_output" ]; then
-        quiet mpvc get ytdl-raw-options || cat
+    if [ ! -n "$ytdl_output" -o ! -n "$ytdl_output" ]; then
+        #quiet mpvc get ytdl-raw-options || cat
         mpvcfzf_warn "$PROGNAME: Error cache not enabled: undefined ytdl-raw-options"
         if cat; then return; fi
     fi
