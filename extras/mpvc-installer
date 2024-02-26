@@ -55,7 +55,7 @@ mpvc_fetch()
 {
     mkdir -p "$BINDIR"
     echo "Fetching mpvc from $PROGURL"
-    for script in ${SCRIPT};
+    for script in ${SCRIPT[@]};
     do
         file="$BINDIR/${script##*/}"
         url="$PROGURL/raw/master/$script"
@@ -86,7 +86,7 @@ mpvc_licenses()
 mpvc_link()
 {
     mkdir -p "$BINDIR"
-    for script in ${SCRIPT};
+    for script in ${SCRIPT[@]};
     do
         ln -svfn "$(pwd)/$script" "$BINDIR";
     done
@@ -96,7 +96,7 @@ mpvc_install()
 {
     echo 'Installing mpvc...'
     mkdir -p "$BINDIR"
-    for script in ${SCRIPT};
+    for script in ${SCRIPT[@]};
     do
         install -Dvm755 "$(pwd)/$script" "$BINDIR";
     done
@@ -105,7 +105,7 @@ mpvc_install()
 mpvc_uninstall()
 {
     echo 'Un-installing mpvc...'
-    for script in ${SCRIPT};
+    for script in ${SCRIPT[@]};
     do
         rm -v "$BINDIR/${script##*/}";
     done
