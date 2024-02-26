@@ -12,6 +12,8 @@ PROGVERSION="v1.5"
 PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
 
+set -euf
+
 SHELL="${SHELL:-/bin/sh}"
 PREFIX="${PREFIX:-/usr/local}"
 BINDIR="${BINDIR:-$PREFIX/bin}"
@@ -25,20 +27,19 @@ LICENSES="LICENSE.md"
 SCRIPT="mpvc extras/mpvc-tui extras/mpvc-fzf extras/mpvc-cut extras/mpvc-chapter extras/mpvc-mpris extras/mpvc-equalizer extras/mpvc-web extras/mpvc-autostart extras/mpvc-installer"
 CONFIG="docs/mpv.conf"
 
-set -euf
-
 mpvc_config()
 {
     mkdir -p "$MPV_CONFDIR/scripts/"
     echo "Fetching mpv.conf from $PROGURL"
     for config in ${CONFIG};
     do
-        local="$MPV_CONFDIR/$(basename "$config")"
-        echo "Fetch $local"
-        if [ -e "$local" ]; then
-            echo "$PROGNAME: $local exists. Not overwriting."
+        file="$MPV_CONFDIR/${config##*/}"
+        url="$PROGURL/raw/master/$config"
+        echo "Fetch $file"
+        if [ -e "$file" ]; then
+            echo "$PROGNAME: $file exists. Not overwriting."
         else
-            curl -fsSL -o "$local" "$PROGURL/raw/master/$config"
+            curl -fsSL -o "$file" "$url"
         fi
     done
 
@@ -56,10 +57,11 @@ mpvc_fetch()
     echo "Fetching mpvc from $PROGURL"
     for script in ${SCRIPT};
     do
-        local="$BINDIR/$(basename "$script")"
-        echo "Fetch $local"
-        curl -fsSL -o "$local" "$PROGURL/raw/master/$script"
-        chmod u+x "$local"
+        file="$BINDIR/${script##*/}"
+        url="$PROGURL/raw/master/$script"
+        echo "Fetch $file from $url"
+        curl -fsSL -o "$file" "$url"
+        chmod u+x "$file"
     done
 }
 
@@ -75,9 +77,9 @@ mpvc_docs()
 mpvc_licenses()
 {
     mkdir -p "$LICDIR"
-    for lic in ${LICENSES};
+    for license in ${LICENSES};
     do
-        install -Dvm644 "$(pwd)/$lic" "$LICDIR";
+        install -Dvm644 "$(pwd)/$license" "$LICDIR";
     done
 }
 
@@ -105,7 +107,7 @@ mpvc_uninstall()
     echo 'Un-installing mpvc...'
     for script in ${SCRIPT};
     do
-        rm -v "$BINDIR/$(basename "$script")";
+        rm -v "$BINDIR/${script##*/}";
     done
 }
 
