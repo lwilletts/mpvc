@@ -27,6 +27,9 @@ LICENSES="LICENSE.md"
 SCRIPT="mpvc extras/mpvc-tui extras/mpvc-fzf extras/mpvc-cut extras/mpvc-chapter extras/mpvc-mpris extras/mpvc-equalizer extras/mpvc-web extras/mpvc-autostart extras/mpvc-installer"
 CONFIG="docs/mpv.conf"
 
+# hack to force SHELL back to posix-sh in macOS TBD
+case "$SHELL" in *'zsh') SHELL="/bin/sh";; esac
+
 mpvc_config()
 {
     mkdir -p "$MPV_CONFDIR/scripts/"
