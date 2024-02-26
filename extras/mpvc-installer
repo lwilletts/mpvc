@@ -124,6 +124,7 @@ mpvc_check_requirements()
     command -v "rlwrap" || echo "$PROGNAME: Warning: No rlwrap, Install to get history, filename & completion support!"
     command -v "notify-send" || echo "$PROGNAME: Warning: No notify-send, Install to get mpv desktop notifications"
     command -v "jq" || echo "$PROGNAME: Warning: No jq found, Install to parse JSON"
+    command -v "yt-dlp" || echo "$PROGNAME: Warning: No yt-dlp, Install to get youtube-dl support"
 }
 
 mpvc_check_update()
