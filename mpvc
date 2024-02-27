@@ -248,7 +248,7 @@ mpvc_curl_cache_title_clean() {
 }
 
 mpvc_getjson() {
-    sed -n '/"'"$1"'":/ { s/.*"'"$1"'":"\?\(.*\?\)"\?,.*/\1/; s/"\?,".\+".*//; p }'
+    awk '/'"$1"'/{ gsub(".*'"$1"'\":\"?",""); gsub("\"?,.+.*",""); print }'
 }
 
 mpvc_sockrepl() { $MPVC_SOCAT - "$MPVC_SOCKET" || nc -U -N "$MPVC_SOCKET"; }
