@@ -835,7 +835,7 @@ isInt() { printf '%d' "$1" >/dev/null 2>&1 && [ -n "$1" ]; }
 mpvc_tty_size() {
     # this is convoluted as mpvc is run as cgi by mpvc-web without an actual tty
     ttydev="$(if tty -s; then tty; else ps -hp $$ -o tty | sed 's|^|/dev/|'; fi)"
-    stty size -F "$ttydev" || stty
+    equiet stty -F "$ttydev" size || equiet stty -f "$ttydev" size || stty
 }
 mpvc_tty_lines() { size=$(mpvc_tty_size); echo "${size%% *}"; }
 mpvc_tty_cols() { size=$(mpvc_tty_size); echo "${size##* }"; }
