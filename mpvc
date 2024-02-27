@@ -793,28 +793,34 @@ mpvc_chapter_search_play()
 # formats and prints according to $FORMATSTRING
 mpvc_print_status() {
     # not that nice, in fact way more ugly, but also way faster
-    RE='year\|genre\|album\|comment\|volume\|path\|height\|width\|playback-time\|ab-loop-[ab]\|speed\|force-window\|video\|aspect\|idle\|fullscreen\|chapter\|chapters\|=chapter'
     F=$(echo "$FORMATSTRING" |
-        sed \
-            -e "s/%\(${RE}\)%/\${\1:NA}/g" \
-            -e "s/%title%/\${media-title}/g" \
-            -e "s/%artist%/\${?metadata\/by-key\/artist:\${metadata\/by-key\/artist}}\${!metadata\/by-key\/artist:NA}/g" \
-            -e "s/%albumartist%/\${?metadata\/by-key\/album:\${metadata\/by-key\/album}}\${!metadata\/by-key\/album:NA}/g" \
-            -e "s/%muted%/\${mute}/g" \
-            -e "s/%percentage%/\${percent-pos}/g" \
-            -e "s/%name%/\${filename}/g" \
-            -e "s/%repeat%/\${loop-playlist}/g" \
-            -e "s/%single%/\${loop-file}/g" \
-            -e "s/%frame%/\${estimated-frame-number}/g" \
-            -e "s/%dir%/\${working-directory}/g" \
-            -e "s/%remaining%/\${playtime-remaining}/g" \
-            -e "s/%length%/\${duration}/g" \
-            -e "s/%time%/\${playback-time}/g" \
-            -e "s/%precisetime%/\${playback-time}/g" \
-            -e "s/%playlistlength%/\${playlist-count}/g" \
-            -e "s/%position%/\${playlist-pos}/g" \
-            -e "s/%status%/$(mpvc_get_pause_status)/g" \
-            -e ''
+        awk -v status=$(mpvc_get_pause_status) '
+        {
+            split("year genre album comment volume path height width playback-time ab-loop-[ab] speed force-window video aspect idle fullscreen chapter chapters =chapter", RE)
+            for (i in RE) { re=RE[i]; gsub("%"re"%", "${"re":NA}"); }
+
+            gsub("%title%", "${media-title}")
+            gsub("%artist%", "${?metadata/by-key/artist:${metadata/by-key/artist}}${!metadata/by-key/artist:NA}")
+            gsub("%albumartist%", "${?metadata/by-key/album:${metadata/by-key/album}}${!metadata/by-key/album:NA}")
+            gsub("%muted%", "${mute}")
+            gsub("%percentage%", "${percent-pos}")
+            gsub("%name%", "${filename}")
+            gsub("%repeat%", "${loop-playlist}")
+            gsub("%single%", "${loop-file}")
+            gsub("%frame%", "${estimated-frame-number}")
+            gsub("%dir%", "${working-directory}")
+            gsub("%remaining%", "${playtime-remaining}")
+            gsub("%length%", "${duration}")
+            gsub("%time%", "${playback-time}")
+            gsub("%precisetime%", "${playback-time}")
+            gsub("%playlistlength%", "${playlist-count}")
+            gsub("%position%", "${playlist-pos}")
+
+            gsub("%status%", status)
+
+            print
+        }
+        '
     )
     mpvc_cmd "expand-text" "${F}" | sed 's/ \\r/\n/g'
 }
