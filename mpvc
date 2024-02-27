@@ -293,7 +293,7 @@ mpvc_get_pause_status() {
 mpvc_get_playlist_json() {
     mpvc_cmdr "get_property" "playlist" |
         grep -o '"data":\[.*\]' |
-        sed 's/^"data"://; s|{"filename":|\n\t{"filename":|g; /^\[\]$/ !s/]$/\n]/'
+        awk '{ sub("^\"data\":",""); gsub("{\"filename\":","\n\t{\"filename\":");  } ! /^\[\]$/ { sub("]$","\n]"); } {print}'
     QUIETFLAG="true"
 }
 
