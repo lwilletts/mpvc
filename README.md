@@ -91,7 +91,7 @@ Debian (and derivatives such as Ubuntu):
 
 	apt install mpv gawk curl socat fzf rlwrap jq libnotify-bin
      
- Arch (and derivatives):
+Arch (and derivatives):
 
  	pacman -Sy mpv gawk curl socat fzf rlwrap jq libnotify
 
