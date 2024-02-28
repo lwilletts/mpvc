@@ -95,6 +95,10 @@ Arch (and derivatives):
 
  	pacman -Sy mpv gawk curl socat fzf rlwrap jq libnotify
 
+BSD (and pkg(1) based derivatives):
+
+    pkg install -y mpv gawk curl socat fzf rlwrap jq libnotify
+
 Check for missing dependencies using `mpvc-installer check-reqs`
      
 ## Install
