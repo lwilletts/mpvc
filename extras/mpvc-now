@@ -11,13 +11,13 @@ set -euf
 mpvcnow_geturls()
 {
     mpvc saven
+    #| sed -n "/^https/ ! s/^.*-\([0-9a-zA-Z_-]\{11\}\).opus/https:\/\/yewtu.be\/\1/p"
 }
 
 mpvcnow_getvids()
 {
     vids=$(
-        mpvcnow_geturls |
-            awk '/youtube|yewtu/ {gsub("^.*/",""); gsub(".*=",""); print }'
+        echo "$@" | awk '/youtube|yewtu/ {gsub("^.*/",""); gsub(".*=",""); print }'
     )
 
     for f in $vids;
@@ -30,11 +30,11 @@ main()
 {
     date=$(date -Idate)
     now="https://gmt4.github.io/mpvc/now/"
-    vids=$(mpvcnow_getvids)
     urls=$(mpvcnow_geturls)
+    vids=$(mpvcnow_getvids "$urls")
 
     echo "$now?t=$date$vids"
-
+    echo
     bash -c "paste <(echo \"$urls\") <(mpvc -I)"
 }
 
