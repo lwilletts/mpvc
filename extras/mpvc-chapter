@@ -22,14 +22,47 @@ mpvc_chapter_file()
     echo "$chaptersfile"
 }
 
-# generate a ffmpeg metadata file with chapters
-# loadable with: mpvc set chapters-file chapters.txt
+mpvc_chapter_info()
+{
+    chaptersfile=$(mpvc_chapter_file)
+    if [ ! -e "$chaptersfile" ]; then echo "$PROGNAME: Not found $chaptersfile"; return; fi
+
+    #echo "# $chaptersfile"
+    awk '
+        BEGIN{ chapter=0 }
+        /^title=/ { title=$0; sub("^title= ", "", title); }
+        /^START=/ { start=$2; }
+        /\[CHAPTER\]/ { print start"\t"title; }
+        END { print start"\t"title; }
+    ' "$chaptersfile"
+}
+
+# usage: mpvc_chapter_gen < chapterlist.txt with timepos title entries
+mpvc_chapter_gen()
+{
+    while read line
+    do
+        timepos=$(echo "$line" | awk '{print $1}')
+        title=$(echo "$line" | sed "s/^$timepos //")
+        mpvc_chapter_add_new "$timepos" "$title"
+    done
+}
+
+# usage: mpvc_chapter_add [timepos] [title]
 mpvc_chapter_add()
+{
+    timepos=$(mpvc get time-pos)
+    timepos=${timepos%%.*}
+    mpvc_chapter_add_new "$timepos" "$@"
+}
+
+# usage: mpvc_chapter_add_new [title], generates a ffmpeg metadata chapters file
+mpvc_chapter_add_new()
 {
     chaptersfile=$(mpvc_chapter_file)
 
+    timepos=$1; shift
     path=$(mpvc get path)
-    timepos=$(mpvc get time-pos)
     percentpos=$(mpvc get percent-pos)
     mediatitle=$(mpvc get media-title)
 
@@ -70,6 +103,7 @@ EOF
     #cat "$chaptersfile"
 }
 
+# usage mpvc_chapter_load chapters.txt ffmetadata chapter-file
 mpvc_chapter_load()
 {
     track=$(mpvc get playlist-pos)
@@ -83,8 +117,10 @@ usage()
 {
     echo "usage: $PROGNAME args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
     echo "  file : Show current ffmetadata chapter-file"
+    echo "  info : Info current ffmetadata chapter-file"
     echo "  load : Load current ffmetadata chapter-file"
     echo "  add  : Add new chapter to current ffmetadata chapter-file"
+    echo "  gen  : Gen a ffmetadata chapter-file from a < chapterlist.txt"
     exit;
 }
 
@@ -94,8 +130,10 @@ main()
 
     case "$1" in
     file)   shift; mpvc_chapter_file "$@" ;;
+    info)   shift; mpvc_chapter_info "$@" ;;
     load)   shift; mpvc_chapter_load "$@" ;;
     add)    shift; mpvc_chapter_add "$@" ;;
+    gen)    shift; mpvc_chapter_gen "$@" ;;
     help)   shift; usage "$@" ;;
     *)      shift; usage "$@" ;;
     esac
