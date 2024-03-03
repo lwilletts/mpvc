@@ -62,6 +62,21 @@ mpvc_web_style()
     echo 'body { filter: invert(0.7); }'
 }
 
+mpvc_web_select_form()
+{
+    cmd="$1"
+
+    echo '<form action="/" method="get">'
+    echo "$cmd"
+    awk -v cmd="$cmd" '
+        BEGIN   { printf "<select name=cli id=cli-select onchange=this.form.submit() style=\"width:100%; height:1.2rem\" >"}
+        NR == 1 { printf "<option value="">Make your choice</option>" }
+        NR > 1  { printf "<option value=\"%s "$0"\">"$0"</option>", cmd }
+        END     { printf "</select>"}
+    '
+    echo '</form>'
+}
+
 mpvc_web_index()
 {
     cat <<EOF
@@ -118,14 +133,7 @@ mpvc_web_index()
             <input type="text" id="cli" name="cli" autocomplete="on" placeholder="mpvc status ${MPVC_WEB_DEV:-(off)}" title="mpvc cli" onkeydown="if (event.keyCode == 13) { this.form.submit(); return false; }" style="height:0.8rem">
         </form>
         <li>
-            <form action="/" method="get">
-            mpvc stash
-            $(mpvc stash list | awk '
-                BEGIN   { printf "<select name=cli id=cli-select onchange=this.form.submit() style=\"width:11rem; height:1.2rem\" >"}
-                NR == 1 { printf "<option value="">Please choose a stash</option>" }
-                NR > 1  { printf "<option value=\"mpvc stash apply "$NF"\">"$NF"</option>" }
-                END     { printf "</select>"}' )
-            </form>
+            $(mpvc stash list | awk '{print $NF}' | mpvc_web_select_form "mpvc -q stash apply")
         </li>
         </li>
         <li>
@@ -174,23 +182,13 @@ mpvc_web_index()
             <a href="?cmd=mpvc cnext">cnext</a>
         </li>
         <li>
-            mpvc vol
-            <a href="?cmd=mpvc vol -20">-20</a>
-            <a href="?cmd=mpvc vol -10">-10</a>
-            <a href="?cmd=mpvc vol -5">-5</a>
-            <a href="?cmd=mpvc vol 0">0</a>
-            <a href="?cmd=mpvc vol +5">+5</a>
-            <a href="?cmd=mpvc vol +10">+10</a>
-            <a href="?cmd=mpvc vol +20">+20</a>
+            $(mpvc fullplaylist | awk '{print $1,"#",$0}' | mpvc_web_select_form "mpvc -q play")
         </li>
         <li>
-            mpvc seek
-            <a href="?cmd=mpvc seek -120">-120</a>
-            <a href="?cmd=mpvc seek -60">-60</a>
-            <a href="?cmd=mpvc seek -25">-25</a>
-            <a href="?cmd=mpvc seek +25">+25</a>
-            <a href="?cmd=mpvc seek +60">+60</a>
-            <a href="?cmd=mpvc seek +120">+120</a>
+            $(echo "\n-30\n-20\n-10\n-5\n0\n+5\n+10\n+20\n+30" | mpvc_web_select_form "mpvc -q vol")
+        </li>
+        <li>
+            $(echo "\n-120\n-60\n-25\n+25\n+60\n+120" | mpvc_web_select_form "mpvc -q seek")
         </li>
         <li>
         mpvc theme
@@ -367,6 +365,12 @@ mpvc_web()
             ln -f -s $HOME/.config/mpvc/ytdl-archive "$MPVC_WEB_ROOT/"
         fi
 
+        if [ -n "${MPVC_WEB_DEV:-}" ]; then
+            echo "# $PROGNAME Setup MPVC_WEB_DEV=$MPVC_WEB_DEV is set";
+        else
+            echo "# $PROGNAME Setup MPVC_WEB_DEV=${MPVC_WEB_DEV:-} is not set, CLI wont work";
+        fi
+
         chmod a-w -R "$MPVC_WEB_ROOT/"
 
         # XXX handle cli commands, rewrite this mess
@@ -388,9 +392,6 @@ mpvc_web()
 
         /GET \/\?cmd=mpvc%20shuffle/      { system(mpvc" -q shuffle") }
         /GET \/\?cmd=mpvc%20unshuffle/    { system(mpvc" -q unshuffle") }
-
-        /GET \/\?cmd=mpvc%20vol%20[+-]?[0-9]+/ { gsub("%20", " "); system(mpvc" -q vol "$(NF-3)); }
-        /GET \/\?cmd=mpvc%20seek%20[+-]?[0-9]+/ { gsub("%20", " "); system(mpvc" -q seek "$(NF-3)); }
 
         /GET \/\?cmd=mpvc%20repeat/       { system(mpvc" -q repeat") }
         /GET \/\?cmd=mpvc%20single/       { system(mpvc" -q single") }
@@ -417,6 +418,7 @@ mpvc_web()
             {
                 gsub("^("mpvc") [^a-zA-Z0-9 ]*", mpvc" ", r);
                 gsub("\\+", " ", r);
+                gsub("%2B", "+", r);
                 system(r); # XXX
             }
         }
