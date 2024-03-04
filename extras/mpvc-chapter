@@ -24,7 +24,8 @@ mpvc_chapter_file()
 
 mpvc_chapter_info()
 {
-    chaptersfile=$(mpvc_chapter_file)
+    chaptersfile=${1:-$(mpvc_chapter_file)}
+
     if [ ! -e "$chaptersfile" ]; then echo "$PROGNAME: Not found $chaptersfile"; return; fi
 
     #echo "# $chaptersfile"
@@ -40,27 +41,34 @@ mpvc_chapter_info()
 # usage: mpvc_chapter_gen < chapterlist.txt with timepos title entries
 mpvc_chapter_gen()
 {
+    chaptersfile=${1:-$(mpvc_chapter_file)}
+
     while read line
     do
-        timepos=$(echo "$line" | awk '{print $1}')
-        title=$(echo "$line" | sed "s/^$timepos //")
-        mpvc_chapter_add_new "$timepos" "$title"
+        timepos=$(echo "$line" | awk -v otp=${otimepos:-0} '{ tp=$1; if (tp ~ ":") { split(tp, a, ":"); tp = a[1]*60 + a[2] } print otp + tp; }')
+        title=$(echo "$line" | awk '{ sub($1, ""); print }')
+        mpvc_chapter_add_new "$chaptersfile" "$timepos" "$title"
+        otimepos=$timepos
     done
+
+    cat "$chaptersfile"
 }
 
 # usage: mpvc_chapter_add [timepos] [title]
 mpvc_chapter_add()
 {
+    chaptersfile=$1; shift
+
     timepos=$(mpvc get time-pos)
     timepos=${timepos%%.*}
-    mpvc_chapter_add_new "$timepos" "$@"
+    mpvc_chapter_add_new "$chaptersfile" "$timepos" "$@"
 }
 
 # usage: mpvc_chapter_add_new [title], generates a ffmpeg metadata chapters file
 mpvc_chapter_add_new()
 {
-    chaptersfile=$(mpvc_chapter_file)
 
+    chaptersfile=$1; shift
     timepos=$1; shift
     path=$(mpvc get path)
     percentpos=$(mpvc get percent-pos)
