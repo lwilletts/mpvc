@@ -154,6 +154,13 @@ mpvc_change() { mpvc_setvals $(mpvc_values | sed "$@"); }
 mpvc_vals()   { echo "$(mpvc_values)"; }
 mpvc_json()   { mpvc getr af | jq -C .data | sed '/graph/ s/:/:\n\t/g'; }
 
+mpvc_add()
+{
+    mpvc-equalizer save |
+        awk -v f="$1" -v g="$2" '{ if (NR == f) { print $0 + g } else { print $0 } }' |
+            mpvc-equalizer load
+}
+
 usage()
 {
     echo "usage: $PROGNAME [save|load|reset|clear] # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
@@ -175,6 +182,9 @@ main()
     vals)  mpvc_vals;;
     bars)  mpvc_bars;;
     json)  mpvc_json;;
+
+    inc) shift; mpvc_add "$1"  0.1 ;;
+    dec) shift; mpvc_add "$1" -0.1 ;;
 
     help)  usage;;
     *)     usage;;
