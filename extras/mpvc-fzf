@@ -258,6 +258,29 @@ mpvcfzf_ddg_play()
                 mpvc load
 }
 
+mpvcfzf_urlbrowse()
+{
+    url=${1:-https://localhost:8443/ytdl-archive/}
+
+    curl -k -fsSL "$url" |
+        awk '/<a href=".*">.*<\/a>/ { h=$0;sub("^.*href=\"","",h);sub("\".*$","",h);print h }' |
+        mpvcfzf_preview |
+        awk -v url="$url" '{ print url$0 }'
+}
+
+mpvcfzf_equalizer()
+{
+    mpvc-equalizer bars |
+        mpvcfzf_preview \
+        --bind='ctrl-x:execute-silent(mpvc-equalizer dec {n} &)' \
+        --bind='ctrl-v:execute-silent(mpvc-equalizer inc {n} &)' \
+        --bind='ctrl-s:execute-silent(mpvc-equalizer reset)' \
+        --bind='ctrl-o:execute-silent(mpvc-equalizer preset {-1} | mpvc-equalizer load)' \
+        --bind='ctrl-v:reload(mpvc-equalizer preset)' \
+        --bind='ctrl-r:reload(mpvc-equalizer bars)' \
+        "$@"
+}
+
 mpvcfzf_ddg()
 {
     url_search="https://duckduckgo.com/html?q=$*&iax=videos"
@@ -288,29 +311,6 @@ mpvcfzf_ddg()
                 #print urldecode($0)
                 print
             }'
-}
-
-mpvcfzf_urlbrowse()
-{
-    url=${1:-https://localhost:8443/ytdl-archive/}
-
-    curl -k -fsSL "$url" |
-        awk '/<a href=".*">.*<\/a>/ { h=$0;sub("^.*href=\"","",h);sub("\".*$","",h);print h }' |
-        mpvcfzf_preview |
-        awk -v url="$url" '{ print url$0 }'
-}
-
-mpvcfzf_equalizer()
-{
-    mpvc-equalizer bars |
-        mpvcfzf_preview \
-        --bind='ctrl-x:execute-silent(mpvc-equalizer dec {n} &)' \
-        --bind='ctrl-v:execute-silent(mpvc-equalizer inc {n} &)' \
-        --bind='ctrl-s:execute-silent(mpvc-equalizer reset)' \
-        --bind='ctrl-o:execute-silent(mpvc-equalizer preset {-1} | mpvc-equalizer load)' \
-        --bind='ctrl-v:reload(mpvc-equalizer preset)' \
-        --bind='ctrl-r:reload(mpvc-equalizer bars)' \
-        "$@"
 }
 
 mpvcfzf_version()
