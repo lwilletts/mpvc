@@ -270,13 +270,15 @@ mpvcfzf_urlbrowse()
 
 mpvcfzf_equalizer()
 {
+    MPVC_FZF_BIND_HELP="C-x:list C-v:yt-dlp C-\\:local C-s:chapter C-t:add C-o:play C-r:reload C-spc:toggle"
     mpvc-equalizer bars |
-        mpvcfzf_preview \
+        mpvcfzf_preview --prompt="(equalizer) " \
+        --header="$PROGNAME help: $MPVC_FZF_BIND_HELP" \
         --bind='ctrl-x:execute-silent(mpvc-equalizer dec {n} &)' \
         --bind='ctrl-v:execute-silent(mpvc-equalizer inc {n} &)' \
-        --bind='ctrl-s:execute-silent(mpvc-equalizer reset)' \
+        --bind='ctrl-space:execute-silent(mpvc-equalizer reset)' \
         --bind='ctrl-o:execute-silent(mpvc-equalizer preset {-1} | mpvc-equalizer load)' \
-        --bind='ctrl-v:reload(mpvc-equalizer preset)' \
+        --bind='ctrl-s:reload(mpvc-equalizer preset)' \
         --bind='ctrl-r:reload(mpvc-equalizer bars)' \
         "$@"
 }
