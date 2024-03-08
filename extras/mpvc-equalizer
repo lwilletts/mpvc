@@ -70,26 +70,26 @@ mpvc_presets()
 {
     cmd=${1:-list}
     case "$cmd" in
-    reset)      echo "0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0";;       # preset: Flat (Default)
-    fullbass)   echo "4.8 5.7 5.7 3.3 1.0 -2.4 -4.8 -6.3 -6.7 -6.7";;  # preset: Full Bass
-    fulltreble) echo "5.8 -5.8 -5.8 -2.4 1.4 6.7 9.6 9.6 9.6 10.1";;   # preset: Full Treble
-    fullbastre) echo "4.3 3.3 0.0 -4.4 -2.9 1.0 4.8 6.7 7.2 7.2";;     # preset: Full Bass & Treble
-    headphones) echo "2.8 6.7 3.3 -2.0 -1.4 1.0 2.8 5.7 7.7 8.6";;     # preset: Headphones
-    largehall)  echo "6.2 6.2 3.3 3.3 0.0 -2.9 -2.9 -2.9 0.0 0.0";;    # preset: Large Hall
-    live)       echo "2.9 0.0 2.4 3.3 3.3 3.3 2.4 1.4 1.4 1.4";;       # preset: Live
-    party)      echo "4.3 4.3 0.0 0.0 0.0 0.0 0.0 0.0 4.3 4.3";;       # preset: Party
-    soft)       echo "2.8 1.0 0.0 -1.4 0.0 2.4 4.8 5.7 6.7 7.2";;      # preset: Soft
-    classical)  echo "0.0 0.0 0.0 0.0 0.0 -4.4 -4.4 -4.4 -5.8";;       # preset: Classical
-    club)       echo "0.0 0.0 4.8 3.3 3.3 3.3 1.9 0.0 0.0";;           # preset: Club
-    dance)      echo "5.7 4.3 1.4 0.0 0.0 -3.4 -4.4 -4.3 0.0 0.0";;    # preset: Dance
-    pop)        echo "1.0 2.8 4.3 4.8 3.3 0.0 -1.4 -1.4 -1.0 -1.0";;   # preset: Pop
-    reggae)     echo "0.0 0.0 0.0 -3.4 0.0 3.8 3.8 0.0 0.0 0.0";;      # preset: Reggae
-    ska)        echo "1.4 -2.9 -2.4 0.0 2.4 3.3 5.3 5.7 6.7 5.8";;     # preset: Ska
-    softrock)   echo "2.4 2.4 1.4 0.0 -2.4 -3.4 -2.0 0.0 1.4 5.3";;    # preset: Soft Rock
-    rock)       echo "4.8 2.8 -3.4 -4.8 -2.0 2.4 5.3 6.7 6.7 6.7";;    # preset: Rock
-    techno)     echo "4.8 3.3 0.0 -3.4 -2.9 0.0 4.8 5.7 5.8 5.3";;     # preset: Techno
+    reset)      echo "0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0";;       # preset: flat
+    fullbass)   echo "4.8 5.7 5.7 3.3 1.0 -2.4 -4.8 -6.3 -6.7 -6.7";;  # preset: fullbass
+    fulltreble) echo "5.8 -5.8 -5.8 -2.4 1.4 6.7 9.6 9.6 9.6 10.1";;   # preset: fulltreble
+    fullbastre) echo "4.3 3.3 0.0 -4.4 -2.9 1.0 4.8 6.7 7.2 7.2";;     # preset: fullbastre
+    headphones) echo "2.8 6.7 3.3 -2.0 -1.4 1.0 2.8 5.7 7.7 8.6";;     # preset: headphones
+    largehall)  echo "6.2 6.2 3.3 3.3 0.0 -2.9 -2.9 -2.9 0.0 0.0";;    # preset: largehall
+    live)       echo "2.9 0.0 2.4 3.3 3.3 3.3 2.4 1.4 1.4 1.4";;       # preset: live
+    party)      echo "4.3 4.3 0.0 0.0 0.0 0.0 0.0 0.0 4.3 4.3";;       # preset: party
+    soft)       echo "2.8 1.0 0.0 -1.4 0.0 2.4 4.8 5.7 6.7 7.2";;      # preset: soft
+    classical)  echo "0.0 0.0 0.0 0.0 0.0 -4.4 -4.4 -4.4 -5.8";;       # preset: classical
+    club)       echo "0.0 0.0 4.8 3.3 3.3 3.3 1.9 0.0 0.0";;           # preset: club
+    dance)      echo "5.7 4.3 1.4 0.0 0.0 -3.4 -4.4 -4.3 0.0 0.0";;    # preset: dance
+    pop)        echo "1.0 2.8 4.3 4.8 3.3 0.0 -1.4 -1.4 -1.0 -1.0";;   # preset: pop
+    reggae)     echo "0.0 0.0 0.0 -3.4 0.0 3.8 3.8 0.0 0.0 0.0";;      # preset: reggae
+    ska)        echo "1.4 -2.9 -2.4 0.0 2.4 3.3 5.3 5.7 6.7 5.8";;     # preset: ska
+    softrock)   echo "2.4 2.4 1.4 0.0 -2.4 -3.4 -2.0 0.0 1.4 5.3";;    # preset: softrock
+    rock)       echo "4.8 2.8 -3.4 -4.8 -2.0 2.4 5.3 6.7 6.7 6.7";;    # preset: rock
+    techno)     echo "4.8 3.3 0.0 -3.4 -2.9 0.0 4.8 5.7 5.8 5.3";;     # preset: techno
 
-    ''|help|list) grep '# preset: ' $0;;
+    ''|help|list) awk '/# preset: / { print }' $0;;
     esac
 }
 
