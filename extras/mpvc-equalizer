@@ -107,43 +107,46 @@ mpvc_setvals()
     mpvc cmdr af add "@$MPVC_LABEL:lavfi=[$filter]"
 }
 
-mpvc_bar_line()
-{
-    valf=$1
-    min_val=-360
-    max_val=770
-    cols=${cols:-$(mpvc ttycols)}
-    inc_val=$(( ( max_val - min_val ) / cols ))
-
-    inc=${inc:-$inc_val}
-    val=$((${valf%%.*} - min_val))
-    x=${inc}
-
-    str=""
-    while [ "$x" -le $val ]
-    do
-        str="${str}="
-        x=$((x + inc))
-    done
-    echo "$str"
-}
-
 mpvc_bars()
 {
     mpvc_values="$(mpvc_values)"
     if [ -z "$mpvc_values" ]; then usage; fi
     freq_table="0\n65\n157\n288\n472\n733\n1k1\n1k6\n2k4\n3k4\n4k9\n7k0\n10k\n14k\n20k\n"
     gain_table="$(printf "$mpvc_values" | sed '/^$/d')"
-    output="$(printf "# Linear Phase 15-Bands Equalizer\n")\n"
 
-    for i in $(seq 1 15)
-    do
-        f=$(echo "$freq_table" | awk -v i=$i 'NR==i')
-        g=$(echo "$gain_table" | awk -v i=$i 'NR==i')
-        bar=$(mpvc_bar_line $g)
-        output="$output$(printf '%3s Hz: %6.1f dB %s\n' $f $g $bar)\n"
-    done
-    printf "$output"
+    awk -v freq="$freq_table" -v gain="$gain_table" -v cols=$(mpvc ttycols) '
+    function mpvc_bar_line(val)
+    {
+        valf=$1
+        min_val=-360
+        max_val=770
+        inc_val=(max_val - min_val) / cols
+
+        inc=inc_val
+        val=valf - min_val
+        x=inc
+
+        str=""
+        while (x < val)
+        {
+            str=str"="
+            x=x + inc
+        }
+
+        return str
+    }
+
+    END {
+        printf "# Linear Phase 15-Bands Equalizer\n"
+        nf=split(freq, fa)
+        ng=split(gain, ga)
+        for (i=1; i <= 15; i++)
+        {
+            bar=mpvc_bar_line(ga[i])
+            printf "%3s Hz: %6.1f dB %s\n", fa[i], ga[i], bar
+        }
+    }
+    ' /dev/null
 }
 
 mpvc_save()   { mpvc_vals; }
