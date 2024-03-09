@@ -113,8 +113,9 @@ mpvc_bars()
     if [ -z "$mpvc_values" ]; then usage; fi
     freq_table="0\n65\n157\n288\n472\n733\n1k1\n1k6\n2k4\n3k4\n4k9\n7k0\n10k\n14k\n20k\n"
     gain_table="$(printf "$mpvc_values" | sed '/^$/d')"
+    preset=$(awk /"$(echo "$gain_table" | awk 'NR<10{s=s""$0} END{print s}')"/' {print $NF}' $0)
 
-    awk -v freq="$freq_table" -v gain="$gain_table" -v cols=$(mpvc ttycols) '
+    awk -v freq="$freq_table" -v gain="$gain_table" -v cols=$(mpvc ttycols) -v preset=$preset '
     function mpvc_bar_line(val)
     {
         valf=$1
@@ -137,7 +138,7 @@ mpvc_bars()
     }
 
     END {
-        printf "# Linear Phase 15-Bands Equalizer\n"
+        printf "# Linear Phase 15-Bands Equalizer (%s)\n", preset
         nf=split(freq, fa)
         ng=split(gain, ga)
         for (i=1; i <= 15; i++)
