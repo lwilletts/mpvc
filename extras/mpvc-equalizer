@@ -118,7 +118,7 @@ mpvc_bars()
     awk -v freq="$freq_table" -v gain="$gain_table" -v cols=$(mpvc ttycols) -v preset=$preset '
     function mpvc_bar_line(val)
     {
-        valf=$1
+        valf=val
         min_val=-360
         max_val=770
         inc_val=(max_val - min_val) / cols
