@@ -339,6 +339,13 @@ mpvc_get_playlist() {
             n=split(url, fields, "/")
             return fields[n]
         }
+        function truncate(str)
+        {
+            # dont truncate str on the end, better on the start TBD
+            if (length(str) > cols)
+                return sprintf("%.*s...", (cols-4-4), str)
+            return str
+        }
 
         function mpvc_ytquery(url,  ytcmd, ytitle)
         {
@@ -383,7 +390,7 @@ mpvc_get_playlist() {
                     mpvc " cmd expand-text \\${percent-pos}" | getline pct
                     count=int((cols) * (pct/100))
                     title=mpvc_ytquery($0)
-                    line=sprintf("%2d  %s", lid, title)
+                    line=sprintf("%2d  %s", lid, truncate(title))
                     fmtstr="\033[7m%-"count"s\033[0m\n"
                     printf(fmtstr, line)
                 }
@@ -391,7 +398,7 @@ mpvc_get_playlist() {
             else
             {
                 title=mpvc_ytquery($0)
-                printf("%2d  %s\n", lid, title)
+                printf("%2d  %s\n", lid, truncate(title))
             }
         }
     '
