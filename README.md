@@ -7,13 +7,13 @@
 
 # mpvc 🎧
 
-An mpc-like control interface for mpv with a nearly complete compatibility layer for mpc commands in addition to GNU style arguments.
+An mpc-like control interface for the mpv player with a nearly complete compatibility layer for mpc commands in addition to GNU style arguments.
 This forks [lwillets/mpvc](https://github.com/lwilletts/mpvc) providing some extra goodies such as: improved CLI, TUI, FZF, WEB & playing media from YouTube & streaming services.
 Check the [Wiki](../../wiki), [LogBook](https://gmt4.github.io/mpvc/logbook.html) & [Casts](https://gmt4.github.io/mpvc/casts/) for a detailed view of the extra features of this fork.
 
 ## Overview
 
-[mpvc](https://github.com/gmt4/mpvc/) functionality is split in a few pieces/files:
+[mpvc](https://github.com/gmt4/mpvc/) functionality is provided by:
 
 - [mpvc](../../blob/master/mpvc): provides the mpvc core CLI commands
 - [extras/mpvc-tui](../../blob/master/extras/mpvc-tui): provides a console TUI, using mpvc underneath
@@ -98,7 +98,7 @@ BSD (and pkg(1) based derivatives):
 
     pkg install -y mpv gawk curl socat fzf rlwrap jq libnotify
 
-MacOS (and brew(1) based derivatives see [FAQ](wiki/FAQ)):
+MacOS (and brew(1) based derivatives see [FAQ](../../wiki/FAQ)):
 
     brew install socat fzf rlwrap jq gawk gnu-sed yt-dlp # mpv
 
