@@ -100,7 +100,7 @@ BSD (and pkg(1) based derivatives):
 
 MacOS (and brew(1) based derivatives see [FAQ](../../wiki/FAQ)):
 
-    brew install socat fzf rlwrap jq gawk gnu-sed yt-dlp # mpv
+    brew install gawk socat fzf rlwrap jq gnu-sed yt-dlp # mpv curl libnotify
 
 Check for missing dependencies using `mpvc-installer check-reqs`
      
