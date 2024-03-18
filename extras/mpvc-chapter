@@ -54,6 +54,18 @@ mpvc_chapter_gen()
     cat "$chaptersfile"
 }
 
+mpvc_chapter_merge()
+{
+    file="$1"
+    tmpfile="/tmp/$(basename "$file")"
+    metadatafile="/tmp/$(basename "$file")-metadata.txt"
+
+    # -map_metadata 0 -map_metadata:s:v 0:s:v -map_metadata:s:a 0:s:a
+    ffmpeg -v quiet -i "$file" -f ffmetadata "$metadatafile"
+    cat "$(mpvc_chapter_file)" >> "$metadatafile"
+    ffmpeg -v quiet -i "$file" -f ffmetadata "$metadatafile" "$tmpfile"
+}
+
 # usage: mpvc_chapter_add [timepos] [title]
 mpvc_chapter_add()
 {
@@ -142,6 +154,7 @@ main()
     load)   shift; mpvc_chapter_load "$@" ;;
     add)    shift; mpvc_chapter_add "$@" ;;
     gen)    shift; mpvc_chapter_gen "$@" ;;
+    merge)  shift; mpvc_chapter_merge "$@" ;;
     help)   shift; usage "$@" ;;
     *)      shift; usage "$@" ;;
     esac
