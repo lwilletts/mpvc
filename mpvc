@@ -441,7 +441,13 @@ mpvc_stash() {
     QUIETFLAG="true"
     case "$cmd" in
         list) ls -ltr "$MPVC_STASH_DIR" ;;
-        show) cat "$MPVC_STASH_DIR/$1" ;;
+        show)
+            if [ -z "${1:-}" ]; then
+                mpvc_stash list;
+            else
+                cat "$MPVC_STASH_DIR/$1";
+            fi
+            ;;
         edit) ${EDITOR:-vi} "$MPVC_STASH_DIR/$1" ;;
         drop) rm -i "$MPVC_STASH_DIR/$1" ;;
         push)
