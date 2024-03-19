@@ -44,29 +44,6 @@ mpvcfzf_config()
     fi
 }
 
-mpvcfzf_preview()
-{
-    MPVC_FZF_BIND_HELP="C-x:list C-v:yt-dlp C-\\:local C-s:chapter C-t:add C-o:play C-r:reload C-spc:toggle"
-    #--bind='ctrl-d:execute-silent(mpvc seek -20 &)'
-
-    # fzf keys: ctrl + [dorstxv\]
-    fzf \
-        --ansi --reverse --no-sort \
-        --multi \
-        \
-        --header="$PROGNAME help: $MPVC_FZF_BIND_HELP" \
-        --bind='ctrl-space:execute-silent(mpvc toggle &)' \
-        --bind='ctrl-t:execute-silent(mpvc add {+1} &)' \
-        --bind='ctrl-s:execute(mpvc-fzf -c)' \
-        --bind='ctrl-x:execute(mpvc-fzf -f {q})' \
-        --bind='ctrl-v:execute(mpvc-fzf -p {q})' \
-        --bind='ctrl-\:execute(mpvc-fzf -l)' \
-        \
-        --preview-window='up:5' \
-        --preview="mpvc" \
-        "$@"
-}
-
 mpvcfzf_isearch()
 {
     url_host="${url_host:-yewtu.be}"
@@ -208,6 +185,29 @@ mpvcfzf_fetch_remove()
 
     rm -i "$(find "$ytdl_dir" | grep "$ytdl_id")"
     sed -i "/$ytdl_id/ s|^|#|" "$ytdl_archive"
+}
+
+mpvcfzf_preview()
+{
+    MPVC_FZF_BIND_HELP="C-x:list C-v:yt-dlp C-\\:local C-s:chapter C-t:add C-o:play C-r:reload C-spc:toggle"
+    #--bind='ctrl-d:execute-silent(mpvc seek -20 &)'
+
+    # fzf keys: ctrl + [dorstxv\]
+    fzf \
+        --ansi --reverse --no-sort \
+        --multi \
+        \
+        --header="$PROGNAME help: $MPVC_FZF_BIND_HELP" \
+        --bind='ctrl-space:execute-silent(mpvc toggle &)' \
+        --bind='ctrl-t:execute-silent(mpvc add {+1} &)' \
+        --bind='ctrl-s:execute(mpvc-fzf -c)' \
+        --bind='ctrl-x:execute(mpvc-fzf -f {q})' \
+        --bind='ctrl-v:execute(mpvc-fzf -p {q})' \
+        --bind='ctrl-\:execute(mpvc-fzf -l)' \
+        \
+        --preview-window='up:5' \
+        --preview="mpvc" \
+        "$@"
 }
 
 mpvcfzf_iplay()
