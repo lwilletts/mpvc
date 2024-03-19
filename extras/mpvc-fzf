@@ -258,14 +258,14 @@ mpvcfzf_ddg_play()
                 mpvc load
 }
 
-mpvcfzf_urlbrowse()
+mpvcfzf_urlbrowser()
 {
     url=${1:-https://localhost:8443/ytdl-archive/}
 
     curl -k -fsSL "$url" |
         awk '/<a href=".*">.*<\/a>/ { h=$0;sub("^.*href=\"","",h);sub("\".*$","",h);print h }' |
-        mpvcfzf_preview |
-        awk -v url="$url" '{ print url$0 }'
+            mpvcfzf_preview --prompt="(urlbrowse) " |
+                awk -v url="$url" '{ print url$0 }'
 }
 
 mpvcfzf_equalizer()
@@ -352,7 +352,7 @@ main()
         1) shift; mpvcfzf_awk1;;
 
         a) mpvcfzf_stashlist ;;
-        b) mpvcfzf_urlbrowse "$OPTARG" ;;
+        b) mpvcfzf_urlbrowser "$OPTARG" ;;
         c) mpvcfzf_chapterlist ;;
         C) shift; mpvcfzf_icache;;
         d) MPVC_DIR="$OPTARG"; cd "$MPVC_DIR" || return;;
