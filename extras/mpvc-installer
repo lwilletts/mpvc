@@ -160,7 +160,7 @@ main()
 {
     if [ $# -lt 1 ]; then usage; fi
 
-    # hack to force SHELL back to posix-sh in macOS TBD
+    # hack to force SHELL back to posix-sh in macOS
     case "$SHELL" in *'zsh') SHELL="/bin/sh";; esac
 
     case "$1" in
