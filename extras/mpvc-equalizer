@@ -161,7 +161,16 @@ mpvc_json()   { mpvc getr af | jq -C .data | sed '/graph/ s/:/:\n\t/g'; }
 mpvc_add()
 {
     mpvc-equalizer save |
-        awk -v f="$1" -v g="$2" '{ if (NR == f) { print $0 + g } else { print $0 } }' |
+        awk -v f="$1" -v g="$2" '
+            BEGIN {
+                n=split("0  65 157 288 472 733 1k1 1k6 2k4 3k4 4k9 7k0 10k 14k 20k", freq_table)
+                for (i=0; i < n; i++) if (freq_table[i] == f) break;
+            }
+            {
+                nr=(i+1)
+                if (length($0)) print $0 + ((NR == nr) ? g : 0)
+            }
+            ' |
             mpvc-equalizer load
 }
 
@@ -187,8 +196,8 @@ main()
     bars)  mpvc_bars;;
     json)  mpvc_json;;
 
-    inc) shift; mpvc_add "$1"  0.1 ;;
-    dec) shift; mpvc_add "$1" -0.1 ;;
+    inc) shift; mpvc_add "$1"  "${2:-0.1}" ;;
+    dec) shift; mpvc_add "$1" "-${2:-0.1}" ;;
 
     help)  usage;;
     *)     usage;;
