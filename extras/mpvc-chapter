@@ -133,14 +133,21 @@ mpvc_chapter_load()
     mpvc delay set time-pos "$timepos"
 }
 
+mpvc_chapter_reset()
+{
+    mpvc set chapters-file ''
+}
+
 usage()
 {
     echo "usage: $PROGNAME args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
     echo "  file : Show current ffmetadata chapter-file"
     echo "  info : Info current ffmetadata chapter-file"
+    echo "  reset: Reset current ffmetadata chapter-file"
     echo "  load : Load current ffmetadata chapter-file"
     echo "  add  : Add new chapter to current ffmetadata chapter-file"
     echo "  gen  : Gen a ffmetadata chapter-file from a < chapterlist.txt"
+    #echo "  merge: Merge ffmetadata chapter-file to audio file"
     exit;
 }
 
@@ -155,6 +162,7 @@ main()
     add)    shift; mpvc_chapter_add "$@" ;;
     gen)    shift; mpvc_chapter_gen "$@" ;;
     merge)  shift; mpvc_chapter_merge "$@" ;;
+    reset)  shift; mpvc_chapter_reset "$@" ;;
     help)   shift; usage "$@" ;;
     *)      shift; usage "$@" ;;
     esac
