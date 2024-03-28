@@ -30,11 +30,12 @@ mpvc_chapter_info()
 
     #echo "# $chaptersfile"
     awk '
-        BEGIN{ chapter=0 }
-        /^title=/ { title=$0; sub("^title= ", "", title); }
-        /^START=/ { start=$2; }
-        /\[CHAPTER\]/ { print start"\t"title; }
-        END { print start"\t"title; }
+        function chapter_info() { printf("%d\t%d\t%s\n", chapternr++, start, title); }
+        BEGIN         { chapternr=0 }
+        /^title=/     { title=$0; sub("^title= ", "", title); }
+        /^START=/     { start=$2; }
+        /\[CHAPTER\]/ { chapter_info(); }
+        END           { chapter_info(); }
     ' "$chaptersfile"
 }
 
@@ -98,7 +99,7 @@ title=$mediatitle
 TIMEBASE=1/1
 START= 0
 END= $timepos
-title= 0 $@
+title=$@
 EOF
 
     fi
@@ -116,7 +117,7 @@ EOF
 TIMEBASE=1/1
 START= $start_time
 END= $end_time
-title= $chapter $@
+title=$@
 EOF
     fi
 
