@@ -32,7 +32,7 @@ mpvc_chapter_info()
     awk '
         function chapter_info() { printf("%d\t%d\t%s\n", chapternr++, start, title); }
         BEGIN         { chapternr=0 }
-        /^title=/     { title=$0; sub("^title= ", "", title); }
+        /^title=/     { title=$0; sub("^title=", "", title); }
         /^START=/     { start=$2; }
         /\[CHAPTER\]/ { chapter_info(); }
         END           { chapter_info(); }
