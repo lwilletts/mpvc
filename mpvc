@@ -353,9 +353,8 @@ mpvc_get_playlist() {
             if (url ~ "^ *https?:")
             {
                 ytcmd=sprintf("%s ytquery \"%s\"", mpvc, url)
-                ytcmd | getline ytitle
-                if (!ytitle)
-                    mpvc " ytquery " url | getline ytitle
+                ytcmd | getline ytitle # TBD
+                #if (!ytitle) mpvc " ytquery " url | getline ytitle
             } else {
                 ytitle=basename(url)
             }
@@ -853,11 +852,13 @@ isInt() { printf '%d' "$1" >/dev/null 2>&1 && [ -n "$1" ]; }
 
 mpvc_tty_size() {
     # this is convoluted as mpvc is run as cgi by mpvc-web without an actual tty
-    ttydev="$(if tty -s; then tty; else ps -hp $$ -o tty | sed 's|^|/dev/|'; fi)"
-    equiet stty -F "$ttydev" size || equiet stty -f "$ttydev" size || stty
+    ttydev="${ttydev:-$(if tty -s; then tty; else ps -hp $$ -o tty | sed 's|^|/dev/|'; fi)}"
+    ttysize=${ttysize:-$(equiet stty -F "$ttydev" size || equiet stty -f "$ttydev" size || stty)}
+    echo "$ttysize"
+
 }
-mpvc_tty_lines() { size=$(mpvc_tty_size); echo "${size%% *}"; }
-mpvc_tty_cols() { size=$(mpvc_tty_size); echo "${size##* }"; }
+mpvc_tty_lines() { ttysize=$(mpvc_tty_size); echo "${ttysize%% *}"; }
+mpvc_tty_cols() { ttysize=$(mpvc_tty_size); echo "${ttysize##* }"; }
 
 mpvc_get_terminal_height() {
     plpos="$1"
@@ -915,10 +916,10 @@ mpvc_handle_socket() {
 
 mpvc_validate_socket() {
     # validate deps
-    if ! quiet command -v "$MPVC_MPV"; then
+    if ! test -x "$MPVC_MPV" || ! quiet command -v "$MPVC_MPV"; then
         die 4 "$PROGNAME: Error: No mpv found. Install to continue."
     fi
-    if ! quiet command -v "$MPVC_SOCAT" && ! quiet command -v nc; then
+    if ! test -x "$MPVC_SOCAT" || ! quiet command -v "$MPVC_SOCAT" && ! quiet command -v nc; then
         die 4 "$PROGNAME: Error: No socat found. Install to continue."
     fi
 
@@ -965,7 +966,7 @@ main() {
     mpvc_config
     arg1=${1:-}
     case "$arg1" in
-    ytquery*) ;;
+    ytquery|ytqueryjson) ;;
     -k|--kill|kill|-K|--killall|killall) ;;
     -c|--crop|crop|-C|--clear|clear|cmd|sockcmd|socklist|--socklist) ;;
     -a|add|append|-A|playnext|--playnext|-n|playnow|--playnow|mpv|--mpv|stash|--stash|--toggle|toggle|-q|--quiet) ;;
