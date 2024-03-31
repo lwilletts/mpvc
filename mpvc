@@ -217,6 +217,13 @@ mpvc_curl_cache_json()
 }
 
 mpvc_curl_cache_metadata_json() {
+    for i in "$@"
+    do
+        mpvc_curl_cache_metadata_json_once "$i"
+    done
+}
+
+mpvc_curl_cache_metadata_json_once() {
     filename="${1:-}"
     result="${1:-}"
     case "$filename" in
@@ -326,14 +333,22 @@ mpvc_get_playlist() {
     lcount=$(mpvc_get playlist-count)
     lpos=$(mpvc_get playlist-pos)
 
-    FIRSTLAST=$(mpvc_get_terminal_height "$lpos" "$lcount")
+    firstlast=$(mpvc_get_terminal_height "$lpos" "$lcount")
     if [ "$mode" = "numbered" ]; then
         mpvc_get_playlist_once "$mode"; return
     fi
 
+    #mpvc_isinteractive=""; if [ -t 1 ]; then mpvc_isinteractive=1; fi
     mpvc_get_playlist_once |
-        awk -v mpvc="$0" -v lpos="$lpos" -v cols="$(mpvc_tty_cols)" -v first="${FIRSTLAST%% *}" -v last="${FIRSTLAST##* }" \
+        awk -v mpvc="$0" -v lpos="$lpos" -v cols="$(mpvc_tty_cols)" -v firstlast="$firstlast" \
         '
+        BEGIN {
+            # truncate lines x cols when interactive TBD
+            isinteractive=1
+            split(firstlast, flarray, " ")
+            first=flarray[1]; last=flarray[2]
+        }
+
         function basename(url, fields, n)
         {
             n=split(url, fields, "/")
@@ -341,16 +356,17 @@ mpvc_get_playlist() {
         }
         function truncate(str)
         {
-            # dont truncate str on the end, better on the start TBD
-            if (length(str) > cols)
-                return sprintf("%.*s...", (cols-4-4), str)
+            trunclen=cols - (length("123 ")+length("...\n"))
+            if (isinteractive && length(str) > trunclen)
+                return sprintf("%.*s...", trunclen, str)
             return str
         }
 
         function mpvc_ytquery(url,  ytcmd, ytitle)
         {
             gsub("^ *", "", url)
-            if (url ~ "^ *https?:")
+            ytitle=url
+            if (url ~ "^https?:")
             {
                 ytcmd=sprintf("%s ytquery \"%s\"", mpvc, url)
                 ytcmd | getline ytitle # TBD
@@ -753,10 +769,16 @@ mpvc_chapter_list()
     chapter_pos=$(mpvc_get "chapter")
     chapter_count=$(mpvc_get "chapter-list/count")
 
-    FIRSTLAST=$(mpvc_get_terminal_height "$chapter_pos" "$chapter_count")
+    firstlast=$(mpvc_get_terminal_height "$chapter_pos" "$chapter_count")
     mpvc_chapter_list_json |
         grep -o '"title":".*' | sed 's/"title":"//; s/","time":.*$//' |
-        awk -v mode="$mode" -v chapter_pos="$chapter_pos" -v first="${FIRSTLAST%% *}" -v last="${FIRSTLAST##* }" '
+        awk -v mode="$mode" -v chapter_pos="$chapter_pos" -v firstlast="$firstlast" \
+        '
+        BEGIN {
+            split(firstlast, flarray, " ")
+            first=flarray[1]; last=flarray[2]
+        }
+
         {
             chapternr = NR-1
             if (!(first <= chapternr && chapternr <= last) && (mode == "short"))
@@ -869,15 +891,15 @@ mpvc_get_terminal_height() {
     half=$((rows / 2))
     plhalf=$((plpos + half))
 
-    FIRSTLAST="0 $lcount"
+    firstlast="0 $lcount"
     if [ "$mode" != "full" ]; then
-        if   [ "$lcount" -le $rows ]; then     FIRSTLAST="0 $lcount"
-        elif [ "$plpos"  -le $half ]; then     FIRSTLAST="0 $rows"
-        elif [  $plhalf  -ge "$lcount" ]; then FIRSTLAST="$((lcount - rows)) $lcount"
-        elif [  $plhalf  -lt "$lcount" ]; then FIRSTLAST="$((plpos - half)) $plhalf"
+        if   [ "$lcount" -le $rows ]; then     firstlast="0 $lcount"
+        elif [ "$plpos"  -le $half ]; then     firstlast="0 $rows"
+        elif [  $plhalf  -ge "$lcount" ]; then firstlast="$((lcount - rows)) $lcount"
+        elif [  $plhalf  -lt "$lcount" ]; then firstlast="$((plpos - half)) $plhalf"
         fi
     fi
-    echo "$FIRSTLAST"
+    echo "$firstlast"
 }
 
 mpvc_parse_time() {
