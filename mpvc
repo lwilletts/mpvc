@@ -916,10 +916,10 @@ mpvc_handle_socket() {
 
 mpvc_validate_socket() {
     # validate deps
-    if ! test -x "$MPVC_MPV" || ! quiet command -v "$MPVC_MPV"; then
+    if ! test -x "$MPVC_MPV" && ! quiet command -v "$MPVC_MPV"; then
         die 4 "$PROGNAME: Error: No mpv found. Install to continue."
     fi
-    if ! test -x "$MPVC_SOCAT" || ! quiet command -v "$MPVC_SOCAT" && ! quiet command -v nc; then
+    if ! test -x "$MPVC_SOCAT" && ! quiet command -v "$MPVC_SOCAT" && ! quiet command -v nc; then
         die 4 "$PROGNAME: Error: No socat found. Install to continue."
     fi
 
