@@ -46,10 +46,11 @@ mpvc_autoscan()
     done
 }
 
+optflags="hi:"
 usage()
 {
-    echo "usage: $PROGNAME args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
-    echo "example: $PROGNAME 192.168.0.2 # your tablet/phone LAN IP";
+    echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
+    echo "example: $PROGNAME -i 192.168.0.2 # your tablet/phone LAN IP";
     exit;
 }
 
@@ -57,7 +58,14 @@ main()
 {
     [ $# -lt 1 ] && usage
 
-    mpvc_autoscan "$@"
+    while getopts "$optflags" flag;
+    do
+        case "$flag" in
+        h) shift; usage ;;
+        i) shift; mpvc_autoscan "$@" ;;
+        *) shift; usage ;;
+        esac
+    done
 }
 
 main "$@"
