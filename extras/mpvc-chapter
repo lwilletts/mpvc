@@ -62,9 +62,12 @@ mpvc_chapter_merge()
     metadatafile="/tmp/$(basename "$file")-metadata.txt"
 
     # -map_metadata 0 -map_metadata:s:v 0:s:v -map_metadata:s:a 0:s:a
-    ffmpeg -v quiet -i "$file" -f ffmetadata "$metadatafile"
-    cat "$(mpvc_chapter_file)" >> "$metadatafile"
-    ffmpeg -v quiet -i "$file" -f ffmetadata "$metadatafile" "$tmpfile"
+    if [ ! -e "$metadatafile" ];
+    then
+        ffmpeg -v quiet -i "$file" -f ffmetadata - > "$metadatafile"
+        cat "$(mpvc_chapter_file)" >> "$metadatafile"
+    fi
+    ffmpeg -i "$file" -i "$metadatafile" -map_metadata 1 -codec copy "$tmpfile"
 }
 
 # usage: mpvc_chapter_add [timepos] [title]
@@ -97,8 +100,8 @@ title=$mediatitle
 #percent-pos=0
 [CHAPTER]
 TIMEBASE=1/1
-START= 0
-END= $timepos
+START=0
+END=$timepos
 title=$@
 EOF
 
@@ -115,8 +118,8 @@ EOF
 #percent-pos=$percentpos
 [CHAPTER]
 TIMEBASE=1/1
-START= $start_time
-END= $end_time
+START=$start_time
+END=$end_time
 title=$@
 EOF
     fi
@@ -148,7 +151,7 @@ usage()
     echo "  load : Load current ffmetadata chapter-file"
     echo "  add  : Add new chapter to current ffmetadata chapter-file"
     echo "  gen  : Gen a ffmetadata chapter-file from a < chapterlist.txt"
-    #echo "  merge: Merge ffmetadata chapter-file to audio file"
+    echo "  merge: Merge ffmetadata chapter-file to audio file"
     exit;
 }
 
