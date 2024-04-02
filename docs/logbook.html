@@ -379,6 +379,7 @@ $ grep mpvc ~/.bashrc
     alias mh="alias | grep mpvc"
     alias mi="mpvc -i"
     alias mI="mpvc -I"
+    alias ma="mpvc-autostart"
     alias mc="mpvc-chapter"
     alias mci="mpvc chapter-list"
     alias mcn="mpvc chapter-list-nr"
@@ -414,9 +415,9 @@ A simple need to have some background music automatically playing while I'm near
 A solution for this was to write a small script in <a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-autostart">extras/mpvc-autostart</a> that periodically pings an IP (for example your phone LAN IP, or alternatively detecting the presence of a Bluetooth device you carry with yourself), then, if the presence of the device is detected, the audio is resumed, otherwise, the audio is paused.
 </p>
 <p>
-For an example of its usage, just run <code>PERIOD=300 NCHECK=3 mpvc-autostart 192.168.0.2</code> where <code>192.168.0.2</code> must be replaced by the LAN IP of your phone. The listing below show the output <code>mpvc-autostart</code> doing periodic pings at 300 sec (5 minutes) intervals. When NCHECK=3 consecutive ping checks fail to detect the device, the audio is paused (pause=true). As soon as one ping check succeeds, the audio is resumed (pause=false). This means that each 300 * 3 seconds (15 minutes) the audio can be paused, and in 5 minutes resumed. Personally I prefer to raise NCHECKS=6, to have about 30 minutes of audio without pauses, anyway, the parameters are there for catter for your needs, just play with them.
+For an example of its usage, just run <code>PERIOD=300 NCHECK=3 mpvc-autostart -i 192.168.0.2</code> where <code>192.168.0.2</code> must be replaced by the LAN IP of your phone. The listing below show the output <code>mpvc-autostart</code> doing periodic pings at 300 sec (5 minutes) intervals. When NCHECK=3 consecutive ping checks fail to detect the device, the audio is paused (pause=true). As soon as one ping check succeeds, the audio is resumed (pause=false). This means that each 300 * 3 seconds (15 minutes) the audio can be paused, and in 5 minutes resumed. Personally I prefer to raise NCHECKS=6, to have about 30 minutes of audio without pauses, anyway, the parameters are there for catter for your needs, just play with them.
 <pre>
-user@box mpvc $ PERIOD=300 NCHECK=3 mpvc-autostart 192.168.0.2
+user@box mpvc $ PERIOD=300 NCHECK=3 mpvc-autostart -i 192.168.0.2
 # mpvc-autostart mpvc pingscan PERIOD=300 NCHECK=3 192.168.0.2
 # 2023-09-15T19:26+00:00 mpvc-autostart PERIOD=300 NCHECK=6 pause=false c=0 n=0
 # 2023-09-15T19:31+00:00 mpvc-autostart PERIOD=300 NCHECK=6 pause=false c=0 n=-1
