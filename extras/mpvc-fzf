@@ -242,7 +242,7 @@ mpvcfzf_chapterlist()
     ( if [ -z "$len" ]; then echo; else mpvc chapter-list-nr; fi) |
         mpvcfzf_preview --prompt="(chapter) " \
         --bind='ctrl-o:execute-silent(mpvc set chapter {1})' \
-        --bind='ctrl-r:reload(mpvc mpvc chapter-list-nr)'
+        --bind='ctrl-r:reload(mpvc chapter-list-nr)'
 }
 
 mpvcfzf_stashlist()
