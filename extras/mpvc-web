@@ -431,15 +431,28 @@ mpvc_web()
     )
 }
 
+optflags="hs:p:r:"
 usage()
 {
-    echo "usage: $PROGNAME args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
+    echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
+    echo "example: $PROGNAME -p 8000 # to start mpvc-web HTTP server at http://localhost:8000"
     exit
 }
 
 main()
 {
     [ $# -lt 0 ] && usage
+
+    while getopts "$optflags" flag;
+    do
+        case "$flag" in
+        h) shift; usage ;;
+        s) shift; MPVC_WEB_HOST="$OPTARG" ;;
+        p) shift; MPVC_WEB_PORT="$OPTARG" ;;
+        r) shift; MPVC_WEB_ROOT="$OPTARG" ;;
+        *) shift; usage ;;
+        esac
+    done
 
     mpvc_web "$@"
 }
