@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 #
 # @file mpvc-fzf
 # @description mpvc fzf, mpv terminal user interface
