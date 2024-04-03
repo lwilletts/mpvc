@@ -33,13 +33,13 @@ mpvc_chapter_info()
         function cinfo() { printf("%d\t%d\t%s\n", ch++, start, title); }
         BEGIN            { ch=0 }
         /^title=/        { title=$0; sub("^title=", "", title); }
-        /^START=/        { start=$2; }
-        /\[CHAPTER\]/    { cinfo(); }
+        /^START=/        { start=$0; sub("^START=", "", start);}
+        /^\[CHAPTER\]/   { cinfo(); }
         END              { cinfo(); }
     ' "$chaptersfile"
 }
 
-# usage: mpvc_chapter_gen < chapterlist.txt with timepos title entries
+# usage: mpvc_chapter_gen < chapterlist.txt with timepos (MM:SS) title entries
 mpvc_chapter_gen()
 {
     chaptersfile=${1:-$(mpvc_chapter_file)}
@@ -47,12 +47,12 @@ mpvc_chapter_gen()
     while read -r line
     do
         timepos=$(echo "$line" | awk -v otp=${otimepos:-0} '{ tp=$1; if (tp ~ ":") { split(tp, a, ":"); tp = a[1]*60 + a[2] } print otp + tp; }')
-        title=$(echo "$line" | awk '{ sub($1, ""); print }')
+        title=$(echo "$line" | awk '{ sub($1" *", ""); print }')
         mpvc_chapter_add_new "$chaptersfile" "$timepos" "$title"
         otimepos=$timepos
     done
 
-    cat "$chaptersfile"
+    #cat "$chaptersfile"
 }
 
 mpvc_chapter_merge()
@@ -98,18 +98,18 @@ title=$mediatitle
 ;path=$path
 
 #percent-pos=0
-[CHAPTER]
-TIMEBASE=1/1
-START=0
-END=$timepos
-title=$@
+#[CHAPTER]
+#TIMEBASE=1/1
+#START=0
+#END=$timepos
+#title=$@
 EOF
 
     fi
 
-    start_time=$(awk 'BEGIN{s=0} /^END= [0-9]+/ {s=$2} END{print s}' "$chaptersfile")
+    start_time=$(awk -F'=' 'BEGIN{s=0} /^END=[0-9]+/ {s=$2} END{print s}' "$chaptersfile")
     end_time=$timepos
-    chapter=$(awk 'BEGIN{s=0} /^title= [0-9]+/ {s=$2} END{print ++s}' "$chaptersfile")
+    chapter=$(awk -F'=' 'BEGIN{s=0} /^title=[0-9]+/ {s=$2} END{print ++s}' "$chaptersfile")
 
     if [ "$#" -gt 0 ]
     then
@@ -142,6 +142,16 @@ mpvc_chapter_reset()
     mpvc set chapters-file ''
 }
 
+mpvc_chapter_list()
+{
+    ls -ltr "$HOME/.config/mpvc/chapters/"
+}
+
+mpvc_chapter_edit()
+{
+    ${EDITOR:-vi} "$HOME/.config/mpvc/chapters/"
+}
+
 usage()
 {
     echo "usage: $PROGNAME args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
@@ -151,6 +161,7 @@ usage()
     echo "  load : Load current ffmetadata chapter-file"
     echo "  add  : Add new chapter to current ffmetadata chapter-file"
     echo "  gen  : Gen a ffmetadata chapter-file from a < chapterlist.txt"
+    echo "  list : List ffmetadata chapter-files"
     echo "  merge: Merge ffmetadata chapter-file to audio file"
     exit;
 }
@@ -167,6 +178,8 @@ main()
     gen)    shift; mpvc_chapter_gen "$@" ;;
     merge)  shift; mpvc_chapter_merge "$@" ;;
     reset)  shift; mpvc_chapter_reset "$@" ;;
+    list)   shift; mpvc_chapter_list "$@" ;;
+    edit)   shift; mpvc_chapter_edit "$@" ;;
     help)   shift; usage "$@" ;;
     *)      shift; usage "$@" ;;
     esac
