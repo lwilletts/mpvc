@@ -42,8 +42,6 @@ mpvc_web_defaults()
 
 mpvc_web_config()
 {
-    mpvc_web_defaults
-
     if ! command -v python3 >/dev/null; then
         echo "$PROGNAME: Error: No python3 found, install to continue."
         exit
@@ -435,13 +433,18 @@ optflags="hs:p:r:"
 usage()
 {
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
-    echo "example: $PROGNAME -p 8000 # to start mpvc-web HTTP server at http://localhost:8000"
+    echo "  -s : Set the $PROGNAME HTTP server IP address (default $MPVC_WEB_HOST)"
+    echo "  -p : Set the $PROGNAME HTTP server port (default $MPVC_WEB_PORT)"
+    echo "  -r : Set the $PROGNAME HTTP server root dir (default $MPVC_WEB_ROOT)"
+    echo "*tips: If unsure where to begin, run: $PROGNAME -p 8000 # serves @ http://localhost:8000"
     exit
 }
 
 main()
 {
     [ $# -lt 0 ] && usage
+
+    mpvc_web_defaults
 
     while getopts "$optflags" flag;
     do
