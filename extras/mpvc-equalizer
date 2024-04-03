@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 #
 # @file mpvc-equalizer
 # @description mpvc equalizer based on firequalizer15.lua
