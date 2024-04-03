@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 #
 # @file mpvc-mpris
 # @description mpvc-mpris speaks MPRIS to control mplayer through key-bindings
