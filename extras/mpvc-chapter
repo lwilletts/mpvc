@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 #
 # @file mpvc-chapter
 # @description mpvc chapter auxiliar cmds (see mpvc chapter-list instead)
