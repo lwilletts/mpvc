@@ -429,14 +429,17 @@ mpvc_web()
     )
 }
 
-optflags="hs:p:r:"
+optflags="ha:b:c:p:r:s:"
 usage()
 {
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
-    echo "  -s : Set the $PROGNAME HTTP server IP address (default $MPVC_WEB_HOST)"
-    echo "  -p : Set the $PROGNAME HTTP server port (default $MPVC_WEB_PORT)"
-    echo "  -r : Set the $PROGNAME HTTP server root dir (default $MPVC_WEB_ROOT)"
-    echo "*tips: If unsure where to begin, run: $PROGNAME -p 8000 # serves @ http://localhost:8000"
+    echo "  -c : Set $PROGNAME HTTP server command: [start,stop] (*required)"
+    echo "  -b : Set $PROGNAME HTTP server bind address (default $MPVC_WEB_HOST)"
+    echo "  -p : Set $PROGNAME HTTP server port (default $MPVC_WEB_PORT)"
+    echo "  -r : Set $PROGNAME HTTP server root dir (default $MPVC_WEB_ROOT)"
+    echo "  -s : Set $PROGNAME HTTP server SSL/TLS (default $MPVC_WEB_SSL_ENABLE)"
+    echo "  -a : Serve the $PROGNAME HTTP server ytdl-archive/ (default $MPVC_WEB_ARCHIVE_ENABLE)"
+    echo "*tips: If unsure where to begin, run: $PROGNAME -p 8000 -c start # serves @ http://localhost:8000"
     exit
 }
 
@@ -449,15 +452,24 @@ main()
     while getopts "$optflags" flag;
     do
         case "$flag" in
-        h) shift; usage ;;
-        s) shift; MPVC_WEB_HOST="$OPTARG" ;;
-        p) shift; MPVC_WEB_PORT="$OPTARG" ;;
-        r) shift; MPVC_WEB_ROOT="$OPTARG" ;;
-        *) shift; usage ;;
+        h) usage ;;
+        c) MPVC_WEB_CMD="$OPTARG"; ;;
+        b) MPVC_WEB_HOST="$OPTARG" ;;
+        p) MPVC_WEB_PORT="$OPTARG" ;;
+        r) MPVC_WEB_ROOT="$OPTARG" ;;
+        s) MPVC_WEB_SSL_ENABLE="$OPTARG" ;;
+        a) MPVC_WEB_ARCHIVE_ENABLE="$OPTARG" ;;
+        *) usage ;;
         esac
     done
+    shift $((OPTIND - 1))
 
-    mpvc_web "$@"
+    case "${MPVC_WEB_CMD:-}" in
+    start)  mpvc_web ;;
+    stop)   pkill -f "$PROGNAME" ;;
+    status) ps auxww | grep 'mpvc-web' ;;
+    *) usage ;;
+    esac
 }
 
 main "$@"
