@@ -76,17 +76,18 @@ main()
     while getopts "$optflags" flag;
     do
         case "$flag" in
-        h) shift; usage ;;
-        i) shift; ARGS="$OPTARG" ;;
-        p) shift; PERIOD="$OPTARG" ;;
-        n) shift; NCHECK="$OPTARG" ;;
-        m) shift; MPVC_HOURMIN="$OPTARG" ;;
-        M) shift; MPVC_HOURMAX="$OPTARG" ;;
-        *) shift; usage ;;
+        h) usage ;;
+        i) ARGS="$ARGS $OPTARG"; ;;
+        p) PERIOD="$OPTARG"; ;;
+        n) NCHECK="$OPTARG"; ;;
+        m) MPVC_HOURMIN="$OPTARG" ;;
+        M) MPVC_HOURMAX="$OPTARG" ;;
+        *) usage ;;
         esac
     done
+    shift $((OPTIND - 1))
 
-    [ -z "${ARGS:-}" ] && usage
+    [ -z "${ARGS:-}" ] && usage "Error: No -i option provided (required)"
     mpvc_autoscan "$ARGS"
 }
 
