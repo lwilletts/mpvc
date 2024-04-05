@@ -48,9 +48,6 @@ mpvc_autoscan()
             -$NCHECK)  mpvc -q pause ;; # -n pings down: pause
             $NCHECK|*) mpvc -q resume;; # +n pings up: resume
             esac
-        else
-            # pause during resting hours
-            if [ "$pause" = "no" ]; then mpvc -q pause; fi
         fi
     done
 }
