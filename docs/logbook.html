@@ -89,6 +89,7 @@ Logbook Entries
     <li> <a href="#logbook-20240116">#20240116 On http-streaming media using mpvc-web</a></li>
     <li> <a href="#logbook-20240214">#20240214 On MPRIS support</a></li>
     <li> <a href="#logbook-20240301">#20240301 On support UNIXes besides GNU/Linux: BSD and MacOS</a></li>
+    <li> <a href="#logbook-20240405">#20240405 Introducing mpvc-chapter: helper managing chapters, 5 Apr 2024</a></li>
 </ul>
 
 <hr />
@@ -614,12 +615,32 @@ Check that mpv speaks MPRIS by running `mpvc-mpris status`, or get <a href="http
 Well, been "moving fast &amp; breaking things" lately (there'll be more breakage to come), yet the goal is achieved, and, now this thing (mpvc) runs on FreeBSD and MacOS. I consider them to be working, and, usable but rought, since are not UNIXes that I do not run regularly.
 </p>
 
+<h3 id="logbook-20240405">Introducing mpvc-chapter: helper for managing chapters, 5 Apr 2024</h3>
+<p>
+Mpv does a great job on handling chapters, however, sometimes you end up wanting to modify chapters to existing media, or media that lacks chapters. This is the purpose of mpvc-chapter: managing chapter-files. Long story short, basically this boils down to keeping chapter-file under <code>$HOME/.config/mpvc/chapters/</code>. <code>mpvc-chapter -h</code> shows the available cmds:
+<ul>
+    <li>
+    The most used is <code>mpvc-chapter load</code>, checks if a chapter-file exists for the current media, if the chapter-file exists then basically loads it with: <code>mpvc set chapters-file $(mpvc-chapter file)</code>.
+    </li>
+    <li>
+    The chapter-file can be fetched, or written using a text-editor, or using <code>mpvc-chapter add|gen</code>, the "add" adds a new chapter each time it is invoked, while "gen" gets an input file with one line per chapter with each line format being "timepos chapter-title" where timepos are incremental timestamps in MM:SS, and generates a chapter-file.
+    </li>
+    <li>
+    Last, and not so much well tested, "merge" command merges the chapter-file into a media file.
+    </li>
+</ul>
+
+<p>
+PS: Although the title says "Introducing mpvc-chapter", it has been present for a long time, it was just an small auxiliar command, missing documentation, the above lines addresses this.
+</p>
+</p>
+
 <!-- SOF -->
 
 <hr/>
 <p>
 <span>
-    <em>Last-Modified: Monday, 16 January 2024 by <a href="https://gmt4.github.io">gmt4</a></em>
+    <em>Last-Modified: Friday, 5 April 2024 by <a href="https://gmt4.github.io">gmt4</a></em>
 </span>
 <span style="float: right;">
     <em>Powered by #HTML 🧡 💚 💙 </em>
