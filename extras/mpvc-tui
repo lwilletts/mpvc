@@ -281,12 +281,13 @@ mpvctui_notify()
 mpvctui_notify_loop_cli()
 {
     scrobler_cli='echo $(date +"T%H:%M") $(mpvc -f "[%status%] #%position%/%playlistlength% %time% %artist% - %title% #%chapter%")'
-    mpvctui_notify_loop "${1:-$scrobler_cli}" | grep -v event
+    notify_cli='false'
+    mpvctui_notify_loop "${1:-$scrobler_cli}" "${2:-$notify_cli}" | grep -v event
 }
 
 mpvctui_notify_loop()
 {
-    # mpvc idleloop | mpvctui_notify "$@"
+    # loop to prevent mpvc idleloop exits when mpvsocket closes (mpv terminates)
     while sleep 1; do mpvc idleloop | mpvctui_notify "$@"; sleep 10; done
 }
 
