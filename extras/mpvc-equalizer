@@ -150,8 +150,19 @@ mpvc_bars()
     ' /dev/null
 }
 
-mpvc_save()   { mpvc_vals; }
-mpvc_load()   { mpvc_setvals "$(cat)"; }
+mpvc_save()
+{
+    mpvc_vals
+}
+
+mpvc_load()
+{
+    case "$1" in
+    '') mpvc_setvals "$(cat)" ;;
+    *)  mpvc_setvals "$(mpvc_presets "$1")" ;;
+    esac
+}
+
 mpvc_reset()  { mpvc_setvals "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"; }
 mpvc_clear()  { mpvc set af ""; }
 mpvc_change() { mpvc_setvals $(mpvc_values | sed "$@"); }
@@ -185,13 +196,13 @@ main()
     if [ $# -lt 1 ]; then usage; fi
 
     case "$1" in
-    save)  mpvc_save;;
-    load)  mpvc_load;;
-    reset) mpvc_reset;;
-    clear) mpvc_clear;;
+    save)   shift; mpvc_save "$@";;
+    load)   shift; mpvc_load "$@";;
+    reset)  shift; mpvc_reset;;
+    clear)  shift; mpvc_clear;;
     change) shift; mpvc_change "$@";;
     preset) shift; mpvc_presets "$@";;
-    values) mpvc_values;;
+    values) shift; mpvc_values;;
     vals)  mpvc_vals;;
     bars)  mpvc_bars;;
     json)  mpvc_json;;
