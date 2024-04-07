@@ -7,6 +7,7 @@
 #
 
 PROGNAME=${0##*/}
+PROGDIR=${0%/*}
 PROGVERSION="v1.5"
 PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
@@ -14,6 +15,8 @@ PROGURL="https://github.com/gmt4/mpvc"
 MPVC_LABEL="${MPVC_LABEL:-mpvc-equalizer}"
 
 set -euf
+
+mpvc() { "$PROGDIR/mpvc" "$@"; } # mpvc-web?
 
 mpvc_genfilter()
 {
@@ -157,7 +160,7 @@ mpvc_save()
 
 mpvc_load()
 {
-    case "$1" in
+    case "${1:-}" in
     '') mpvc_setvals "$(cat)" ;;
     *)  mpvc_setvals "$(mpvc_presets "$1")" ;;
     esac
