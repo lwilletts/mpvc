@@ -284,10 +284,10 @@ main()
         env -i PATH="/usr/bin:/bin" HOME="\$HOME" TERM="\$TERM" QUERY_STRING="\${QUERY_STRING:-}" "\$0" "\$@"; exit;
     fi
     case "\${QUERY_STRING:-}" in
-        status)           mpvc_out status;;
-        playlist)         mpvc_out playlist | mpvc_strip_escapes ;;
-        fullplaylist)     mpvc_out fullplaylist | mpvc_strip_escapes ;;
-        rawplaylist)      mpvc_out saven | mpvc_strip_escapes ;;
+        status)            mpvc_out status;;
+        playlist)          mpvc_out playlist | mpvc_strip_escapes ;;
+        fullplaylist)      mpvc_out fullplaylist | mpvc_strip_escapes ;;
+        rawplaylist)       mpvc_out saven | mpvc_strip_escapes ;;
         chapter-list)      mpvc_out chapter-list | mpvc_strip_escapes ;;
         chapter-list-full) mpvc_out chapter-list-full | mpvc_strip_escapes ;;
         *)            mpvc "\$@" ;;
@@ -369,9 +369,9 @@ mpvc_web()
         fi
 
         if [ -n "${MPVC_WEB_DEV:-}" ]; then
-            echo "# $PROGNAME Setup MPVC_WEB_DEV=$MPVC_WEB_DEV is set";
+            echo "# $PROGNAME Setup MPVC_WEB_DEV=$MPVC_WEB_DEV is set"
         else
-            echo "# $PROGNAME Setup MPVC_WEB_DEV=${MPVC_WEB_DEV:-} is not set, CLI wont work";
+            echo "# $PROGNAME Setup MPVC_WEB_DEV=${MPVC_WEB_DEV:-} is not set, CLI wont work"
         fi
 
         chmod a-w -R "$MPVC_WEB_ROOT/"
@@ -432,7 +432,7 @@ mpvc_web()
     )
 }
 
-optflags="ha:b:c:p:r:s:"
+optflags="ha:b:c:d:p:r:s:"
 usage()
 {
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
@@ -457,6 +457,7 @@ main()
         case "$flag" in
         h) usage ;;
         c) MPVC_WEB_CMD="$OPTARG"; ;;
+        d) MPVC_WEB_DEV="$OPTARG"; ;;
         b) MPVC_WEB_HOST="$OPTARG" ;;
         p) MPVC_WEB_PORT="$OPTARG" ;;
         r) MPVC_WEB_ROOT="$OPTARG" ;;
@@ -471,7 +472,7 @@ main()
     start)  mpvc_web ;;
     stop)   pkill -f "$PROGNAME" ;;
     status) ps auxww | grep 'mpvc-web' ;;
-    *) usage ;;
+    *)      usage ;;
     esac
 }
 
