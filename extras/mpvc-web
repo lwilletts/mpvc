@@ -441,7 +441,7 @@ usage()
     echo "  -p : Set $PROGNAME HTTP server port (default $MPVC_WEB_PORT)"
     echo "  -r : Set $PROGNAME HTTP server root dir (default $MPVC_WEB_ROOT)"
     echo "  -s : Set $PROGNAME HTTP server SSL/TLS (default $MPVC_WEB_SSL_ENABLE)"
-    echo "  -a : Serve the $PROGNAME HTTP server ytdl-archive/ (default $MPVC_WEB_ARCHIVE_ENABLE)"
+    echo "  -a : Set $PROGNAME HTTP server to include ytdl-archive/ (default $MPVC_WEB_ARCHIVE_ENABLE)"
     echo "*tips: If unsure where to begin, run: $PROGNAME -p 8000 -c start # serves @ http://localhost:8000"
     exit
 }
