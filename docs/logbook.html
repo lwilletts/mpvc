@@ -350,6 +350,7 @@ mpvc setr msg-level all=warn
 mpvc setr msg-level all=info
 
 # Some af filters
+mpvc cmdr af toggle "@afade:lavfi=[afade=t=in:ss=0:d=15]"
 mpvc cmdr af toggle "@flanger:lavfi=[flanger=delay=1]"
 mpvc cmdr af toggle "@tremolo:lavfi=[tremolo]"
 mpvc cmdr af toggle "@vibrato:lavfi=[vibrato]"
