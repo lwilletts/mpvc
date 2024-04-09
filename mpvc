@@ -343,7 +343,7 @@ mpvc_get_playlist() {
         awk -v mpvc="$0" -v lpos="$lpos" -v cols="$(mpvc_tty_cols)" -v firstlast="$firstlast" \
         '
         BEGIN {
-            # truncate lines x cols when interactive TBD
+            # truncate lines x cols when interactive (configurable) TBD
             isinteractive=1
             split(firstlast, flarray, " ")
             first=flarray[1]; last=flarray[2]
@@ -356,9 +356,9 @@ mpvc_get_playlist() {
         }
         function truncate(str)
         {
-            trunclen=cols - (length("123 ")+length("...\n"))
+            trunclen=cols - (length("123 ")+length(" ...\n"))
             if (isinteractive && length(str) > trunclen)
-                return sprintf("%.*s...", trunclen, str)
+                return sprintf("%.*s ...", trunclen, str)
             return str
         }
 
