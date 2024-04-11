@@ -470,7 +470,7 @@ mpvc_stash() {
             stashid="${1:-}"
             if [ -z "$stashid" ]; then
                 stashid="${1:-stash-$(date -Imin)}"
-                warn "$PROGNAME: $stashid created, use $PROGNAME stash apply $stashid"
+                warn "$PROGNAME: $PROGNAME stash apply $stashid # new stash created"
             fi
             if [ -e "$MPVC_STASH_DIR/$stashid" ]; then
                 warn "$PROGNAME: Warn Existing $stashid stash found, drop it first. Quitting"
