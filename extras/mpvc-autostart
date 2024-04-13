@@ -40,15 +40,12 @@ mpvc_autoscan()
         check=$($CHECK $target)
         nsign=$(if [ -n "$check" ]; then echo +; else echo -; fi)
         ncheck=$(( ( $ncheck $nsign 1 ) % ( $NCHECK + 1 ) ))
-        echo "# $(date -Imin) PERIOD=$PERIOD NCHECK=$NCHECK pause=$pause c=${#check} n=${ncheck} $check" # $@
         if [ "$hour" -ge ${MPVC_HOURMIN} -a "$hour" -lt ${MPVC_HOURMAX} ]
         then
-            case "$ncheck" in
-            0) ;;                       # 0 pings: no action
-            -$NCHECK)  mpvc -q pause ;; # -n pings down: pause
-            $NCHECK|*) mpvc -q resume;; # +n pings up: resume
-            esac
+            [ "$ncheck" -gt 0 ]        &&  mpvc -q resume # n>0 pings up: resume
+            [ "$ncheck" -le -$NCHECK ] &&  mpvc -q pause  # n<0 pings down: pause
         fi
+        echo "# $(date -Imin) PERIOD=$PERIOD NCHECK=$NCHECK pause=$pause c=${#check} n=${ncheck} $check" # $@
     done
 }
 
