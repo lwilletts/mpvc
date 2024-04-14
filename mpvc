@@ -456,10 +456,9 @@ mpvc_stash() {
     cmd="$1"; shift
     QUIETFLAG="true"
     case "$cmd" in
-        list) ls -ltr "$MPVC_STASH_DIR" ;;
-        show)
+        show|list|ls)
             if [ -z "${1:-}" ]; then
-                mpvc_stash list;
+                ls -ltr "$MPVC_STASH_DIR" ;
             else
                 cat "$MPVC_STASH_DIR/$1";
             fi
