@@ -142,6 +142,15 @@ mpvc_chapter_reset()
     mpvc set chapters-file ''
 }
 
+mpvc_chapter_clear()
+{
+    track=$(mpvc get playlist-pos)
+    timepos=$(mpvc get time-pos)
+    mpvc set chapters-file ''
+    mpvc play "$track"
+    mpvc delay set time-pos "$timepos"
+}
+
 mpvc_chapter_list()
 {
     ls -ltr "$HOME/.config/mpvc/chapters/"
@@ -174,6 +183,7 @@ main()
     file)   shift; mpvc_chapter_file "$@" ;;
     info)   shift; mpvc_chapter_info "$@" ;;
     load)   shift; mpvc_chapter_load "$@" ;;
+    clear)  shift; mpvc_chapter_clear "$@" ;;
     add)    shift; mpvc_chapter_add "$@" ;;
     gen)    shift; mpvc_chapter_gen "$@" ;;
     merge)  shift; mpvc_chapter_merge "$@" ;;
