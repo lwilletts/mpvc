@@ -3,7 +3,7 @@
 # @file mpvc-installer
 # @version v1.0
 # @description mpvc installer
-# @author gmt4 <gmt4 at github.com> (c) Copyright 2022 MIT
+# @author gmt4 <gmt4 at github.com> (c) Copyright 2022 GPLv2+
 # @url github.com/gmt4/mpvc
 #
 
@@ -11,6 +11,8 @@ PROGNAME=${0##*/}
 PROGVERSION="v1.5"
 PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
+
+set -euf
 
 SHELL="${SHELL:-/bin/sh}"
 PREFIX="${PREFIX:-/usr/local}"
@@ -22,10 +24,8 @@ MPV_CONFDIR="${CONFIGDIR:-$HOME/.config/mpv}"
 
 DOCS="README.md docs/mpv.conf docs/logbook.html"
 LICENSES="LICENSE.md"
-SCRIPT="mpvc extras/mpvc-tui extras/mpvc-fzf extras/mpvc-cut extras/mpvc-chapter extras/mpvc-mpris extras/mpvc-equalizer extras/mpvc-web extras/mpvc-autostart extras/mpvc-installer"
+SCRIPT="mpvc extras/mpvc-tui extras/mpvc-fzf extras/mpvc-cut extras/mpvc-chapter extras/mpvc-mpris extras/mpvc-equalizer extras/mpvc-web extras/mpvc-autostart extras/mpvc-now extras/mpvc-installer"
 CONFIG="docs/mpv.conf"
-
-set -euf
 
 mpvc_config()
 {
@@ -33,12 +33,13 @@ mpvc_config()
     echo "Fetching mpv.conf from $PROGURL"
     for config in ${CONFIG};
     do
-        local="$MPV_CONFDIR/$(basename "$config")"
-        echo "Fetch $local"
-        if [ -e "$local" ]; then
-            echo "$PROGNAME: $local exists. Not overwriting."
+        file="$MPV_CONFDIR/${config##*/}"
+        url="$PROGURL/raw/master/$config"
+        echo "Fetch $file"
+        if [ -e "$file" ]; then
+            echo "$PROGNAME: $file exists. Not overwriting."
         else
-            curl -fsSL -o "$local" "$PROGURL/raw/master/$config"
+            curl -fsSL -o "$file" "$url"
         fi
     done
 
@@ -54,12 +55,13 @@ mpvc_fetch()
 {
     mkdir -p "$BINDIR"
     echo "Fetching mpvc from $PROGURL"
-    for script in ${SCRIPT};
+    for script in $SCRIPT;
     do
-        local="$BINDIR/$(basename "$script")"
-        echo "Fetch $local"
-        curl -fsSL -o "$local" "$PROGURL/raw/master/$script"
-        chmod u+x "$local"
+        file="$BINDIR/${script##*/}"
+        url="$PROGURL/raw/master/$script"
+        echo "Fetch $file"
+        curl -fsSL -o "$file" "$url"
+        chmod u+x "$file"
     done
 }
 
@@ -75,16 +77,16 @@ mpvc_docs()
 mpvc_licenses()
 {
     mkdir -p "$LICDIR"
-    for lic in ${LICENSES};
+    for license in ${LICENSES};
     do
-        install -Dvm644 "$(pwd)/$lic" "$LICDIR";
+        install -Dvm644 "$(pwd)/$license" "$LICDIR";
     done
 }
 
 mpvc_link()
 {
     mkdir -p "$BINDIR"
-    for script in ${SCRIPT};
+    for script in $SCRIPT;
     do
         ln -svfn "$(pwd)/$script" "$BINDIR";
     done
@@ -94,7 +96,7 @@ mpvc_install()
 {
     echo 'Installing mpvc...'
     mkdir -p "$BINDIR"
-    for script in ${SCRIPT};
+    for script in $SCRIPT;
     do
         install -Dvm755 "$(pwd)/$script" "$BINDIR";
     done
@@ -103,9 +105,9 @@ mpvc_install()
 mpvc_uninstall()
 {
     echo 'Un-installing mpvc...'
-    for script in ${SCRIPT};
+    for script in $SCRIPT;
     do
-        rm -v "$BINDIR/$(basename "$script")";
+        rm -v "$BINDIR/${script##*/}";
     done
 }
 
@@ -115,12 +117,14 @@ mpvc_check_requirements()
     command -v "mpv" || echo "$PROGNAME: Error: No mpv found. Install to continue."
     command -v "fzf" || echo "$PROGNAME: Error: No fzf found, Install to continue"
     command -v "awk" || echo "$PROGNAME: Error: No awk found, Install to continue" # gawk ???
+    command -v "sed" || echo "$PROGNAME: Error: No sed found, Install to continue" # gsed ???
     command -v "socat" || echo "$PROGNAME: Error: No socat found, Install to continue"
     # recommened, and good to have, but not required
     command -v "curl" || echo "$PROGNAME: Warning: No curl found, Install to search streaming services"
     command -v "rlwrap" || echo "$PROGNAME: Warning: No rlwrap, Install to get history, filename & completion support!"
     command -v "notify-send" || echo "$PROGNAME: Warning: No notify-send, Install to get mpv desktop notifications"
     command -v "jq" || echo "$PROGNAME: Warning: No jq found, Install to parse JSON"
+    command -v "yt-dlp" || echo "$PROGNAME: Warning: No yt-dlp, Install to get youtube-dl support (*hint: check $PROGNAME config)"
 }
 
 mpvc_check_update()
@@ -156,8 +160,10 @@ main()
 {
     if [ $# -lt 1 ]; then usage; fi
 
-    case "$1" in
+    # hack to force SHELL back to posix-sh in macOS
+    case "$SHELL" in *'zsh') SHELL="/bin/sh";; esac
 
+    case "$1" in
     check-reqs)      shift; mpvc_check_requirements;;
     check-update)    shift; mpvc_check_update;;
     config)          shift; mpvc_config "$@";;

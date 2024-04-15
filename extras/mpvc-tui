@@ -2,7 +2,7 @@
 #
 # @file mpvc-tui
 # @description mpvc tui, mpv terminal user interface
-# @author gmt4 <gmt4 at github.com> (c) Copyright 2022 MIT
+# @author gmt4 <gmt4 at github.com> (c) Copyright 2022 GPLv2+
 # @url github.com/gmt4/mpvc
 #
 
@@ -45,13 +45,13 @@ mpvctui_defaults()
     MPVC_COLOR0="$MPVC_CGREENL"
     MPVC_COLOR1="$MPVC_CCYAN"
     MPVC_COLOR2="$MPVC_CYELLOW"
-    MPVC_UPDATEC=1
-    MPVC_CLEARC=4
+    MPVC_UPDATEC=${MPVC_UPDATEC:-2}
+    MPVC_CLEARC=${MPVC_CLEARC:-4}
 
-    MPVC_TIPS=true
+    MPVC_TIPS=${MPVC_TIPS:-true}
     MPVC_TERM=${MPVC_TERM:-xterm}
     MPVC_SHELL=$(readlink -f /proc/$$/exe)
-    export MPVC_CLINE=11
+    export MPVC_CLINE=${MPVC_CLINE:-11}
 }
 
 # Load user config
@@ -280,13 +280,14 @@ mpvctui_notify()
 
 mpvctui_notify_loop_cli()
 {
-    scrobler_cli='echo $(date +"T%H:%M") $(mpvc -f "[%status%] #%position%/%playlistlength% %time% %artist% - %title%")'
-    mpvctui_notify_loop "${1:-$scrobler_cli}" | grep -v event
+    scrobler_cli='echo $(date +"T%H:%M") $(mpvc -f "[%status%] #%position%/%playlistlength% %time% %artist% - %title% #%chapter%")'
+    notify_cli='false'
+    mpvctui_notify_loop "${1:-$scrobler_cli}" "${2:-$notify_cli}" | grep -v event
 }
 
 mpvctui_notify_loop()
 {
-    # mpvc idleloop | mpvctui_notify "$@"
+    # loop to prevent mpvc idleloop exits when mpvsocket closes (mpv terminates)
     while sleep 1; do mpvc idleloop | mpvctui_notify "$@"; sleep 10; done
 }
 
@@ -327,7 +328,7 @@ mpvctui_usage()
     exit;
 }
 
-optflags="d:hHkKtTm:nN:sS:P:x"
+optflags="d:hHktTm:nsSP:x"
 mpvctui_main()
 {
     mpvctui_config
@@ -347,12 +348,10 @@ mpvctui_main()
                   mpvctui_watch
                   ;;
         m) shift; mpvctui_mouse "$OPTARG" ;;
-        n) shift; mpvctui_notify_loop ;;
-        k) shift; pkill -f "$PROGNAME -n" ;;
-        K) shift; pkill "$PROGNAME" ;;
-        N) shift; mpvctui_notify_loop "$OPTARG" ;;
+        n) shift; mpvctui_notify_loop "${1:-}" ;;
+        k) shift; pkill -f "$PROGNAME" ;;
         s) shift; mpvctui_suggest ;;
-        S) shift; mpvctui_notify_loop_cli "$OPTARG" ;;
+        S) shift; mpvctui_notify_loop_cli "${1:-}" ;;
         x) shift; if quiet command -v $MPVC_TERM; then $MPVC_TERM -e "$0" "$@"; fi; exit;;
         *) mpvctui_usage;;
         esac

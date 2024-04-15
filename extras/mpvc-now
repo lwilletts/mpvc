@@ -1,0 +1,41 @@
+#!/usr/bin/env sh
+#
+# @file mpvc-now
+# @description mpvc-now get a shareable URL to the "now listening" playlist
+# @author gmt4 <gmt4 at github.com> (c) Copyright 2024 GPLv2+
+# @url github.com/gmt4/mpvc
+#
+
+set -euf
+
+mpvcnow_geturls()
+{
+    mpvc saven
+    #| sed -n "/^https/ ! s/^.*-\([0-9a-zA-Z_-]\{11\}\).opus/https:\/\/yewtu.be\/\1/p"
+}
+
+mpvcnow_getvids()
+{
+    vids=$(
+        echo "$@" | awk '/youtube|yewtu/ {gsub("^.*/",""); gsub(".*=",""); print }'
+    )
+
+    for f in $vids;
+    do
+        echo -n "&v=$f";
+    done
+}
+
+main()
+{
+    date=$(date -Idate)
+    now="https://gmt4.github.io/mpvc/now/"
+    urls=$(mpvcnow_geturls)
+    vids=$(mpvcnow_getvids "$urls")
+
+    echo "$now?t=$date$vids"
+    echo
+    bash -c "paste <(echo \"$urls\") <(mpvc -I)"
+}
+
+main "$@"

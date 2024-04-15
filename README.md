@@ -7,14 +7,13 @@
 
 # mpvc 🎧
 
-An mpc-like control interface for mpv with a nearly complete compatibility layer for mpc commands in
-addition to GNU style arguments.
+An mpc-like control interface for the mpv player with a nearly complete compatibility layer for mpc commands in addition to GNU style arguments.
 This forks [lwillets/mpvc](https://github.com/lwilletts/mpvc) providing some extra goodies such as: improved CLI, TUI, FZF, WEB & playing media from YouTube & streaming services.
-Check the [Wiki](../../wiki) & [Casts](https://gmt4.github.io/mpvc/casts/) for a detailed view of the extra features of this fork.
+Check the [Wiki](../../wiki), [LogBook](https://gmt4.github.io/mpvc/logbook.html) & [Casts](https://gmt4.github.io/mpvc/casts/) for a detailed view of the extra features of this fork.
 
 ## Overview
 
-[mpvc](https://github.com/gmt4/mpvc/) functionality is split in a few pieces/files:
+[mpvc](https://github.com/gmt4/mpvc/) functionality is provided by:
 
 - [mpvc](../../blob/master/mpvc): provides the mpvc core CLI commands
 - [extras/mpvc-tui](../../blob/master/extras/mpvc-tui): provides a console TUI, using mpvc underneath
@@ -22,9 +21,11 @@ Check the [Wiki](../../wiki) & [Casts](https://gmt4.github.io/mpvc/casts/) for a
 - [extras/mpvc-web](../../blob/master/extras/mpvc-web): a hack to remotely control mpvc from web
 - [extras/mpvc-mpris](../../blob/master/extras/mpvc-mpris): speaks MPRIS to control mpv player through key-bindings.
 - [extras/mpvc-equalizer](../../blob/master/extras/mpvc-equalizer): provides a basic mpv equalizer for the CLI.
+- [extras/mpvc-autostart](../../blob/master/extras/mpvc-autostart): automatic mpv start/stop based on presence.
 - [extras/mpvc-installer](../../blob/master/extras/mpvc-installer): provides an installer to install/update mpvc.
 
-Have a look at the [casts/](https://gmt4.github.io/mpvc/casts/) to watch screencasts of mpvc in action.
+For more details on how to use the above tools have a look at the [logbok.html](https://gmt4.github.io/mpvc/logbook.html).
+In addition, the [casts/](https://gmt4.github.io/mpvc/casts/) directory to shows some screencasts of mpvc in action.
 
 ## QuickInstall ▶️
 
@@ -85,6 +86,24 @@ Recommended extras:
 - `fzf`
 - `notify-send`
 
+Debian (and derivatives such as Ubuntu):
+
+	apt install mpv gawk curl socat fzf rlwrap jq libnotify-bin
+     
+Arch (and derivatives):
+
+ 	pacman -Sy mpv gawk curl socat fzf rlwrap jq libnotify
+
+BSD (and pkg(1) based derivatives):
+
+    pkg install -y mpv gawk curl socat fzf rlwrap jq libnotify
+
+MacOS (and brew(1) based derivatives see [FAQ](../../wiki/FAQ)):
+
+    brew install gawk socat fzf rlwrap jq gnu-sed yt-dlp # mpv curl libnotify
+
+Check for missing dependencies using `mpvc-installer check-reqs`
+     
 ## Install
 
 To install mpvc:

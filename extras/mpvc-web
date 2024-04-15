@@ -2,7 +2,7 @@
 #
 # @file mpvc-web
 # @description mpvc web, A hack to remotely control mpvc from web/http
-# @author gmt4 <gmt4 at github.com> (c) Copyright 2022 MIT
+# @author gmt4 <gmt4 at github.com> (c) Copyright 2022 GPLv2+
 # @url github.com/gmt4/mpvc
 #
 
@@ -42,8 +42,6 @@ mpvc_web_defaults()
 
 mpvc_web_config()
 {
-    mpvc_web_defaults
-
     if ! command -v python3 >/dev/null; then
         echo "$PROGNAME: Error: No python3 found, install to continue."
         exit
@@ -60,6 +58,20 @@ mpvc_web_config()
 mpvc_web_style()
 {
     echo 'body { filter: invert(0.7); }'
+}
+
+mpvc_web_select_form()
+{
+    cmd="$1"
+
+    echo '<form action="/" method="get">'
+    echo "$cmd"
+    awk -v cmd="$cmd" '
+        BEGIN  { print "<select name=cli id=cli-select onchange=this.form.submit() style=\"width:100%; height:1.2rem\" >"; printf "<option value=\"\"># Select</option>\n"  }
+        NR > 0 { gsub("\"",""); print "<option value=\""cmd" "$0"\">"$0"</option>" }
+        END    { print "</select>"}
+    '
+    echo '</form>'
 }
 
 mpvc_web_index()
@@ -83,7 +95,6 @@ mpvc_web_index()
     <link rel="IconFile" href="apple-touch-icon.svg" sizes="64x64">
     <link rel="apple-touch-icon" href="apple-touch-icon.svg">
     <title>$PROGNAME @ $MPVC_WEB_HOSTNAME 🎧</title>
-    </head>
     <style type="text/css" media="all">
     @media (prefers-color-scheme: light) {
         :root { --body-bg: #fff; --body-color: #111; --pre-bg:#eee; --link-color:#00f; }
@@ -100,14 +111,15 @@ mpvc_web_index()
     <script type="text/javascript">
         $(mpvc_web_index_js)
     </script>
+    </head>
 
     <body>
         [
             <a href="." name="mpvc-web">$PROGNAME</a>
-            <a href="#status">#status</a>
-            <a href="#playlist">#playlist</a>
+            <a href="#status">#stat</a>
+            <a href="#mpvc-web-playlist">#list</a>
             <a href="#prompt">#prompt</a>
-            <!-- $([ -n "$MPVC_WEB_ARCHIVE_ENABLE" ] && echo '<a href="ytdl-archive" >archive</a>'; ) -->
+            $([ -n "$MPVC_WEB_ARCHIVE_ENABLE" ] && echo '<a href="ytdl-archive" >#arch</a>'; )
         ]
         <hr>
         <ul style="padding: 0em 1em;">
@@ -118,14 +130,7 @@ mpvc_web_index()
             <input type="text" id="cli" name="cli" autocomplete="on" placeholder="mpvc status ${MPVC_WEB_DEV:-(off)}" title="mpvc cli" onkeydown="if (event.keyCode == 13) { this.form.submit(); return false; }" style="height:0.8rem">
         </form>
         <li>
-            <form action="/" method="get">
-            mpvc stash
-            $(mpvc stash list | awk '
-                BEGIN   { printf "<select name=cli id=cli-select onchange=this.form.submit() style=\"width:11rem; height:1.2rem\" >"}
-                NR == 1 { printf "<option value="">Please choose a stash</option>" }
-                NR > 1  { printf "<option value=\"mpvc stash apply "$NF"\">"$NF"</option>" }
-                END     { printf "</select>"}' )
-            </form>
+            $(mpvc stash list | awk 'NR>1{print $NF}' | mpvc_web_select_form "mpvc -q stash apply")
         </li>
         </li>
         <li>
@@ -174,23 +179,19 @@ mpvc_web_index()
             <a href="?cmd=mpvc cnext">cnext</a>
         </li>
         <li>
-            mpvc vol
-            <a href="?cmd=mpvc vol -20">-20</a>
-            <a href="?cmd=mpvc vol -10">-10</a>
-            <a href="?cmd=mpvc vol -5">-5</a>
-            <a href="?cmd=mpvc vol 0">0</a>
-            <a href="?cmd=mpvc vol +5">+5</a>
-            <a href="?cmd=mpvc vol +10">+10</a>
-            <a href="?cmd=mpvc vol +20">+20</a>
+            $(mpvc --nocolor fullplaylist | awk '{print $1,"#",$0}' | mpvc_web_select_form "mpvc -q play")
         </li>
         <li>
-            mpvc seek
-            <a href="?cmd=mpvc seek -120">-120</a>
-            <a href="?cmd=mpvc seek -60">-60</a>
-            <a href="?cmd=mpvc seek -25">-25</a>
-            <a href="?cmd=mpvc seek +25">+25</a>
-            <a href="?cmd=mpvc seek +60">+60</a>
-            <a href="?cmd=mpvc seek +120">+120</a>
+            $(mpvc --nocolor chapter-list-nr | awk '{print $1,"#",$0}' | mpvc_web_select_form "mpvc -q cplay")
+        </li>
+        <li>
+            $(echo "-30\n-20\n-10\n-5\n0\n+5\n+10\n+20\n+30" | mpvc_web_select_form "mpvc -q vol")
+        </li>
+        <li>
+            $(echo "-120\n-60\n-25\n+25\n+60\n+120" | mpvc_web_select_form "mpvc -q seek")
+        </li>
+        <li>
+            $(mpvc-equalizer preset | awk '/ # preset: / {print $NF}' | mpvc_web_select_form "mpvc-equalizer load")
         </li>
         <li>
         mpvc theme
@@ -283,10 +284,10 @@ main()
         env -i PATH="/usr/bin:/bin" HOME="\$HOME" TERM="\$TERM" QUERY_STRING="\${QUERY_STRING:-}" "\$0" "\$@"; exit;
     fi
     case "\${QUERY_STRING:-}" in
-        status)           mpvc_out status;;
-        playlist)         mpvc_out playlist | mpvc_strip_escapes ;;
-        fullplaylist)     mpvc_out fullplaylist | mpvc_strip_escapes ;;
-        rawplaylist)      mpvc_out saven | mpvc_strip_escapes ;;
+        status)            mpvc_out status;;
+        playlist)          mpvc_out playlist | mpvc_strip_escapes ;;
+        fullplaylist)      mpvc_out fullplaylist | mpvc_strip_escapes ;;
+        rawplaylist)       mpvc_out saven | mpvc_strip_escapes ;;
         chapter-list)      mpvc_out chapter-list | mpvc_strip_escapes ;;
         chapter-list-full) mpvc_out chapter-list-full | mpvc_strip_escapes ;;
         *)            mpvc "\$@" ;;
@@ -367,6 +368,12 @@ mpvc_web()
             ln -f -s $HOME/.config/mpvc/ytdl-archive "$MPVC_WEB_ROOT/"
         fi
 
+        if [ -n "${MPVC_WEB_DEV:-}" ]; then
+            echo "# $PROGNAME Setup MPVC_WEB_DEV=$MPVC_WEB_DEV is set"
+        else
+            echo "# $PROGNAME Setup MPVC_WEB_DEV=${MPVC_WEB_DEV:-} is not set, CLI wont work"
+        fi
+
         chmod a-w -R "$MPVC_WEB_ROOT/"
 
         # XXX handle cli commands, rewrite this mess
@@ -388,9 +395,6 @@ mpvc_web()
 
         /GET \/\?cmd=mpvc%20shuffle/      { system(mpvc" -q shuffle") }
         /GET \/\?cmd=mpvc%20unshuffle/    { system(mpvc" -q unshuffle") }
-
-        /GET \/\?cmd=mpvc%20vol%20[+-]?[0-9]+/ { gsub("%20", " "); system(mpvc" -q vol "$(NF-3)); }
-        /GET \/\?cmd=mpvc%20seek%20[+-]?[0-9]+/ { gsub("%20", " "); system(mpvc" -q seek "$(NF-3)); }
 
         /GET \/\?cmd=mpvc%20repeat/       { system(mpvc" -q repeat") }
         /GET \/\?cmd=mpvc%20single/       { system(mpvc" -q single") }
@@ -417,6 +421,8 @@ mpvc_web()
             {
                 gsub("^("mpvc") [^a-zA-Z0-9 ]*", mpvc" ", r);
                 gsub("\\+", " ", r);
+                gsub("%2B", "+", r);
+                gsub("%23", "#", r);
                 system(r); # XXX
             }
         }
@@ -426,9 +432,17 @@ mpvc_web()
     )
 }
 
+optflags="ha:b:c:d:p:r:s:"
 usage()
 {
-    echo "usage: $PROGNAME args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
+    echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
+    echo "  -c : Set $PROGNAME HTTP server command: [start,stop] (*required)"
+    echo "  -b : Set $PROGNAME HTTP server bind address (default $MPVC_WEB_HOST)"
+    echo "  -p : Set $PROGNAME HTTP server port (default $MPVC_WEB_PORT)"
+    echo "  -r : Set $PROGNAME HTTP server root dir (default $MPVC_WEB_ROOT)"
+    echo "  -s : Set $PROGNAME HTTP server SSL/TLS (default $MPVC_WEB_SSL_ENABLE)"
+    echo "  -a : Set $PROGNAME HTTP server to include ytdl-archive/ (default $MPVC_WEB_ARCHIVE_ENABLE)"
+    echo "*tips: If unsure where to begin, run: $PROGNAME -p 8000 -c start # serves @ http://localhost:8000"
     exit
 }
 
@@ -436,7 +450,30 @@ main()
 {
     [ $# -lt 0 ] && usage
 
-    mpvc_web "$@"
+    mpvc_web_defaults
+
+    while getopts "$optflags" flag;
+    do
+        case "$flag" in
+        h) usage ;;
+        c) MPVC_WEB_CMD="$OPTARG"; ;;
+        d) MPVC_WEB_DEV="$OPTARG"; ;;
+        b) MPVC_WEB_HOST="$OPTARG" ;;
+        p) MPVC_WEB_PORT="$OPTARG" ;;
+        r) MPVC_WEB_ROOT="$OPTARG" ;;
+        s) MPVC_WEB_SSL_ENABLE="$OPTARG" ;;
+        a) MPVC_WEB_ARCHIVE_ENABLE="$OPTARG" ;;
+        *) usage ;;
+        esac
+    done
+    shift $((OPTIND - 1))
+
+    case "${MPVC_WEB_CMD:-}" in
+    start)  mpvc_web ;;
+    stop)   pkill -f "$PROGNAME" ;;
+    status) ps auxww | grep 'mpvc-web' ;;
+    *)      usage ;;
+    esac
 }
 
 main "$@"

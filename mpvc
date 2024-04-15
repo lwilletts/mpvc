@@ -217,11 +217,18 @@ mpvc_curl_cache_json()
 }
 
 mpvc_curl_cache_metadata_json() {
+    for i in "$@"
+    do
+        mpvc_curl_cache_metadata_json_once "$i"
+    done
+}
+
+mpvc_curl_cache_metadata_json_once() {
     filename="${1:-}"
     result="${1:-}"
     case "$filename" in
-        https://youtu.be/watch*)
-            filename="$(echo "$filename" | sed 's|/watch?v=|/|')"
+        https://youtu.be/watch*|https://youtube.com/watch*|https://www.youtube.com/watch*)
+            filename="$(echo "$filename" | sed 's|\(www.\)\?youtube.com|youtu.be|; s|/watch/\??v=|/|')"
             result="$(mpvc_curl_cache_json "$filename")"
             ;;
         https://youtu.be/*|https://youtube.com/*|https://www.youtube.com/*)
@@ -248,7 +255,7 @@ mpvc_curl_cache_title_clean() {
 }
 
 mpvc_getjson() {
-    sed -n '/"'"$1"'":/ { s/.*"'"$1"'":"\?\(.*\?\)"\?,.*/\1/; s/"\?,".\+".*//; p }'
+    awk '/'"$1"'/{ sub(".*'"$1"'\":\"?",""); sub("\"?,\".+\".*",""); sub(", }$", ""); print }'
 }
 
 mpvc_sockrepl() { $MPVC_SOCAT - "$MPVC_SOCKET" || nc -U -N "$MPVC_SOCKET"; }
@@ -293,7 +300,7 @@ mpvc_get_pause_status() {
 mpvc_get_playlist_json() {
     mpvc_cmdr "get_property" "playlist" |
         grep -o '"data":\[.*\]' |
-        sed 's/^"data"://; s|{"filename":|\n\t{"filename":|g; /^\[\]$/ !s/]$/\n]/'
+        awk '{ sub("^\"data\":",""); gsub("{\"filename\":","\n\t{\"filename\":");  } ! /^\[\]$/ { sub("]$","\n]"); } {print}'
     QUIETFLAG="true"
 }
 
@@ -326,40 +333,56 @@ mpvc_get_playlist() {
     lcount=$(mpvc_get playlist-count)
     lpos=$(mpvc_get playlist-pos)
 
-    FIRSTLAST=$(mpvc_get_terminal_height "$lpos" "$lcount")
+    firstlast=$(mpvc_get_terminal_height "$lpos" "$lcount")
     if [ "$mode" = "numbered" ]; then
         mpvc_get_playlist_once "$mode"; return
     fi
 
+    #mpvc_isinteractive=""; if [ -t 1 ]; then mpvc_isinteractive=1; fi
     mpvc_get_playlist_once |
-        awk -v mpvc="$0" -v lpos="$lpos" -v cols="$(mpvc_tty_cols)" -v first="${FIRSTLAST%% *}" -v last="${FIRSTLAST##* }" \
+        awk -v mpvc="$0" -v lpos="$lpos" -v cols="$(mpvc_tty_cols)" -v firstlast="$firstlast" \
         '
+        BEGIN {
+            # truncate lines x cols when interactive (configurable) TBD
+            isinteractive=1
+            split(firstlast, flarray, " ")
+            first=flarray[1]; last=flarray[2]
+        }
+
         function basename(url, fields, n)
         {
             n=split(url, fields, "/")
             return fields[n]
         }
+        function truncate(str)
+        {
+            trunclen=cols - (length("123 ")+length(" ...\n"))
+            if (isinteractive && length(str) > trunclen)
+                return sprintf("%.*s ...", trunclen, str)
+            return str
+        }
 
         function mpvc_ytquery(url,  ytcmd, ytitle)
         {
             gsub("^ *", "", url)
-            if (url ~ "^ *https?:")
+            ytitle=url
+            if (url ~ "^https?:")
             {
                 ytcmd=sprintf("%s ytquery \"%s\"", mpvc, url)
-                ytcmd | getline ytitle
-                if (!ytitle)
-                    mpvc " ytquery " url | getline ytitle
+                ytcmd | getline ytitle # TBD
+                #if (!ytitle) mpvc " ytquery " url | getline ytitle
+
+                gsub("\\\\u00", "\\x", ytitle)
+                gsub("\\\\x22", "\x22", ytitle)
+                gsub("\\\\x23", "\x23", ytitle)
+                gsub("\\\\x25", "\x25", ytitle)
+                gsub("\\\\x26", "\x26", ytitle)
+                gsub("\\\\x27", "\x27", ytitle)
+                gsub("\\\\xa0", "\xa0", ytitle)
+                gsub("\\\\u[0-9a-f]{4}", "", ytitle)
             } else {
                 ytitle=basename(url)
             }
-            gsub("\\\\u00", "\\x", ytitle)
-            gsub("\\\\x22", "\x22", ytitle)
-            gsub("\\\\x23", "\x23", ytitle)
-            gsub("\\\\x25", "\x25", ytitle)
-            gsub("\\\\x26", "\x26", ytitle)
-            gsub("\\\\x27", "\x27", ytitle)
-            gsub("\\\\xa0", "\xa0", ytitle)
-            gsub("\\\\u[0-9a-f]{4}", "", ytitle)
 
             return ytitle
         }
@@ -383,7 +406,7 @@ mpvc_get_playlist() {
                     mpvc " cmd expand-text \\${percent-pos}" | getline pct
                     count=int((cols) * (pct/100))
                     title=mpvc_ytquery($0)
-                    line=sprintf("%2d  %s", lid, title)
+                    line=sprintf("%2d  %s", lid, truncate(title))
                     fmtstr="\033[7m%-"count"s\033[0m\n"
                     printf(fmtstr, line)
                 }
@@ -391,7 +414,7 @@ mpvc_get_playlist() {
             else
             {
                 title=mpvc_ytquery($0)
-                printf("%2d  %s\n", lid, title)
+                printf("%2d  %s\n", lid, truncate(title))
             }
         }
     '
@@ -433,15 +456,20 @@ mpvc_stash() {
     cmd="$1"; shift
     QUIETFLAG="true"
     case "$cmd" in
-        list) ls -ltr "$MPVC_STASH_DIR" ;;
-        show) cat "$MPVC_STASH_DIR/$1" ;;
+        show|list|ls)
+            if [ -z "${1:-}" ]; then
+                ls -ltr "$MPVC_STASH_DIR" ;
+            else
+                cat "$MPVC_STASH_DIR/$1";
+            fi
+            ;;
         edit) ${EDITOR:-vi} "$MPVC_STASH_DIR/$1" ;;
         drop) rm -i "$MPVC_STASH_DIR/$1" ;;
         push)
             stashid="${1:-}"
             if [ -z "$stashid" ]; then
                 stashid="${1:-stash-$(date -Imin)}"
-                warn "$PROGNAME: $stashid created, use $PROGNAME stash apply $stashid"
+                warn "$PROGNAME: $PROGNAME stash apply $stashid # new stash created"
             fi
             if [ -e "$MPVC_STASH_DIR/$stashid" ]; then
                 warn "$PROGNAME: Warn Existing $stashid stash found, drop it first. Quitting"
@@ -645,6 +673,7 @@ mpvc_toggle_loop() {
 
 mpvc_set_volume() {
     volumemax=$(mpvc_get volume-max)
+    if [ -z "$volumemax" ]; then return; fi
     if [ -n "$1" ] && [ "${1%.*}" -ge "${volumemax%.*}" ]; then
         QUIETFLAG="true"
         warn "$PROGNAME: Error: volume $1 above volume-max"
@@ -740,10 +769,16 @@ mpvc_chapter_list()
     chapter_pos=$(mpvc_get "chapter")
     chapter_count=$(mpvc_get "chapter-list/count")
 
-    FIRSTLAST=$(mpvc_get_terminal_height "$chapter_pos" "$chapter_count")
+    firstlast=$(mpvc_get_terminal_height "$chapter_pos" "$chapter_count")
     mpvc_chapter_list_json |
         grep -o '"title":".*' | sed 's/"title":"//; s/","time":.*$//' |
-        awk -v mode="$mode" -v chapter_pos="$chapter_pos" -v first="${FIRSTLAST%% *}" -v last="${FIRSTLAST##* }" '
+        awk -v mode="$mode" -v chapter_pos="$chapter_pos" -v firstlast="$firstlast" \
+        '
+        BEGIN {
+            split(firstlast, flarray, " ")
+            first=flarray[1]; last=flarray[2]
+        }
+
         {
             chapternr = NR-1
             if (!(first <= chapternr && chapternr <= last) && (mode == "short"))
@@ -792,28 +827,34 @@ mpvc_chapter_search_play()
 # formats and prints according to $FORMATSTRING
 mpvc_print_status() {
     # not that nice, in fact way more ugly, but also way faster
-    RE='year\|genre\|album\|comment\|volume\|path\|height\|width\|playback-time\|ab-loop-[ab]\|speed\|force-window\|video\|aspect\|idle\|fullscreen\|chapter\|chapters\|=chapter'
     F=$(echo "$FORMATSTRING" |
-        sed \
-            -e "s/%\(${RE}\)%/\${\1:NA}/g" \
-            -e "s/%title%/\${media-title}/g" \
-            -e "s/%artist%/\${?metadata\/by-key\/artist:\${metadata\/by-key\/artist}}\${!metadata\/by-key\/artist:NA}/g" \
-            -e "s/%albumartist%/\${?metadata\/by-key\/album:\${metadata\/by-key\/album}}\${!metadata\/by-key\/album:NA}/g" \
-            -e "s/%muted%/\${mute}/g" \
-            -e "s/%percentage%/\${percent-pos}/g" \
-            -e "s/%name%/\${filename}/g" \
-            -e "s/%repeat%/\${loop-playlist}/g" \
-            -e "s/%single%/\${loop-file}/g" \
-            -e "s/%frame%/\${estimated-frame-number}/g" \
-            -e "s/%dir%/\${working-directory}/g" \
-            -e "s/%remaining%/\${playtime-remaining}/g" \
-            -e "s/%length%/\${duration}/g" \
-            -e "s/%time%/\${playback-time}/g" \
-            -e "s/%precisetime%/\${playback-time}/g" \
-            -e "s/%playlistlength%/\${playlist-count}/g" \
-            -e "s/%position%/\${playlist-pos}/g" \
-            -e "s/%status%/$(mpvc_get_pause_status)/g" \
-            -e ''
+        awk -v status=$(mpvc_get_pause_status) '
+        {
+            split("year genre album comment volume path height width playback-time ab-loop-[ab] speed force-window video aspect idle fullscreen chapter chapters =chapter", RE)
+            for (i in RE) { re=RE[i]; gsub("%"re"%", "${"re":NA}"); }
+
+            gsub("%title%", "${media-title}")
+            gsub("%artist%", "${?metadata/by-key/artist:${metadata/by-key/artist}}${!metadata/by-key/artist:NA}")
+            gsub("%albumartist%", "${?metadata/by-key/album:${metadata/by-key/album}}${!metadata/by-key/album:NA}")
+            gsub("%muted%", "${mute}")
+            gsub("%percentage%", "${percent-pos}")
+            gsub("%name%", "${filename}")
+            gsub("%repeat%", "${loop-playlist}")
+            gsub("%single%", "${loop-file}")
+            gsub("%frame%", "${estimated-frame-number}")
+            gsub("%dir%", "${working-directory}")
+            gsub("%remaining%", "${playtime-remaining}")
+            gsub("%length%", "${duration}")
+            gsub("%time%", "${playback-time}")
+            gsub("%precisetime%", "${playback-time}")
+            gsub("%playlistlength%", "${playlist-count}")
+            gsub("%position%", "${playlist-pos}")
+
+            gsub("%status%", status)
+
+            print
+        }
+        '
     )
     mpvc_cmd "expand-text" "${F}" | sed 's/ \\r/\n/g'
 }
@@ -831,9 +872,15 @@ mpvc_print_status_final() {
 
 isInt() { printf '%d' "$1" >/dev/null 2>&1 && [ -n "$1" ]; }
 
-mpvc_tty_size() { stty size -F "$(if tty -s; then tty; else ps -hp $$ -o tty | sed 's|^|/dev/|'; fi)"; }
-mpvc_tty_lines() { size=$(mpvc_tty_size); echo "${size%% *}"; }
-mpvc_tty_cols() { size=$(mpvc_tty_size); echo "${size##* }"; }
+mpvc_tty_size() {
+    # this is convoluted as mpvc is run as cgi by mpvc-web without an actual tty
+    ttydev="${ttydev:-$(if tty -s; then tty; else ps -hp $$ -o tty | sed 's|^|/dev/|'; fi)}"
+    ttysize=${ttysize:-$(equiet stty -F "$ttydev" size || equiet stty -f "$ttydev" size || stty)}
+    echo "$ttysize"
+
+}
+mpvc_tty_lines() { ttysize=$(mpvc_tty_size); echo "${ttysize%% *}"; }
+mpvc_tty_cols() { ttysize=$(mpvc_tty_size); echo "${ttysize##* }"; }
 
 mpvc_get_terminal_height() {
     plpos="$1"
@@ -844,15 +891,15 @@ mpvc_get_terminal_height() {
     half=$((rows / 2))
     plhalf=$((plpos + half))
 
-    FIRSTLAST="0 $lcount"
+    firstlast="0 $lcount"
     if [ "$mode" != "full" ]; then
-        if   [ "$lcount" -le $rows ]; then     FIRSTLAST="0 $lcount"
-        elif [ "$plpos"  -le $half ]; then     FIRSTLAST="0 $rows"
-        elif [  $plhalf  -ge "$lcount" ]; then FIRSTLAST="$((lcount - rows)) $lcount"
-        elif [  $plhalf  -lt "$lcount" ]; then FIRSTLAST="$((plpos - half)) $plhalf"
+        if   [ "$lcount" -le $rows ]; then     firstlast="0 $lcount"
+        elif [ "$plpos"  -le $half ]; then     firstlast="0 $rows"
+        elif [  $plhalf  -ge "$lcount" ]; then firstlast="$((lcount - rows)) $lcount"
+        elif [  $plhalf  -lt "$lcount" ]; then firstlast="$((plpos - half)) $plhalf"
         fi
     fi
-    echo "$FIRSTLAST"
+    echo "$firstlast"
 }
 
 mpvc_parse_time() {
@@ -891,10 +938,10 @@ mpvc_handle_socket() {
 
 mpvc_validate_socket() {
     # validate deps
-    if ! quiet command -v "$MPVC_MPV"; then
+    if ! test -x "$MPVC_MPV" && ! quiet command -v "$MPVC_MPV"; then
         die 4 "$PROGNAME: Error: No mpv found. Install to continue."
     fi
-    if ! quiet command -v "$MPVC_SOCAT" && ! quiet command -v nc; then
+    if ! test -x "$MPVC_SOCAT" && ! quiet command -v "$MPVC_SOCAT" && ! quiet command -v nc; then
         die 4 "$PROGNAME: Error: No socat found. Install to continue."
     fi
 
@@ -913,8 +960,7 @@ mpvc_validate_socket() {
 }
 
 mpvc_get_version() {
-    echo "version: $PROGNAME # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
-    echo "originally forked from lwillets/mpvc"
+    echo "version: $PROGNAME # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL (forks lwillets/mpvc)"
     echo
     "$MPVC_MPV" --version
 }
@@ -942,7 +988,7 @@ main() {
     mpvc_config
     arg1=${1:-}
     case "$arg1" in
-    ytquery*) ;;
+    ytquery|ytqueryjson) ;;
     -k|--kill|kill|-K|--killall|killall) ;;
     -c|--crop|crop|-C|--clear|clear|cmd|sockcmd|socklist|--socklist) ;;
     -a|add|append|-A|playnext|--playnext|-n|playnow|--playnow|mpv|--mpv|stash|--stash|--toggle|toggle|-q|--quiet) ;;
