@@ -331,7 +331,7 @@ EOF
 mpvc_web()
 {
     mpvc_web_config
-    echo "# $PROGNAME $PROGVERSION running (beta version: might contain bugs!) SSL=${MPVC_WEB_SSL_ENABLE} $MPVC_WEB_HOST:$MPVC_WEB_SSL_PORT"
+    echo "# $PROGNAME $PROGVERSION running (beta version: might contain bugs!) SSL=${MPVC_WEB_SSL_ENABLE}"
 
     (
         # setup http webroot
@@ -349,7 +349,7 @@ mpvc_web()
 
         # setup https stunnel if requested
         if [ -n "${MPVC_WEB_SSL_ENABLE}" ]; then
-            echo "# $PROGNAME Setup $MPVC_WEB_SSL_CFG"
+            echo "# $PROGNAME Setup $MPVC_WEB_ROOT stunnel: $MPVC_WEB_HOST:$MPVC_WEB_SSL_PORT"
             mpvc_web_stunnel_cfg > "$MPVC_WEB_SSL_CFG"
             if [ ! -e "$MPVC_WEB_SSL_PEM" ]; then
                 MPVC_WEB_SSL_SUBJ="/C=CN/ST=ST/O=$PROGNAME/CN=$PROGNAME-$MPVC_WEB_HOSTNAME"
@@ -369,9 +369,9 @@ mpvc_web()
         fi
 
         if [ -n "${MPVC_WEB_DEV:-}" ]; then
-            echo "# $PROGNAME Setup MPVC_WEB_DEV=$MPVC_WEB_DEV is set"
+            echo "# $PROGNAME Setup development/cli features (MPVC_WEB_DEV=$MPVC_WEB_DEV is set)"
         else
-            echo "# $PROGNAME Setup MPVC_WEB_DEV=${MPVC_WEB_DEV:-} is not set, CLI wont work"
+            echo "# $PROGNAME Setup development/cli features (MPVC_WEB_DEV=${MPVC_WEB_DEV:-} is not set)"
         fi
 
         chmod a-w -R "$MPVC_WEB_ROOT/"
