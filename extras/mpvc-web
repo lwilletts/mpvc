@@ -312,8 +312,9 @@ sslVersion = all
 options = NO_SSLv2
 options = NO_SSLv3
 
-socket = l:TCP_NODELAY=1
-socket = r:TCP_NODELAY=1
+#socket = a:TCP_NODELAY=1
+#socket = l:TCP_NODELAY=1
+#socket = r:TCP_NODELAY=1
 pid=$MPVC_WEB_SSL_PID
 
 [mpvc-web]
