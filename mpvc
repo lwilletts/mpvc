@@ -323,8 +323,10 @@ mpvc_get_playlist_filename() {
     lid="${1:-}"
     fullPath="${2:-}"
     filename=$(mpvc_get "playlist/$lid/filename")
-    if [  "$fullPath" != "fullpath" ]; then filename=$(mpvc_curl_cache_title_clean "$filename"); fi
-    echo "$filename"
+    result=$filename
+    if [ "$fullPath" != "fullpath" ]; then result=$(mpvc_curl_cache_title_clean "$filename"); fi
+    result="${result:-${filename%%*/}}"
+    echo "$result"
 }
 
 # print filenames in the current playlist, mode=numbered disables filenames/URLs to title expansion
