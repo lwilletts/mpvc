@@ -179,7 +179,7 @@ mpvc_web_index()
             <a href="?cmd=mpvc cnext">cnext</a>
         </li>
         <li>
-            $(mpvc --nocolor fullplaylist | awk '{print $1,"#",$0}' | mpvc_web_select_form "mpvc -q play")
+            $(echo "-15\n-10\n-5\n-2\n0\n+2\n+5\n+10\n+15" | mpvc_web_select_form "mpvc -q play")
         </li>
         <li>
             $(mpvc --nocolor chapter-list-nr | awk '{print $1,"#",$0}' | mpvc_web_select_form "mpvc -q cplay")
