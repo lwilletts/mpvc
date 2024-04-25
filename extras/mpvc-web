@@ -276,13 +276,13 @@ mpvc_web_cgi()
 #!/bin/sh
 set -euf
 mpvc_strip_escapes(){ sed '/\x1b\[7m/ { s|\x1b\[7m||; s| |+|; }; s|\x1b\[0m||;'; }
-mpvc() { $MPVC "\$@"; }
 mpvc_out() { echo "Content-Type: text/plain"; echo; $MPVC "\$@"; }
 main()
 {
     if [ -n "\${USER:-}" ]; then
         env -i PATH="/usr/bin:/bin" HOME="\$HOME" TERM="\$TERM" QUERY_STRING="\${QUERY_STRING:-}" "\$0" "\$@"; exit;
     fi
+    case "\${1:-}" in equalizer) shift; $MPVC-equalizer "\$@"; return ;; esac
     case "\${QUERY_STRING:-}" in
         status)            mpvc_out status;;
         playlist)          mpvc_out playlist | mpvc_strip_escapes ;;
@@ -290,7 +290,7 @@ main()
         rawplaylist)       mpvc_out saven | mpvc_strip_escapes ;;
         chapter-list)      mpvc_out chapter-list | mpvc_strip_escapes ;;
         chapter-list-full) mpvc_out chapter-list-full | mpvc_strip_escapes ;;
-        *)            mpvc "\$@" ;;
+        *)                 $MPVC "\$@" ;;
     esac
 }
 main "\$@"
@@ -418,6 +418,7 @@ mpvc_web()
             r=$0;
             gsub("HTTP.*$", "", r);
             gsub("^.*GET \\/\\?cli=mpvc\\+", mpvc" ", r);
+            gsub("^.*GET \\/\\?cli=mpvc-", mpvc" ", r);
 
             if (ENVIRON["MPVC_WEB_DEV"] && match(r, "^"mpvc))
             {
