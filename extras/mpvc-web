@@ -63,11 +63,12 @@ mpvc_web_style()
 mpvc_web_select_form()
 {
     cmd="$1"
+    arg="${2:-}"
 
-    echo '<form action="/" method="get">'
-    echo "$cmd"
-    awk -v cmd="$cmd" '
-        BEGIN  { print "<select name=cli id=cli-select onchange=this.form.submit() style=\"width:100%; height:1.2rem\" >"; printf "<option value=\"\"># Select</option>\n"  }
+    echo "<form action=/ method=get>"
+    echo "<span title="$arg" >$cmd</span>"
+    awk -v cmd="$cmd" -v arg="$arg" '
+        BEGIN  { print "<select name=cli id=cli-select "arg" onchange=this.form.submit() style=\"width:100%; height:1.2rem\" >"; printf "<option value=\"\"># Select</option>\n"  }
         NR > 0 { gsub("\"",""); print "<option value=\""cmd" "$0"\">"$0"</option>" }
         END    { print "</select>"}
     '
@@ -127,10 +128,10 @@ mpvc_web_index()
         <!-- enable this optionally: only for dev/testing -->
         <form action="/" method="get" >
             mpvc cli
-            <input type="text" id="cli" name="cli" autocomplete="on" placeholder="mpvc status ${MPVC_WEB_DEV:-(off)}" title="mpvc cli" onkeydown="if (event.keyCode == 13) { this.form.submit(); return false; }" style="height:0.8rem">
+            <input type="text" id="cli" name="cli" accesskey="c" autocomplete="on" placeholder="mpvc status ${MPVC_WEB_DEV:-(off)}" title="mpvc cli" onkeydown="if (event.keyCode == 13) { this.form.submit(); return false; }" style="height:0.8rem">
         </form>
         <li>
-            $(mpvc stash list | awk 'NR>1{print $NF}' | mpvc_web_select_form "mpvc -q stash apply")
+            $(mpvc stash list | awk 'NR>1{print $NF}' | mpvc_web_select_form "mpvc -q stash apply" "accesskey=a")
         </li>
         </li>
         <li>
@@ -179,19 +180,19 @@ mpvc_web_index()
             <a href="?cmd=mpvc cnext">cnext</a>
         </li>
         <li>
-            $(echo "-15\n-10\n-5\n-2\n0\n+2\n+5\n+10\n+15" | mpvc_web_select_form "mpvc -q play")
+            $(echo "-15\n-10\n-5\n-2\n0\n+2\n+5\n+10\n+15" | mpvc_web_select_form "mpvc -q play" "accesskey=p")
         </li>
         <li>
             $(mpvc --nocolor chapter-list-nr | awk '{print $1,"#",$0}' | mpvc_web_select_form "mpvc -q cplay")
         </li>
         <li>
-            $(echo "-30\n-20\n-10\n-5\n0\n+5\n+10\n+20\n+30" | mpvc_web_select_form "mpvc -q vol")
+            $(echo "-30\n-20\n-10\n-5\n0\n+5\n+10\n+20\n+30" | mpvc_web_select_form "mpvc -q vol" "accesskey=v")
         </li>
         <li>
-            $(echo "-120\n-60\n-25\n+25\n+60\n+120" | mpvc_web_select_form "mpvc -q seek")
+            $(echo "-120\n-60\n-25\n+25\n+60\n+120" | mpvc_web_select_form "mpvc -q seek" "accesskey=s")
         </li>
         <li>
-            $(mpvc-equalizer preset | awk '/ # preset: / {print $NF}' | mpvc_web_select_form "mpvc-equalizer load")
+            $(mpvc-equalizer preset | awk '/ # preset: / {print $NF}' | mpvc_web_select_form "mpvc-equalizer load" "accesskey=e")
         </li>
         <li>
         mpvc theme
