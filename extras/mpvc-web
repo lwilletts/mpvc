@@ -116,7 +116,7 @@ mpvc_web_index()
 
     <body>
         [
-            <a href="." name="mpvc-web">$PROGNAME</a>
+            <a href="." name="mpvc-web" accesskey="m">$PROGNAME</a>
             <a href="#status">#stat</a>
             <a href="#mpvc-web-playlist">#list</a>
             <a href="#prompt">#prompt</a>
@@ -226,6 +226,7 @@ mpvc_web_index()
         </div>
         [ <a href="#mpvc-web-prompt" name="mpvc-web-prompt">Prompt</a> ] <hr>
         🎧 <a href="$PROGURL">$PROGNAME</a> $PROGVERSION, mpvc-tui for the web
+        🎧 <a href="javascript:alert('Accesskeys shortcuts:\n\n- h: this help\n- a: select stash\n- e: select equalizer\n- m: refresh\n- p: select play\n- s: select seek\n- v: select volume\n\n*tips: for more, Read The Source Luke!')" accesskey="h">#help</a>
     </body>
 </html>
 EOF
