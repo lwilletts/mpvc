@@ -45,6 +45,8 @@ mpvc_web_defaults()
     MPVC_WEB_SHORTCUT_PLAY=${MPVC_WEB_SHORTCUT_PLAY:-accesskey=p}
     MPVC_WEB_SHORTCUT_SEEK=${MPVC_WEB_SHORTCUT_SEEK:-accesskey=s}
     MPVC_WEB_SHORTCUT_VOL=${MPVC_WEB_SHORTCUT_VOL:-accesskey=v}
+    MPVC_WEB_SHORTCUT_KILL=${MPVC_WEB_SHORTCUT_KILL:-accesskey=k}
+    MPVC_WEB_SHORTCUT_TOGGLE=${MPVC_WEB_SHORTCUT_TOGGLE:-accesskey=t}
     MPVC_WEB_SHORTCUT_EQUALIZER=${MPVC_WEB_SHORTCUT_EQUALIZER:-accesskey=e}
     MPVC_WEB_SHORTCUT_HELP=${MPVC_WEB_SHORTCUT_HELP:-accesskey=h}
 
@@ -155,9 +157,9 @@ mpvc_web_index()
         <li>
             mpvc
             <a href="?cmd=mpvc status">status</a>
-            <a href="?cmd=mpvc toggle">toggle</a>
+            <a href="?cmd=mpvc toggle" ${MPVC_WEB_SHORTCUT_TOGGLE}>toggle</a>
             <a href="?cmd=mpvc mpv">mpv</a>
-            <a href="?cmd=mpvc kill">kill</a>
+            <a href="?cmd=mpvc kill" ${MPVC_WEB_SHORTCUT_KILL}>kill</a>
             <a href="?cmd=mpvc clear">clear</a>
         </li>
         <li>
@@ -244,7 +246,7 @@ mpvc_web_index()
         </div>
         [ <a href="#mpvc-web-prompt" name="mpvc-web-prompt">Prompt</a> ] <hr>
         🎧 <a href="$PROGURL">$PROGNAME</a> $PROGVERSION, mpvc-tui for the web
-        🎧 <a href="javascript:alert('Accesskeys shortcuts:\n\n- h: this help\n- a: select stash\n- e: select equalizer\n- m: refresh\n- p: select play\n- s: select seek\n- v: select volume\n\n*For more, Read The Source Luke!')" ${MPVC_WEB_SHORTCUT_HELP}>#help</a>
+        🎧 <a href="javascript:alert('Accesskeys shortcuts:\n\n- h: this help\n- a: select stash\n- e: select equalizer\n- m: refresh\n- k: kill\n- p: select play\n- s: select seek\n- t: select toggle\n- v: select volume\n\n*For more, Read The Source Luke!')" ${MPVC_WEB_SHORTCUT_HELP}>#help</a>
     </body>
 </html>
 EOF
