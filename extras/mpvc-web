@@ -37,6 +37,15 @@ mpvc_web_defaults()
     MPVC_WEB_SSL_VERIFY=${MPVC_WEB_SSL_VERIFY:-0}
     MPVC_WEB_ARCHIVE_ENABLE=${MPVC_WEB_ARCHIVE_ENABLE:-}
 
+    # accesskey keyboard shortcuts
+    MPVC_WEB_SHORTCUT_REFRESH=${MPVC_WEB_SHORTCUT_REFRESH:-accesskey=m}
+    MPVC_WEB_SHORTCUT_CLI=${MPVC_WEB_SHORTCUT_CLI:-accesskey=i}
+    MPVC_WEB_SHORTCUT_APPLY=${MPVC_WEB_SHORTCUT_APPLY:-accesskey=a}
+    MPVC_WEB_SHORTCUT_PLAY=${MPVC_WEB_SHORTCUT_PLAY:-accesskey=p}
+    MPVC_WEB_SHORTCUT_SEEK=${MPVC_WEB_SHORTCUT_SEEK:-accesskey=s}
+    MPVC_WEB_SHORTCUT_VOL=${MPVC_WEB_SHORTCUT_VOL:-accesskey=v}
+    MPVC_WEB_SHORTCUT_HELP=${MPVC_WEB_SHORTCUT_HELP:-accesskey=h}
+
     MPVC_CGI="$MPVC_WEB_ROOT/cgi-bin/mpvc"
 }
 
@@ -116,7 +125,7 @@ mpvc_web_index()
 
     <body>
         [
-            <a href="." name="mpvc-web" accesskey="m">$PROGNAME</a>
+            <a href="." name="mpvc-web" $MPVC_WEB_SHORTCUT_REFRESH>$PROGNAME</a>
             <a href="#status">#stat</a>
             <a href="#mpvc-web-playlist">#list</a>
             <a href="#prompt">#prompt</a>
@@ -128,10 +137,10 @@ mpvc_web_index()
         <!-- enable this optionally: only for dev/testing -->
         <form action="/" method="get" >
             mpvc cli
-            <input type="text" id="cli" name="cli" accesskey="c" autocomplete="on" placeholder="mpvc status ${MPVC_WEB_DEV:-(off)}" title="mpvc cli" onkeydown="if (event.keyCode == 13) { this.form.submit(); return false; }" style="height:0.8rem">
+            <input type="text" id="cli" name="cli" ${MPVC_WEB_SHORTCUT_CLI} autocomplete="on" placeholder="mpvc status ${MPVC_WEB_DEV:-(off)}" title="mpvc cli" onkeydown="if (event.keyCode == 13) { this.form.submit(); return false; }" style="height:0.8rem">
         </form>
         <li>
-            $(mpvc stash list | awk 'NR>1{print $NF}' | mpvc_web_select_form "mpvc -q stash apply" "accesskey=a")
+            $(mpvc stash list | awk 'NR>1{print $NF}' | mpvc_web_select_form "mpvc -q stash apply" "${MPVC_WEB_SHORTCUT_APPLY}")
         </li>
         </li>
         <li>
@@ -180,19 +189,19 @@ mpvc_web_index()
             <a href="?cmd=mpvc cnext">cnext</a>
         </li>
         <li>
-            $(echo "-15\n-10\n-5\n-2\n0\n+2\n+5\n+10\n+15" | mpvc_web_select_form "mpvc -q play" "accesskey=p")
+            $(echo "-15\n-10\n-5\n-2\n0\n+2\n+5\n+10\n+15" | mpvc_web_select_form "mpvc -q play" "${MPVC_WEB_SHORTCUT_PLAY}")
         </li>
         <li>
             $(mpvc --nocolor chapter-list-nr | awk '{print $1,"#",$0}' | mpvc_web_select_form "mpvc -q cplay")
         </li>
         <li>
-            $(echo "-30\n-20\n-10\n-5\n0\n+5\n+10\n+20\n+30" | mpvc_web_select_form "mpvc -q vol" "accesskey=v")
+            $(echo "-30\n-20\n-10\n-5\n0\n+5\n+10\n+20\n+30" | mpvc_web_select_form "mpvc -q vol" "${MPVC_WEB_SHORTCUT_VOL}")
         </li>
         <li>
-            $(echo "-120\n-60\n-25\n+25\n+60\n+120" | mpvc_web_select_form "mpvc -q seek" "accesskey=s")
+            $(echo "-120\n-60\n-25\n+25\n+60\n+120" | mpvc_web_select_form "mpvc -q seek" "${MPVC_WEB_SHORTCUT_SEEK}")
         </li>
         <li>
-            $(mpvc-equalizer preset | awk '/ # preset: / {print $NF}' | mpvc_web_select_form "mpvc-equalizer load" "accesskey=e")
+            $(mpvc-equalizer preset | awk '/ # preset: / {print $NF}' | mpvc_web_select_form "mpvc-equalizer load" "${MPVC_WEB_SHORTCUT_EQUALIZER}")
         </li>
         <li>
         mpvc theme
@@ -226,7 +235,7 @@ mpvc_web_index()
         </div>
         [ <a href="#mpvc-web-prompt" name="mpvc-web-prompt">Prompt</a> ] <hr>
         🎧 <a href="$PROGURL">$PROGNAME</a> $PROGVERSION, mpvc-tui for the web
-        🎧 <a href="javascript:alert('Accesskeys shortcuts:\n\n- h: this help\n- a: select stash\n- e: select equalizer\n- m: refresh\n- p: select play\n- s: select seek\n- v: select volume\n\n*tips: for more, Read The Source Luke!')" accesskey="h">#help</a>
+        🎧 <a href="javascript:alert('Accesskeys shortcuts:\n\n- h: this help\n- a: select stash\n- e: select equalizer\n- m: refresh\n- p: select play\n- s: select seek\n- v: select volume\n\n*For more, Read The Source Luke!')" "${MPVC_WEB_SHORTCUT_HELP}">#help</a>
     </body>
 </html>
 EOF
