@@ -265,7 +265,7 @@ mpvctui_notify()
             if (tn - otn > 1)
                 system(cmd_notify);
             otn=tn
-            print tn, $0, "notify"
+            if (cmd_notify != "false") print t, $0, "notify"
         }
 
         /playback-restart|metadata-update/ {
@@ -273,7 +273,7 @@ mpvctui_notify()
             if (t - ot > 1)
                 system(cmd_scrobble);
             ot=t
-            print t, $0, "scrobble"
+            if (cmd_scrobble != "false") print t, $0, "scrobble"
         }
     '
 }
@@ -282,7 +282,7 @@ mpvctui_notify_loop_cli()
 {
     scrobler_cli='echo $(date +"T%H:%M") $(mpvc -f "[%status%] #%position%/%playlistlength% %time% %artist% - %title% #%chapter%")'
     notify_cli='false'
-    mpvctui_notify_loop "${1:-$scrobler_cli}" "${2:-$notify_cli}" | grep -v event
+    mpvctui_notify_loop "${1:-$scrobler_cli}" "${2:-$notify_cli}"
 }
 
 mpvctui_notify_loop()
