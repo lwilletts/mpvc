@@ -258,14 +258,14 @@ mpvctui_notify()
     cmd_scrobble='echo $(mpvc expand-text "$(date +%s)\t\\${=duration}\t\\${path}\t\\${media-title}") >> '"$MPVC_SCROBBLER"
 
     awk -v cmd_scrobble="${1:-$cmd_scrobble}" -v cmd_notify="${2:-$cmd_notify}" '
-        BEGIN { ot = otn = systime(); }
+        BEGIN { ot = otn = systime(); do_print = cmd_notify != "false" && cmd_scrobble != "false"; }
 
         /playback-restart|chapter-change|metadata-update/ {
             tn=systime()
             if (tn - otn > 1)
                 system(cmd_notify);
             otn=tn
-            if (cmd_notify != "false") print tn, $0, "notify"
+            if (do_print) print tn, $0, "notify"
         }
 
         /playback-restart|metadata-update/ {
@@ -273,7 +273,7 @@ mpvctui_notify()
             if (t - ot > 1)
                 system(cmd_scrobble);
             ot=t
-            if (cmd_scrobble != "false") print t, $0, "scrobble"
+            if (do_print) print t, $0, "scrobble"
         }
     '
 }
