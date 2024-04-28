@@ -265,7 +265,7 @@ mpvctui_notify()
             if (tn - otn > 1)
                 system(cmd_notify);
             otn=tn
-            if (cmd_notify != "false") print t, $0, "notify"
+            if (cmd_notify != "false") print tn, $0, "notify"
         }
 
         /playback-restart|metadata-update/ {
