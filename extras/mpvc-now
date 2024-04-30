@@ -6,6 +6,11 @@
 # @url github.com/gmt4/mpvc
 #
 
+PROGNAME=${0##*/}
+PROGVERSION="v1.0"
+PROGAUTHOR=gmt4
+PROGURL="https://github.com/gmt4/mpvc"
+
 set -euf
 
 mpvcnow_geturls()
@@ -26,7 +31,7 @@ mpvcnow_getvids()
     done
 }
 
-main()
+mpvcnow()
 {
     date=$(date -Idate)
     now="https://gmt4.github.io/mpvc/now/"
@@ -36,6 +41,20 @@ main()
     echo "$now?t=$date$vids"
     echo
     bash -c "paste <(echo \"$urls\") <(mpvc -I)"
+}
+
+
+usage()
+{
+    echo "usage: $PROGNAME args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
+    exit;
+}
+
+main()
+{
+    [ "${1:-}" = "-h" ] && usage
+
+    mpvcnow "$@"
 }
 
 main "$@"
