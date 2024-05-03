@@ -7,11 +7,14 @@
 #
 
 PROGNAME=${0##*/}
+PROGDIR=${0%/*}
 PROGVERSION="v1.5"
 PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
 
 set -euf
+
+mpvc() { "$PROGDIR/mpvc" "$@"; } # mpvc-web?
 
 mpvcnow_geturls()
 {
@@ -21,9 +24,7 @@ mpvcnow_geturls()
 
 mpvcnow_getvids()
 {
-    vids=$(
-        echo "$@" | awk '/youtube|yewtu/ {gsub("^.*/",""); gsub(".*=",""); print }'
-    )
+    vids=$( echo "$@" | awk '/youtube|yewtu/ {gsub("^.*/",""); gsub(".*=",""); print }' )
 
     for f in $vids;
     do
@@ -43,18 +44,26 @@ mpvcnow()
     bash -c "paste <(echo \"$urls\") <(mpvc -I)"
 }
 
+mpvcnow1()
+{
+    mpvcnow "$@" | head -n1
+}
 
 usage()
 {
-    echo "usage: $PROGNAME args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
+    echo "usage: $PROGNAME [now] # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
     exit;
 }
 
 main()
 {
-    [ "${1:-}" = "-h" ] && usage
+    [ -z "${1:-}" ] && usage
 
-    mpvcnow "$@"
+    case "${1:-}" in
+    now)  mpvcnow "$@";;
+    now1) mpvcnow1 "$@";;
+    *) usage;;
+    esac
 }
 
 main "$@"
