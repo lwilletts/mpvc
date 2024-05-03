@@ -502,7 +502,7 @@ mpvc_stash() {
                 esac
             done
             ;;
-        current)
+        current|curr)
             echo "# $PROGNAME stash $MPVC_STASH_DIR/$1 # $PROGURL @version $PROGVERSION"
             echo "mpvc mpv"
             echo "mpvc wait"
