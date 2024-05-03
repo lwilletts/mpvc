@@ -130,11 +130,12 @@ mpvc_check_requirements()
 mpvc_check_update()
 {
     master=$(curl -fsSL "$PROGURL/raw/master/extras/mpvc-installer" |
-        sed -n '/^PROGVERSION/ { s/"//g; s/PROGVERSION=//p }')
+        awk '/^PROGVERSION=/ { gsub("PROGVERSION=",""); gsub("\\x22",""); print}'
+    )
 
     if [ "$PROGVERSION" = "$master" ]
     then
-        echo "$PROGNAME: Up-to-date, no new version > $PROGVERSION available at $PROGURL"
+        echo "$PROGNAME: Not-Found new version $master available at $PROGURL"
     else
         echo "$PROGNAME: Found new version $master available at $PROGURL"
     fi
