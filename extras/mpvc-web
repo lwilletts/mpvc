@@ -138,7 +138,7 @@ mpvc_web_index()
             <a href="." name="mpvc-web" ${MPVC_WEB_SHORTCUT_REFRESH}>$PROGNAME</a>
             <a href="#status">#stat</a>
             <a href="#mpvc-web-playlist">#list</a>
-            <a href="#prompt">#prompt</a>
+            <a href="https://gmt4.github.io/mpvc/now/">#now</a>
             $([ -n "$MPVC_WEB_ARCHIVE_ENABLE" ] && echo '<a href="ytdl-archive" >#arch</a>'; )
         ]
         <hr>
@@ -243,7 +243,7 @@ mpvc_web_index()
         }
         </script>
         </div>
-        [ <a href="#mpvc-web-prompt" name="mpvc-web-prompt">Prompt</a> ] <hr>
+        <hr>
         🎧 <a href="$PROGURL">$PROGNAME</a> $PROGVERSION, mpvc-tui for the web
         🎧 <a href="javascript:alert('$PROGNAME accesskeys shortcuts:\n\n- h: this help\n- a: select stash\n- e: select equalizer\n- m: refresh\n- k: select kill\n- p: select play\n- s: select seek\n- t: select toggle\n- v: select volume\n\n*For more, Read The Source Luke!')" ${MPVC_WEB_SHORTCUT_HELP}>#help</a>
     </body>
@@ -303,7 +303,7 @@ main()
     if [ -n "\${USER:-}" ]; then
         env -i PATH="/usr/bin:/bin" HOME="\$HOME" TERM="\$TERM" QUERY_STRING="\${QUERY_STRING:-}" "\$0" "\$@"; exit;
     fi
-    case "\${1:-}" in equalizer) shift; $MPVC-equalizer "\$@"; return ;; esac
+    cmd="\${1:-}"; case "\$cmd" in equalizer|fzf|now) shift; $MPVC-\$cmd "\$@"; return ;; esac
     case "\${QUERY_STRING:-}" in
         status|playlist)   mpvc_out "\${QUERY_STRING}" | mpvc_strip_escapes ;;
         fullplaylist)      mpvc_out fullplaylist | mpvc_strip_escapes ;;
@@ -446,6 +446,9 @@ mpvc_web()
                 gsub("\\+", " ", r);
                 gsub("%2B", "+", r);
                 gsub("%23", "#", r);
+                gsub("%2F", "/",r);
+                gsub("%3A", ":",r);
+
                 system(r); # XXX
             }
         }
