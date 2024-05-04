@@ -229,7 +229,7 @@ mpvc_web_index()
           <a href="#mpvc-web-playlist" name="mpvc-web-playlist">Playlist</a>
           <a href="#mpvc-web-fullplaylist" name="mpvc-web-fullplaylist">full</a>
           <a href="#mpvc-web-rawplaylist" name="mpvc-web-rawplaylist">raw</a>
-          <a href="#mpvc-web-chapter-list-full" name="mpvc-web-chapter-list-full">chapters</a>
+          <a href="#mpvc-web-chapter-list-nr" name="mpvc-web-chapter-list-nr">chapters</a>
           <a href="javascript:window.location.reload()" >load</a>
         ] <hr>
         <div style="display:flex">
@@ -240,6 +240,7 @@ mpvc_web_index()
         case '#mpvc-web-playlist':           { pl.src='/cgi-bin/mpvc?playlist'; break; }
         case '#mpvc-web-fullplaylist':       { pl.src='/cgi-bin/mpvc?fullplaylist'; break; }
         case '#mpvc-web-rawplaylist':        { pl.src='/cgi-bin/mpvc?rawplaylist'; break; }
+        case '#mpvc-web-chapter-list-nr':    { pl.src='/cgi-bin/mpvc?chapter-list-nr'; break; }
         case '#mpvc-web-chapter-list-full':  { pl.src='/cgi-bin/mpvc?chapter-list-full'; break; }
         }
         </script>
@@ -310,6 +311,7 @@ main()
         fullplaylist)      mpvc_out fullplaylist | mpvc_strip_escapes ;;
         rawplaylist)       mpvc_out saven | mpvc_strip_escapes ;;
         chapter-list)      mpvc_out chapter-list | mpvc_strip_escapes ;;
+        chapter-list-nr)   mpvc_out chapter-list-nr | mpvc_strip_escapes ;;
         chapter-list-full) mpvc_out chapter-list-full | mpvc_strip_escapes ;;
         *)                 $MPVC "\$@" ;;
     esac
