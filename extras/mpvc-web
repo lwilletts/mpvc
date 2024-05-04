@@ -245,7 +245,7 @@ mpvc_web_index()
         </script>
         </div>
         <hr>
-        <a href="$PROGURL">$PROGNAME</a> $(mpvc-installer check-update | awk '{ print "<a href="$PROGURL" style=color:"(match($0,"Not-Found")?"none":"red")">"$5"</a>"; }'), mpvc-tui for the web
+        <a href="$PROGURL">$PROGNAME</a> $(mpvc-installer check-update | awk -v progurl=$PROGURL '{ print "<a href="progurl" style=color:"(match($0,"Not-Found")?"none":"red")">"$5"</a>"; }'), mpvc-tui for the web
         <a href="javascript:alert('$PROGNAME accesskeys shortcuts:\n\n- h: this help\n- a: select stash\n- e: select equalizer\n- m: refresh\n- k: select kill\n- p: select play\n- s: select seek\n- t: select toggle\n- v: select volume\n\n*For more, Read The Source Luke!')" ${MPVC_WEB_SHORTCUT_HELP}>/h</a>
     </body>
 </html>
