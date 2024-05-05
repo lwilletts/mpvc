@@ -465,7 +465,7 @@ mpvc_stash() {
                 cat "$MPVC_STASH_DIR/$1";
             fi
             ;;
-        edit) ${EDITOR:-vi} "$MPVC_STASH_DIR/$1" ;;
+        edit|ed) ${EDITOR:-vi} "$MPVC_STASH_DIR/$1" ;;
         drop) rm -i "$MPVC_STASH_DIR/$1" ;;
         push)
             stashid="${1:-}"
