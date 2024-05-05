@@ -90,6 +90,7 @@ Logbook Entries
     <li> <a href="#logbook-20240214">#20240214 On MPRIS support</a></li>
     <li> <a href="#logbook-20240301">#20240301 On support UNIXes besides GNU/Linux: BSD and MacOS</a></li>
     <li> <a href="#logbook-20240405">#20240405 Introducing mpvc-chapter: helper managing chapters, 5 Apr 2024</a></li>
+    <li> <a href="#logbook-20240505">#20240505 Introducing mpvc-osd: interfacing mpvc with a 4x20 USB LCD, 5 May 2024</a></li>
 </ul>
 
 <hr />
@@ -636,12 +637,22 @@ PS: Although the title says "Introducing mpvc-chapter", it has been present for 
 </p>
 </p>
 
+<h3 id="logbook-20240505">Introducing mpvc-osd: interfacing mpvc with a 4x20 USB LCD, 5 May 2024</h3>
+<p>
+While mpvc was playing `The Number 4` from Khruangbin's EP `The Infamous Bill` I decided I'd be fun to interface mpvc with a USB LCD on the Raspberry PI that acts as a jukebox, so each time a track starts I'd output what's playing now for some seconds, and then poweroff the LCD. Turned out nice and easy by using <code>mpvc-tui -S</code> scrobbling code, and masaging the output to pipe it to the USB LCD for presentation. For the record the output from <code>mpvc-tui</code> is:
+<pre>
+    mpvc-tui -S 'echo $(date +"T%H:%M") $(mpvc -f "[%status%] #%position%/%playlistlength% %time% %artist% - %title% - %path%")' 'false'
+</pre>
+And this is how it looks:
+<img src="assets/mpvc-osd-usblcd.jpg" alt="mpvc-osd usblcd" width="95%" />
+</p>
+
 <!-- SOF -->
 
 <hr/>
 <p>
 <span>
-    <em>Last-Modified: Friday, 5 April 2024 by <a href="https://gmt4.github.io">gmt4</a></em>
+    <em>Last-Modified: Sunday, 5 May 2024 by <a href="https://gmt4.github.io">gmt4</a></em>
 </span>
 <span style="float: right;">
     <em>Powered by #HTML 🧡 💚 💙 </em>
