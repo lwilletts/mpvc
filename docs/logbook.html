@@ -639,7 +639,7 @@ PS: Although the title says "Introducing mpvc-chapter", it has been present for 
 
 <h3 id="logbook-20240505">Introducing mpvc-osd: interfacing mpvc with a 4x20 USB LCD, 5 May 2024</h3>
 <p>
-While mpvc was playing `The Number 4` from Khruangbin's EP `The Infamous Bill` I decided I'd be fun to interface mpvc with a USB LCD on the Raspberry PI that acts as a jukebox, so each time a track starts I'd output what's playing now for some seconds, and then poweroff the LCD. Turned out nice and easy by using <code>mpvc-tui -S</code> scrobbling code, and masaging the output to pipe it to the USB LCD for presentation. For the record the output from <code>mpvc-tui</code> is:
+While mpvc was playing `The Number 4` from Khruangbin's EP `The Infamous Bill` decided it would be fun to interface mpvc with a USB LCD on the Raspberry PI that acts as a jukebox, so each time a track starts output what's playing now for some seconds, and then poweroff the LCD. Turned out nice and easy by using <code>mpvc-tui -S</code> scrobbling code, and masaging the output to pipe it to the USB LCD for presentation. For the record the output from <code>mpvc-tui</code> is:
 <pre>
     mpvc-tui -S 'echo $(date +"T%H:%M") $(mpvc -f "[%status%] #%position%/%playlistlength% %time% %artist% - %title% - %path%")' 'false'
 </pre>
