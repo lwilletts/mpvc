@@ -84,6 +84,7 @@ Recommended extras:
 
 - `curl`
 - `fzf`
+- `jq`
 - `notify-send`
 
 Debian (and derivatives such as Ubuntu):
