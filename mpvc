@@ -810,6 +810,25 @@ mpvc_chapter_list()
         QUIETFLAG=true
 }
 
+# use mpv ab-loop to loop a chapter
+mpvc_chapter_cloop()
+{
+    chapter=""
+    abloopa="no"
+    abloopb="no"
+    cpos=$(mpvc_get chapter)
+    if [ "$cpos" = "null" ]; then return; fi
+    if [ "$(mpvc_get ab-loop-a)" = "no" -a "$cpos" -ge 0 ]; then
+        chapterlist="$(mpvc getr chapter-list)"
+        chapter="$(echo "$chapterlist" | jq ".data | .[$cpos + 0] | .title")"
+        abloopa="$(echo "$chapterlist" | jq ".data | .[$cpos + 0] | .time")"
+        abloopb="$(echo "$chapterlist" | jq ".data | .[$cpos + 1] | .time")"
+        if [ "$abloopb" = "null" ]; then abloopb="$(mpvc_get duration)"; fi
+    fi
+    mpvc_set ab-loop-a "$abloopa"
+    mpvc_set ab-loop-b "$abloopb"
+}
+
 mpvc_chapter_replay() { mpvc_chapter_set "$(mpvc_get chapter)"; }
 mpvc_chapter_next()   { mpvc_chapter_set $(( ( $(mpvc_get chapter) + 1 ) % $(mpvc_get chapter-list/count) )); }
 mpvc_chapter_prev()   { mpvc_chapter_set $(( ( $(mpvc_get chapter) - 1 ) % $(mpvc_get chapter-list/count) )); }
@@ -1100,6 +1119,8 @@ main() {
             cplay|--chapter-play|chapter-play)            shift; mpvc_chapter_set "${1:-}" ;;
             cplayrand|--cplayrand)                        shift; mpvc_chapter_play_random "$@" ;;
             creplay|--chapter-replay|chapter-replay)      mpvc_chapter_replay ;;
+            cloop|--chapter-loop|chapter-loop)            mpvc_chapter_cloop ;;
+
             clist|--chapter-list|chapter-list)            mpvc_chapter_list "short";;
             clistf|--chapter-list-full|chapter-list-full) mpvc_chapter_list "full";;
             clistn|--chapter-list-nr|chapter-list-nr)     mpvc_chapter_list "numbered";;
