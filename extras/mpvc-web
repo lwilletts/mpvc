@@ -398,7 +398,7 @@ mpvc_web()
         # setup streamable mpvc archive if requested
         if [ -n "${MPVC_WEB_ARCHIVE_ENABLE}" ]; then
             echo "# $PROGNAME Setup $MPVC_WEB_ROOT/ytdl-archive/"
-            ln -f -s $HOME/.config/mpvc/ytdl-archive "$MPVC_WEB_ROOT/"
+            ln -f -s "$HOME/.config/mpvc/ytdl-archive/" "$MPVC_WEB_ROOT/"
         fi
 
         if [ -n "${MPVC_WEB_DEV:-}" ]; then
@@ -460,6 +460,7 @@ mpvc_web()
                 gsub("%2F", "/",r);
                 gsub("%3A", ":",r);
 
+                #print(r);
                 system(r); # XXX
             }
         }
