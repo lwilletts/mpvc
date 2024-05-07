@@ -44,6 +44,11 @@ mpvcfzf_config()
     fi
 }
 
+mpvcfzf_isearch_once()
+{
+    mpvcfzf_isearch "$@" | awk 'NR==2 {sub(" +", " # "); print}'
+}
+
 mpvcfzf_isearch()
 {
     url_host="${url_host:-yewtu.be}"
@@ -323,7 +328,7 @@ mpvcfzf_version()
     echo "usage: $PROGNAME -[optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
 }
 
-optflags="01ab:cCd:efFg:G:hk:K:n:s:p:P:o:Or:lxv"
+optflags="01ab:cCd:efFg:G:hk:K:n:s:p:P:o:Or:lL:xv"
 mpvcfzf_usage()
 {
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
@@ -368,8 +373,9 @@ main()
         K) mpvcfzf_ddg "$OPTARG";;
         h) mpvcfzf_usage ;;
         l) mpvcfzf_local ;;
+        L) mpvcfzf_isearch_once "$OPTARG" | mpvcfzf_awk1 | mpvc load ;; # lucky
         n) mpvcfzf_nextvideo "$OPTARG" ;;
-        o) mpvcfzf_isearch "$OPTARG" | awk 'NR==2 {print}' ;;
+        o) mpvcfzf_isearch_once "$OPTARG" ;;
         O) mpvcfzf_icache_output_dir ;;
         r) mpvcfzf_fetch_remove "$OPTARG" ;;
         p) mpvcfzf_iplay "$OPTARG" | mpvc load ;;
