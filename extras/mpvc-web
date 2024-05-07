@@ -25,6 +25,9 @@ mpvc_web_defaults()
 {
     MPVC=$(command -v mpvc)
 
+    XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}
+    MPVC_CONFIG="${MPVC_CONFIG:-$XDG_CONFIG_HOME/mpvc/mpvc.conf}"
+
     MPVC_WEB_HOST=${MPVC_WEB_HOST:-localhost}
     MPVC_WEB_PORT=${MPVC_WEB_PORT:-8000}
     MPVC_WEB_ROOT=${MPVC_WEB_ROOT:-/tmp/mpvc-web/root}
@@ -51,6 +54,11 @@ mpvc_web_defaults()
     MPVC_WEB_SHORTCUT_HELP=${MPVC_WEB_SHORTCUT_HELP:-accesskey=h}
 
     MPVC_CGI="$MPVC_WEB_ROOT/cgi-bin/mpvc"
+
+    # if present load user config
+    if [ -r "$MPVC_CONFIG" ]; then
+        . "$MPVC_CONFIG"
+    fi
 }
 
 mpvc_web_config()
