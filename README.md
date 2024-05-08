@@ -67,36 +67,15 @@ To install mpvc:
 
 ### Dependencies
 
-Required:
+- Required:  `mpv`,  `socat`: is recommended due to the differing implementations of `netcat` across UNIXes, and, `awk`: a sane version of `awk` is recommended
+- Recommended extras: `curl` `fzf` `jq` `notify-send`
 
-- `mpv`
-- `socat`: is recommended due to the differing implementations of `netcat` across UNIXes.
-- `awk`: a sane version of `awk` is recommended
+Check for missing dependencies using `mpvc-installer check-reqs`:
 
-Recommended extras:
-
-- `curl`
-- `fzf`
-- `jq`
-- `notify-send`
-
-Debian (and derivatives such as Ubuntu):
-
-    apt install mpv gawk curl socat fzf rlwrap jq libnotify-bin
-     
-Arch (and derivatives):
-
-    pacman -Sy mpv gawk curl socat fzf rlwrap jq libnotify
-
-BSD (and pkg(1) based derivatives):
-
-    pkg install -y mpv gawk curl socat fzf rlwrap jq libnotify
-
-MacOS (and brew(1) based derivatives see [FAQ](../../wiki/FAQ)):
-
-    brew install gawk socat fzf rlwrap jq gnu-sed yt-dlp # mpv curl libnotify
-
-Check for missing dependencies using `mpvc-installer check-reqs`
+- Debian (and derivatives such as Ubuntu): `apt install mpv gawk curl socat fzf rlwrap jq libnotify-bin`
+- Arch (and derivatives): `pacman -Sy mpv gawk curl socat fzf rlwrap jq libnotify`
+- BSD (and pkg(1) based derivatives): `pkg install -y mpv gawk curl socat fzf rlwrap jq libnotify`
+- MacOS (and brew(1) based derivatives see [FAQ](../../wiki/FAQ)): `brew install gawk socat fzf rlwrap jq gnu-sed yt-dlp # mpv curl libnotify`
 
 ## Screenshots
 
@@ -118,6 +97,8 @@ mpvc-tui -T: running the mpvc TUI
      
 ## Usage
 
+### mpvc
+
 ```console
 usage: mpvc opts # @version v1.5 (c) gmt4 https://github.com/gmt4/mpvc
     -a | --add              : Add media to playlist (see --load for stdin).
@@ -131,8 +112,37 @@ usage: mpvc opts # @version v1.5 (c) gmt4 https://github.com/gmt4/mpvc
     -v | --vol              : Increase/decrease volume relative to current volume.
     -h | --help             : Prints the short help.
     -H | --long-help        : Prints the long help.
-
 *tips: If unsure about where to begin, have a look at https://gmt4.github.io/mpvc
+```
+
+### mpvc-tui
+
+```console
+usage: mpvc-tui -[d:hHktTm:nsSP:x] args # @version v1.5 (c) gmt4 https://github.com/gmt4/mpvc
+  -d : Set the WD to the media directory given as argument
+  -n : Desktop notification using notify on mpvc events (notify-send*)
+  -s : Suggest a random media to play based on previous media played
+  -t : Starts the mpvc-tui to manage the mpv playlist (rlwrap*)
+  -T : Combo that starts mpvc-tui -t -n, and adds media given as args
+  -x : Starts mpvc-tui in a new xterm (config $MPVC_TERM) [combine -x with d:hHktTm:nsSP:x]
+*tips: If unsure about where to begin, start with: mpvc-tui -d /path/to/media/ -T
+````
+
+### mpvc-fzf
+
+```console
+usage: mpvc-fzf -[01ab:cCd:efFg:G:hk:K:n:s:p:P:o:Or:lL:xv] args # @version v1.5 (c) gmt4 https://github.com/gmt4/mpvc
+  -b : Browse the provided ytdl-archive URL with fzf (fzf*)
+  -c : Start fzf to manage the current mpv chapterlist (fzf*)
+  -d : Set the WD to the media directory given as argument
+  -f : Start fzf to manage the current mpv playist (fzf*)
+  -g : Fetch the given YT URL, and store locally (fzf*)
+  -G : Search on Invidious, fetch, and store locally (fzf*)
+  -l : Search & play local media (fzf*)
+  -s : Search on Invidious (fzf*)
+  -p : Search & play media found using Invidious (fzf*)
+  -x : Starts mpvc-fzf in a new xterm (config $MPVC_TERM) [combine -x with 01ab:cCd:efFg:G:hk:K:n:s:p:P:o:Or:lL:xv]
+*tips: If unsure about where to begin, start with: mpvc-fzf -p 'kupla mirage'
 ```
 
 ## Useful Tricks
