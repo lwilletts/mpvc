@@ -205,8 +205,8 @@ mpvc_web_index()
             <a href="?cmd=mpvc cplayrand">crand</a>
             <a href="?cmd=mpvc creplay">creplay</a>
             <a href="?cmd=mpvc cloop">cloop</a>
-            <a href="?cmd=mpvc cprev">cprev</a>
-            <a href="?cmd=mpvc cnext">cnext</a>
+            <a href="?cmd=mpvc c-">cprev</a>
+            <a href="?cmd=mpvc c+">cnext</a>
         </li>
         <li>
             $(echo "-15\n-10\n-5\n-2\n0\n+2\n+5\n+10\n+15" | mpvc_web_select_form "mpvc -q play" "${MPVC_WEB_SHORTCUT_PLAY}")
