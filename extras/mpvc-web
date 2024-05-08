@@ -193,7 +193,7 @@ mpvc_web_index()
             <a href="?cmd=mpvc unshuffle">unshuffle</a>
         </li>
         <li>
-            mpvc vid
+            mpvc
             <a href="?cmd=mpvc togglev">video</a>
             <a href="?cmd=mpvc aspect">aspect</a>
             <a href="?cmd=mpvc togglew">win</a>
@@ -201,9 +201,10 @@ mpvc_web_index()
             <a href="?cmd=mpvc togglei">idle</a>
         </li>
         <li>
-            mpvc ch
+            mpvc
             <a href="?cmd=mpvc cplayrand">crand</a>
             <a href="?cmd=mpvc creplay">creplay</a>
+            <a href="?cmd=mpvc cloop">cloop</a>
             <a href="?cmd=mpvc cprev">cprev</a>
             <a href="?cmd=mpvc cnext">cnext</a>
         </li>
@@ -441,6 +442,7 @@ mpvc_web()
 
         /GET \/\?cmd=mpvc%20cstart/       { system(mpvc" -q cplay 0") }
         /GET \/\?cmd=mpvc%20creplay/      { system(mpvc" -q chapter-replay") }
+        /GET \/\?cmd=mpvc%20cloop/        { system(mpvc" -q chapter-loop") }
         /GET \/\?cmd=mpvc%20cprev/        { system(mpvc" -q chapter-prev") }
         /GET \/\?cmd=mpvc%20cnext/        { system(mpvc" -q chapter-next") }
         /GET \/\?cmd=mpvc%20cplayrand/    { system(mpvc" -q cplayrand") }
