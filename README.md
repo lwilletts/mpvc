@@ -7,13 +7,13 @@
 
 # mpvc 🎧
 
-A terminal music player to interfacing the mpv media player with a nearly complete compatibility layer for mpc commands.
+A terminal music player in POSIX sh(1) that interfaces mpv providing mpc(1) commands + extras.
 This forks [lwillets/mpvc](https://github.com/lwilletts/mpvc) providing some extra goodies such as: improved CLI, TUI, FZF, WEB & playing media from YouTube & streaming services.
 Check the [Wiki](../../wiki), [LogBook](https://gmt4.github.io/mpvc/logbook.html) & [Casts](https://gmt4.github.io/mpvc/casts/) for a detailed view of the extra features of this fork.
 
 ## Overview
 
-[mpvc](https://github.com/gmt4/mpvc/) functionality is provided by:
+[mpvc](https://github.com/gmt4/mpvc/) player functionality is provided by:
 
 - [mpvc](../../blob/master/mpvc): provides the mpvc player core CLI commands
 - [extras/mpvc-tui](../../blob/master/extras/mpvc-tui): provides a console TUI, using mpvc underneath
