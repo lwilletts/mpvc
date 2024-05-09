@@ -162,7 +162,7 @@ mpvc_defaults()
         FORMATSTRING="\
 %artist% - %title% \r\
 [%status%] #%position%/%playlistlength% %time%/%length% (%percentage%%%) \r\
-speed:%speed%x volume:%volume%%% muted:%muted% repeat:%repeat% single:%single% \r\
+speed:%speed%x vol:%volume%%% mute:%muted% repeat:%repeat% single:%single% \r\
 video:%video% aspect:%aspect% win:%force-window% fs:%fullscreen% idle:%idle% \r\
 chapter:%chapter% %=chapter%/%chapters%"
     fi
