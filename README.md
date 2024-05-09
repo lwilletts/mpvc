@@ -8,7 +8,7 @@
 # mpvc 🎧
 
 A terminal music player in POSIX sh(1) that interfaces mpv providing mpc(1) commands + extras.
-This forks [lwillets/mpvc](https://github.com/lwilletts/mpvc) providing some extra goodies such as: improved CLI, TUI, FZF, WEB & playing media from YouTube & streaming services.
+This forks [lwillets/mpvc](https://github.com/lwilletts/mpvc) providing some extra goodies such as: improved CLI, TUI, FZF, WEB, EQ, & playing media from YouTube & streaming services.
 Check the [Wiki](../../wiki), [LogBook](https://gmt4.github.io/mpvc/logbook.html) & [Casts](https://gmt4.github.io/mpvc/casts/) for a detailed view of the extra features of this fork.
 
 ## Overview
@@ -29,7 +29,7 @@ In addition, the [casts/](https://gmt4.github.io/mpvc/casts/) directory to shows
 
 ## Installation
 
-To install mpvc:
+To install mpvc, the easiest is the curl based install below, otherwise choose what better suits you:
 
 - curl based install: as in [QuickInstall](#quickinstall-%EF%B8%8F).
 - git based install: as in [QuickStart](#quickstart).
@@ -67,7 +67,7 @@ To install mpvc:
 
 ### Dependencies
 
-- Required:  `mpv`,  `socat`: is recommended due to the differing implementations of `netcat` across UNIXes, and, `awk`: a sane version of `awk` is recommended
+- Required:  `mpv`,  `socat`: is preferred due to the differing implementations of `netcat` across UNIXes, and, `awk`: a sane version of `awk` for the same reason (`gawk` works)
 - Recommended extras: `curl` `fzf` `jq` `notify-send`
 
 Check for missing dependencies using `mpvc-installer check-reqs`:
