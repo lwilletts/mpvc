@@ -473,7 +473,7 @@ mpvc_web()
     )
 }
 
-optflags="ha:b:c:d:p:r:s:t:"
+optflags="ha:b:c:d:p:P:r:s:t:"
 usage()
 {
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
@@ -501,6 +501,7 @@ main()
         d) MPVC_WEB_DEV="$OPTARG"; ;;
         b) MPVC_WEB_HOST="$OPTARG" ;;
         p) MPVC_WEB_PORT="$OPTARG" ;;
+        P) MPVC_WEB_SSL_PORT="$OPTARG" ;;
         r) MPVC_WEB_ROOT="$OPTARG" ;;
         s) MPVC_WEB_SSL_ENABLE="$OPTARG" ;;
         t) MPVC_WEB_HTML_THEME="$OPTARG"  ;;
