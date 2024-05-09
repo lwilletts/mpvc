@@ -1,9 +1,9 @@
-
 ![GitHub](https://img.shields.io/github/license/gmt4/mpvc)
 ![GitHub Release Date](https://img.shields.io/github/release-date/gmt4/mpvc)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/gmt4/mpvc)
 ![GitHub top language](https://img.shields.io/github/languages/top/gmt4/mpvc)
 ![GitHub lines of Code](https://sloc.xyz/github/gmt4/mpvc/?category=code)
+
 
 # mpvc 🎧
 
@@ -11,7 +11,26 @@ A terminal music player in POSIX sh(1) that interfaces mpv providing mpc(1) comm
 This forks [lwillets/mpvc](https://github.com/lwilletts/mpvc) providing some extra goodies such as: improved CLI, TUI, FZF, WEB, EQ, & playing media from YouTube & streaming services.
 Check the [Wiki](../../wiki), [LogBook](https://gmt4.github.io/mpvc/logbook.html) & [Casts](https://gmt4.github.io/mpvc/casts/) for a detailed view of the extra features of this fork.
 
-## Overview
+<details open>
+<summary>mpvc-tui -T: running the mpvc TUI<i>(click to view screenshot)</i></summary>
+
+![mpvc-tui -T screenshot](../../blob/master/docs/assets/mpvc-tui.png)
+</details>
+
+<details>
+<summary>mpvc-fzf -f: running with fzf to manage the playlist <i>(click to view screenshot)</i></summary>
+ 
+![mpvc-fzf screenshot](../../blob/master/docs/assets/mpvc-tui-arch.png)
+</details>
+
+<details>
+<summary>mpvc-tui -n: running with mpvc-fzf and desktop notifications on the upper-right corner <i>(click to view screenshot)</i></summary>
+
+![mpvc tui+fzf+notifications screenshot](../../blob/master/docs/assets/mpvc-tui-fzf.png)
+</details> 
+
+
+## Overview ▶️
 
 [mpvc](https://github.com/gmt4/mpvc/) player functionality is provided by:
 
@@ -27,24 +46,38 @@ Check the [Wiki](../../wiki), [LogBook](https://gmt4.github.io/mpvc/logbook.html
 For more details on how to use the above tools have a look at the [logbok.html](https://gmt4.github.io/mpvc/logbook.html).
 In addition, the [casts/](https://gmt4.github.io/mpvc/casts/) directory to shows some screencasts of mpvc in action.
 
+## Requirements
+
+- `mpv`
+- `socat`: is preferred due to the differing implementations of `netcat` across UNIXes.
+- `awk`: a sane version of `awk` for the same reason (`gawk` works)
+
+Recommended extras: `curl` `fzf` `jq` `notify-send`
+
+Check for missing dependencies using `mpvc-installer check-reqs`:
+
 ## Installation
 
-To install mpvc, the easiest is the curl based install below, otherwise choose what better suits you:
+- [Manual](#manual)
+- [Git](#git)
+- [Debian](#debian)
+- [Arch](#arch-mpvc-git)
+- [BSD](#bsd)
+- [MacOS](#macos)
+- [Gentoo](#gentoo-mpvc)
+- [Nix](#nix-mpvc)
 
-- curl based install: as in [QuickInstall](#quickinstall-%EF%B8%8F).
-- git based install: as in [QuickStart](#quickstart).
-- distro package based installation:
-  - Arch Linux package: `pacaur -y mpvc-git` [mpvc-git](https://aur.archlinux.org/packages/mpvc-git)
-  - Gentoo Linux package: `emerge mpvc` [mpvc](https://gitlab.com/xy2_/osman)
-  - Nix package: `nix-env -i mpvc` [mpvc](http://github.com/nixos/nixpkgs/tree/master/pkgs/applications/misc/mpvc)
+  
+### Manual
 
-### QuickInstall ▶️
+The easiest install method is just to run the [mpvc-installer](../../blob/master/extras/mpvc-installer) to install under `$HOME/bin`
 
-[mpvc-installer](../../blob/master/extras/mpvc-installer) fetch-user: installs mpvc under BINDIR=~/bin/
+```console
+curl -fsSL -o mpvc-installer https://github.com/gmt4/mpvc/raw/master/extras/mpvc-installer \
+  && sh ./mpvc-installer fetch-user
+```
 
-`curl -fsSL -o mpvc-installer https://github.com/gmt4/mpvc/raw/master/extras/mpvc-installer && sh ./mpvc-installer fetch-user`
-
-### QuickStart
+### Git
 
 <pre>
  <b># fetch a local copy of the github repo</b>
@@ -65,36 +98,51 @@ To install mpvc, the easiest is the curl based install below, otherwise choose w
  mpvc-tui -T
 </pre>
 
-### Dependencies
+#### Debian
 
-- Required:  `mpv`,  `socat`: is preferred due to the differing implementations of `netcat` across UNIXes, and, `awk`: a sane version of `awk` for the same reason (`gawk` works)
-- Recommended extras: `curl` `fzf` `jq` `notify-send`
+Debian (and APT derivatives such as Ubuntu):
 
-Check for missing dependencies using `mpvc-installer check-reqs`:
+```console
+apt install mpv gawk curl socat fzf rlwrap jq libnotify-bin
+```
 
-- Debian (and derivatives such as Ubuntu): `apt install mpv gawk curl socat fzf rlwrap jq libnotify-bin`
-- Arch (and derivatives): `pacman -Sy mpv gawk curl socat fzf rlwrap jq libnotify`
-- BSD (and pkg(1) based derivatives): `pkg install -y mpv gawk curl socat fzf rlwrap jq libnotify`
-- MacOS (and brew(1) based derivatives see [FAQ](../../wiki/FAQ)): `brew install gawk socat fzf rlwrap jq gnu-sed yt-dlp # mpv curl libnotify`
+#### Arch [mpvc-git](https://aur.archlinux.org/packages/mpvc-git)
 
-## Screenshots
+Arch (and derivatives):
 
-mpvc-tui -T: running the mpvc TUI
+```console
+pacaur -y mpvc-git
+pacman -Sy mpv gawk curl socat fzf rlwrap jq libnotify
+````
 
-![mpvc-tui -T screenshot](../../blob/master/docs/assets/mpvc-tui.png)
+### BSD
 
-<details>
-<summary>mpvc-fzf -f: running with fzf to manage the playlist <i>(screenshot click to view)</i></summary>
- 
-![mpvc-fzf screenshot](../../blob/master/docs/assets/mpvc-tui-arch.png)
-</details>
+BSD (and pkg(1) based derivatives such as FreeBSD):
 
-<details>
-<summary>mpvc-tui -n: running with mpvc-fzf and desktop notifications on the upper-right corner <i>(screenshot click to view)</i></summary>
+```console
+pkg install -y mpv gawk curl socat fzf rlwrap jq libnotify
+```
 
-![mpvc tui+fzf+notifications screenshot](../../blob/master/docs/assets/mpvc-tui-fzf.png)
-</details> 
-     
+### MacOS
+
+MacOS (and brew(1) based derivatives see [FAQ](../../wiki/FAQ)):
+
+```console
+brew install gawk socat fzf rlwrap jq gnu-sed yt-dlp # mpv curl libnotify
+```
+
+#### Gentoo [mpvc](https://gitlab.com/xy2_/osman)
+
+```console
+emerge mpvc
+``` 
+
+#### Nix [mpvc](http://github.com/nixos/nixpkgs/tree/master/pkgs/applications/misc/mpvc)
+
+```console
+nix-env -i mpvc
+```
+
 ## Usage
 
 ### mpvc
@@ -147,7 +195,7 @@ usage: mpvc-fzf -[01ab:cCd:efFg:G:hk:K:n:s:p:P:o:Or:lL:xv] args # @version v1.5 
 
 ## Useful Tricks
 
-Some basic tricks are provided in [QuickStart](#quickstart). For more tips on loading/saving/maniputaling the mpv playlist/state, managing av/vf filters, etc. are provided in the [LogBook](https://gmt4.github.io/mpvc/logbook.html).
+Some basic tricks are provided in [Git](#git). For more tips on loading/saving/maniputaling the mpv playlist/state, managing av/vf filters, etc. are provided in the [LogBook](https://gmt4.github.io/mpvc/logbook.html).
 
 ## Limitations
 
