@@ -48,13 +48,20 @@ In addition, the [casts/](https://gmt4.github.io/mpvc/casts/) directory to shows
 
 ## Requirements
 
+Required:
+
 - `mpv`
 - `socat`: is preferred due to the differing implementations of `netcat` across UNIXes.
 - `awk`: a sane version of `awk` for the same reason (`gawk` works)
 
-Recommended extras: `curl` `fzf` `jq` `notify-send`
+Recommended extras: 
 
-Check for missing dependencies using `mpvc-installer check-reqs`:
+- `curl`
+- `fzf`
+- `jq`
+- `notify-send`
+
+Check for missing dependencies using `mpvc-installer check-reqs`.
 
 ## Installation
 
