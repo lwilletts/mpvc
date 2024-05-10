@@ -422,7 +422,7 @@ mpvc_web()
         /GET \/\?cmd=mpvc%20clear/        { system(mpvc" -q clear") }
         /GET \/\?cmd=mpvc%20kill/         { system(mpvc" -q kill") }
         /GET \/\?cmd=mpvc%20vol%20-5/     { system(mpvc" -q vol -5") }
-        /GET \/\?cmd=mpvc%20vol%20+5/     { system(mpvc" -q vol +5") }
+        /GET \/\?cmd=mpvc%20vol%20\+5/    { system(mpvc" -q vol +5") }
 
         /GET \/\?cmd=mpvc%20toggle/       { system(mpvc" -q toggle") }
         /GET \/\?cmd=mpvc%20play/         { system(mpvc" -q play") }
