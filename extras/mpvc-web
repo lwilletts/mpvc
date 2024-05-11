@@ -52,6 +52,7 @@ mpvc_web_defaults()
     MPVC_WEB_SHORTCUT_TOGGLE=${MPVC_WEB_SHORTCUT_TOGGLE:-accesskey=t}
     MPVC_WEB_SHORTCUT_EQUALIZER=${MPVC_WEB_SHORTCUT_EQUALIZER:-accesskey=e}
     MPVC_WEB_SHORTCUT_ARCHIVE=${MPVC_WEB_SHORTCUT_ARCHIVE:-accesskey=f}
+    MPVC_WEB_SHORTCUT_MUTE=${MPVC_WEB_SHORTCUT_MUTE:-accesskey=g}
     MPVC_WEB_SHORTCUT_HELP=${MPVC_WEB_SHORTCUT_HELP:-accesskey=h}
 
     MPVC_CGI="$MPVC_WEB_ROOT/cgi-bin/mpvc"
@@ -178,9 +179,9 @@ mpvc_web_index()
         <li>
             mpvc
             <a href="?cmd=mpvc play">play</a>
+            <a href="?cmd=mpvc --mute" ${MPVC_WEB_SHORTCUT_MUTE}>mute</a>
             <a href="?cmd=mpvc start 0">start</a>
             <a href="?cmd=mpvc start $">end</a>
-            <a href="?cmd=mpvc playrand">rand</a>
             <a href="?cmd=mpvc prev" title="prev">tr-</a>
             <a href="?cmd=mpvc next" title="next">tr+</a>
         </li>
@@ -190,12 +191,16 @@ mpvc_web_index()
             <a href="?cmd=mpvc single">single</a>
             <a href="?cmd=mpvc replay">replay</a>
             <a href="?cmd=mpvc cmd ab-loop">ab-loop</a>
+            <!--
+            <a href="?cmd=mpvc seek -10" title="seek fwd">s-</a>
+            <a href="?cmd=mpvc seek +10" title="seek bwd">s+</a>
+            -->
         </li>
         <li>
             mpvc
-            <a href="?cmd=mpvc playlist-shuffle">playlist</a>
             <a href="?cmd=mpvc shuffle">shuffle</a>
             <a href="?cmd=mpvc unshuffle">unshuffle</a>
+            <a href="?cmd=mpvc playrand">rand</a>
         </li>
         <li>
             mpvc
@@ -226,16 +231,10 @@ mpvc_web_index()
             $(echo "-120\n-60\n-25\n+25\n+60\n+120" | mpvc_web_select_form "mpvc -q seek" "${MPVC_WEB_SHORTCUT_SEEK}")
         </li>
         <li>
+            $(if [ -n "$MPVC_WEB_ARCHIVE_ENABLE" ]; then find "ytdl-archive/" | awk -F/ '{print "https://"$NF}' | mpvc_web_select_form "mpvc add" "${MPVC_WEB_SHORTCUT_ARCHIVE}"; fi)
+        </li>
+        <li>
             $(mpvc-equalizer preset | awk '/ # preset: / {print $NF}' | mpvc_web_select_form "mpvc-equalizer load" "${MPVC_WEB_SHORTCUT_EQUALIZER}")
-        </li>
-
-        </li>
-        $(
-        if [ -n "$MPVC_WEB_ARCHIVE_ENABLE" ]; then
-            find "ytdl-archive/" | awk -F'/' '{print "https://"$NF}' |
-                mpvc_web_select_form "mpvc add" "${MPVC_WEB_SHORTCUT_ARCHIVE}";
-        fi;
-        )
         </li>
 
         <li>
@@ -435,6 +434,7 @@ mpvc_web()
         /GET \/\?cmd=mpvc%20vol%20-5/     { system(mpvc" -q vol -5") }
         /GET \/\?cmd=mpvc%20vol%20\+5/    { system(mpvc" -q vol +5") }
 
+        /GET \/\?cmd=mpvc%20--mute/       { system(mpvc" -q --mute") }
         /GET \/\?cmd=mpvc%20toggle/       { system(mpvc" -q toggle") }
         /GET \/\?cmd=mpvc%20play/         { system(mpvc" -q play") }
         /GET \/\?cmd=mpvc%20start%200/    { system(mpvc" -q start 0") }
