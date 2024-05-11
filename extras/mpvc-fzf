@@ -195,8 +195,9 @@ mpvcfzf_fetch_remove()
 mpvcfzf_preview()
 {
     MPVC_FZF_BIND_HELP="C-x:list C-v:yt-dlp C-\\:local C-s:chapter C-t:add C-o:play C-r:reload C-spc:toggle"
-    #--bind='ctrl-d:execute(mpvc {q})'
-    #--bind='ctrl-d:execute-silent(mpvc seek -20 &)'
+    # --bind='ctrl-d:execute(mpvc {q})'
+    # --bind='left:execute-silent(mpvc -q seek -20 &)' \
+    # --bind='right:execute-silent(mpvc -q seek +20 &)' \
 
     # fzf keys: ctrl + [dorstxv\]
     fzf \
