@@ -275,7 +275,8 @@ mpvcfzf_urlget()
 
 mpvcfzf_urlbrowser()
 {
-    mpvcfzf_urlget "${1:-}" |
+    url=${1:-https://localhost:8443/ytdl-archive/}
+    mpvcfzf_urlget "$url" |
         mpvcfzf_preview --prompt="(urlbrowse) " |
             awk -v url="$url" '{ print url$0 }'
 }
