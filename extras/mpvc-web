@@ -51,6 +51,7 @@ mpvc_web_defaults()
     MPVC_WEB_SHORTCUT_KILL=${MPVC_WEB_SHORTCUT_KILL:-accesskey=k}
     MPVC_WEB_SHORTCUT_TOGGLE=${MPVC_WEB_SHORTCUT_TOGGLE:-accesskey=t}
     MPVC_WEB_SHORTCUT_EQUALIZER=${MPVC_WEB_SHORTCUT_EQUALIZER:-accesskey=e}
+    MPVC_WEB_SHORTCUT_ARCHIVE=${MPVC_WEB_SHORTCUT_ARCHIVE:-accesskey=f}
     MPVC_WEB_SHORTCUT_HELP=${MPVC_WEB_SHORTCUT_HELP:-accesskey=h}
 
     MPVC_CGI="$MPVC_WEB_ROOT/cgi-bin/mpvc"
@@ -227,6 +228,16 @@ mpvc_web_index()
         <li>
             $(mpvc-equalizer preset | awk '/ # preset: / {print $NF}' | mpvc_web_select_form "mpvc-equalizer load" "${MPVC_WEB_SHORTCUT_EQUALIZER}")
         </li>
+
+        </li>
+        $(
+        if [ -n "$MPVC_WEB_ARCHIVE_ENABLE" ]; then
+            find "ytdl-archive/" | awk -F'/' '{print "https://"$NF}' |
+                mpvc_web_select_form "mpvc add" "${MPVC_WEB_SHORTCUT_ARCHIVE}";
+        fi;
+        )
+        </li>
+
         <li>
         mpvc theme
             <a href="#" title="theme 2" onclick="document.body.style.WebkitFilter='invert(0.2)';">th2</a>
@@ -378,6 +389,12 @@ mpvc_web()
         cd "$MPVC_WEB_ROOT" || return
         chmod u+w -R "${MPVC_WEB_ROOT%/*}"
 
+        # setup streamable mpvc archive if requested
+        if [ -n "${MPVC_WEB_ARCHIVE_ENABLE}" ]; then
+            echo "# $PROGNAME Setup $MPVC_WEB_ROOT/ytdl-archive/"
+            ln -f -s "$HOME/.config/mpvc/ytdl-archive/" "$MPVC_WEB_ROOT/"
+        fi
+
         mpvc_web_index > "$MPVC_WEB_ROOT/index.html"
         mpvc_web_favicon > "$MPVC_WEB_ROOT/favicon.ico"
         mpvc_web_favicon > "$MPVC_WEB_ROOT/apple-touch-icon.svg"
@@ -398,12 +415,6 @@ mpvc_web()
                 kill "$(cat "$MPVC_WEB_SSL_PID")" || true
             fi
             stunnel "$MPVC_WEB_SSL_CFG"
-        fi
-
-        # setup streamable mpvc archive if requested
-        if [ -n "${MPVC_WEB_ARCHIVE_ENABLE}" ]; then
-            echo "# $PROGNAME Setup $MPVC_WEB_ROOT/ytdl-archive/"
-            ln -f -s "$HOME/.config/mpvc/ytdl-archive/" "$MPVC_WEB_ROOT/"
         fi
 
         if [ -n "${MPVC_WEB_DEV:-}" ]; then
