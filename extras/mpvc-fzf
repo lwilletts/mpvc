@@ -266,14 +266,18 @@ mpvcfzf_ddg_play()
                 mpvc load
 }
 
-mpvcfzf_urlbrowser()
+mpvcfzf_urlget()
 {
     url=${1:-https://localhost:8443/ytdl-archive/}
-
     curl -k -fsSL "$url" |
-        awk '/<a href=".*">.*<\/a>/ { h=$0;sub("^.*href=\"","",h);sub("\".*$","",h);print h }' |
-            mpvcfzf_preview --prompt="(urlbrowse) " |
-                awk -v url="$url" '{ print url$0 }'
+        awk '/<a href=".*">.*<\/a>/ { h=$0;sub("^.*href=\"","",h);sub("\".*$","",h);print h }'
+}
+
+mpvcfzf_urlbrowser()
+{
+    mpvcfzf_urlget "${1:-}" |
+        mpvcfzf_preview --prompt="(urlbrowse) " |
+            awk -v url="$url" '{ print url$0 }'
 }
 
 mpvcfzf_equalizer()
@@ -328,7 +332,7 @@ mpvcfzf_version()
     echo "usage: $PROGNAME -[optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
 }
 
-optflags="01ab:cCd:efFg:G:hk:K:n:s:p:P:o:Or:lL:xv"
+optflags="01ab:B:cCd:efFg:G:hk:K:n:s:p:P:o:Or:lL:xv"
 mpvcfzf_usage()
 {
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
@@ -361,6 +365,7 @@ main()
 
         a) mpvcfzf_stashlist ;;
         b) mpvcfzf_urlbrowser "$OPTARG" ;;
+        B) mpvcfzf_urlget "$OPTARG" ;;
         c) mpvcfzf_chapterlist ;;
         C) shift; mpvcfzf_icache;;
         d) MPVC_DIR="$OPTARG"; cd "$MPVC_DIR" || return;;
