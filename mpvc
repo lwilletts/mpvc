@@ -657,11 +657,6 @@ mpvc_always_play() {
     mpvc_set "pause" "no"
 }
 
-mpvc_toggle_mute() {
-    if [ $# -gt 0 ]; then mpvc_set "mute" "${1:-}"; return; fi
-    mpvc_ecmdr "cycle" "mute"
-}
-
 mpvc_toggle_loop() {
     property=${1:-}
     value=${2:-}
@@ -1041,8 +1036,8 @@ main() {
             next|--next)    mpvc_set_track 1 relative ;;
             prev|--prev)    mpvc_set_track -1 relative;;
             move|mv)        shift; mpvc_move_track "${1:-}" "${2:-}" ;;
-            mute)           mpvc_toggle_mute yes ;;
-            unmute)         mpvc_toggle_mute no ;;
+            mute)           mpvc_set "mute" "yes" ;;
+            unmute)         mpvc_set "mute" "no" ;;
             pretty)         die 1 "$PROGNAME: Error $* not implemented" ;;
             find)           die 1 "$PROGNAME: Error $* not implemented" ;;
 
@@ -1133,7 +1128,7 @@ main() {
             -s|--stop|stop)                  mpvc_set "pause" "yes"; mpvc_set_time "absolute" 0 ;;
             -P|--play)                       mpvc_always_play ;;
             -p|--toggle|toggle)              mpvc_cycle "pause" ;;
-            -m|--mute)                       mpvc_toggle_mute                 ;;
+            -m|--mute)                       mpvc_cycle "mute"                ;;
             -i|--playlist|playlist)          mpvc_get_playlist "";            ;;
             -I|--fullplaylist|fullplaylist)  mpvc_get_playlist "full";        ;;
                --playlistjson|playlistjson)  mpvc_get_playlist_json ""        ;;
