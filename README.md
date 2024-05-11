@@ -86,24 +86,24 @@ curl -fsSL -o mpvc-installer https://github.com/gmt4/mpvc/raw/master/extras/mpvc
 
 ### Git
 
-<pre>
- <b># fetch a local copy of the github repo</b>
+```sh
+ # fetch a local copy of the github repo
  git clone https://github.com/gmt4/mpvc/
- <b># use extras/mpvc-installer: just copy/link to your $HOME/bin</b>
+ # use extras/mpvc-installer: just copy/link to your $HOME/bin
  (cd mpvc; extras/mpvc-installer link-user)
 
- <b># use mpvc-fzf to search and play youtube media</b>
+ # use mpvc-fzf to search and play youtube media
  mpvc-fzf -p 'kupla mirage'
- <b># use mpvc to add/load/save media files or online YT URLs</b>
+ # use mpvc to add/load/save media files or online YT URLs
  mpvc add /path/to/your/*.mp3 # or your URLs
  find . -type f -name | mpvc load
  mpvc save my-playlist
 
- <b># use mpvc-fzf to manage the playlist</b>
+ # use mpvc-fzf to manage the playlist
  mpvc-fzf -f
- <b># use mpvc-tui to start the tui + desktop notifications</b>
+ # use mpvc-tui to start the tui + desktop notifications
  mpvc-tui -T
-</pre>
+```
 
 #### Debian
 
@@ -200,14 +200,16 @@ usage: mpvc-fzf -[01ab:cCd:efFg:G:hk:K:n:s:p:P:o:Or:lL:xv] args # @version v1.5 
 *tips: If unsure about where to begin, start with: mpvc-fzf -p 'kupla mirage'
 ```
 
-## Useful Tricks
+## Tricks
 
-Some basic tricks are provided in [Git](#git). For more tips on loading/saving/maniputaling the mpv playlist/state, managing av/vf filters, etc. are provided in the [LogBook](https://gmt4.github.io/mpvc/logbook.html).
+There's some basic tricks in [Git](#git) to get you started. 
+For more  check the  [LogBook](https://gmt4.github.io/mpvc/logbook.html).
+
+This gives just a sneak peek on what's possible to manage mpv from the command-line, your best chances are to go play and have fun.
 
 ## Limitations
 
 Like any piece of software, mpvc is not perfect:
-
 - mpvc does not resolve individual files in a directory unless it is
   currently in or has been inside that directory, giving misleading results about
   the total number of files in the current playlist. This is a limitation of mpv.
