@@ -45,11 +45,11 @@ mpvc_web_defaults()
     MPVC_WEB_SHORTCUT_REFRESH=${MPVC_WEB_SHORTCUT_REFRESH:-accesskey=m}
     MPVC_WEB_SHORTCUT_CLI=${MPVC_WEB_SHORTCUT_CLI:-accesskey=i}
     MPVC_WEB_SHORTCUT_APPLY=${MPVC_WEB_SHORTCUT_APPLY:-accesskey=a}
-    MPVC_WEB_SHORTCUT_PLAY=${MPVC_WEB_SHORTCUT_PLAY:-accesskey=p}
+    MPVC_WEB_SHORTCUT_TRACK=${MPVC_WEB_SHORTCUT_TRACK:-accesskey=t}
     MPVC_WEB_SHORTCUT_SEEK=${MPVC_WEB_SHORTCUT_SEEK:-accesskey=s}
     MPVC_WEB_SHORTCUT_VOL=${MPVC_WEB_SHORTCUT_VOL:-accesskey=v}
     MPVC_WEB_SHORTCUT_KILL=${MPVC_WEB_SHORTCUT_KILL:-accesskey=k}
-    MPVC_WEB_SHORTCUT_TOGGLE=${MPVC_WEB_SHORTCUT_TOGGLE:-accesskey=t}
+    MPVC_WEB_SHORTCUT_PAUSE=${MPVC_WEB_SHORTCUT_PAUSE:-accesskey=p}
     MPVC_WEB_SHORTCUT_EQUALIZER=${MPVC_WEB_SHORTCUT_EQUALIZER:-accesskey=e}
     MPVC_WEB_SHORTCUT_ARCHIVE=${MPVC_WEB_SHORTCUT_ARCHIVE:-accesskey=f}
     MPVC_WEB_SHORTCUT_MUTE=${MPVC_WEB_SHORTCUT_MUTE:-accesskey=g}
@@ -96,6 +96,27 @@ mpvc_web_select_form()
         END    { print "</select>"}
     '
     echo '</form>'
+}
+
+mpvc_web_help()
+{
+    cat <<EOF
+$PROGNAME HTML accesskeys shortcuts:\n
+\n
+- $MPVC_WEB_SHORTCUT_HELP: this help\n
+- $MPVC_WEB_SHORTCUT_APPLY: select stash\n
+- $MPVC_WEB_SHORTCUT_CLI: select cli\n
+- $MPVC_WEB_SHORTCUT_EQUALIZER: select equalizer\n
+- $MPVC_WEB_SHORTCUT_REFRESH: refresh\n
+- $MPVC_WEB_SHORTCUT_KILL: select kill\n
+- $MPVC_WEB_SHORTCUT_TRACK: select track\n
+- $MPVC_WEB_SHORTCUT_SEEK: select seek\n
+- $MPVC_WEB_SHORTCUT_PAUSE: select pause\n
+- $MPVC_WEB_SHORTCUT_VOL: select volume\n
+- $MPVC_WEB_SHORTCUT_ARCHIVE: select archive\n
+\n
+*For more, Read The Source Luke!\n
+EOF
 }
 
 mpvc_web_index()
@@ -167,7 +188,7 @@ mpvc_web_index()
         <li>
             mpvc
             <a href="?cmd=mpvc status">status</a>
-            <a href="?cmd=mpvc toggle" ${MPVC_WEB_SHORTCUT_TOGGLE}>toggle</a>
+            <a href="?cmd=mpvc toggle" ${MPVC_WEB_SHORTCUT_PAUSE}>pause</a>
             <!--
             <a href="?cmd=mpvc mpv">mpv</a>
             <a href="?cmd=mpvc kill" ${MPVC_WEB_SHORTCUT_KILL}>kill</a>
@@ -219,7 +240,7 @@ mpvc_web_index()
             <a href="?cmd=mpvc cnext" title="cnext">ch+</a>
         </li>
         <li>
-            $(echo "-15\n-10\n-5\n-2\n0\n+2\n+5\n+10\n+15" | mpvc_web_select_form "mpvc -q play" "${MPVC_WEB_SHORTCUT_PLAY}")
+            $(echo "-15\n-10\n-5\n-2\n0\n+2\n+5\n+10\n+15" | mpvc_web_select_form "mpvc -q track" "${MPVC_WEB_SHORTCUT_TRACK}")
         </li>
         <li>
             $(mpvc --nocolor chapter-list-nr | awk '{print $1,"#",$0}' | mpvc_web_select_form "mpvc -q cplay")
@@ -270,7 +291,7 @@ mpvc_web_index()
         </div>
         <hr>
         <a href="$PROGURL">$PROGNAME</a> $(mpvc-installer check-update | awk -v progurl=$PROGURL '{ print "<a href="progurl" style=color:"(match($0,"Not-Found")?"none":"red")">"$5"</a>"; }'), mpvc-tui for the web
-        <a href="javascript:alert('$PROGNAME HTML accesskeys shortcuts:\n\n- h: this help\n- a: select stash\n- e: select equalizer\n- m: refresh\n- k: select kill\n- p: select play\n- s: select seek\n- t: select toggle\n- v: select volume\n\n*For more, Read The Source Luke!')" ${MPVC_WEB_SHORTCUT_HELP}>/h</a>
+        <a href="javascript:alert('$(mpvc_web_help)')" ${MPVC_WEB_SHORTCUT_HELP}>/h</a>
     </body>
 </html>
 EOF
