@@ -187,12 +187,10 @@ mpvc_web_index()
         </li>
         <li>
             mpvc
-            <a href="?cmd=mpvc status">status</a>
+            <!--<a href="?cmd=mpvc status">status</a>-->
             <a href="?cmd=mpvc toggle" ${MPVC_WEB_SHORTCUT_PAUSE}>pause</a>
-            <!--
             <a href="?cmd=mpvc mpv">mpv</a>
             <a href="?cmd=mpvc kill" ${MPVC_WEB_SHORTCUT_KILL}>kill</a>
-            -->
             <a href="?cmd=mpvc clear">clear</a>
             <a href="?cmd=mpvc vol -5" title="vol down">v-</a>
             <a href="?cmd=mpvc vol +5" title="vol up">v+</a>
