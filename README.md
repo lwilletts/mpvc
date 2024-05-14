@@ -4,7 +4,6 @@
 ![GitHub top language](https://img.shields.io/github/languages/top/gmt4/mpvc)
 ![GitHub lines of Code](https://sloc.xyz/github/gmt4/mpvc/?category=code)
 
-
 # mpvc 🎧
 
 A terminal music player in POSIX sh(1) that interfaces mpv providing mpc(1) commands + extras.
@@ -28,7 +27,6 @@ Check the [Wiki](../../wiki), [LogBook](https://gmt4.github.io/mpvc/logbook.html
 
 ![mpvc tui+fzf+notifications screenshot](../../blob/master/docs/assets/mpvc-tui-fzf.png)
 </details> 
-
 
 ## Overview ▶️
 
@@ -74,7 +72,6 @@ Check for missing dependencies using `mpvc-installer check-reqs`.
 - [Gentoo](#gentoo-mpvc)
 - [Nix](#nix-mpvc)
 
-  
 ### Manual
 
 The easiest install method is just to run the [mpvc-installer](../../blob/master/extras/mpvc-installer) to install under `$HOME/bin`
@@ -105,7 +102,7 @@ curl -fsSL -o mpvc-installer https://github.com/gmt4/mpvc/raw/master/extras/mpvc
  mpvc-tui -T
 ```
 
-#### Debian
+### Debian
 
 Debian (and APT derivatives such as Ubuntu):
 
@@ -113,7 +110,7 @@ Debian (and APT derivatives such as Ubuntu):
 apt install mpv gawk curl socat fzf rlwrap jq libnotify-bin
 ```
 
-#### Arch [mpvc-git](https://aur.archlinux.org/packages/mpvc-git)
+### Arch [mpvc-git](https://aur.archlinux.org/packages/mpvc-git)
 
 Arch (and derivatives):
 
@@ -138,13 +135,13 @@ MacOS (and brew(1) based derivatives see [FAQ](../../wiki/FAQ)):
 brew install gawk socat fzf rlwrap jq gnu-sed yt-dlp # mpv curl libnotify
 ```
 
-#### Gentoo [mpvc](https://gitlab.com/xy2_/osman)
+### Gentoo [mpvc](https://gitlab.com/xy2_/osman)
 
 ```console
 emerge mpvc
 ``` 
 
-#### Nix [mpvc](http://github.com/nixos/nixpkgs/tree/master/pkgs/applications/misc/mpvc)
+### Nix [mpvc](http://github.com/nixos/nixpkgs/tree/master/pkgs/applications/misc/mpvc)
 
 ```console
 nix-env -i mpvc
