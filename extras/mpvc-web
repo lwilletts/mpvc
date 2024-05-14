@@ -33,9 +33,9 @@ mpvc_web_defaults()
     MPVC_WEB_ROOT=${MPVC_WEB_ROOT:-/tmp/mpvc-web/root}
     MPVC_WEB_HOSTNAME=$(hostname)
     MPVC_WEB_SSL_PORT=${MPVC_WEB_SSL_PORT:-8443}
-    MPVC_WEB_SSL_PEM=$MPVC_WEB_ROOT/../stunnel.pem
-    MPVC_WEB_SSL_CFG=$MPVC_WEB_ROOT/../stunnel.cfg
-    MPVC_WEB_SSL_PID=$MPVC_WEB_ROOT/../stunnel.pid
+    MPVC_WEB_SSL_PEM=${MPVC_WEB_SSL_PEM:-$MPVC_WEB_ROOT/../stunnel.pem}
+    MPVC_WEB_SSL_CFG=${MPVC_WEB_SSL_CFG:-$MPVC_WEB_ROOT/../stunnel.cfg}
+    MPVC_WEB_SSL_PID=${MPVC_WEB_SSL_PID:-$MPVC_WEB_ROOT/../stunnel.pid}
     MPVC_WEB_SSL_ENABLE=${MPVC_WEB_SSL_ENABLE:-}
     MPVC_WEB_SSL_VERIFY=${MPVC_WEB_SSL_VERIFY:-0}
     MPVC_WEB_ARCHIVE_ENABLE=${MPVC_WEB_ARCHIVE_ENABLE:-}
@@ -509,7 +509,7 @@ mpvc_web()
     )
 }
 
-optflags="ha:b:c:d:p:P:r:s:t:"
+optflags="ha:b:c:d:p:P:r:s:S:t:"
 usage()
 {
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
@@ -540,6 +540,7 @@ main()
         P) MPVC_WEB_SSL_PORT="$OPTARG" ;;
         r) MPVC_WEB_ROOT="$OPTARG" ;;
         s) MPVC_WEB_SSL_ENABLE="$OPTARG" ;;
+        S) MPVC_WEB_SSL_PEM="$OPTARG" ;;
         t) MPVC_WEB_HTML_THEME="$OPTARG"  ;;
         a) MPVC_WEB_ARCHIVE_ENABLE="$OPTARG" ;;
         *) usage ;;
