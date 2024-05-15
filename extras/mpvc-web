@@ -46,6 +46,8 @@ mpvc_web_defaults()
     MPVC_WEB_SHORTCUT_CLI=${MPVC_WEB_SHORTCUT_CLI:-accesskey=i}
     MPVC_WEB_SHORTCUT_APPLY=${MPVC_WEB_SHORTCUT_APPLY:-accesskey=a}
     MPVC_WEB_SHORTCUT_TRACK=${MPVC_WEB_SHORTCUT_TRACK:-accesskey=t}
+    MPVC_WEB_SHORTCUT_PREV=${MPVC_WEB_SHORTCUT_PREV:-accesskey=p}
+    MPVC_WEB_SHORTCUT_NEXT=${MPVC_WEB_SHORTCUT_NEXT:-accesskey=n}
     MPVC_WEB_SHORTCUT_SEEK=${MPVC_WEB_SHORTCUT_SEEK:-accesskey=s}
     MPVC_WEB_SHORTCUT_VOL=${MPVC_WEB_SHORTCUT_VOL:-accesskey=v}
     MPVC_WEB_SHORTCUT_KILL=${MPVC_WEB_SHORTCUT_KILL:-accesskey=k}
@@ -201,8 +203,8 @@ mpvc_web_index()
             <a href="?cmd=mpvc --mute" ${MPVC_WEB_SHORTCUT_MUTE}>mute</a>
             <a href="?cmd=mpvc start 0">start</a>
             <a href="?cmd=mpvc start $">end</a>
-            <a href="?cmd=mpvc prev" title="prev">tr-</a>
-            <a href="?cmd=mpvc next" title="next">tr+</a>
+            <a href="?cmd=mpvc prev" title="prev" ${MPVC_WEB_SHORTCUT_PREV}>tr-</a>
+            <a href="?cmd=mpvc next" title="next" ${MPVC_WEB_SHORTCUT_NEXT}>tr+</a>
         </li>
         <li>
             mpvc
