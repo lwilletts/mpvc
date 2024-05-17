@@ -328,7 +328,7 @@ mpvctui_usage()
     exit;
 }
 
-optflags="d:hHktTm:nsSP:x"
+optflags="d:hHktTm:nsSP:u:x"
 mpvctui_main()
 {
     mpvctui_config
@@ -342,16 +342,17 @@ mpvctui_main()
         H) shift; cat $MPVC_SCROBBLER ;;
         t) shift; mpvctui_watch ;;
         T) shift;
-                  mpvc -q --mpv &
-                  ( sleep 2 && if [ "$#" -gt 0 ]; then mpvc --append "$@"; fi )
-                  ( sleep 1; pgrep -f "$PROGNAME -n" || setsid "$0" -n ) &
-                  mpvctui_watch
-                  ;;
+           mpvc -q --mpv &
+           ( sleep 2 && if [ "$#" -gt 0 ]; then mpvc --append "$@"; fi )
+           ( sleep 1; pgrep -f "$PROGNAME -n" || setsid "$0" -n ) &
+           mpvctui_watch
+           ;;
         m) shift; mpvctui_mouse "$OPTARG" ;;
         n) shift; mpvctui_notify_loop "${1:-}" ;;
         k) shift; pkill -f "$PROGNAME" ;;
         s) shift; mpvctui_suggest ;;
         S) shift; mpvctui_notify_loop_cli "${1:-}" ;;
+        u) shift; MPVC_UPDATEC="$OPTARG" ;;
         x) shift; if quiet command -v $MPVC_TERM; then $MPVC_TERM -e "$0" "$@"; fi; exit;;
         *) mpvctui_usage;;
         esac
