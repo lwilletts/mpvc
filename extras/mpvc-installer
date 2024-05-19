@@ -135,9 +135,9 @@ mpvc_check_update()
 
     if [ "$PROGVERSION" = "$master" ]
     then
-        echo "$PROGNAME: Not-Found new version $master available at $PROGURL"
+        echo "$PROGNAME: Not-Found new version at $PROGURL (latest: $master)"
     else
-        echo "$PROGNAME: Found new version $master available at $PROGURL"
+        echo "$PROGNAME: Found new version at $PROGURL (latest: $master)"
     fi
 }
 
