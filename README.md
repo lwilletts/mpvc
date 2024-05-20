@@ -11,7 +11,7 @@ This forks [lwillets/mpvc](https://github.com/lwilletts/mpvc) providing some ext
 Check the [Wiki](../../wiki), [LogBook](https://gmt4.github.io/mpvc/logbook.html) & [Casts](https://gmt4.github.io/mpvc/casts/) for a detailed view of the extra features of this fork.
 
 <details open>
-<summary>mpvc-tui -T: running the mpvc TUI<i>(click to view screenshot)</i></summary>
+<summary>mpvc-tui -T: running the mpvc TUI <i>(click to view screenshot)</i></summary>
 
 ![mpvc-tui -T screenshot](../../blob/master/docs/assets/mpvc-tui.png)
 </details>
