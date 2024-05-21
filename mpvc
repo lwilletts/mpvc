@@ -443,11 +443,19 @@ mpvc_lsplaylists() { ls -1d "$@" "$MPVC_PLAYLIST"/*; }
 mpvc_autosave_playlist() { mpvc_save_playlist "$MPVC_PLAYLIST/${1:-$(date -Imin)}"; }
 mpvc_autoload_playlist() { mpvc_load_playlist < "$MPVC_PLAYLIST/${1:-$(date -Imin)}"; }
 
-# loads a playlist from stdin. Note $buffer trick to avoid clear wiping the playlist
-mpvc_load_playlist() {
-    QUIETFLAG="true"
+# $buffer stdin: to save the whole stdin in one piece at once
+mpvc_buffer_stdin()
+{
     buffer=""
     while read -r line; do buffer="${buffer}\n${line}"; done
+    printf "$buffer\n"
+}
+
+# loads a playlist from stdin.
+mpvc_load_playlist() {
+    QUIETFLAG="true"
+    buffer=$(mpvc_buffer_stdin)
+
     if [ -z "$buffer" ]; then return; fi
     if [ "${1:-}" = "clear" ]; then mpvc_clear_playlist; fi
     printf "$buffer\n" | while read -r line; do mpvc_appendtracks "$line"; done
@@ -532,8 +540,13 @@ mpvc_stash() {
             #echo "mpvc set af $(mpvc_get af)"
             #echo "mpvc set working-directory $(mpvc_get working-directory)"
             ;;
+
+        replay)
+            buffer=$(mpvc_stash current "replay" | mpvc_buffer_stdin)
+            printf "$buffer\n" | mpvc_stash apply
+            ;;
         help)
-            echo "usage: $PROGNAME stash [list|current|edit|show|push|drop|apply]"
+            echo "usage: $PROGNAME stash [list|current|edit|show|push|drop|apply|replay]"
             ;;
         *)
             warn "$PROGNAME stash: error: unknown subcommand $cmd (see $PROGNAME stash help)."
