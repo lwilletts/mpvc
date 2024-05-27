@@ -129,7 +129,7 @@ mpvc_check_requirements()
 
 mpvc_check_update()
 {
-    master=$(curl -fsSL "$PROGURL/raw/master/extras/mpvc-installer" |
+    master=$(curl -fsSL "$PROGURL/raw/master/extras/$PROGNAME" |
         awk '/^PROGVERSION=/ { gsub("PROGVERSION=",""); gsub("\\x22",""); print}'
     )
 
