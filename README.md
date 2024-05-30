@@ -1,19 +1,18 @@
 
-![GitHub](https://img.shields.io/github/license/gmt4/mpvc)
-![GitHub Release Date](https://img.shields.io/github/release-date/gmt4/mpvc)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/gmt4/mpvc)
-![GitHub top language](https://img.shields.io/github/languages/top/gmt4/mpvc)
-![GitHub lines of Code](https://sloc.xyz/github/gmt4/mpvc/?category=code)
+![GitHub](https://img.shields.io/github/license/lwilletts/mpvc)
+![GitHub Release Date](https://img.shields.io/github/release-date/lwilletts/mpvc)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/lwilletts/mpvc)
+![GitHub top language](https://img.shields.io/github/languages/top/lwilletts/mpvc)
+![GitHub lines of Code](https://sloc.xyz/github/lwilletts/mpvc/?category=code)
 
 # mpvc 🎧
 
 An mpc-like control interface for the mpv player with a nearly complete compatibility layer for mpc commands in addition to GNU style arguments.
-This forks [lwillets/mpvc](https://github.com/lwilletts/mpvc) providing some extra goodies such as: improved CLI, TUI, FZF, WEB & playing media from YouTube & streaming services.
-Check the [Wiki](../../wiki), [LogBook](https://gmt4.github.io/mpvc/logbook.html) & [Casts](https://gmt4.github.io/mpvc/casts/) for a detailed view of the extra features of this fork.
+Check the [Wiki](../../wiki) for a view of the features.
 
 ## Overview
 
-[mpvc](https://github.com/gmt4/mpvc/) functionality is provided by:
+[mpvc](https://github.com/lwilletts/mpvc/) functionality is provided by:
 
 - [mpvc](../../blob/master/mpvc): provides the mpvc core CLI commands
 - [extras/mpvc-tui](../../blob/master/extras/mpvc-tui): provides a console TUI, using mpvc underneath
@@ -24,20 +23,17 @@ Check the [Wiki](../../wiki), [LogBook](https://gmt4.github.io/mpvc/logbook.html
 - [extras/mpvc-autostart](../../blob/master/extras/mpvc-autostart): automatic mpv start/stop based on presence.
 - [extras/mpvc-installer](../../blob/master/extras/mpvc-installer): provides an installer to install/update mpvc.
 
-For more details on how to use the above tools have a look at the [logbok.html](https://gmt4.github.io/mpvc/logbook.html).
-In addition, the [casts/](https://gmt4.github.io/mpvc/casts/) directory to shows some screencasts of mpvc in action.
-
 ## QuickInstall ▶️
 
 [mpvc-installer](../../blob/master/extras/mpvc-installer) fetch-user: installs mpvc under BINDIR=~/bin/
 
-`curl -fsSL -o mpvc-installer https://github.com/gmt4/mpvc/raw/master/extras/mpvc-installer && sh ./mpvc-installer fetch-user`
+`curl -fsSL -o mpvc-installer https://github.com/lwilletts/mpvc/raw/master/extras/mpvc-installer && sh ./mpvc-installer fetch-user`
 
 ## QuickStart
 
 <pre>
  <b># fetch a local copy of the github repo</b>
- git clone https://github.com/gmt4/mpvc/
+ git clone https://github.com/lwilletts/mpvc/
  <b># use extras/mpvc-installer: just copy/link to your $HOME/bin</b>
  (cd mpvc; extras/mpvc-installer link-user)
 
@@ -142,7 +138,7 @@ this by adding the video via mpvc, and manually switching to the video.
 
 ## Useful Tricks
 
-Some basic tricks are provided in [QuickStart](#quickstart). For more tips on loading/saving/maniputaling the mpv playlist/state, managing av/vf filters, etc. are provided in the [LogBook](https://gmt4.github.io/mpvc/logbook.html).
+Some basic tricks are provided in [QuickStart](#quickstart).
 
 - Hotkey daemons like [sxhkd](https://github.com/baskerville/sxhkd) can be used
   to bind mpvc commands to key combinations. Alternatively check your window
