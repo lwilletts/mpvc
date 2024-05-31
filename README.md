@@ -1,8 +1,8 @@
-![GitHub](https://img.shields.io/github/license/gmt4/mpvc)
-![GitHub Release Date](https://img.shields.io/github/release-date/gmt4/mpvc)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/gmt4/mpvc)
-![GitHub top language](https://img.shields.io/github/languages/top/gmt4/mpvc)
-![GitHub lines of Code](https://sloc.xyz/github/gmt4/mpvc/?category=code)
+![GitHub](https://img.shields.io/github/license/lwilletts/mpvc)
+![GitHub Release Date](https://img.shields.io/github/release-date/lwilletts/mpvc)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/lwilletts/mpvc)
+![GitHub top language](https://img.shields.io/github/languages/top/lwilletts/mpvc)
+![GitHub lines of Code](https://sloc.xyz/github/lwilletts/mpvc/?category=code)
 
 # mpvc 🎧
 
