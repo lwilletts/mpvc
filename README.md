@@ -8,7 +8,7 @@
 
 A terminal music player in POSIX sh(1) that interfaces mpv providing mpc(1) commands + extras.
 This forks [lwillets/mpvc](https://github.com/lwilletts/mpvc) providing some extra goodies such as: improved CLI, TUI, FZF, WEB, EQ, & playing media from YouTube & streaming services.
-Check the [Wiki](../../wiki), [LogBook](https://gmt4.github.io/mpvc/logbook.html) & [Casts](https://gmt4.github.io/mpvc/casts/) for a detailed view of the extra features of this fork.
+Check the [Wiki](../../wiki), [LogBook](../../wiki#logbook) & [Casts](../../wiki#screencasts) for a detailed view of the extra features of this fork.
 
 <details open>
 <summary>mpvc-tui -T: running the mpvc TUI <i>(click to view screenshot)</i></summary>
@@ -25,12 +25,12 @@ Check the [Wiki](../../wiki), [LogBook](https://gmt4.github.io/mpvc/logbook.html
 <details>
 <summary>mpvc-tui -n: running with mpvc-fzf and desktop notifications on the upper-right corner <i>(click to view screenshot)</i></summary>
 
-![mpvc tui+fzf+notifications screenshot](../../blob/master/docs/assets/mpvc-tui-fzf.png)
+![mpvc tui+fzf+notifications screenshot](../../blob/master/docs/assets/mpvc-tui-fzf.png) 
 </details> 
 
 ## Overview ▶️
 
-[mpvc](https://github.com/gmt4/mpvc/) player functionality is provided by:
+[mpvc](../../) player functionality is provided by:
 
 - [mpvc](../../blob/master/mpvc): provides the mpvc player core CLI commands
 - [extras/mpvc-tui](../../blob/master/extras/mpvc-tui): provides a console TUI, using mpvc underneath
@@ -41,8 +41,8 @@ Check the [Wiki](../../wiki), [LogBook](https://gmt4.github.io/mpvc/logbook.html
 - [extras/mpvc-autostart](../../blob/master/extras/mpvc-autostart): automatic mpv start/stop based on presence.
 - [extras/mpvc-installer](../../blob/master/extras/mpvc-installer): provides an installer to install/update mpvc.
 
-For more details on how to use the above tools have a look at the [logbok.html](https://gmt4.github.io/mpvc/logbook.html).
-In addition, the [casts/](https://gmt4.github.io/mpvc/casts/) directory to shows some screencasts of mpvc in action.
+For more details on how to use the above tools have a look at the [logbok.html](../../wiki#logbook).
+In addition, the [casts/](../../wiki#screencasts) directory to shows some screencasts of mpvc in action.
 
 ## Requirements
 
@@ -200,7 +200,7 @@ usage: mpvc-fzf -[01ab:cCd:efFg:G:hk:K:n:s:p:P:o:Or:lL:xv] args # @version v1.5 
 ## Tricks
 
 There's some basic tricks in [Git](#git) to get you started. 
-For more  check the  [LogBook](https://gmt4.github.io/mpvc/logbook.html).
+For more  check the  [LogBook](../../wiki#logbook).
 
 This gives just a sneak peek on what's possible to manage mpv from the command-line, your best chances are to go play and have fun.
 
