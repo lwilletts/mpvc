@@ -41,7 +41,7 @@ Check the [Wiki](../../wiki), [LogBook](../../wiki#logbook) & [Casts](../../wiki
 - [extras/mpvc-autostart](../../blob/master/extras/mpvc-autostart): automatic mpv start/stop based on presence.
 - [extras/mpvc-installer](../../blob/master/extras/mpvc-installer): provides an installer to install/update mpvc.
 
-For more details on how to use the above tools have a look at the [logbok.html](../../wiki#logbook).
+For more details on how to use the above tools have a look at the [LogBook](../../wiki#logbook).
 In addition, the [casts/](../../wiki#screencasts) directory to shows some screencasts of mpvc in action.
 
 ## Requirements
@@ -77,7 +77,7 @@ Check for missing dependencies using `mpvc-installer check-reqs`.
 The easiest install method is just to run the [mpvc-installer](../../blob/master/extras/mpvc-installer) to install under `$HOME/bin`
 
 ```console
-curl -fsSL -o mpvc-installer https://github.com/gmt4/mpvc/raw/master/extras/mpvc-installer \
+curl -fsSL -o mpvc-installer https://github.com/lwilletts/mpvc/raw/master/extras/mpvc-installer \
   && sh ./mpvc-installer fetch-user
 ```
 
@@ -85,7 +85,7 @@ curl -fsSL -o mpvc-installer https://github.com/gmt4/mpvc/raw/master/extras/mpvc
 
 ```sh
  # fetch a local copy of the github repo
- git clone https://github.com/gmt4/mpvc/
+ git clone https://github.com/lwilletts/mpvc/
  # use extras/mpvc-installer: just copy/link to your $HOME/bin
  (cd mpvc; extras/mpvc-installer link-user)
 
