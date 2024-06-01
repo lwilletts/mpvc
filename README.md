@@ -25,7 +25,7 @@ Check the [Wiki](../../wiki), [LogBook](../../wiki#logbook) & [Casts](../../wiki
 <details>
 <summary>mpvc-tui -n: running with mpvc-fzf and desktop notifications on the upper-right corner <i>(click to view screenshot)</i></summary>
 
-![mpvc tui+fzf+notifications screenshot](../../blob/master/docs/assets/mpvc-tui-fzf.png) 
+![mpvc tui+fzf+notifications screenshot](../../blob/master/docs/assets/mpvc-tui-fzf.png)
 </details> 
 
 ## Overview ▶️
