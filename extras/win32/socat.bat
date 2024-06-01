@@ -1,7 +1,7 @@
 ::
 :: @file socat.bat
 :: @description mimic socat over win32 named pipe for mpvc
-:: @author gmt4 <gmt4 at github.com> (c) Copyright 2022 MIT
+:: @author gmt4 <gmt4 at github.com> (c) Copyright 2022 GPLv2+
 :: @url github.com/gmt4/mpvc
 ::
 
