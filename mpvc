@@ -335,6 +335,7 @@ mpvc_get_playlist() {
     lcount=$(mpvc_get playlist-count)
     lpos=$(mpvc_get playlist-pos)
 
+    if [ -z "$lcount" ]; then return; fi
     firstlast=$(mpvc_get_terminal_height "$lpos" "$lcount")
     if [ "$mode" = "numbered" ]; then
         mpvc_get_playlist_once "$mode"; return
@@ -660,7 +661,9 @@ mpvc_remove_track() {
     if [ "$lid" = "$" ]; then lid=$(( $(mpvc_get playlist-count) - 1 )); fi
     filename="$(mpvc_get_playlist_filename "$lid")"
     mpvc_ecmdr "playlist-remove" "$lid" || return 1
-    quietcheck warn "$filename removed from playlist."
+    if [ -n "$filename" ]; then
+        quietcheck warn "$filename removed from playlist."
+    fi
 }
 
 mpvc_always_play() {
