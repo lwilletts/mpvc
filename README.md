@@ -7,7 +7,7 @@
 # mpvc 🎧
 
 A terminal music player in POSIX sh(1) that interfaces mpv providing mpc(1) commands + extras.
-This forks [lwillets/mpvc](https://github.com/lwilletts/mpvc) providing some extra goodies such as: improved CLI, TUI, FZF, WEB, EQ, & playing media from YouTube & streaming services.
+Originally a fork of [lwillets/mpvc](https://github.com/lwilletts/mpvc) that evolved on its own, providing some extra goodies such as: improved CLI, TUI, FZF, WEB, EQ, & playing media from YouTube & streaming services.
 Check the [Wiki](../../wiki), [LogBook](../../wiki#logbook) & [Casts](../../wiki#screencasts) for a detailed view of the extra features of this fork.
 
 <details open>
