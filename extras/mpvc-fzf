@@ -44,6 +44,11 @@ mpvcfzf_config()
     fi
 }
 
+mpvcfzf_isearch_once()
+{
+    mpvcfzf_isearch "$@" | awk 'NR==2 {sub(" +", " # "); print}'
+}
+
 mpvcfzf_isearch()
 {
     url_host="${url_host:-yewtu.be}"
@@ -190,8 +195,9 @@ mpvcfzf_fetch_remove()
 mpvcfzf_preview()
 {
     MPVC_FZF_BIND_HELP="C-x:list C-v:yt-dlp C-\\:local C-s:chapter C-t:add C-o:play C-r:reload C-spc:toggle"
-    #--bind='ctrl-d:execute(mpvc {q})'
-    #--bind='ctrl-d:execute-silent(mpvc seek -20 &)'
+    # --bind='ctrl-d:execute(mpvc {q})'
+    # --bind='left:execute-silent(mpvc -q seek -20 &)' \
+    # --bind='right:execute-silent(mpvc -q seek +20 &)' \
 
     # fzf keys: ctrl + [dorstxv\]
     fzf \
@@ -261,14 +267,19 @@ mpvcfzf_ddg_play()
                 mpvc load
 }
 
+mpvcfzf_urlget()
+{
+    url=${1:-https://localhost:8443/ytdl-archive/}
+    curl -k -fsSL "$url" |
+        awk '/<a href=".*">.*<\/a>/ { h=$0;sub("^.*href=\"","",h);sub("\".*$","",h);print h }'
+}
+
 mpvcfzf_urlbrowser()
 {
     url=${1:-https://localhost:8443/ytdl-archive/}
-
-    curl -k -fsSL "$url" |
-        awk '/<a href=".*">.*<\/a>/ { h=$0;sub("^.*href=\"","",h);sub("\".*$","",h);print h }' |
-            mpvcfzf_preview --prompt="(urlbrowse) " |
-                awk -v url="$url" '{ print url$0 }'
+    mpvcfzf_urlget "$url" |
+        mpvcfzf_preview --prompt="(urlbrowse) " |
+            awk -v url="$url" '{ print url$0 }'
 }
 
 mpvcfzf_equalizer()
@@ -323,7 +334,7 @@ mpvcfzf_version()
     echo "usage: $PROGNAME -[optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
 }
 
-optflags="01ab:cCd:efFg:G:hk:K:n:s:p:P:o:Or:lxv"
+optflags="01ab:B:cCd:efFg:G:hk:K:n:s:p:P:o:Or:lL:xv"
 mpvcfzf_usage()
 {
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
@@ -356,6 +367,7 @@ main()
 
         a) mpvcfzf_stashlist ;;
         b) mpvcfzf_urlbrowser "$OPTARG" ;;
+        B) mpvcfzf_urlget "$OPTARG" ;;
         c) mpvcfzf_chapterlist ;;
         C) shift; mpvcfzf_icache;;
         d) MPVC_DIR="$OPTARG"; cd "$MPVC_DIR" || return;;
@@ -368,8 +380,9 @@ main()
         K) mpvcfzf_ddg "$OPTARG";;
         h) mpvcfzf_usage ;;
         l) mpvcfzf_local ;;
+        L) mpvcfzf_isearch_once "$OPTARG" | mpvcfzf_awk1 | mpvc load ;; # lucky
         n) mpvcfzf_nextvideo "$OPTARG" ;;
-        o) mpvcfzf_isearch "$OPTARG" | awk 'NR==2 {print}' ;;
+        o) mpvcfzf_isearch_once "$OPTARG" ;;
         O) mpvcfzf_icache_output_dir ;;
         r) mpvcfzf_fetch_remove "$OPTARG" ;;
         p) mpvcfzf_iplay "$OPTARG" | mpvc load ;;

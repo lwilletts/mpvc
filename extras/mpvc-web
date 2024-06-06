@@ -25,19 +25,44 @@ mpvc_web_defaults()
 {
     MPVC=$(command -v mpvc)
 
+    XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}
+    MPVC_CONFIG="${MPVC_CONFIG:-$XDG_CONFIG_HOME/mpvc/mpvc.conf}"
+
     MPVC_WEB_HOST=${MPVC_WEB_HOST:-localhost}
     MPVC_WEB_PORT=${MPVC_WEB_PORT:-8000}
     MPVC_WEB_ROOT=${MPVC_WEB_ROOT:-/tmp/mpvc-web/root}
     MPVC_WEB_HOSTNAME=$(hostname)
     MPVC_WEB_SSL_PORT=${MPVC_WEB_SSL_PORT:-8443}
-    MPVC_WEB_SSL_PEM=$MPVC_WEB_ROOT/../stunnel.pem
-    MPVC_WEB_SSL_CFG=$MPVC_WEB_ROOT/../stunnel.cfg
-    MPVC_WEB_SSL_PID=$MPVC_WEB_ROOT/../stunnel.pid
+    MPVC_WEB_SSL_PEM=${MPVC_WEB_SSL_PEM:-$MPVC_WEB_ROOT/../stunnel.pem}
+    MPVC_WEB_SSL_CFG=${MPVC_WEB_SSL_CFG:-$MPVC_WEB_ROOT/../stunnel.cfg}
+    MPVC_WEB_SSL_PID=${MPVC_WEB_SSL_PID:-$MPVC_WEB_ROOT/../stunnel.pid}
     MPVC_WEB_SSL_ENABLE=${MPVC_WEB_SSL_ENABLE:-}
     MPVC_WEB_SSL_VERIFY=${MPVC_WEB_SSL_VERIFY:-0}
     MPVC_WEB_ARCHIVE_ENABLE=${MPVC_WEB_ARCHIVE_ENABLE:-}
+    MPVC_WEB_HTML_THEME=${MPVC_WEB_HTML_THEME:-}
+
+    # accesskey keyboard shortcuts
+    MPVC_WEB_SHORTCUT_REFRESH=${MPVC_WEB_SHORTCUT_REFRESH:-accesskey=m}
+    MPVC_WEB_SHORTCUT_CLI=${MPVC_WEB_SHORTCUT_CLI:-accesskey=i}
+    MPVC_WEB_SHORTCUT_APPLY=${MPVC_WEB_SHORTCUT_APPLY:-accesskey=a}
+    MPVC_WEB_SHORTCUT_TRACK=${MPVC_WEB_SHORTCUT_TRACK:-accesskey=t}
+    MPVC_WEB_SHORTCUT_PREV=${MPVC_WEB_SHORTCUT_PREV:-accesskey=p}
+    MPVC_WEB_SHORTCUT_NEXT=${MPVC_WEB_SHORTCUT_NEXT:-accesskey=n}
+    MPVC_WEB_SHORTCUT_SEEK=${MPVC_WEB_SHORTCUT_SEEK:-accesskey=s}
+    MPVC_WEB_SHORTCUT_VOL=${MPVC_WEB_SHORTCUT_VOL:-accesskey=v}
+    MPVC_WEB_SHORTCUT_KILL=${MPVC_WEB_SHORTCUT_KILL:-accesskey=k}
+    MPVC_WEB_SHORTCUT_PAUSE=${MPVC_WEB_SHORTCUT_PAUSE:-accesskey=p}
+    MPVC_WEB_SHORTCUT_EQUALIZER=${MPVC_WEB_SHORTCUT_EQUALIZER:-accesskey=e}
+    MPVC_WEB_SHORTCUT_ARCHIVE=${MPVC_WEB_SHORTCUT_ARCHIVE:-accesskey=f}
+    MPVC_WEB_SHORTCUT_MUTE=${MPVC_WEB_SHORTCUT_MUTE:-accesskey=g}
+    MPVC_WEB_SHORTCUT_HELP=${MPVC_WEB_SHORTCUT_HELP:-accesskey=h}
 
     MPVC_CGI="$MPVC_WEB_ROOT/cgi-bin/mpvc"
+
+    # if present load user config
+    if [ -r "$MPVC_CONFIG" ]; then
+        . "$MPVC_CONFIG"
+    fi
 }
 
 mpvc_web_config()
@@ -63,15 +88,37 @@ mpvc_web_style()
 mpvc_web_select_form()
 {
     cmd="$1"
+    arg="${2:-}"
 
-    echo '<form action="/" method="get">'
-    echo "$cmd"
-    awk -v cmd="$cmd" '
-        BEGIN  { print "<select name=cli id=cli-select onchange=this.form.submit() style=\"width:100%; height:1.2rem\" >"; printf "<option value=\"\"># Select</option>\n"  }
+    echo "<form action=/ method=get>"
+    echo "<span title="$arg" >$cmd</span>"
+    awk -v cmd="$cmd" -v arg="$arg" '
+        BEGIN  { print "<select name=cli id=cli-select "arg" onchange=this.form.submit() style=\"width:100%; height:1.2rem\" >"; printf "<option value=\"\"># Select</option>\n"  }
         NR > 0 { gsub("\"",""); print "<option value=\""cmd" "$0"\">"$0"</option>" }
         END    { print "</select>"}
     '
     echo '</form>'
+}
+
+mpvc_web_help()
+{
+    cat <<EOF
+$PROGNAME HTML accesskeys shortcuts:\n
+\n
+- $MPVC_WEB_SHORTCUT_HELP: this help\n
+- $MPVC_WEB_SHORTCUT_APPLY: select stash\n
+- $MPVC_WEB_SHORTCUT_CLI: select cli\n
+- $MPVC_WEB_SHORTCUT_EQUALIZER: select equalizer\n
+- $MPVC_WEB_SHORTCUT_REFRESH: refresh\n
+- $MPVC_WEB_SHORTCUT_KILL: select kill\n
+- $MPVC_WEB_SHORTCUT_TRACK: select track\n
+- $MPVC_WEB_SHORTCUT_SEEK: select seek\n
+- $MPVC_WEB_SHORTCUT_PAUSE: select pause\n
+- $MPVC_WEB_SHORTCUT_VOL: select volume\n
+- $MPVC_WEB_SHORTCUT_ARCHIVE: select archive\n
+\n
+*For more, Read The Source Luke!\n
+EOF
 }
 
 mpvc_web_index()
@@ -102,6 +149,12 @@ mpvc_web_index()
     @media (prefers-color-scheme: dark) {
        :root { --body-bg: #222; --body-color: #eee; --pre-bg:#333; --link-color:#07f; }
     }
+    $(
+    case "${MPVC_WEB_HTML_THEME:-}" in
+    light) echo ":root { --body-bg: #fff; --body-color: #111; --pre-bg:#eee; --link-color:#00f; }" ;;
+    dark)  echo ":root { --body-bg: #222; --body-color: #eee; --pre-bg:#333; --link-color:#07f; }" ;;
+    esac
+    )
     body { background: var(--body-bg); color: var(--body-color); font-family: monospace; }
     code { background: var(--pre-bg); }
     pre  { background: var(--pre-bg); }
@@ -115,10 +168,11 @@ mpvc_web_index()
 
     <body>
         [
-            <a href="." name="mpvc-web">$PROGNAME</a>
+            🎧
+            <a href="." name="mpvc-web" ${MPVC_WEB_SHORTCUT_REFRESH}>$PROGNAME</a>
             <a href="#status">#stat</a>
             <a href="#mpvc-web-playlist">#list</a>
-            <a href="#prompt">#prompt</a>
+            <a href="https://gmt4.github.io/mpvc/now/">#now</a>
             $([ -n "$MPVC_WEB_ARCHIVE_ENABLE" ] && echo '<a href="ytdl-archive" >#arch</a>'; )
         ]
         <hr>
@@ -127,28 +181,30 @@ mpvc_web_index()
         <!-- enable this optionally: only for dev/testing -->
         <form action="/" method="get" >
             mpvc cli
-            <input type="text" id="cli" name="cli" autocomplete="on" placeholder="mpvc status ${MPVC_WEB_DEV:-(off)}" title="mpvc cli" onkeydown="if (event.keyCode == 13) { this.form.submit(); return false; }" style="height:0.8rem">
+            <input type="text" id="cli" name="cli" ${MPVC_WEB_SHORTCUT_CLI} autocomplete="on" placeholder="mpvc status ${MPVC_WEB_DEV:-(off)}" title="mpvc cli" onkeydown="if (event.keyCode == 13) { this.form.submit(); return false; }" style="height:0.8rem">
         </form>
         <li>
-            $(mpvc stash list | awk 'NR>1{print $NF}' | mpvc_web_select_form "mpvc -q stash apply")
+            $(mpvc stash list | awk 'NR>1{print $NF}' | mpvc_web_select_form "mpvc -q stash apply" "${MPVC_WEB_SHORTCUT_APPLY}")
         </li>
         </li>
         <li>
             mpvc
-            <a href="?cmd=mpvc status">status</a>
-            <a href="?cmd=mpvc toggle">toggle</a>
+            <!--<a href="?cmd=mpvc status">status</a>-->
+            <a href="?cmd=mpvc toggle" ${MPVC_WEB_SHORTCUT_PAUSE}>pause</a>
             <a href="?cmd=mpvc mpv">mpv</a>
-            <a href="?cmd=mpvc kill">kill</a>
+            <a href="?cmd=mpvc kill" ${MPVC_WEB_SHORTCUT_KILL}>kill</a>
             <a href="?cmd=mpvc clear">clear</a>
+            <a href="?cmd=mpvc vol -5" title="vol down">v-</a>
+            <a href="?cmd=mpvc vol +5" title="vol up">v+</a>
         </li>
         <li>
             mpvc
             <a href="?cmd=mpvc play">play</a>
+            <a href="?cmd=mpvc --mute" ${MPVC_WEB_SHORTCUT_MUTE}>mute</a>
             <a href="?cmd=mpvc start 0">start</a>
             <a href="?cmd=mpvc start $">end</a>
-            <a href="?cmd=mpvc playrand">rand</a>
-            <a href="?cmd=mpvc prev">prev</a>
-            <a href="?cmd=mpvc next">next</a>
+            <a href="?cmd=mpvc prev" title="prev" ${MPVC_WEB_SHORTCUT_PREV}>tr-</a>
+            <a href="?cmd=mpvc next" title="next" ${MPVC_WEB_SHORTCUT_NEXT}>tr+</a>
         </li>
         <li>
             mpvc
@@ -156,43 +212,52 @@ mpvc_web_index()
             <a href="?cmd=mpvc single">single</a>
             <a href="?cmd=mpvc replay">replay</a>
             <a href="?cmd=mpvc cmd ab-loop">ab-loop</a>
+            <!--
+            <a href="?cmd=mpvc seek -10" title="seek fwd">s-</a>
+            <a href="?cmd=mpvc seek +10" title="seek bwd">s+</a>
+            -->
         </li>
         <li>
             mpvc
-            <a href="?cmd=mpvc playlist-shuffle">playlist</a>
             <a href="?cmd=mpvc shuffle">shuffle</a>
             <a href="?cmd=mpvc unshuffle">unshuffle</a>
+            <a href="?cmd=mpvc playrand">rand</a>
         </li>
         <li>
-            mpvc vid
-            <a href="?cmd=mpvc togglev">video</a>
-            <a href="?cmd=mpvc aspect">aspect</a>
-            <a href="?cmd=mpvc togglew">win</a>
-            <a href="?cmd=mpvc togglef">fs</a>
-            <a href="?cmd=mpvc togglei">idle</a>
+            mpvc
+            <a href="?cmd=mpvc togglev" title="togglev">video</a>
+            <a href="?cmd=mpvc aspect"  title="togglea">aspect</a>
+            <a href="?cmd=mpvc togglew" title="togglew">win</a>
+            <a href="?cmd=mpvc togglef" title="togglef">fs</a>
+            <a href="?cmd=mpvc togglei" title="togglei">idle</a>
         </li>
         <li>
-            mpvc ch
+            mpvc
             <a href="?cmd=mpvc cplayrand">crand</a>
             <a href="?cmd=mpvc creplay">creplay</a>
-            <a href="?cmd=mpvc cprev">cprev</a>
-            <a href="?cmd=mpvc cnext">cnext</a>
+            <a href="?cmd=mpvc cloop">cloop</a>
+            <a href="?cmd=mpvc cprev" title="cprev">ch-</a>
+            <a href="?cmd=mpvc cnext" title="cnext">ch+</a>
         </li>
         <li>
-            $(mpvc --nocolor fullplaylist | awk '{print $1,"#",$0}' | mpvc_web_select_form "mpvc -q play")
+            $(echo "-15\n-10\n-5\n-2\n0\n+2\n+5\n+10\n+15" | mpvc_web_select_form "mpvc -q track" "${MPVC_WEB_SHORTCUT_TRACK}")
         </li>
         <li>
             $(mpvc --nocolor chapter-list-nr | awk '{print $1,"#",$0}' | mpvc_web_select_form "mpvc -q cplay")
         </li>
         <li>
-            $(echo "-30\n-20\n-10\n-5\n0\n+5\n+10\n+20\n+30" | mpvc_web_select_form "mpvc -q vol")
+            $(echo "-30\n-20\n-10\n-5\n0\n+5\n+10\n+20\n+30" | mpvc_web_select_form "mpvc -q vol" "${MPVC_WEB_SHORTCUT_VOL}")
         </li>
         <li>
-            $(echo "-120\n-60\n-25\n+25\n+60\n+120" | mpvc_web_select_form "mpvc -q seek")
+            $(echo "-120\n-60\n-25\n+25\n+60\n+120" | mpvc_web_select_form "mpvc -q seek" "${MPVC_WEB_SHORTCUT_SEEK}")
         </li>
         <li>
-            $(mpvc-equalizer preset | awk '/ # preset: / {print $NF}' | mpvc_web_select_form "mpvc-equalizer load")
+            $(if [ -n "$MPVC_WEB_ARCHIVE_ENABLE" ]; then find "ytdl-archive/" | awk -F/ '{print "https://"$NF}' | mpvc_web_select_form "mpvc add" "${MPVC_WEB_SHORTCUT_ARCHIVE}"; fi)
         </li>
+        <li>
+            $(mpvc-equalizer preset | awk '/ # preset: / {print $NF}' | mpvc_web_select_form "mpvc-equalizer load" "${MPVC_WEB_SHORTCUT_EQUALIZER}")
+        </li>
+
         <li>
         mpvc theme
             <a href="#" title="theme 2" onclick="document.body.style.WebkitFilter='invert(0.2)';">th2</a>
@@ -208,7 +273,7 @@ mpvc_web_index()
           <a href="#mpvc-web-playlist" name="mpvc-web-playlist">Playlist</a>
           <a href="#mpvc-web-fullplaylist" name="mpvc-web-fullplaylist">full</a>
           <a href="#mpvc-web-rawplaylist" name="mpvc-web-rawplaylist">raw</a>
-          <a href="#mpvc-web-chapter-list-full" name="mpvc-web-chapter-list-full">chapters</a>
+          <a href="#mpvc-web-chapter-list-nr" name="mpvc-web-chapter-list-nr">chapters</a>
           <a href="javascript:window.location.reload()" >load</a>
         ] <hr>
         <div style="display:flex">
@@ -219,12 +284,14 @@ mpvc_web_index()
         case '#mpvc-web-playlist':           { pl.src='/cgi-bin/mpvc?playlist'; break; }
         case '#mpvc-web-fullplaylist':       { pl.src='/cgi-bin/mpvc?fullplaylist'; break; }
         case '#mpvc-web-rawplaylist':        { pl.src='/cgi-bin/mpvc?rawplaylist'; break; }
+        case '#mpvc-web-chapter-list-nr':    { pl.src='/cgi-bin/mpvc?chapter-list-nr'; break; }
         case '#mpvc-web-chapter-list-full':  { pl.src='/cgi-bin/mpvc?chapter-list-full'; break; }
         }
         </script>
         </div>
-        [ <a href="#mpvc-web-prompt" name="mpvc-web-prompt">Prompt</a> ] <hr>
-        🎧 <a href="$PROGURL">$PROGNAME</a> $PROGVERSION, mpvc-tui for the web
+        <hr>
+        <a href="$PROGURL">$PROGNAME</a> $(mpvc-installer check-update | awk -v progurl=$PROGURL '{ print "<a href="progurl" style=color:"(match($0,"Not-Found")?"none":"red")">"$NF"</a>"; }') mpvc-tui for the web
+        <a href="javascript:alert('$(mpvc_web_help)')" ${MPVC_WEB_SHORTCUT_HELP}>/h</a>
     </body>
 </html>
 EOF
@@ -276,21 +343,21 @@ mpvc_web_cgi()
 #!/bin/sh
 set -euf
 mpvc_strip_escapes(){ sed '/\x1b\[7m/ { s|\x1b\[7m||; s| |+|; }; s|\x1b\[0m||;'; }
-mpvc() { $MPVC "\$@"; }
 mpvc_out() { echo "Content-Type: text/plain"; echo; $MPVC "\$@"; }
 main()
 {
     if [ -n "\${USER:-}" ]; then
         env -i PATH="/usr/bin:/bin" HOME="\$HOME" TERM="\$TERM" QUERY_STRING="\${QUERY_STRING:-}" "\$0" "\$@"; exit;
     fi
+    cmd="\${1:-}"; case "\$cmd" in equalizer|fzf|now) shift; $MPVC-\$cmd "\$@"; return ;; esac
     case "\${QUERY_STRING:-}" in
-        status)            mpvc_out status;;
-        playlist)          mpvc_out playlist | mpvc_strip_escapes ;;
+        status|playlist)   mpvc_out "\${QUERY_STRING}" | mpvc_strip_escapes ;;
         fullplaylist)      mpvc_out fullplaylist | mpvc_strip_escapes ;;
         rawplaylist)       mpvc_out saven | mpvc_strip_escapes ;;
         chapter-list)      mpvc_out chapter-list | mpvc_strip_escapes ;;
+        chapter-list-nr)   mpvc_out chapter-list-nr | mpvc_strip_escapes ;;
         chapter-list-full) mpvc_out chapter-list-full | mpvc_strip_escapes ;;
-        *)            mpvc "\$@" ;;
+        *)                 $MPVC "\$@" ;;
     esac
 }
 main "\$@"
@@ -312,8 +379,9 @@ sslVersion = all
 options = NO_SSLv2
 options = NO_SSLv3
 
-socket = l:TCP_NODELAY=1
-socket = r:TCP_NODELAY=1
+#socket = a:TCP_NODELAY=1
+#socket = l:TCP_NODELAY=1
+#socket = r:TCP_NODELAY=1
 pid=$MPVC_WEB_SSL_PID
 
 [mpvc-web]
@@ -331,7 +399,7 @@ EOF
 mpvc_web()
 {
     mpvc_web_config
-    echo "# $PROGNAME $PROGVERSION running (beta version: might contain bugs!) SSL=${MPVC_WEB_SSL_ENABLE} $MPVC_WEB_HOST:$MPVC_WEB_SSL_PORT"
+    echo "# $PROGNAME $PROGVERSION running (beta version: might contain bugs!) SSL=${MPVC_WEB_SSL_ENABLE}"
 
     (
         # setup http webroot
@@ -341,7 +409,14 @@ mpvc_web()
         cd "$MPVC_WEB_ROOT" || return
         chmod u+w -R "${MPVC_WEB_ROOT%/*}"
 
+        # setup streamable mpvc archive if requested
+        if [ -n "${MPVC_WEB_ARCHIVE_ENABLE}" ]; then
+            echo "# $PROGNAME Setup $MPVC_WEB_ROOT/ytdl-archive/"
+            ln -f -s "$HOME/.config/mpvc/ytdl-archive/" "$MPVC_WEB_ROOT/"
+        fi
+
         mpvc_web_index > "$MPVC_WEB_ROOT/index.html"
+        mpvc_web_favicon > "$MPVC_WEB_ROOT/favicon.ico"
         mpvc_web_favicon > "$MPVC_WEB_ROOT/apple-touch-icon.svg"
         [ ! -e "$MPVC_WEB_ROOT/style.css" ] && mpvc_web_style > "$MPVC_WEB_ROOT/style.css"
         mpvc_web_cgi > "$MPVC_CGI"
@@ -349,7 +424,7 @@ mpvc_web()
 
         # setup https stunnel if requested
         if [ -n "${MPVC_WEB_SSL_ENABLE}" ]; then
-            echo "# $PROGNAME Setup $MPVC_WEB_SSL_CFG"
+            echo "# $PROGNAME Setup $MPVC_WEB_ROOT stunnel: $MPVC_WEB_HOST:$MPVC_WEB_SSL_PORT"
             mpvc_web_stunnel_cfg > "$MPVC_WEB_SSL_CFG"
             if [ ! -e "$MPVC_WEB_SSL_PEM" ]; then
                 MPVC_WEB_SSL_SUBJ="/C=CN/ST=ST/O=$PROGNAME/CN=$PROGNAME-$MPVC_WEB_HOSTNAME"
@@ -362,16 +437,10 @@ mpvc_web()
             stunnel "$MPVC_WEB_SSL_CFG"
         fi
 
-        # setup streamable mpvc archive if requested
-        if [ -n "${MPVC_WEB_ARCHIVE_ENABLE}" ]; then
-            echo "# $PROGNAME Setup $MPVC_WEB_ROOT/ytdl-archive/"
-            ln -f -s $HOME/.config/mpvc/ytdl-archive "$MPVC_WEB_ROOT/"
-        fi
-
         if [ -n "${MPVC_WEB_DEV:-}" ]; then
-            echo "# $PROGNAME Setup MPVC_WEB_DEV=$MPVC_WEB_DEV is set"
+            echo "# $PROGNAME Setup development/cli features (MPVC_WEB_DEV=$MPVC_WEB_DEV is set)"
         else
-            echo "# $PROGNAME Setup MPVC_WEB_DEV=${MPVC_WEB_DEV:-} is not set, CLI wont work"
+            echo "# $PROGNAME Setup development/cli features (MPVC_WEB_DEV=${MPVC_WEB_DEV:-} is not set)"
         fi
 
         chmod a-w -R "$MPVC_WEB_ROOT/"
@@ -383,7 +452,10 @@ mpvc_web()
         /GET \/\?cmd=mpvc%20mpv/          { system(mpvc" -q mpv") }
         /GET \/\?cmd=mpvc%20clear/        { system(mpvc" -q clear") }
         /GET \/\?cmd=mpvc%20kill/         { system(mpvc" -q kill") }
+        /GET \/\?cmd=mpvc%20vol%20-5/     { system(mpvc" -q vol -5") }
+        /GET \/\?cmd=mpvc%20vol%20\+5/    { system(mpvc" -q vol +5") }
 
+        /GET \/\?cmd=mpvc%20--mute/       { system(mpvc" -q --mute") }
         /GET \/\?cmd=mpvc%20toggle/       { system(mpvc" -q toggle") }
         /GET \/\?cmd=mpvc%20play/         { system(mpvc" -q play") }
         /GET \/\?cmd=mpvc%20start%200/    { system(mpvc" -q start 0") }
@@ -408,6 +480,7 @@ mpvc_web()
 
         /GET \/\?cmd=mpvc%20cstart/       { system(mpvc" -q cplay 0") }
         /GET \/\?cmd=mpvc%20creplay/      { system(mpvc" -q chapter-replay") }
+        /GET \/\?cmd=mpvc%20cloop/        { system(mpvc" -q chapter-loop") }
         /GET \/\?cmd=mpvc%20cprev/        { system(mpvc" -q chapter-prev") }
         /GET \/\?cmd=mpvc%20cnext/        { system(mpvc" -q chapter-next") }
         /GET \/\?cmd=mpvc%20cplayrand/    { system(mpvc" -q cplayrand") }
@@ -416,13 +489,19 @@ mpvc_web()
             r=$0;
             gsub("HTTP.*$", "", r);
             gsub("^.*GET \\/\\?cli=mpvc\\+", mpvc" ", r);
+            gsub("^.*GET \\/\\?cli=mpvc-", mpvc" ", r);
 
             if (ENVIRON["MPVC_WEB_DEV"] && match(r, "^"mpvc))
             {
                 gsub("^("mpvc") [^a-zA-Z0-9 ]*", mpvc" ", r);
                 gsub("\\+", " ", r);
+                gsub("%22", "\"", r);
                 gsub("%2B", "+", r);
                 gsub("%23", "#", r);
+                gsub("%2F", "/",r);
+                gsub("%3A", ":",r);
+
+                #print(r);
                 system(r); # XXX
             }
         }
@@ -432,7 +511,7 @@ mpvc_web()
     )
 }
 
-optflags="ha:b:c:d:p:r:s:"
+optflags="ha:b:c:d:p:P:r:s:S:t:"
 usage()
 {
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
@@ -460,8 +539,11 @@ main()
         d) MPVC_WEB_DEV="$OPTARG"; ;;
         b) MPVC_WEB_HOST="$OPTARG" ;;
         p) MPVC_WEB_PORT="$OPTARG" ;;
+        P) MPVC_WEB_SSL_PORT="$OPTARG" ;;
         r) MPVC_WEB_ROOT="$OPTARG" ;;
         s) MPVC_WEB_SSL_ENABLE="$OPTARG" ;;
+        S) MPVC_WEB_SSL_PEM="$OPTARG" ;;
+        t) MPVC_WEB_HTML_THEME="$OPTARG"  ;;
         a) MPVC_WEB_ARCHIVE_ENABLE="$OPTARG" ;;
         *) usage ;;
         esac

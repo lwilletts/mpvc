@@ -162,7 +162,7 @@ mpvc_defaults()
         FORMATSTRING="\
 %artist% - %title% \r\
 [%status%] #%position%/%playlistlength% %time%/%length% (%percentage%%%) \r\
-speed:%speed%x volume:%volume%%% muted:%muted% repeat:%repeat% single:%single% \r\
+speed:%speed%x vol:%volume%%% mute:%muted% repeat:%repeat% single:%single% \r\
 video:%video% aspect:%aspect% win:%force-window% fs:%fullscreen% idle:%idle% \r\
 chapter:%chapter% %=chapter%/%chapters%"
     fi
@@ -323,8 +323,10 @@ mpvc_get_playlist_filename() {
     lid="${1:-}"
     fullPath="${2:-}"
     filename=$(mpvc_get "playlist/$lid/filename")
-    if [  "$fullPath" != "fullpath" ]; then filename=$(mpvc_curl_cache_title_clean "$filename"); fi
-    echo "$filename"
+    result=$filename
+    if [ "$fullPath" != "fullpath" ]; then result=$(mpvc_curl_cache_title_clean "$filename"); fi
+    result="${result:-${filename%%*/}}"
+    echo "$result"
 }
 
 # print filenames in the current playlist, mode=numbered disables filenames/URLs to title expansion
@@ -333,6 +335,7 @@ mpvc_get_playlist() {
     lcount=$(mpvc_get playlist-count)
     lpos=$(mpvc_get playlist-pos)
 
+    if [ -z "$lcount" ]; then return; fi
     firstlast=$(mpvc_get_terminal_height "$lpos" "$lcount")
     if [ "$mode" = "numbered" ]; then
         mpvc_get_playlist_once "$mode"; return
@@ -441,11 +444,19 @@ mpvc_lsplaylists() { ls -1d "$@" "$MPVC_PLAYLIST"/*; }
 mpvc_autosave_playlist() { mpvc_save_playlist "$MPVC_PLAYLIST/${1:-$(date -Imin)}"; }
 mpvc_autoload_playlist() { mpvc_load_playlist < "$MPVC_PLAYLIST/${1:-$(date -Imin)}"; }
 
-# loads a playlist from stdin. Note $buffer trick to avoid clear wiping the playlist
-mpvc_load_playlist() {
-    QUIETFLAG="true"
+# $buffer stdin: to save the whole stdin in one piece at once
+mpvc_buffer_stdin()
+{
     buffer=""
     while read -r line; do buffer="${buffer}\n${line}"; done
+    printf "$buffer\n"
+}
+
+# loads a playlist from stdin.
+mpvc_load_playlist() {
+    QUIETFLAG="true"
+    buffer=$(mpvc_buffer_stdin)
+
     if [ -z "$buffer" ]; then return; fi
     if [ "${1:-}" = "clear" ]; then mpvc_clear_playlist; fi
     printf "$buffer\n" | while read -r line; do mpvc_appendtracks "$line"; done
@@ -463,7 +474,7 @@ mpvc_stash() {
                 cat "$MPVC_STASH_DIR/$1";
             fi
             ;;
-        edit) ${EDITOR:-vi} "$MPVC_STASH_DIR/$1" ;;
+        edit|ed) ${EDITOR:-vi} "$MPVC_STASH_DIR/$1" ;;
         drop) rm -i "$MPVC_STASH_DIR/$1" ;;
         push)
             stashid="${1:-}"
@@ -500,7 +511,7 @@ mpvc_stash() {
                 esac
             done
             ;;
-        current)
+        current|curr)
             echo "# $PROGNAME stash $MPVC_STASH_DIR/$1 # $PROGURL @version $PROGVERSION"
             echo "mpvc mpv"
             echo "mpvc wait"
@@ -530,8 +541,13 @@ mpvc_stash() {
             #echo "mpvc set af $(mpvc_get af)"
             #echo "mpvc set working-directory $(mpvc_get working-directory)"
             ;;
+
+        replay)
+            buffer=$(mpvc_stash current "replay" | mpvc_buffer_stdin)
+            printf "$buffer\n" | mpvc_stash apply
+            ;;
         help)
-            echo "usage: $PROGNAME stash [list|current|edit|show|push|drop|apply]"
+            echo "usage: $PROGNAME stash [list|current|edit|show|push|drop|apply|replay]"
             ;;
         *)
             warn "$PROGNAME stash: error: unknown subcommand $cmd (see $PROGNAME stash help)."
@@ -645,7 +661,9 @@ mpvc_remove_track() {
     if [ "$lid" = "$" ]; then lid=$(( $(mpvc_get playlist-count) - 1 )); fi
     filename="$(mpvc_get_playlist_filename "$lid")"
     mpvc_ecmdr "playlist-remove" "$lid" || return 1
-    quietcheck warn "$filename removed from playlist."
+    if [ -n "$filename" ]; then
+        quietcheck warn "$filename removed from playlist."
+    fi
 }
 
 mpvc_always_play() {
@@ -653,11 +671,6 @@ mpvc_always_play() {
         mpvc_set_track 0 absolute; return
     fi
     mpvc_set "pause" "no"
-}
-
-mpvc_toggle_mute() {
-    if [ $# -gt 0 ]; then mpvc_set "mute" "${1:-}"; return; fi
-    mpvc_ecmdr "cycle" "mute"
 }
 
 mpvc_toggle_loop() {
@@ -806,6 +819,25 @@ mpvc_chapter_list()
             }
         }'
         QUIETFLAG=true
+}
+
+# use mpv ab-loop to loop a chapter
+mpvc_chapter_cloop()
+{
+    chapter=""
+    abloopa="no"
+    abloopb="no"
+    cpos=$(mpvc_get chapter)
+    if [ "$cpos" = "null" ]; then return; fi
+    if [ "$(mpvc_get ab-loop-a)" = "no" -a "$cpos" -ge 0 ]; then
+        chapterlist="$(mpvc getr chapter-list)"
+        chapter="$(echo "$chapterlist" | jq ".data | .[$cpos + 0] | .title")"
+        abloopa="$(echo "$chapterlist" | jq ".data | .[$cpos + 0] | .time")"
+        abloopb="$(echo "$chapterlist" | jq ".data | .[$cpos + 1] | .time")"
+        if [ "$abloopb" = "null" ]; then abloopb="$(mpvc_get duration)"; fi
+    fi
+    mpvc_set ab-loop-a "$abloopa"
+    mpvc_set ab-loop-b "$abloopb"
 }
 
 mpvc_chapter_replay() { mpvc_chapter_set "$(mpvc_get chapter)"; }
@@ -1020,8 +1052,8 @@ main() {
             next|--next)    mpvc_set_track 1 relative ;;
             prev|--prev)    mpvc_set_track -1 relative;;
             move|mv)        shift; mpvc_move_track "${1:-}" "${2:-}" ;;
-            mute)           mpvc_toggle_mute yes ;;
-            unmute)         mpvc_toggle_mute no ;;
+            mute)           mpvc_set "mute" "yes" ;;
+            unmute)         mpvc_set "mute" "no" ;;
             pretty)         die 1 "$PROGNAME: Error $* not implemented" ;;
             find)           die 1 "$PROGNAME: Error $* not implemented" ;;
 
@@ -1098,6 +1130,8 @@ main() {
             cplay|--chapter-play|chapter-play)            shift; mpvc_chapter_set "${1:-}" ;;
             cplayrand|--cplayrand)                        shift; mpvc_chapter_play_random "$@" ;;
             creplay|--chapter-replay|chapter-replay)      mpvc_chapter_replay ;;
+            cloop|--chapter-loop|chapter-loop)            mpvc_chapter_cloop ;;
+
             clist|--chapter-list|chapter-list)            mpvc_chapter_list "short";;
             clistf|--chapter-list-full|chapter-list-full) mpvc_chapter_list "full";;
             clistn|--chapter-list-nr|chapter-list-nr)     mpvc_chapter_list "numbered";;
@@ -1110,7 +1144,7 @@ main() {
             -s|--stop|stop)                  mpvc_set "pause" "yes"; mpvc_set_time "absolute" 0 ;;
             -P|--play)                       mpvc_always_play ;;
             -p|--toggle|toggle)              mpvc_cycle "pause" ;;
-            -m|--mute)                       mpvc_toggle_mute                 ;;
+            -m|--mute)                       mpvc_cycle "mute"                ;;
             -i|--playlist|playlist)          mpvc_get_playlist "";            ;;
             -I|--fullplaylist|fullplaylist)  mpvc_get_playlist "full";        ;;
                --playlistjson|playlistjson)  mpvc_get_playlist_json ""        ;;
