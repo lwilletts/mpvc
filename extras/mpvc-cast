@@ -1,0 +1,60 @@
+#!/usr/bin/env sh
+#
+# @file mpvc-cast
+# @description mpvc cast, mpv screen cast recorder
+# @author gmt4 <gmt4 at github.com> (c) Copyright 2022 GPLv2+
+# @url github.com/gmt4/mpvc
+# SPDX-License-Identifier: GPL-2.0-or-later
+#
+
+PROGNAME=${0##*/}
+PROGVERSION="v1.5"
+PROGAUTHOR=gmt4
+PROGURL="https://github.com/gmt4/mpvc"
+SITEURL="https://gmt4.github.io/mpvc"
+
+set -euf
+
+mpvc_screencast()
+{
+    vres=$(xrandr | awk '
+        /^Screen 0: .* current .*/ {
+            r=$0; sub("^.* current ","",r); sub(", maximum .*$","",r); gsub(" ","",r); print r; exit
+        }'
+    )
+
+    asrc=$(pactl list sources | awk '
+        /^Source #.*/ {
+            s=$2; sub("#","",s);} / *Description: Monitor of Built-in Audio Analog Stereo/ {print s; exit
+        }'
+    )
+
+    fout="mpvc-cast-$(date -Isec | sed 's/:/-/g').mkv"
+
+    loglevel=${loglevel:-warning}
+    framerate=${framerate:-25}
+
+    if [ -z "$vres" ]; then usage; fi
+    if [ -z "$asrc" ]; then usage; fi
+
+    echo "# $PROGNAME: recording vres $vres asrc $asrc to $fout (ctl+c to finish)"
+    ffmpeg -hide_banner -loglevel "$loglevel" -video_size "$vres" -framerate "$framerate" -f x11grab -i :0.0 -f pulse -ac 2 -i "$asrc" "$fout"
+}
+
+usage()
+{
+    echo "usage: $PROGNAME [cast|help] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
+    exit
+}
+
+main()
+{
+    [ $# -lt 1 ] && usage
+
+    case "$1" in
+    cast) mpvc_screencast "$@" ;;
+    *) usage;;
+    esac
+}
+
+main "$@"
