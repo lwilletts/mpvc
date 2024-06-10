@@ -142,7 +142,7 @@ mpvc_web_index()
     $(if [ -n "${MPVC_WEB_REFRESH:-}" ]; then echo "<meta http-equiv=refresh content=$MPVC_WEB_REFRESH>"; fi)
     <link rel="IconFile" href="apple-touch-icon.svg" sizes="64x64">
     <link rel="apple-touch-icon" href="apple-touch-icon.svg">
-    <title>$PROGNAME @ $MPVC_WEB_HOSTNAME 🎧</title>
+    <title>mpvc @ $MPVC_WEB_HOSTNAME 🎧</title>
     <style type="text/css" media="all">
     @media (prefers-color-scheme: light) {
         :root { --body-bg: #fff; --body-color: #111; --pre-bg:#eee; --link-color:#00f; }
