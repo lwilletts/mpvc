@@ -112,10 +112,13 @@ $PROGNAME HTML accesskeys shortcuts:\n
 - $MPVC_WEB_SHORTCUT_EQUALIZER: select equalizer\n
 - $MPVC_WEB_SHORTCUT_REFRESH: refresh\n
 - $MPVC_WEB_SHORTCUT_KILL: select kill\n
+- $MPVC_WEB_SHORTCUT_NEXT: next track\n
+- $MPVC_WEB_SHORTCUT_PREV: prev track\n
 - $MPVC_WEB_SHORTCUT_TRACK: select track\n
 - $MPVC_WEB_SHORTCUT_SEEK: select seek\n
 - $MPVC_WEB_SHORTCUT_PAUSE: select pause\n
 - $MPVC_WEB_SHORTCUT_VOL: select volume\n
+- $MPVC_WEB_SHORTCUT_MUTE: select mute\n
 - $MPVC_WEB_SHORTCUT_ARCHIVE: select archive\n
 \n
 *For more, Read The Source Luke!\n
