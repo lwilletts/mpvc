@@ -29,8 +29,7 @@ mpvc_screencast()
         }'
     )
 
-    fout="mpvc-cast-$(date -Isec | sed 's/:/-/g').mkv"
-
+    fout="${fout:-mpvc-cast-$(date -Isec | sed 's/:/-/g').mkv}"
     loglevel=${loglevel:-warning}
     framerate=${framerate:-25}
 
