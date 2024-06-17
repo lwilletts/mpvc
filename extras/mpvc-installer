@@ -148,13 +148,14 @@ usage()
     echo "  check-update   : Check for updates"
     echo "  check-reqs     : Check for required packages"
     echo "  config         : Fetch mpv config"
+    echo "  config-user    : Fetch mpv config to BINDIR=$HOME/bin"
     echo "  fetch-user     : Fetch to BINDIR=$HOME/bin"
     echo "  link-user      : Symlink to BINDIR=$HOME/bin"
     echo "  install-user   : Install to BINDIR=$HOME/bin"
     echo "  install-sys    : Install to BINDIR=$PREFIX/bin"
     echo "  uninstall-sys  : Uninstall from BINDIR=$PREFIX/bin"
     echo "  uninstall-user : Uninstall from BINDIR=$HOME/bin}"
-    echo "*tips: If unsure where to start, start with: $PROGNAME link-user"
+    echo "*tips: If unsure where to start, start with: $PROGNAME fetch-user"
     exit
 }
 
@@ -168,7 +169,6 @@ main()
     case "$1" in
     check-reqs)      shift; mpvc_check_requirements;;
     check-update)    shift; mpvc_check_update;;
-    config)          shift; mpvc_config "$@";;
     docs)            shift; mpvc_docs "$@";;
     licenses)        shift; mpvc_licenses "$@";;
     fetch)           shift; mpvc_fetch "$@";;
@@ -176,7 +176,8 @@ main()
     install)         shift; mpvc_install "$@";;
     uninstall)       shift; mpvc_uninstall "$@";;
 
-    fetch-config)    shift; PREFIX=$HOME $SHELL "$0" config;;
+    config)          shift; mpvc_config "$@";;
+    config-user)     shift; PREFIX=$HOME $SHELL "$0" config;;
 
     fetch-user)      shift; PREFIX=$HOME $SHELL "$0" fetch;;
     fetch-sys)       shift; PREFIX=/usr/local $SHELL "$0" fetch;;
