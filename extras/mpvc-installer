@@ -149,6 +149,7 @@ usage()
     echo "  check-reqs     : Check for required packages"
     echo "  config         : Fetch mpv config"
     echo "  config-user    : Fetch mpv config to BINDIR=$HOME/bin"
+    echo "  config-sys     : Fetch mpv config to BINDIR=$PREFIX/bin"
     echo "  fetch-user     : Fetch to BINDIR=$HOME/bin"
     echo "  link-user      : Symlink to BINDIR=$HOME/bin"
     echo "  install-user   : Install to BINDIR=$HOME/bin"
@@ -178,6 +179,7 @@ main()
 
     config)          shift; mpvc_config "$@";;
     config-user)     shift; PREFIX=$HOME $SHELL "$0" config;;
+    config-sys)      shift; PREFIX=/usr/local $SHELL "$0" config;;
 
     fetch-user)      shift; PREFIX=$HOME $SHELL "$0" fetch;;
     fetch-sys)       shift; PREFIX=/usr/local $SHELL "$0" fetch;;
