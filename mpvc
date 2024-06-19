@@ -475,8 +475,8 @@ mpvc_stash() {
             fi
             ;;
         edit|ed) ${EDITOR:-vi} "$MPVC_STASH_DIR/$1" ;;
-        drop) rm -i "$MPVC_STASH_DIR/$1" ;;
-        push)
+        drop|rm) rm -i "$MPVC_STASH_DIR/$1" ;;
+        push|cp)
             stashid="${1:-}"
             if [ -z "$stashid" ]; then
                 stashid="${1:-stash-$(date -Imin)}"
@@ -488,7 +488,7 @@ mpvc_stash() {
             fi
             mpvc_stash current "$stashid" > "$MPVC_STASH_DIR/$stashid"
             ;;
-        apply) # if no stash given, default to stdin
+        apply|do) # if no stash given, default to stdin
             stashid="${1:-}"
             if [ -z "$stashid" ]; then
                 mpvc_stash apply_current
