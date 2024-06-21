@@ -68,6 +68,7 @@
     <h2 id="mpvc-now-listening">
         <a href="">Now Listening</a>
     </h2>
+
     <div id="container" class="container">
     </div>
 
@@ -81,9 +82,11 @@
     const urlp = new URL(window.location.href).searchParams
     const dflt = [ 'ssDzysKLlpY', '667dtK7O89k', 'mEkZbWYUego', 'UzRFQ6pDqhk', '_nl3Oo4-IQ4', 'ypAIWyH13aM', 'Jls9wXOSjl4', 'Hwg7hJrDiRg', '6FJ7F6trvBc' ]
     const vids = urlp.getAll('v').length > 0 ? urlp.getAll('v') : dflt
+    const autoplay = urlp.getAll('autoplay').length > 0 ? 1 : 0
     const cont = document.getElementById('container')
     const pre  = document.getElementById('pre')
     pre.innerHTML = '\n'
+
     for(i in vids)
     {
         if (/^([-_a-zA-Z0-9]{11})$/.test(vids[i]))
@@ -91,7 +94,7 @@
             const video = vids[i]
             const url='https://www.youtube.com/watch?v='+video+'\n'
             const emb='https://www.youtube.com/embed/'+video
-            const html='<iframe src="'+emb+'" frameborder="0" allowfullscreen=""></iframe>'
+            const html='<iframe src="'+emb+'?autoplay='+( autoplay ? i == 0 : 0)+'" frameborder="0" allowfullscreen="" allow="autoplay"></iframe>'
             const node = document.createElement('div')
 
             node.setAttribute('class', 'item')
