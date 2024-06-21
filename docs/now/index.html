@@ -83,6 +83,7 @@
     const dflt = [ 'ssDzysKLlpY', '667dtK7O89k', 'mEkZbWYUego', 'UzRFQ6pDqhk', '_nl3Oo4-IQ4', 'ypAIWyH13aM', 'Jls9wXOSjl4', 'Hwg7hJrDiRg', '6FJ7F6trvBc' ]
     const vids = urlp.getAll('v').length > 0 ? urlp.getAll('v') : dflt
     const autoplay = urlp.getAll('autoplay').length > 0 ? 1 : 0
+    const loop = urlp.getAll('loop').length > 0 ? 1 : 0
     const cont = document.getElementById('container')
     const pre  = document.getElementById('pre')
     pre.innerHTML = '\n'
@@ -94,7 +95,8 @@
             const video = vids[i]
             const url='https://www.youtube.com/watch?v='+video+'\n'
             const emb='https://www.youtube.com/embed/'+video
-            const html='<iframe src="'+emb+'?autoplay='+( autoplay ? i == 0 : 0)+'" frameborder="0" allowfullscreen="" allow="autoplay"></iframe>'
+            const att='?autoplay='+( autoplay ? i == 0 : 0)+'&loop='+( loop ? 1 : 0 )
+            const html='<iframe src="'+emb+att+'" frameborder="0" allowfullscreen="" allow="autoplay"></iframe>'
             const node = document.createElement('div')
 
             node.setAttribute('class', 'item')
