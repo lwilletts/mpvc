@@ -406,7 +406,8 @@ $ grep mpvc ~/.bashrc
     alias mffo="mpvc-fzf -o"   # fzf search and return first ytid URL
     alias mffp="mpvc-fzf -p"   # fzf search and add ytid URLs from Invidious
     alias xargn="xargs -n1"    # xargn mpvc cmd
-    rseq() { seq "$@" | tac; } # rseq | xargn mpvc cmd
+    rseq()  { seq "$@" | tac; } # rseq | xargn mpvc cmd
+    mffo1() { mpvc add $(mpvc-fzf -o "$@" | mpvc-fzf -1); }
 </pre>
 </p>
 
