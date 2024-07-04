@@ -41,6 +41,7 @@ mpvc_web_defaults()
     MPVC_WEB_SSL_VERIFY=${MPVC_WEB_SSL_VERIFY:-0}
     MPVC_WEB_ARCHIVE_ENABLE=${MPVC_WEB_ARCHIVE_ENABLE:-}
     MPVC_WEB_HTML_THEME=${MPVC_WEB_HTML_THEME:-}
+    MPVC_WEB_HTML_REFRESH=${MPVC_WEB_HTML_REFRESH:-}
 
     # accesskey keyboard shortcuts
     MPVC_WEB_SHORTCUT_REFRESH=${MPVC_WEB_SHORTCUT_REFRESH:-accesskey=m}
@@ -142,7 +143,7 @@ mpvc_web_index()
     <meta http-equiv="pragma" content="no-cache" />
     <meta http-equiv="Cache-Control" content="no-store" />
 
-    $(if [ -n "${MPVC_WEB_REFRESH:-}" ]; then echo "<meta http-equiv=refresh content=$MPVC_WEB_REFRESH;url=.> ⟳ ${MPVC_WEB_REFRESH}s"; fi)
+    $(if [ -n "$MPVC_WEB_HTML_REFRESH" ]; then echo "<meta http-equiv=refresh content=$MPVC_WEB_HTML_REFRESH;url=.> ⟳ ${MPVC_WEB_HTML_REFRESH}s"; fi)
     <link rel="IconFile" href="apple-touch-icon.svg" sizes="64x64">
     <link rel="apple-touch-icon" href="apple-touch-icon.svg">
     <title> 🎧$MPVC_WEB_HOSTNAME mpvc</title>
@@ -515,7 +516,7 @@ mpvc_web()
     )
 }
 
-optflags="ha:b:c:d:p:P:r:s:S:t:"
+optflags="ha:b:c:d:p:P:r:R:s:S:t:"
 usage()
 {
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
@@ -523,6 +524,7 @@ usage()
     echo "  -b : Set $PROGNAME HTTP server bind address (default $MPVC_WEB_HOST)"
     echo "  -p : Set $PROGNAME HTTP server port (default $MPVC_WEB_PORT)"
     echo "  -r : Set $PROGNAME HTTP server root dir (default $MPVC_WEB_ROOT)"
+    echo "  -R : Set $PROGNAME HTTP server HTML refresh (default $MPVC_WEB_HTML_REFRESH)"
     echo "  -s : Set $PROGNAME HTTP server SSL/TLS (default $MPVC_WEB_SSL_ENABLE)"
     echo "  -a : Set $PROGNAME HTTP server to include ytdl-archive/ (default $MPVC_WEB_ARCHIVE_ENABLE)"
     echo "*tips: If unsure where to begin, run: $PROGNAME -p 8000 -c start # serves @ http://localhost:8000"
@@ -545,6 +547,7 @@ main()
         p) MPVC_WEB_PORT="$OPTARG" ;;
         P) MPVC_WEB_SSL_PORT="$OPTARG" ;;
         r) MPVC_WEB_ROOT="$OPTARG" ;;
+        R) MPVC_WEB_HTML_REFRESH="$OPTARG" ;;
         s) MPVC_WEB_SSL_ENABLE="$OPTARG" ;;
         S) MPVC_WEB_SSL_PEM="$OPTARG" ;;
         t) MPVC_WEB_HTML_THEME="$OPTARG"  ;;
