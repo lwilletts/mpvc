@@ -106,7 +106,7 @@ Formatting:
     %genre%, %year%, %percentage%, %playlistlength%, %position%, %repeat%,
     %single, %status%, %time%, %precisetime%, %speed%, %length%, %remaining%,
     %volume%, %muted%, %frame%, %width%, %height%, %ab-loop-a%, %ab-loop-b%
-    %video%, %aspect%, %force-window%, %fullscreen%, %idle%, %chapter%, %chapters%
+    %video%, %screen%, %aspect%, %force-window%, %fullscreen%, %idle%, %chapter%, %chapters%
 
 MPC compatibility layer:
     mpvc features a nearly complete compatibility layer for mpc commands in
@@ -163,7 +163,7 @@ mpvc_defaults()
 %artist% - %title% \r\
 [%status%] #%position%/%playlistlength% %time%/%length% (%percentage%%%) \r\
 speed:%speed%x vol:%volume%%% mute:%muted% repeat:%repeat% single:%single% \r\
-video:%video% aspect:%aspect% win:%force-window% fs:%fullscreen% idle:%idle% \r\
+vid:%video% scr:%screen% win:%force-window% fs:%fullscreen% idle:%idle% \r\
 chapter:%chapter% %=chapter%/%chapters%"
     fi
 }
@@ -534,6 +534,7 @@ mpvc_stash() {
             echo "mpvc set volume-max $(mpvc_get volume-max)"
             echo "mpvc set video-zoom $(mpvc_get video-zoom)"
             echo "mpvc set video $(mpvc_get video)"
+            echo "mpvc set screen $(mpvc_get screen)"
             echo "mpvc wait"
             echo "mpvc set playback-time $(mpvc_get playback-time)"
             echo "mpvc set pause $(mpvc_get pause)"
@@ -862,7 +863,7 @@ mpvc_print_status() {
     F=$(echo "$FORMATSTRING" |
         awk -v status=$(mpvc_get_pause_status) '
         {
-            split("year genre album comment volume path height width playback-time ab-loop-[ab] speed force-window video aspect idle fullscreen chapter chapters =chapter", RE)
+            split("year genre album comment volume path height width playback-time ab-loop-[ab] speed force-window video screen aspect idle fullscreen chapter chapters =chapter", RE)
             for (i in RE) { re=RE[i]; gsub("%"re"%", "${"re":NA}"); }
 
             gsub("%title%", "${media-title}")
