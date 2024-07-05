@@ -105,8 +105,9 @@ Formatting:
     %name%, %path%, %dir%, %title%, %artist%, %album%, %albumartist%, comment%,
     %genre%, %year%, %percentage%, %playlistlength%, %position%, %repeat%,
     %single, %status%, %time%, %precisetime%, %speed%, %length%, %remaining%,
-    %volume%, %muted%, %frame%, %width%, %height%, %ab-loop-a%, %ab-loop-b%
-    %video%, %screen%, %aspect%, %force-window%, %fullscreen%, %idle%, %chapter%, %chapters%
+    %volume%, %muted%, %frame%, %width%, %height%, %ab-loop-a%, %ab-loop-b%,
+    %video%, %screen%, %aspect%, %force-window%, %fullscreen%, %idle%,
+    %chapter%, %chapters%
 
 MPC compatibility layer:
     mpvc features a nearly complete compatibility layer for mpc commands in
