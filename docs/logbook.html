@@ -678,11 +678,15 @@ For the record, this is the list of commands currently running:
 <pre>
 mpvc-tui -T
 mpvc-web -b 0 -s 1 -a 1 -R 60 -t dark -c start
-mpvc-autostart -p 600 -n 6 -i <local_ip>
+mpvc-autostart -p 600 -n 6 -i [local_ip]
 # mpvc-osd mpvcosd
 </pre>
 
-May be more updates to come, since using mpvc-web, on a device with a HDMI display, opens news possibilities of displaying video media, that is beyond just acting as a jukebox for playing music.
+Using mpvc-web, on a device with a HDMI display, opens news possibilities of displaying video media, that is beyond just acting as a jukebox for playing music.
+For setups where the mediacenter has a video display with X11 x2x(1) might come handy to send X11 input events from a ssh-client to control the remote mpv running on X11, an example invocation is:
+<pre>
+ssh -X $USER@$HOST x2x -west -to :0 # be sure to read x2x(1)
+</pre>
 
 </p>
 
