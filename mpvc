@@ -163,7 +163,7 @@ mpvc_defaults()
         FORMATSTRING="\
 %artist% - %title% \r\
 [%status%] #%position%/%playlistlength% %time%/%length% (%percentage%%%) \r\
-speed:%speed%x vol:%volume%%% mute:%muted% repeat:%repeat% single:%single% \r\
+vol:%volume%%% mute:%muted% repeat:%repeat% single:%single% \r\
 vid:%video% scr:%screen% win:%force-window% fs:%fullscreen% idle:%idle% \r\
 chapter:%chapter% %=chapter%/%chapters%"
     fi
@@ -294,7 +294,7 @@ mpvc_setr()  { mpvc_ecmdr "set_property" "$@"; }
 
 mpvc_get_pause_status() {
     case "$(mpvc_get pause)" in
-        yes) echo "paused";; no) echo "playing" ;; *) echo "NA";;
+        yes) echo "paused";; no) echo "play" ;; *) echo "NA";;
     esac
 }
 
