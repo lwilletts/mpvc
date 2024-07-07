@@ -96,7 +96,7 @@
             const url='https://www.youtube.com/watch?v='+video+'\n'
             const emb='https://www.youtube.com/embed/'+video
             const att='?autoplay='+( autoplay ? i == 0 : 0)+'&loop='+( loop ? 1 : 0 )
-            const html='<iframe src="'+emb+att+'" frameborder="0" allowfullscreen="" allow="autoplay"></iframe>'
+            const html='<iframe src="'+emb+att+'" loading="lazy" frameborder="0" allowfullscreen="" allow="autoplay"></iframe>'
             const node = document.createElement('div')
 
             node.setAttribute('class', 'item')
