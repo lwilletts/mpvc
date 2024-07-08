@@ -84,7 +84,7 @@ mpvc_web_config()
 
 mpvc_web_style()
 {
-    echo 'html { filter: invert(0.7); }'
+    echo 'body { filter: invert(0.7); }'
 }
 
 mpvc_web_select_form()
