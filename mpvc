@@ -265,7 +265,7 @@ mpvc_sockcmd()  { oquiet mpvc_sockcmd_ "$@"; }
 mpvc_socklist() {
     for f in $(find "$MPVC_CONFIG_DIR" -type s); do
         idle_active=$(MPVC_SOCKET=$f mpvc_get idle-active)
-        echo "$f:	idle-active=${idle_active:-yes}"
+        echo "$f:	idle-active=${idle_active:-}"
     done
 }
 
