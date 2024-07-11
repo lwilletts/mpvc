@@ -569,7 +569,8 @@ mpvc_appendtrack() {
     filename="$*"
     # require absolute paths
     case "$filename" in
-        /*) ;; *) if [ -e "$filename" ]; then filename="$(pwd)/$filename"; fi ;;
+        /*) if [ ! -e "$filename" ]; then warn "Warning: ${filename##*/} not found."; fi ;;
+        *)  if [ -e "$filename" ]; then filename="$(pwd)/$filename"; fi ;;
     esac
     # skip over various other filetypes and images unless wanted
     case "$filename" in
