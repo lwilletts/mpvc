@@ -111,7 +111,7 @@ Formatting:
     %chapter%, %chapters%
 
 MPC compatibility layer:
-    mpvc features a nearly complete compatibility layer for mpc commands in
+    mpvc features nearly complete compatibility for mpc(1) commands, in
     addition to GNU style arguments. https://linux.die.net/man/1/mpc
 
 Exit codes:
