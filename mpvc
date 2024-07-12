@@ -218,13 +218,6 @@ mpvc_curl_cache_json()
     mpvc_curl_cache -sL "https://youtube.com/oembed?url=$1"
 }
 
-mpvc_curl_cache_metadata_json() {
-    for i in "$@"
-    do
-        mpvc_curl_cache_metadata_json_once "$i"
-    done
-}
-
 mpvc_curl_cache_metadata_json_once() {
     filename="${1:-}"
     result="${1:-}"
@@ -249,6 +242,10 @@ mpvc_curl_cache_metadata_json_once() {
             ;;
     esac
     printf "$result\n"
+}
+
+mpvc_curl_cache_metadata_json() {
+    for i in "$@"; do mpvc_curl_cache_metadata_json_once "$i"; done
 }
 
 # fn args: given a file/url return its title (may use curl to query YT)
