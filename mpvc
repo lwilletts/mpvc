@@ -83,6 +83,7 @@ EOF
     -R | --searchrm         : Search the playlist and remove matching entries.
     -M | --searchmv         : Search the playlist and move matching entries.
     stash                   : Manage mpv playing state as in git-stash(1)
+    wait                    : Wait until MPV setups $PROGNAME socket (timeout after 10s)
     delay                   : Sleep delay, as in: $PROGNAME play 0 delay seek 20% vol 60
 
     (--)?expand-text        : Expand text as documented in mpv(1) Property Expansion
