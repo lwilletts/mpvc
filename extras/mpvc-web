@@ -148,6 +148,8 @@ mpvc_web_index()
     <link rel="apple-touch-icon" href="apple-touch-icon.svg">
     <title> 🎧$MPVC_WEB_HOSTNAME mpvc</title>
     <style type="text/css" media="all">
+    @media (max-width: 768px) { body { font-size: 13px; } }
+    @media (min-width: 992px) { body { font-size: 16px; } }
     @media (prefers-color-scheme: light) {
         :root { --body-bg: #fff; --body-color: #111; --pre-bg:#eee; --link-color:#00f; }
     }
@@ -177,7 +179,6 @@ mpvc_web_index()
             <a href="." name="mpvc-web" ${MPVC_WEB_SHORTCUT_REFRESH}>$PROGNAME</a>
             <a href="#status">#stat</a>
             <a href="#mpvc-web-playlist">#list</a>
-            <a href="https://gmt4.github.io/mpvc/now/">#now</a>
             $([ -n "$MPVC_WEB_ARCHIVE_ENABLE" ] && echo '<a href="ytdl-archive" >#arch</a>'; )
         ]
         <hr>
@@ -268,7 +269,7 @@ mpvc_web_index()
             <a href="#" title="theme 2" onclick="document.body.style.WebkitFilter='invert(0.2)';">th2</a>
             <a href="#" title="theme 4" onclick="document.body.style.WebkitFilter='invert(0.4)';">th4</a>
             <a href="#" title="theme 8" onclick="document.body.style.WebkitFilter='invert(0.8)';">th8</a>
-            <a href="#" title="toggle" onclick="toggleColorScheme()">toggle</a>
+            <a href="#" title="toggle" onclick="toggleColorScheme()">cycle</a>
             <a href="." title="reset">rst</a>
         </li>
         </ul>
