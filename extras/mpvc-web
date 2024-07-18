@@ -95,7 +95,7 @@ mpvc_web_select_form()
     echo "<form action=/ method=get>"
     echo "<span title="$arg" >$cmd</span>"
     awk -v cmd="$cmd" -v arg="$arg" '
-        BEGIN  { print "<select name=cli id=cli-select "arg" onchange=this.form.submit() style=\"width:100%; height:1.2rem\" >"; printf "<option value=\"\"># Select</option>\n"  }
+        BEGIN  { print "<select name=cli id=cli-select "arg" onchange=this.form.submit() >"; printf "<option value=\"\"># Select</option>\n"  }
         NR > 0 { gsub("\"",""); print "<option value=\""cmd" "$0"\">"$0"</option>" }
         END    { print "</select>"}
     '
@@ -148,24 +148,26 @@ mpvc_web_index()
     <link rel="apple-touch-icon" href="apple-touch-icon.svg">
     <title> 🎧$MPVC_WEB_HOSTNAME mpvc</title>
     <style type="text/css" media="all">
-    @media (max-width: 768px) { body { font-size: 13px; } }
-    @media (min-width: 992px) { body { font-size: 16px; } }
+    @media (max-width: 768px) { :root { --body-font-size: 13px; } }
+    @media (min-width: 768px) { :root { --body-font-size: 18px; } }
     @media (prefers-color-scheme: light) {
         :root { --body-bg: #fff; --body-color: #111; --pre-bg:#eee; --link-color:#00f; }
     }
     @media (prefers-color-scheme: dark) {
-       :root { --body-bg: #222; --body-color: #eee; --pre-bg:#333; --link-color:#07f; }
+        :root { --body-bg: #222; --body-color: #eee; --pre-bg:#333; --link-color:#07f; }
     }
     $(
     case "${MPVC_WEB_HTML_THEME:-}" in
-    light) echo ":root { --body-bg: #fff; --body-color: #111; --pre-bg:#eee; --link-color:#00f; }" ;;
-    dark)  echo ":root { --body-bg: #222; --body-color: #eee; --pre-bg:#333; --link-color:#07f; }" ;;
+    light) echo ":root { --body-bg: #fff; --body-color: #111; --pre-bg:#eee; --link-color:#00f; }";;
+    dark)  echo ":root { --body-bg: #222; --body-color: #eee; --pre-bg:#333; --link-color:#07f; }";;
     esac
     )
-    body { background: var(--body-bg); color: var(--body-color); font-family: monospace; }
-    code { background: var(--pre-bg); }
-    pre  { background: var(--pre-bg); }
-    a    { color: var(--link-color); padding: 0.05rem 0.05rem; }
+    body   { background: var(--body-bg); color: var(--body-color); font-family: monospace; font-size: var(--body-font-size); margin: 0 0;}
+    select { width: 6rem; height: 1.1rem; font-size: var(--body-font-size); }
+    code   { background: var(--pre-bg); }
+    pre    { background: var(--pre-bg); }
+    ul     { padding: 0rem 1rem; margin: 0 0; }
+    a      { color: var(--link-color); padding: 0.05rem 0.05rem; }
     </style>
     <link rel="stylesheet" href="style.css" />
     <script type="text/javascript">
@@ -176,18 +178,18 @@ mpvc_web_index()
     <body>
         [
             🎧
-            <a href="." name="mpvc-web" ${MPVC_WEB_SHORTCUT_REFRESH}>$PROGNAME</a>
+            <a href="." name="top" ${MPVC_WEB_SHORTCUT_REFRESH}>$PROGNAME</a>
             <a href="#status">#stat</a>
             <a href="#mpvc-web-playlist">#list</a>
             $([ -n "$MPVC_WEB_ARCHIVE_ENABLE" ] && echo '<a href="ytdl-archive" >#arch</a>'; )
         ]
         <hr>
-        <ul style="padding: 0em 1em;">
+        <ul>
         <li>
         <!-- enable this optionally: only for dev/testing -->
         <form action="/" method="get" >
             mpvc cli
-            <input type="text" id="cli" name="cli" ${MPVC_WEB_SHORTCUT_CLI} autocomplete="on" placeholder="mpvc status ${MPVC_WEB_DEV:-(off)}" title="mpvc cli" onkeydown="if (event.keyCode == 13) { this.form.submit(); return false; }" style="height:0.8rem">
+            <input type="text" id="cli" name="cli" ${MPVC_WEB_SHORTCUT_CLI} autocomplete="on" placeholder="mpvc status ${MPVC_WEB_DEV:-(off)}" title="mpvc cli" onkeydown="if (event.keyCode == 13) { this.form.submit(); return false; }">
         </form>
         <li>
             $(mpvc stash list | awk 'NR>1{print $NF}' | mpvc_web_select_form "mpvc -q stash apply" "${MPVC_WEB_SHORTCUT_APPLY}")
@@ -283,7 +285,7 @@ mpvc_web_index()
           <a href="javascript:window.location.reload()" >load</a>
         ] <hr>
         <div style="display:flex">
-        <iframe name="mpvc-playlist" width="100%" frameborder="0" src="/cgi-bin/mpvc?playlist" allowtransparency="true" style="margin:auto" ></iframe>
+        <iframe name="mpvc-playlist" width="100%" frameborder="0" src="/cgi-bin/mpvc?playlist" allowtransparency="true" style="margin:auto;" ></iframe>
         <script>
         var pl = document.getElementsByName('mpvc-playlist')[0];
         switch (window.location.hash) {
@@ -296,12 +298,15 @@ mpvc_web_index()
         </script>
         </div>
         <hr>
-        <a href="$PROGURL">$PROGNAME</a> $(mpvc-installer check-update | awk -v progurl=$PROGURL '{ print "<a href="progurl" style=color:"(match($0,"Not-Found")?"none":"red")">"$NF"</a>"; }') mpvc-tui for the web
+        <a href="$PROGURL">$PROGNAME</a>
+        <a href="$PROGURL">$(mpvc-installer version | awk '{print $6}')</a> mpvc for the web
         <a href="javascript:alert('$(mpvc_web_help)')" ${MPVC_WEB_SHORTCUT_HELP}>/h</a>
+        <a href="#top">#top</a>
     </body>
 </html>
 EOF
 }
+
 
 mpvc_web_index_js()
 {
