@@ -180,8 +180,9 @@ mpvc_web_index()
             🎧
             <a href="." name="top" ${MPVC_WEB_SHORTCUT_REFRESH}>$PROGNAME</a>
             <a href="#status">#stat</a>
-            <a href="#mpvc-web-playlist">#list</a>
-            $([ -n "$MPVC_WEB_ARCHIVE_ENABLE" ] && echo '<a href="ytdl-archive" >#arch</a>'; )
+            <a href="#mpvc-web-playlist">#ls</a>
+            $([ -n "$MPVC_WEB_ARCHIVE_ENABLE" ] && echo '<a href="ytdl-archive" >#arc</a>'; )
+            <a href="https://gmt4.github.io/mpvc/now/">#now</a>
         ]
         <hr>
         <ul>
