@@ -142,6 +142,11 @@ mpvc_check_update()
     fi
 }
 
+mpvc_version()
+{
+    echo "usage: $PROGNAME args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
+}
+
 usage()
 {
     echo "usage: $PROGNAME args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
@@ -168,6 +173,7 @@ main()
     case "$SHELL" in *'zsh') SHELL="/bin/sh";; esac
 
     case "$1" in
+    version)         shift; mpvc_version;;
     check-reqs)      shift; mpvc_check_requirements;;
     check-update)    shift; mpvc_check_update;;
     docs)            shift; mpvc_docs "$@";;
