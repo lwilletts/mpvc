@@ -93,9 +93,9 @@ mpvc_web_select_form()
     arg="${2:-}"
 
     echo "<form action=/ method=get>"
-    echo "<span title="$arg" >$cmd</span>"
+    echo "<span title="$arg" ></span>"
     awk -v cmd="$cmd" -v arg="$arg" '
-        BEGIN  { print "<select name=cli id=cli-select "arg" onchange=this.form.submit() >"; printf "<option value=\"\"># Select</option>\n"  }
+        BEGIN  { print "<select name=cli id=cli-select "arg" onchange=this.form.submit() >"; printf "<option value=\"\"># "cmd"</option>\n"  }
         NR > 0 { gsub("\"",""); print "<option value=\""cmd" "$0"\">"$0"</option>" }
         END    { print "</select>"}
     '
@@ -162,11 +162,11 @@ mpvc_web_index()
     dark)  echo ":root { --body-bg: #222; --body-color: #eee; --pre-bg:#333; --link-color:#07f; }";;
     esac
     )
-    body   { background: var(--body-bg); color: var(--body-color); font-family: monospace; font-size: var(--body-font-size); margin: 0 0;}
-    select { width: 6rem; height: 1.1rem; font-size: var(--body-font-size); }
+    body   { background: var(--body-bg); color: var(--body-color); font-family: monospace; font-size: var(--body-font-size); }
+    select { width: 100%; height: 1.1rem; font-size: var(--body-font-size); }
     code   { background: var(--pre-bg); }
     pre    { background: var(--pre-bg); }
-    ul     { padding: 0rem 1rem; margin: 0 0; }
+    ul     { padding: 0rem 0.5rem; }
     a      { color: var(--link-color); padding: 0.05rem 0.05rem; }
     </style>
     <link rel="stylesheet" href="style.css" />
