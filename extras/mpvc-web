@@ -163,7 +163,7 @@ mpvc_web_index()
     esac
     )
     body   { background: var(--body-bg); color: var(--body-color); font-family: monospace; font-size: var(--body-font-size); }
-    select { width: 100%; height: 1.1rem; font-size: var(--body-font-size); }
+    select { width: 100%; height: font-size: var(--body-font-size); }
     code   { background: var(--pre-bg); }
     pre    { background: var(--pre-bg); }
     ul     { padding: 0rem 0.5rem; }
