@@ -69,12 +69,12 @@ mpvc_web_defaults()
 
 mpvc_web_config()
 {
-    if ! command -v python3 >/dev/null; then
-        echo "$PROGNAME: Error: No python3 found, install to continue."
-        exit
-    fi
     if ! command -v mpvc >/dev/null; then
         echo "$PROGNAME: Error: No mpvc found, install to continue."
+        exit
+    fi
+    if ! command -v python3 >/dev/null; then
+        echo "$PROGNAME: Error: No python3 found, install to continue."
         exit
     fi
     if ! command -v stunnel >/dev/null; then
@@ -276,7 +276,7 @@ mpvc_web_index()
             <a href="." title="reset">rst</a>
         </li>
         </ul>
-        [ <a href="#mpvc-web-status" name="mpvc-web-status">Status</a> ] <hr>
+        [ <a href="#mpvc-web-status" name="mpvc-web-status">Status</a> <a href="/cgi-bin/mpvc?lyrics">#lyrics</a> ] <hr>
         <iframe name="mpvc-status" width="100%" height="100%" frameborder="0" src="/cgi-bin/mpvc?status" allowtransparency="true" ></iframe>
         [
           <a href="#mpvc-web-playlist" name="mpvc-web-playlist">Playlist</a>
@@ -404,6 +404,7 @@ cert = ${MPVC_WEB_SSL_PEM}
 key  = ${MPVC_WEB_SSL_PEM}
 cafile = ${MPVC_WEB_SSL_PEM}
 verify=$MPVC_WEB_SSL_VERIFY
+#protocol = proxy
 TIMEOUTclose = 0
 EOF
 }
@@ -567,7 +568,7 @@ main()
     case "${MPVC_WEB_CMD:-}" in
     start)  mpvc_web ;;
     stop)   pkill -f "$PROGNAME" ;;
-    status) ps auxww | grep 'mpvc-web' ;;
+    status) ps auxww | grep "$PROGNAME" ;;
     *)      usage ;;
     esac
 }
