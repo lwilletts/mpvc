@@ -165,8 +165,8 @@ mpvc_defaults()
 %artist% - %title% \r\
 [%status%] #%position%/%playlistlength% %time%/%length% (%percentage%%%) \r\
 vol:%volume%%% mute:%muted% repeat:%repeat% single:%single% \r\
-vid:%video% scr:%screen% win:%force-window% fs:%fullscreen% idle:%idle% \r\
-chapter:%chapter% %=chapter%/%chapters%"
+vid:%video% scr:%screen% win:%force-window% fs:%fullscreen% \r\
+chapter:%chapter% %=chapter%/%chapters% idle:%idle%"
     fi
 }
 
