@@ -356,7 +356,9 @@ mpvc_web_cgi()
 #!/bin/sh
 set -euf
 mpvc_strip_escapes(){ sed '/\x1b\[7m/ { s|\x1b\[7m||; s| |+|; }; s|\x1b\[0m||;'; }
-mpvc_out() { echo "Content-Type: text/plain"; echo; $MPVC "\$@"; }
+mpvc_plain() { echo "Content-Type: text/plain"; echo; $MPVC "\$@"; }
+mpvc_html()  { echo "Content-Type: text/html"; echo; echo "\$@"; }
+mpvc_redir() { mpvc_html '<meta http-equiv=refresh content="0;url='\$1'" />'; }
 main()
 {
     if [ -n "\${USER:-}" ]; then
@@ -364,12 +366,13 @@ main()
     fi
     cmd="\${1:-}"; case "\$cmd" in equalizer|fzf|now) shift; $MPVC-\$cmd "\$@"; return ;; esac
     case "\${QUERY_STRING:-}" in
-        status|playlist)   mpvc_out "\${QUERY_STRING}" | mpvc_strip_escapes ;;
-        fullplaylist)      mpvc_out fullplaylist | mpvc_strip_escapes ;;
-        rawplaylist)       mpvc_out saven | mpvc_strip_escapes ;;
-        chapter-list)      mpvc_out chapter-list | mpvc_strip_escapes ;;
-        chapter-list-nr)   mpvc_out chapter-list-nr | mpvc_strip_escapes ;;
-        chapter-list-full) mpvc_out chapter-list-full | mpvc_strip_escapes ;;
+        lyrics)            mpvc_redir "https://ddg.gg?ia=lyrics&iax=lyrics&q=lyrics \$($MPVC -f '%title%')" ;;
+        status|playlist)   mpvc_plain "\${QUERY_STRING}" | mpvc_strip_escapes ;;
+        fullplaylist)      mpvc_plain fullplaylist | mpvc_strip_escapes ;;
+        rawplaylist)       mpvc_plain saven | mpvc_strip_escapes ;;
+        chapter-list)      mpvc_plain chapter-list | mpvc_strip_escapes ;;
+        chapter-list-nr)   mpvc_plain chapter-list-nr | mpvc_strip_escapes ;;
+        chapter-list-full) mpvc_plain chapter-list-full | mpvc_strip_escapes ;;
         *)                 $MPVC "\$@" ;;
     esac
 }
