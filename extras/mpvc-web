@@ -186,12 +186,14 @@ mpvc_web_index()
         ]
         <hr>
         <ul>
+        $([ -n "${MPVC_WEB_DEV:-}" ] && cat <<EOF
         <li>
-        <!-- enable this optionally: only for dev/testing -->
-        <form action="/" method="get" >
+        <form action="/" method="get">
             mpvc cli
             <input type="text" id="cli" name="cli" ${MPVC_WEB_SHORTCUT_CLI} autocomplete="on" placeholder="mpvc status ${MPVC_WEB_DEV:-(off)}" title="mpvc cli" onkeydown="if (event.keyCode == 13) { this.form.submit(); return false; }">
         </form>
+EOF
+)
         <li>
             $(mpvc stash list | awk 'NR>1{print $NF}' | mpvc_web_select_form "mpvc -q stash apply" "${MPVC_WEB_SHORTCUT_APPLY}")
         </li>
