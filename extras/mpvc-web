@@ -300,8 +300,8 @@ mpvc_web_index()
         </div>
         <hr>
         <a href="$PROGURL">$PROGNAME</a>
-        <a href="$PROGURL">$(mpvc-installer version | awk '{print $6}')</a>
-        <a href="https://github.com/gmt4">@gmt4</a> (c) 2024
+        <a href="$PROGURL">$PROGVERSION</a>
+        <a href="${PROGURL%%/*}">@$PROGAUTHOR</a> (c) 2024
         <a href="javascript:alert('$(mpvc_web_help)')" ${MPVC_WEB_SHORTCUT_HELP}>/h</a>
         <a href="#top">#top</a>
     </body>
