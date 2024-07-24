@@ -303,7 +303,7 @@ EOF
         <hr>
         <a href="$PROGURL">$PROGNAME</a>
         <a href="$PROGURL">$PROGVERSION</a>
-        <a href="${PROGURL%%/*}">@$PROGAUTHOR</a> (c) 2024
+        <a href="${PROGURL%/*}">@$PROGAUTHOR</a> (c) 2024
         <a href="javascript:alert('$(mpvc_web_help)')" ${MPVC_WEB_SHORTCUT_HELP}>/h</a>
         <a href="#top">#top</a>
     </body>
