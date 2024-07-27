@@ -415,7 +415,7 @@ TIMEOUTclose = 0
 EOF
 }
 
-mpvc_web()
+mpvc_web_setup()
 {
     mpvc_web_config
     echo "# $PROGNAME $PROGVERSION running (beta version: might contain bugs!) SSL=${MPVC_WEB_SSL_ENABLE}"
@@ -463,6 +463,14 @@ mpvc_web()
         fi
 
         chmod a-w -R "$MPVC_WEB_ROOT/"
+    )
+}
+
+mpvc_web()
+{
+    mpvc_web_setup
+    (
+        cd "$MPVC_WEB_ROOT" || return
 
         # XXX handle cli commands, rewrite this mess
         python3 -u -m http.server --cgi --bind "$MPVC_WEB_HOST" "$MPVC_WEB_PORT" "$@" 2>&1 |
