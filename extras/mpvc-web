@@ -166,7 +166,7 @@ mpvc_web_index()
     select { width: 95%; font-size: var(--body-font-size); }
     code   { background: var(--pre-bg); }
     pre    { background: var(--pre-bg); }
-    ul     { padding: 0rem 0.5rem; }
+    ul     { padding: 0rem 0.8rem; }
     a      { color: var(--link-color); padding: 0.05rem 0.05rem; }
     </style>
     <link rel="stylesheet" href="style.css" />
