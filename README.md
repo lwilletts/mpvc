@@ -4,11 +4,13 @@
 ![GitHub top language](https://img.shields.io/github/languages/top/lwilletts/mpvc)
 ![GitHub lines of Code](https://sloc.xyz/github/lwilletts/mpvc/?category=code)
 
-# mpvc 🎧
+# mpvc 🎧 [^install]
 
 A terminal music player in POSIX sh(1) that interfaces mpv providing mpc(1) commands + extras.
 Originally a fork of [lwillets/mpvc](https://github.com/lwilletts/mpvc) that evolved on its own, providing some extra goodies such as: improved CLI, TUI, FZF, WEB, EQ, & playing media from YouTube & streaming services.
 Check the [Wiki](../../wiki), [LogBook](../../wiki#logbook) & [Casts](../../wiki#screencasts) for a detailed view of the extra features of this fork.
+
+Skip directly to [Installation](#Installation) to try mpvc!
 
 <details open>
 <summary>mpvc-tui -T: running the mpvc TUI <i>(click to view screenshot)</i></summary>
@@ -28,7 +30,7 @@ Check the [Wiki](../../wiki), [LogBook](../../wiki#logbook) & [Casts](../../wiki
 ![mpvc tui+fzf+notifications screenshot](../../blob/master/docs/assets/mpvc-tui-fzf.png)
 </details>
 
-## Overview ▶️
+## Overview ▶️ [^install]
 
 [mpvc](../../) player functionality is provided by:
 
@@ -73,6 +75,8 @@ Check for missing dependencies using `mpvc-installer check-reqs`.
 - [Gentoo](#gentoo-mpvc)
 - [Nix](#nix-mpvc)
 
+Installing is just a matter of fetching the scripts either via Git/Curl/etc., scripts can be used directly from the repo, the `mpvc-installer` bit is just there for easiness, to fetch & link them into your `BINDIR=~/bin/` by default,
+
 ### Manual
 
 The easiest install method is just to run the [mpvc-installer](../../blob/master/extras/mpvc-installer) to install under `$HOME/bin`
@@ -84,11 +88,14 @@ curl -fsSL -o mpvc-installer https://github.com/lwilletts/mpvc/raw/master/extras
 
 ### Git
 
+Below is a **Quick Start** guide showcasing mpvc commands usage.
+
 ```sh
  # fetch a local copy of the github repo
  git clone https://github.com/lwilletts/mpvc/
  # use extras/mpvc-installer: just copy/link to your $HOME/bin
  (cd mpvc; extras/mpvc-installer link-user)
+ (cd mpvc; extras/mpvc-installer check-reqs)
 
  # use mpvc-fzf to search and play youtube media
  mpvc-fzf -p 'kupla mirage'
@@ -216,3 +223,6 @@ Like any piece of software, mpvc is not perfect:
   all effort has been made to make mpvc as POSIX compliant as possible.
 
 Check out the [Issue Tracker](../../issues) for further improvements to be made.
+
+[^install]: Skip directly to [Installation](#Installation) to try mpvc
+
