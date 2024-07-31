@@ -113,8 +113,8 @@ mpvcfzf_lyrics()
     output=$(curl -fsSL -A '' "https://yewtu.be/watch?v=$id")
     echo "$output" |
         awk '
-            c==0 && /<meta name="description"/  {c++}
-            c==1 && /^Lyrics/                   {c++}
+            c==0 && /<meta name="description"/  {c=1}
+            c==1 && /^[Ll][Yy][Rr][Ii][Cc][Ss]/ {c=2}
             c==2 && /<meta name="keywords"/     {c=0}
             c==2                                {print}
         '
@@ -380,11 +380,15 @@ mpvcfzf_usage()
     echo "  -f : Start fzf to manage the current mpv playist (fzf*)"
     echo "  -g : Fetch the given YT URL, and store locally (fzf*)"
     echo "  -G : Search on Invidious, fetch, and store locally (fzf*)"
+    echo "  -i : Search given media lyrics on Invidious (fzf*)"
+    echo "  -I : Search current media lyrics on Invidious (fzf*)"
     echo "  -k : Search & play DuckDuckGo videos (fzf*)"
     echo "  -K : Search DuckDuckGo videos (fzf*)"
     echo "  -l : Search & play local media (fzf*)"
     echo "  -s : Search on Invidious (fzf*)"
     echo "  -p : Search & play media found using Invidious (fzf*)"
+    echo "  -y : Search related media on Invidious (fzf*)"
+    echo "  -Y : Search & play related media using Invidious (fzf*)"
     echo "  -x : Starts $PROGNAME in a new $MPVC_TERM (config \$MPVC_TERM) [combine -x with $optflags]"
     echo "*tips: If unsure about where to begin, start with: $PROGNAME -p 'kupla mirage'"
     exit;
