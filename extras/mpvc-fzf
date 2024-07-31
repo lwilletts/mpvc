@@ -109,7 +109,8 @@ mpvcfzf_splay()
 
 mpvcfzf_lyrics()
 {
-    id="${1##https://yewtu.be/}"
+    id=${1:-$(mpvc get filename current)}
+    id="${id##https://yewtu.be/}"
     output=$(curl -fsSL -A '' "https://yewtu.be/watch?v=$id")
     echo "$output" |
         awk '
@@ -416,8 +417,8 @@ main()
         F) shift; mpvcfzf_preview "$@" ;;
         g) mpvcfzf_fetch "$OPTARG";;
         G) mpvcfzf_fetch $(mpvcfzf_iplay "$OPTARG") ;;
-        i) mpvcfzf_lyrics "${OPTARG:-$(mpvc get filename current fullpath)}";;
-        I) mpvcfzf_lyrics "$(mpvc get filename current fullpath)";;
+        i) mpvcfzf_lyrics "${OPTARG:-}";;
+        I) mpvcfzf_lyrics "";;
         k) mpvcfzf_ddg_play "$OPTARG";;
         K) mpvcfzf_ddg "$OPTARG";;
         h) mpvcfzf_usage ;;
