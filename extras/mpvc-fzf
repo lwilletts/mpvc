@@ -45,6 +45,11 @@ mpvcfzf_config()
     fi
 }
 
+mpvcfzf_getvideo_id()
+{
+    echo "${1##*/}"
+}
+
 mpvcfzf_isearch_once()
 {
     mpvcfzf_isearch "$@" | awk 'NR==2 {sub(" +", " # "); print}'
@@ -87,7 +92,8 @@ mpvcfzf_isearch()
 
 mpvcfzf_ssearch()
 {
-    id="${1##https://yewtu.be/}"
+    id=${1:-$(mpvc get filename)}
+    id=$(mpvcfzf_getvideo_id "$id")
     output=$(curl -fsSL -A '' "https://yewtu.be/watch?v=$id")
     echo "$output" |
         awk '
@@ -109,21 +115,22 @@ mpvcfzf_splay()
 
 mpvcfzf_lyrics()
 {
-    id=${1:-$(mpvc get filename current)}
-    id="${id##https://yewtu.be/}"
+    id=${1:-$(mpvc get filename)}
+    id=$(mpvcfzf_getvideo_id "$id")
     output=$(curl -fsSL -A '' "https://yewtu.be/watch?v=$id")
     echo "$output" |
-        awk '
+        awk -v id=$id '
             c==0 && /<meta name="description"/  {c=1}
             c==1 && /^[Ll][Yy][Rr][Ii][Cc][Ss]/ {c=2}
             c==2 && /<meta name="keywords"/     {c=0}
             c==2                                {print}
+            END                                 {if (c==1) print "Lyrics: No lyrics found for",id}
         '
 }
 
 mpvcfzf_nextvideo()
 {
-    id="${1##https://yewtu.be/}"
+    id=$(mpvcfzf_getvideo_id "$id")
     output=$(curl -fsSL -A '' "https://yewtu.be/watch?v=$id")
     next_video=$(echo "$output" | awk '/next_video/ {gsub("[\",]",""); print $2}')
     next_url="https://yewtu.be/$next_video"
@@ -432,8 +439,8 @@ main()
         r) mpvcfzf_fetch_remove "$OPTARG" ;;
         s) mpvcfzf_isearch "$OPTARG";;
         x) shift; if quiet command -v $MPVC_TERM; then $MPVC_TERM -e "$0" "$@"; fi; exit;;
-        y) mpvcfzf_ssearch "${OPTARG:-$(mpvc get filename current fullpath)}";;
-        Y) mpvcfzf_splay "${OPTARG:-$(mpvc get filename current fullpath)}";;
+        y) mpvcfzf_ssearch "${OPTARG:-}";;
+        Y) mpvcfzf_splay "${OPTARG:-}";;
         v) mpvcfzf_version ;;
         *) mpvcfzf_usage ;;
         esac
