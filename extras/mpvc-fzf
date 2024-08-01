@@ -122,7 +122,7 @@ mpvcfzf_lyrics()
         awk -v id=$id '
             c==0 && /<meta name="description"/  {c=1}
             c==1 && /^[Ll][Yy][Rr][Ii][Cc][Ss]/ {c=2}
-            c==2 && /<meta name="keywords"/     {c=0}
+            c==2 && /<meta name="keywords"/     {c=0;exit}
             c==2                                {print}
             END                                 {if (c==1) print "Lyrics: No lyrics found for",id}
         '
@@ -430,10 +430,10 @@ main()
         K) mpvcfzf_ddg "$OPTARG";;
         h) mpvcfzf_usage ;;
         l) mpvcfzf_local ;;
-        L) mpvcfzf_isearch_once "$OPTARG" | mpvcfzf_awk1 | mpvc load ;; # lucky
         n) mpvcfzf_nextvideo "$OPTARG" ;;
-        o) mpvcfzf_isearch_once "$OPTARG" ;;
-        O) mpvcfzf_icache_output_dir ;;
+        o) mpvcfzf_isearch_once "$OPTARG" ;; # lucky
+        O) mpvcfzf_isearch_once "$OPTARG" | mpvcfzf_awk1 | mpvc load ;; # lucky
+        #O) mpvcfzf_icache_output_dir ;;
         p) mpvcfzf_iplay "$OPTARG" | mpvc load ;;
         P) mpvcfzf_iplay "$OPTARG" | mpvc loadc ;;
         r) mpvcfzf_fetch_remove "$OPTARG" ;;
