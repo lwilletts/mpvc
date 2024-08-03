@@ -29,7 +29,7 @@ mpvc_web_defaults()
     XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}
     MPVC_CONFIG="${MPVC_CONFIG:-$XDG_CONFIG_HOME/mpvc/mpvc.conf}"
 
-    MPVC_WEB_HOSTNAME=$(hostname)
+    MPVC_WEB_HOSTNAME=${MPVC_WEB_HOSTNAME:-$(hostname)}
     MPVC_WEB_HOST=${MPVC_WEB_HOST:-localhost}
     MPVC_WEB_PORT=${MPVC_WEB_PORT:-8000}
     MPVC_WEB_ROOT=${MPVC_WEB_ROOT:-/tmp/mpvc-web/root}
@@ -40,6 +40,7 @@ mpvc_web_defaults()
     MPVC_WEB_SSL_ENABLE=${MPVC_WEB_SSL_ENABLE:-}
     MPVC_WEB_SSL_VERIFY=${MPVC_WEB_SSL_VERIFY:-0}
     MPVC_WEB_ARCHIVE_ENABLE=${MPVC_WEB_ARCHIVE_ENABLE:-}
+    MPVC_WEB_CAST_URL=${MPVC_WEB_CAST_URL:-}
     MPVC_WEB_HTML_THEME=${MPVC_WEB_HTML_THEME:-}
     MPVC_WEB_HTML_REFRESH=${MPVC_WEB_HTML_REFRESH:-}
 
@@ -181,8 +182,9 @@ mpvc_web_index()
             <a href="." name="top" ${MPVC_WEB_SHORTCUT_REFRESH}>$PROGNAME</a>
             <a href="#status">#stat</a>
             <a href="#mpvc-web-playlist">#ls</a>
-            $([ -n "$MPVC_WEB_ARCHIVE_ENABLE" ] && echo '<a href="ytdl-archive" >#arc</a>'; )
-            <a href="https://gmt4.github.io/mpvc/now/">#now</a>
+            $([ -n "$MPVC_WEB_ARCHIVE_ENABLE" ] && echo '<a title="#arc" href="ytdl-archive" >#a</a>'; )
+            <a title="#now" href="https://gmt4.github.io/mpvc/now/">#n</a>
+            $([ -n "$MPVC_WEB_CAST_URL" ] && echo "<a title=#cast href="$MPVC_WEB_CAST_URL">#c</a>"; )
         ]
         <hr>
         <ul>
@@ -538,7 +540,7 @@ mpvc_web()
     )
 }
 
-optflags="ha:b:c:d:p:P:r:R:s:S:t:"
+optflags="ha:b:c:C:d:p:P:r:R:s:S:t:"
 usage()
 {
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
@@ -564,6 +566,7 @@ main()
         case "$flag" in
         h) usage ;;
         c) MPVC_WEB_CMD="$OPTARG"; ;;
+        C) MPVC_WEB_CAST_URL="$OPTARG"; ;;
         d) MPVC_WEB_DEV="$OPTARG"; ;;
         b) MPVC_WEB_HOST="$OPTARG" ;;
         p) MPVC_WEB_PORT="$OPTARG" ;;
