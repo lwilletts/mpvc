@@ -96,8 +96,8 @@ mpvc_web_select_form()
     echo "<form action=/ method=get>"
     echo "<span title="$arg" ></span>"
     awk -v cmd="$cmd" -v arg="$arg" '
-        BEGIN  { print "<select name=cli id=cli-select "arg" onchange=this.form.submit() >"; printf "<option value=\"\"># "cmd"</option>\n"  }
-        NR > 0 { gsub("\"",""); print "<option value=\""cmd" "$0"\">"$0"</option>" }
+        BEGIN  { print "<select name=cli id=cli-select "arg" onchange=this.form.submit() >"; print "<option value=\"\" selected># "cmd  }
+        NR > 0 { gsub("\"",""); print "<option value=\""cmd" "$0"\">"$0 }
         END    { print "</select>"}
     '
     echo '</form>'
