@@ -1154,7 +1154,7 @@ main() {
             -C|--clear|clear)                mpvc_clear_playlist; QUIETFLAG=true;;
             --delay|delay)                   mpvc_delay;;
             --wait|wait)                     mpvc_wait;;
-            --tac|tac)                       mpvc_tac;;
+            --tac|tac)                       mpvc_tac; exit 0;;
 
             --ttysize|ttysize)               mpvc_tty_size; QUIETFLAG=true;;
             --ttycols|ttycols)               mpvc_tty_cols; QUIETFLAG=true;;
