@@ -96,7 +96,7 @@ mpvc_web_select_form()
     echo "<form action=/ method=get>"
     echo "<span title="$arg" ></span>"
     echo "<select name=cli $arg onchange=this.form.submit() >"
-    awk -v cmd="$cmd" -v arg="$arg" '
+    awk -v cmd="$cmd" '
         BEGIN  { print "<option value=\"\" selected># "cmd }
         NR > 0 { gsub("\"",""); print "<option value=\""cmd" "$0"\">"$0 }
     '
@@ -266,7 +266,7 @@ EOF
             $(echo "-120\n-60\n-25\n+25\n+60\n+120" | mpvc_web_select_form "mpvc -q seek" "${MPVC_WEB_SHORTCUT_SEEK}")
         </li>
         <li>
-            $(if [ -n "$MPVC_WEB_ARCHIVE_ENABLE" ]; then find "ytdl-archive/" | awk -F/ '{print "https://"$NF}' | mpvc_web_select_form "mpvc add" "${MPVC_WEB_SHORTCUT_ARCHIVE}"; fi)
+            $(if [ -n "$MPVC_WEB_ARCHIVE_ENABLE" ]; then find "ytdl-archive/" | awk -F/ '{print "https://"$NF}' | mpvc_web_select_form "mpvc -q add" "${MPVC_WEB_SHORTCUT_ARCHIVE}"; fi)
         </li>
         <li>
             $(mpvc-equalizer preset | awk '/ # preset: / {print $NF}' | mpvc_web_select_form "mpvc-equalizer load" "${MPVC_WEB_SHORTCUT_EQUALIZER}")
