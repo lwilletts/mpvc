@@ -378,7 +378,7 @@ mpvcfzf_version()
     echo "usage: $PROGNAME -[optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
 }
 
-optflags="01ab:B:cCd:efFg:G:hi:Ik:K:n:s:S:p:P:o:Or:lL:xy:Y:v"
+optflags="01ab:B:cCd:efFg:G:hi:Ik:K:n:s:S:p:P:o:O:r:lL:xy:Y:v"
 mpvcfzf_usage()
 {
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
