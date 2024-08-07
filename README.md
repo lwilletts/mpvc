@@ -132,7 +132,7 @@ pacman -Sy mpv gawk curl socat fzf rlwrap jq libnotify
 BSD (and pkg(1) based derivatives such as FreeBSD):
 
 ```console
-pkg install -y mpv gawk curl socat fzf rlwrap jq libnotify
+pkg install -y mpv gawk curl socat fzf rlwrap jq libnotify gsed
 ```
 
 ### MacOS
