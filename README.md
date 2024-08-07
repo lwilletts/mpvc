@@ -129,7 +129,7 @@ pacman -Sy mpv gawk curl socat fzf rlwrap jq libnotify
 
 ### BSD
 
-BSD (and pkg(1) based derivatives such as FreeBSD):
+BSD (and pkg(1) based derivatives as FreeBSD, see [FAQ](../../wiki/FAQ)):
 
 ```console
 pkg install -y mpv gawk curl socat fzf rlwrap jq libnotify gsed
