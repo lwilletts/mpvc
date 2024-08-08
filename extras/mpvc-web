@@ -162,9 +162,8 @@ function mpvcOnKeyDownEvent(event, that)
     {
         if (! that.value.startsWith('http'))
         {
-            console.log(that.value)
-            var datalist=document.getElementById("mpvc-yts-datalist")
-            var url='/cgi-bin/mpvc/?mpvc-fzf+-s+'+that.value;
+            var datalist=document.getElementById('mpvc-yts-datalist')
+            var url='/cgi-bin/mpvc?mpvc-fzf+-s+'+that.value;
             data=mpvcHttpGet(url);
 
             lines=data.split('\n');
@@ -177,10 +176,8 @@ function mpvcOnKeyDownEvent(event, that)
         else
         {
             var yturl=that.value.split(' ')[0]
-            console.log(yturl, that.value)
-            var url='/cgi-bin/mpvc/?mpvc+add+'+yturl
+            var url='/cgi-bin/mpvc?mpvc+add+'+yturl
             data=mpvcHttpGet(url);
-            console.log(data)
         }
     }
 }
