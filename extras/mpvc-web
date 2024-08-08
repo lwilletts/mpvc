@@ -15,6 +15,7 @@
 # like a laptop, tablet, or phone.
 
 PROGNAME=${0##*/}
+PROGDIR=${0%/*}
 PROGVERSION="v1.5"
 PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
@@ -104,6 +105,19 @@ mpvc_web_select_form()
     echo '</form>'
 }
 
+mpvc_web_cli()
+{
+cat <<EOF
+            mpvc yts
+            <input type="text" placeholder="mpvc yts search" name="search" title="search" onkeydown="if (event.keyCode == 13) { url='/cgi-bin/mpvc/?mpvc-fzf+-s+'+this.value; console.log('url '+url); data=httpGet(url); console.log('data '+data); }">
+        <br>
+        <form action="/" method="get">
+            mpvc cli
+            <input type="text" id="cli" name="cli" ${MPVC_WEB_SHORTCUT_CLI} autocomplete="on" placeholder="mpvc status ${MPVC_WEB_DEV:-(off)}" title="mpvc cli" onkeydown="if (event.keyCode == 13) { this.form.submit(); return false; }">
+        </form>
+EOF
+}
+
 mpvc_web_help()
 {
     cat <<EOF
@@ -189,14 +203,8 @@ mpvc_web_index()
         ]
         <hr>
         <ul>
-        $([ -n "${MPVC_WEB_DEV:-}" ] && cat <<EOF
         <li>
-        <form action="/" method="get">
-            mpvc cli
-            <input type="text" id="cli" name="cli" ${MPVC_WEB_SHORTCUT_CLI} autocomplete="on" placeholder="mpvc status ${MPVC_WEB_DEV:-(off)}" title="mpvc cli" onkeydown="if (event.keyCode == 13) { this.form.submit(); return false; }">
-        </form>
-EOF
-)
+            $([ -n "${MPVC_WEB_DEV:-}" ] && mpvc_web_cli)
         <li>
             $(mpvc stash list | awk 'NR>1{print $NF}' | mpvc tac | mpvc_web_select_form "mpvc -q stash apply" "${MPVC_WEB_SHORTCUT_APPLY}")
         </li>
@@ -352,17 +360,27 @@ function toggleColorScheme(mode="dark")
         break;
     }
 }
+
+function httpGet(url)
+{
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open("GET", url, false);
+    xmlHttp.send(null);
+    return xmlHttp.responseText;
+}
 EOF
 }
 
-mpvc_web_cgi()
+mpvc_web_cgi() # /cgi-bin/mpvc
 {
     cat <<EOF
 #!/bin/sh
 set -euf
-mpvc_strip_escapes(){ sed '/\x1b\[7m/ { s|\x1b\[7m||; s| |+|; }; s|\x1b\[0m||;'; }
-mpvc_plain() { echo "Content-Type: text/plain"; echo; $MPVC "\$@"; }
-mpvc_html()  { echo "Content-Type: text/html"; echo; echo "\$@"; }
+mpvc_warn()  { echo "\$@" >&2; }
+mpvc_strip() { sed '/\x1b\[7m/ { s|\x1b\[7m||; s| |+|; }; s|\x1b\[0m||;'; }
+mpvc_cmd()   { echo "Content-Type: text/plain"; echo; $MPVC "\$@"; }
+mpvc_plain() { echo "Content-Type: text/plain"; echo; echo "\$@"; }
+mpvc_html()  { echo "Content-Type: text/html";  echo; echo "\$@"; }
 mpvc_redir() { mpvc_html '<meta http-equiv=refresh content="0;url='\$1'" />'; }
 main()
 {
@@ -372,12 +390,13 @@ main()
     cmd="\${1:-}"; case "\$cmd" in equalizer|fzf|now) shift; $MPVC-\$cmd "\$@"; return ;; esac
     case "\${QUERY_STRING:-}" in
         lyrics)            mpvc_redir "https://ddg.gg?ia=lyrics&iax=lyrics&q=lyrics \$($MPVC -f '%title%')" ;;
-        status|playlist)   mpvc_plain "\${QUERY_STRING}" | mpvc_strip_escapes ;;
-        fullplaylist)      mpvc_plain fullplaylist | mpvc_strip_escapes ;;
-        rawplaylist)       mpvc_plain saven | mpvc_strip_escapes ;;
-        chapter-list)      mpvc_plain chapter-list | mpvc_strip_escapes ;;
-        chapter-list-nr)   mpvc_plain chapter-list-nr | mpvc_strip_escapes ;;
-        chapter-list-full) mpvc_plain chapter-list-full | mpvc_strip_escapes ;;
+        status|playlist)   mpvc_cmd "\${QUERY_STRING}" | mpvc_strip ;;
+        fullplaylist)      mpvc_cmd fullplaylist | mpvc_strip ;;
+        rawplaylist)       mpvc_cmd saven | mpvc_strip ;;
+        chapter-list)      mpvc_cmd chapter-list | mpvc_strip ;;
+        chapter-list-nr)   mpvc_cmd chapter-list-nr | mpvc_strip ;;
+        chapter-list-full) mpvc_cmd chapter-list-full | mpvc_strip ;;
+        mpvc-fzf*)         mpvc_plain "\$(eval $PROGDIR/"\$@")" ;;
         *)                 $MPVC "\$@" ;;
     esac
 }
@@ -429,7 +448,7 @@ mpvc_web_setup()
         mkdir -p "$MPVC_WEB_ROOT" || return
         mkdir -p "$MPVC_WEB_ROOT/cgi-bin/" || return
         cd "$MPVC_WEB_ROOT" || return
-        chmod u+w -R "${MPVC_WEB_ROOT%/*}"
+        chmod -R u+w "${MPVC_WEB_ROOT%/*}"
 
         # setup streamable mpvc archive if requested
         if [ -n "${MPVC_WEB_ARCHIVE_ENABLE}" ]; then
@@ -465,7 +484,7 @@ mpvc_web_setup()
             echo "# $PROGNAME Setup development/cli features (MPVC_WEB_DEV=${MPVC_WEB_DEV:-} is not set)"
         fi
 
-        chmod a-w -R "$MPVC_WEB_ROOT/"
+        chmod -R a-w "$MPVC_WEB_ROOT/"
     )
 }
 
