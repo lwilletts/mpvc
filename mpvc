@@ -1017,7 +1017,7 @@ main() {
     mpvc_config
     arg1=${1:-}
     case "$arg1" in
-    ytquery|ytqueryjson) ;;
+    ytquery|ytqueryjson|--tac|tac) ;;
     -k|--kill|kill|-K|--killall|killall) ;;
     -c|--crop|crop|-C|--clear|clear|cmd|sockcmd|socklist|--socklist) ;;
     -a|add|append|-A|playnext|--playnext|-n|playnow|--playnow|mpv|--mpv|stash|--stash|--toggle|toggle|-q|--quiet) ;;
