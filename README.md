@@ -149,7 +149,7 @@ brew install gawk socat fzf rlwrap jq gnu-sed yt-dlp # mpv curl libnotify
 emerge mpvc
 ```
 
-### Nix [mpvc](http://github.com/nixos/nixpkgs/tree/master/pkgs/applications/misc/mpvc)
+### Nix [mpvc](https://github.com/NixOS/nixpkgs/blob/master/pkgs/by-name/mp/mpvc/)
 
 ```console
 nix-env -i mpvc
