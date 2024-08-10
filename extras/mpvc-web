@@ -204,6 +204,8 @@ mpvc_cmd()   { echo "Content-Type: text/plain"; echo; $MPVC "\$@"; }
 mpvc_plain() { echo "Content-Type: text/plain"; echo; echo "\$@"; }
 mpvc_html()  { echo "Content-Type: text/html";  echo; echo "\$@"; }
 mpvc_redir() { mpvc_html '<meta http-equiv=refresh content="0;url='\$1'" />'; }
+mpvc_split() { for f in \$@; do echo "\$f"; done; }
+
 main()
 {
     QUERY_STRING="\${QUERY_STRING:-\$@}"
@@ -221,11 +223,11 @@ main()
         mpvc+chapter-list-nr)   mpvc_cmd chapter-list-nr | mpvc_strip ;;
         mpvc+chapter-list-full) mpvc_cmd chapter-list-full | mpvc_strip ;;
 
-        mpvc-now*)              mpvc_plain "\$(eval $PROGDIR/"\$@")" ;;
-        mpvc-fzf*)              mpvc_plain "\$(eval $PROGDIR/"\$@")" ;;
-        mpvc-equalizer*)        mpvc_plain "\$(eval $PROGDIR/"\$@")" ;;
+        mpvc-now*)              mpvc_plain "\$($PROGDIR/\$(mpvc_split "\$@"))" ;;
+        mpvc-fzf*)              mpvc_plain "\$($PROGDIR/\$(mpvc_split "\$@"))" ;;
+        mpvc-equalizer*)        mpvc_plain "\$($PROGDIR/\$(mpvc_split "\$@"))" ;;
 
-        mpvc*)                  mpvc_plain "\$(eval $MPVC "\$@")" ;;
+        mpvc*)                  mpvc_plain "\$($MPVC \$(mpvc_split "\$@"))" ;;
     esac
 }
 main "\$@"
