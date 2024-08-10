@@ -199,12 +199,13 @@ mpvc_web_cgi() # /cgi-bin/mpvc
 #!/bin/sh
 set -euf
 mpvc_warn()  { echo "\$@" >&2; }
+mpvc_quiet() { "\$@" >/dev/null; }
 mpvc_strip() { sed '/\x1b\[7m/ { s|\x1b\[7m||; s| |+|; }; s|\x1b\[0m||;'; }
 mpvc_cmd()   { echo "Content-Type: text/plain"; echo; $MPVC "\$@"; }
 mpvc_plain() { echo "Content-Type: text/plain"; echo; echo "\$@"; }
 mpvc_html()  { echo "Content-Type: text/html";  echo; echo "\$@"; }
 mpvc_redir() { mpvc_html '<meta http-equiv=refresh content="0;url='\$1'" />'; }
-mpvc_split() { for f in \$@; do echo "\$f"; done; }
+mpvc_split() { for i in \$@; do echo "\$i"; done; }
 
 main()
 {
@@ -223,11 +224,11 @@ main()
         mpvc+chapter-list-nr)   mpvc_cmd chapter-list-nr | mpvc_strip ;;
         mpvc+chapter-list-full) mpvc_cmd chapter-list-full | mpvc_strip ;;
 
-        mpvc-now*)              mpvc_plain "\$($PROGDIR/\$(mpvc_split "\$@"))" ;;
-        mpvc-fzf*)              mpvc_plain "\$($PROGDIR/\$(mpvc_split "\$@"))" ;;
-        mpvc-equalizer*)        mpvc_plain "\$($PROGDIR/\$(mpvc_split "\$@"))" ;;
+        mpvc-now[+\ ]*)         mpvc_plain "\$($PROGDIR/\$(mpvc_split "\$@"))" ;;
+        mpvc-fzf[+\ ]*)         mpvc_plain "\$($PROGDIR/\$(mpvc_split "\$@"))" ;;
+        mpvc-equalizer[+\ ]*)   mpvc_plain "\$($PROGDIR/\$(mpvc_split "\$@"))" ;;
 
-        mpvc*)                  mpvc_plain "\$($MPVC \$(mpvc_split "\$@"))" ;;
+        mpvc[+\ ]*)             mpvc_plain "\$($PROGDIR/\$(mpvc_split "\$@"))" ;;
     esac
 }
 main "\$@"
@@ -575,7 +576,7 @@ mpvc_web()
             r=$0;
             gsub("HTTP.*$", "", r);
             gsub("^.*GET \\/\\?cli=(mpvc-)", mpvc" mpvc-", r);
-            gsub("^.*GET \\/\\?cli=(mpvc)\\+", mpvc" mpvc", r);
+            gsub("^.*GET \\/\\?cli=(mpvc)\\+", mpvc" mpvc ", r);
 
             if (ENVIRON["MPVC_WEB_DEV"] && match(r, "^"mpvc))
             {
