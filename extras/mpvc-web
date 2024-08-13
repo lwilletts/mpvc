@@ -214,7 +214,7 @@ main()
         env -i PATH="/usr/bin:/bin" HOME="\$HOME" TERM="\$TERM" QUERY_STRING="\${QUERY_STRING:-}" "\$0" "\$@"; exit;
     fi
     case "\$QUERY_STRING" in
-        lyrics)                 mpvc_redir "https://ddg.gg?ia=lyrics&iax=lyrics&q=lyrics \$($MPVC -f '%title%')" ;;
+        lyrics)                 mpvc_redir "\$($MPVC-fzf -L '')" ;;
 
         mpvc+status)            mpvc_cmd status | mpvc_strip ;;
         mpvc+playlist)          mpvc_cmd playlist | mpvc_strip ;;
