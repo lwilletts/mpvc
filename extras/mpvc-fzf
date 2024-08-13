@@ -426,6 +426,7 @@ main()
         G) mpvcfzf_fetch $(mpvcfzf_iplay "$OPTARG") ;;
         i) mpvcfzf_lyrics "${OPTARG:-}";;
         I) mpvcfzf_lyrics "";;
+        L) echo "https://ddg.gg?ia=lyrics&iax=lyrics&q=lyrics $(mpvc -f '%title%')" ;;
         k) mpvcfzf_ddg_play "$OPTARG";;
         K) mpvcfzf_ddg "$OPTARG";;
         h) mpvcfzf_usage ;;
