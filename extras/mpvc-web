@@ -313,10 +313,11 @@ mpvc_web_index()
         [
             🎧
             <a href="." name="top" ${MPVC_WEB_SHORTCUT_REFRESH}>$PROGNAME</a>
-            <a href="#status">#stat</a>
+            <a href="#status">#st</a>
             <a href="#mpvc-web-playlist">#ls</a>
-            $([ -n "$MPVC_WEB_ARCHIVE_ENABLE" ] && echo '<a title="#arc" href="ytdl-archive" >#a</a>'; )
             <a title="#now" href="https://gmt4.github.io/mpvc/now/">#n</a>
+            <a title="#extras" href="/extras/">#x</a>
+            $([ -n "$MPVC_WEB_ARCHIVE_ENABLE" ] && echo '<a title="#arc" href="ytdl-archive" >#a</a>'; )
             $([ -n "$MPVC_WEB_CAST_URL" ] && echo "<a title=#cast href="$MPVC_WEB_CAST_URL">#c</a>"; )
         ]
         <hr>
@@ -483,6 +484,7 @@ mpvc_web_setup()
         echo "# $PROGNAME Setup $MPVC_WEB_ROOT"
         mkdir -p "$MPVC_WEB_ROOT" || return
         mkdir -p "$MPVC_WEB_ROOT/cgi-bin/" || return
+        mkdir -p "$MPVC_WEB_ROOT/extras/" || return
         cd "$MPVC_WEB_ROOT" || return
         chmod -R u+w "${MPVC_WEB_ROOT%/*}"
 
