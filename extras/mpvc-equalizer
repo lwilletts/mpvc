@@ -102,7 +102,7 @@ mpvc_values()
     mpvc getr af |
         jq '.data | .[] | .params.graph' |
         grep -o "gain_entry = '.*':" |
-        sed -n 's/gain_entry = .//; s/.:$//; s|entry([0-9]\{1,2\},\([-.0-9]\+\));\?|\n\1 |gp'
+        sed -n 's/gain_entry = .//; s/.:$//; s|entry([0-9]\{1,2\},\([-.0-9]*\));*|\n\1 |gp'
 }
 
 mpvc_setvals()
