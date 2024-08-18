@@ -118,8 +118,9 @@ mpvc_bars()
     freq_table="0\n65\n157\n288\n472\n733\n1k1\n1k6\n2k4\n3k4\n4k9\n7k0\n10k\n14k\n20k\n"
     gain_table="$(printf "$mpvc_values" | sed '/^$/d')"
     preset=$(awk /"$(echo "$gain_table" | awk 'NR<10{s=s""$0} END{print s}')"/' {print $NF}' $0)
+    gain_table=$(echo "$mpvc_values")
 
-    awk -v freq="$freq_table" -v gain="$gain_table" -v cols=$(mpvc ttycols) -v preset=$preset '
+    awk -v freq="$freq_table" -v gain="$gain_table" -v cols="$(mpvc ttycols)" -v preset="$preset" '
     function mpvc_bar_line(val)
     {
         valf=val
