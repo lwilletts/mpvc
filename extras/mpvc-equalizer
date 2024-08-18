@@ -13,12 +13,11 @@ PROGVERSION="v1.5"
 PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
 
-MPVC_LABEL="${MPVC_LABEL:-mpvc-equalizer}"
+set -euf
 
+MPVC_LABEL="${MPVC_LABEL:-mpvc-equalizer}"
 MPVC_FREQ_TABLE="0  65 157 288 472 733 1k1 1k6 2k4 3k4 4k9 7k0 10k 14k 20k"
 MPVC_GAIN_TABLE="0   0   0   0   0   0   0   0   0   0   0   0   0   0   0"
-
-set -euf
 
 mpvc() { "$PROGDIR/mpvc" "$@"; } # mpvc-web?
 
@@ -96,7 +95,7 @@ mpvc_presets()
     rock)       echo "4.8 2.8 -3.4 -4.8 -2.0 2.4 5.3 6.7 6.7 6.7";;    # preset: rock
     techno)     echo "4.8 3.3 0.0 -3.4 -2.9 0.0 4.8 5.7 5.8 5.3";;     # preset: techno
 
-    ''|help|list) awk '/# preset: / { print }' $0;;
+    ''|help|list) awk '/# preset: / { print }' "$0";;
     esac
 }
 
@@ -120,7 +119,7 @@ mpvc_bars()
     if [ -z "$mpvc_values" ]; then usage; fi
     freq_table="$MPVC_FREQ_TABLE"
     gain_table="$(printf "$mpvc_values" | sed '/^$/d')"
-    preset=$(awk /"$(echo "$gain_table" | awk 'NR<10{s=s""$0} END{print s}')"/' {print $NF}' $0)
+    preset=$(awk /"$(echo "$gain_table" | awk 'NR<10{s=s""$0} END{print s}')"/' {print $NF}' "$0")
     gain_table=$(echo $gain_table)
 
     awk -v freq="$freq_table" -v gain="$gain_table" -v cols="$(mpvc ttycols)" -v preset="$preset" '
