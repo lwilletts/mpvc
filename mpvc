@@ -199,6 +199,11 @@ mpvc_tac()
     ' "$@"
 }
 
+mpvc_isotime()
+{
+    TZ=UTC date -u +"%Y-%m-%dT%H:%M:%SZ"
+}
+
 ## Retrieval Functions ########################################################
 
 mpvc_curl_cache()
@@ -437,8 +442,8 @@ mpvc_save_playlist() {
 }
 
 mpvc_lsplaylists() { ls -1d "$@" "$MPVC_PLAYLIST"/*; }
-mpvc_autosave_playlist() { mpvc_save_playlist "$MPVC_PLAYLIST/${1:-$(date -Imin)}"; }
-mpvc_autoload_playlist() { mpvc_load_playlist < "$MPVC_PLAYLIST/${1:-$(date -Imin)}"; }
+mpvc_autosave_playlist() { mpvc_save_playlist "$MPVC_PLAYLIST/${1:-$(mpvc_isotime)}"; }
+mpvc_autoload_playlist() { mpvc_load_playlist < "$MPVC_PLAYLIST/${1:-$(mpvc_isotime)}"; }
 
 # $buffer stdin: to save the whole stdin in one piece at once
 mpvc_buffer_stdin()
@@ -475,7 +480,7 @@ mpvc_stash() {
         push|cp)
             stashid="${1:-}"
             if [ -z "$stashid" ]; then
-                stashid="${1:-stash-$(date -Imin)}"
+                stashid="${1:-stash-$(mpvc_isotime)}"
                 warn "$PROGNAME: $PROGNAME stash apply $stashid # new stash created"
             fi
             if [ -e "$MPVC_STASH_DIR/$stashid" ]; then
