@@ -15,21 +15,24 @@ PROGURL="https://github.com/gmt4/mpvc"
 
 MPVC_LABEL="${MPVC_LABEL:-mpvc-equalizer}"
 
+MPVC_FREQ_TABLE="0  65 157 288 472 733 1k1 1k6 2k4 3k4 4k9 7k0 10k 14k 20k"
+MPVC_GAIN_TABLE="0   0   0   0   0   0   0   0   0   0   0   0   0   0   0"
+
 set -euf
 
 mpvc() { "$PROGDIR/mpvc" "$@"; } # mpvc-web?
 
 mpvc_genfilter()
 {
-    awk -v quote="'" -v gain_curr="$*" \
+    awk -v quote="'" -v gain_curr="$*" -v freq_table_str="MPVC_FREQ_TABLE" -v gain_table_str="$MPVC_GAIN_TABLE" \
     '
     BEGIN {
       num_entry=15
       min_val = -360
       max_val = 120
 
-      n=split("0  65 157 288 472 733 1k1 1k6 2k4 3k4 4k9 7k0 10k 14k 20k", freq_table)
-      n=split("0   0   0   0   0   0   0   0   0   0   0   0   0   0   0", gain_table)
+      n=split(freq_table_str, freq_table)
+      n=split(gain_table_str, gain_table)
       if (gain_curr)
           n=split(gain_curr, gain_table)
     }
@@ -115,10 +118,10 @@ mpvc_bars()
 {
     mpvc_values="$(mpvc_values)"
     if [ -z "$mpvc_values" ]; then usage; fi
-    freq_table="0\n65\n157\n288\n472\n733\n1k1\n1k6\n2k4\n3k4\n4k9\n7k0\n10k\n14k\n20k\n"
+    freq_table="$MPVC_FREQ_TABLE"
     gain_table="$(printf "$mpvc_values" | sed '/^$/d')"
     preset=$(awk /"$(echo "$gain_table" | awk 'NR<10{s=s""$0} END{print s}')"/' {print $NF}' $0)
-    gain_table=$(echo "$mpvc_values")
+    gain_table=$(echo $gain_table)
 
     awk -v freq="$freq_table" -v gain="$gain_table" -v cols="$(mpvc ttycols)" -v preset="$preset" '
     function mpvc_bar_line(val)
