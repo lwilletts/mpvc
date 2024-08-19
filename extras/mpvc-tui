@@ -4,6 +4,7 @@
 # @description mpvc tui, mpv terminal user interface
 # @author gmt4 <gmt4 at github.com> (c) Copyright 2022 GPLv2+
 # @url github.com/gmt4/mpvc
+# SPDX-License-Identifier: GPL-2.0-or-later
 #
 
 PROGNAME=${0##*/}
@@ -268,7 +269,7 @@ mpvctui_notify()
             if (do_print) print tn, $0, "notify"
         }
 
-        /playback-restart|metadata-update/ {
+        /playback-restartproperty-change||metadata-update/ {
             t=systime()
             if (t - ot > 1)
                 system(cmd_scrobble);
@@ -328,7 +329,7 @@ mpvctui_usage()
     exit;
 }
 
-optflags="d:hHktTm:nsSP:u:x"
+optflags="d:hHktTm:nNsSP:u:x"
 mpvctui_main()
 {
     mpvctui_config
@@ -349,6 +350,7 @@ mpvctui_main()
            ;;
         m) shift; mpvctui_mouse "$OPTARG" ;;
         n) shift; mpvctui_notify_loop "${1:-}" ;;
+        N) shift; mpvctui_notify "${@}" ;;
         k) shift; pkill -f "$PROGNAME" ;;
         s) shift; mpvctui_suggest ;;
         S) shift; mpvctui_notify_loop_cli "${1:-}" ;;

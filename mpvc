@@ -83,6 +83,7 @@ EOF
     -R | --searchrm         : Search the playlist and remove matching entries.
     -M | --searchmv         : Search the playlist and move matching entries.
     stash                   : Manage mpv playing state as in git-stash(1)
+    wait                    : Wait until MPV setups $PROGNAME socket (timeout after 10s)
     delay                   : Sleep delay, as in: $PROGNAME play 0 delay seek 20% vol 60
 
     (--)?expand-text        : Expand text as documented in mpv(1) Property Expansion
@@ -105,11 +106,12 @@ Formatting:
     %name%, %path%, %dir%, %title%, %artist%, %album%, %albumartist%, comment%,
     %genre%, %year%, %percentage%, %playlistlength%, %position%, %repeat%,
     %single, %status%, %time%, %precisetime%, %speed%, %length%, %remaining%,
-    %volume%, %muted%, %frame%, %width%, %height%, %ab-loop-a%, %ab-loop-b%
-    %video%, %aspect%, %force-window%, %fullscreen%, %idle%, %chapter%, %chapters%
+    %volume%, %muted%, %frame%, %width%, %height%, %ab-loop-a%, %ab-loop-b%,
+    %video%, %screen%, %aspect%, %force-window%, %fullscreen%, %idle%,
+    %chapter%, %chapters%
 
 MPC compatibility layer:
-    mpvc features a nearly complete compatibility layer for mpc commands in
+    mpvc features nearly complete compatibility for mpc(1) commands, in
     addition to GNU style arguments. https://linux.die.net/man/1/mpc
 
 Exit codes:
@@ -162,9 +164,9 @@ mpvc_defaults()
         FORMATSTRING="\
 %artist% - %title% \r\
 [%status%] #%position%/%playlistlength% %time%/%length% (%percentage%%%) \r\
-speed:%speed%x vol:%volume%%% mute:%muted% repeat:%repeat% single:%single% \r\
-video:%video% aspect:%aspect% win:%force-window% fs:%fullscreen% idle:%idle% \r\
-chapter:%chapter% %=chapter%/%chapters%"
+vol:%volume%%% mute:%muted% repeat:%repeat% single:%single% \r\
+vid:%video% scr:%screen% win:%force-window% fs:%fullscreen% \r\
+chapter:%chapter% %=chapter%/%chapters% idle:%idle%"
     fi
 }
 
@@ -216,13 +218,6 @@ mpvc_curl_cache_json()
     mpvc_curl_cache -sL "https://youtube.com/oembed?url=$1"
 }
 
-mpvc_curl_cache_metadata_json() {
-    for i in "$@"
-    do
-        mpvc_curl_cache_metadata_json_once "$i"
-    done
-}
-
 mpvc_curl_cache_metadata_json_once() {
     filename="${1:-}"
     result="${1:-}"
@@ -249,6 +244,10 @@ mpvc_curl_cache_metadata_json_once() {
     printf "$result\n"
 }
 
+mpvc_curl_cache_metadata_json() {
+    for i in "$@"; do mpvc_curl_cache_metadata_json_once "$i"; done
+}
+
 # fn args: given a file/url return its title (may use curl to query YT)
 mpvc_curl_cache_title_clean() {
     mpvc_curl_cache_metadata_json "$@" | mpvc_getjson 'title'
@@ -263,12 +262,8 @@ mpvc_sockcmd_() { echo "$@" | mpvc_sockrepl; }
 mpvc_sockcmd()  { oquiet mpvc_sockcmd_ "$@"; }
 mpvc_socklist() {
     for f in $(find "$MPVC_CONFIG_DIR" -type s); do
-        idle=$(MPVC_SOCKET=$f mpvc_get idle-active)
-        if [ -z "$idle" ]; then
-            echo "$f:	active=no"
-        else
-            echo "$f:	active=yes idle=$idle"
-        fi
+        idle_active=$(MPVC_SOCKET=$f mpvc_get idle-active)
+        echo "$f:	idle-active=${idle_active:-}"
     done
 }
 
@@ -293,7 +288,7 @@ mpvc_setr()  { mpvc_ecmdr "set_property" "$@"; }
 
 mpvc_get_pause_status() {
     case "$(mpvc_get pause)" in
-        yes) echo "paused";; no) echo "playing" ;; *) echo "NA";;
+        yes) echo "paused";; no) echo "play" ;; *) echo "NA";;
     esac
 }
 
@@ -306,7 +301,7 @@ mpvc_get_playlist_json() {
 
 mpvc_get_playlist_once() {
     mpvc_get_playlist_json |
-        sed 's|,"current":true||; s|,"playing":true||; s|,"id":[0-9]\+||; s|{"filename":"\(.*\)"}|\1|; s|","title":.*||; s/,$//; /^\[$/d; /\]$/d' |
+        sed 's|,"current":true||; s|,"playing":true||; s|,"id":[0-9]*||; s|{"filename":"\(.*\)"}|\1|; s|","title":.*||; s/,$//; /^\[$/d; /\]$/d' |
         awk -v numbered="${1:-}" '
         {
             gsub("^[ \t]*", " ")
@@ -475,8 +470,8 @@ mpvc_stash() {
             fi
             ;;
         edit|ed) ${EDITOR:-vi} "$MPVC_STASH_DIR/$1" ;;
-        drop) rm -i "$MPVC_STASH_DIR/$1" ;;
-        push)
+        drop|rm) rm -i "$MPVC_STASH_DIR/$1" ;;
+        push|cp)
             stashid="${1:-}"
             if [ -z "$stashid" ]; then
                 stashid="${1:-stash-$(date -Imin)}"
@@ -488,7 +483,7 @@ mpvc_stash() {
             fi
             mpvc_stash current "$stashid" > "$MPVC_STASH_DIR/$stashid"
             ;;
-        apply) # if no stash given, default to stdin
+        apply|do) # if no stash given, default to stdin
             stashid="${1:-}"
             if [ -z "$stashid" ]; then
                 mpvc_stash apply_current
@@ -534,6 +529,7 @@ mpvc_stash() {
             echo "mpvc set volume-max $(mpvc_get volume-max)"
             echo "mpvc set video-zoom $(mpvc_get video-zoom)"
             echo "mpvc set video $(mpvc_get video)"
+            echo "mpvc set screen $(mpvc_get screen)"
             echo "mpvc wait"
             echo "mpvc set playback-time $(mpvc_get playback-time)"
             echo "mpvc set pause $(mpvc_get pause)"
@@ -571,7 +567,8 @@ mpvc_appendtrack() {
     filename="$*"
     # require absolute paths
     case "$filename" in
-        /*) ;; *) if [ -e "$filename" ]; then filename="$(pwd)/$filename"; fi ;;
+        /*) if [ ! -e "$filename" ]; then warn "Warning: ${filename##*/} not found."; fi ;;
+        *)  if [ -e "$filename" ]; then filename="$(pwd)/$filename"; fi ;;
     esac
     # skip over various other filetypes and images unless wanted
     case "$filename" in
@@ -862,7 +859,7 @@ mpvc_print_status() {
     F=$(echo "$FORMATSTRING" |
         awk -v status=$(mpvc_get_pause_status) '
         {
-            split("year genre album comment volume path height width playback-time ab-loop-[ab] speed force-window video aspect idle fullscreen chapter chapters =chapter", RE)
+            split("year genre album comment volume path height width playback-time ab-loop-[ab] speed force-window video screen aspect idle fullscreen chapter chapters =chapter", RE)
             for (i in RE) { re=RE[i]; gsub("%"re"%", "${"re":NA}"); }
 
             gsub("%title%", "${media-title}")
@@ -888,7 +885,7 @@ mpvc_print_status() {
         }
         '
     )
-    mpvc_cmd "expand-text" "${F}" | sed 's/ \\r/\n/g'
+    mpvc_cmd "expand-text" "${F}" | awk '{gsub(" \\\\r","\n");print}'
 }
 
 mpvc_print_status_final() {
@@ -906,8 +903,8 @@ isInt() { printf '%d' "$1" >/dev/null 2>&1 && [ -n "$1" ]; }
 
 mpvc_tty_size() {
     # this is convoluted as mpvc is run as cgi by mpvc-web without an actual tty
-    ttydev="${ttydev:-$(if tty -s; then tty; else ps -hp $$ -o tty | sed 's|^|/dev/|'; fi)}"
-    ttysize=${ttysize:-$(equiet stty -F "$ttydev" size || equiet stty -f "$ttydev" size || stty)}
+    ttydev="${ttydev:-$(if tty -s; then tty; else ps -hp $$ -o tty | awk '{sub("^","/dev/");gsub(" ","");l=$0} END{print l}'; fi)}"
+    ttysize=${ttysize:-$(equiet stty -F "$ttydev" size || equiet stty -f "$ttydev" size || equiet stty size || stty)}
     echo "$ttysize"
 
 }
@@ -1002,7 +999,7 @@ mpvc_idle() { mpvc_observe_property "$1" | awk "/$1/ { print; exit }"; }
 mpvc_observe_property() { q='' mpvc_cmdr_ '"observe_property_string"' 1 "\"$1\"" | mpvc_idleloop; }
 
 mpvc_delay() { sleep "${1:-0.1}"; }
-mpvc_wait()  { until [ -n "$(mpvc_get idle-active)" ]; do mpvc_delay "${1:-}"; done; }
+mpvc_wait()  { for i in $(seq 0 100); do mpvc_delay "${1:-}"; [ -n "$(mpvc_get idle-active)" ] && break; done; }
 mpvc_mpv() { mpvc_startmpv --really-quiet --idle=once; }
 # mpvc_mpv: exec & wait until mpv starts up
 mpvc_startmpv() {
@@ -1020,7 +1017,7 @@ main() {
     mpvc_config
     arg1=${1:-}
     case "$arg1" in
-    ytquery|ytqueryjson) ;;
+    ytquery|ytqueryjson|--tac|tac) ;;
     -k|--kill|kill|-K|--killall|killall) ;;
     -c|--crop|crop|-C|--clear|clear|cmd|sockcmd|socklist|--socklist) ;;
     -a|add|append|-A|playnext|--playnext|-n|playnow|--playnow|mpv|--mpv|stash|--stash|--toggle|toggle|-q|--quiet) ;;
@@ -1099,6 +1096,7 @@ main() {
             --togglev|togglev)               shift; mpvc_cycle "video" ;;
             --togglew|togglew)               shift; mpvc_cycle "force-window" ;;
             --togglei|togglei)               shift; mpvc_cycle "idle" ;;
+            --togglef|togglef)               shift; mpvc_cycle "fullscreen" ;;
             --idle|idle)                     shift; mpvc_idle "${1:-}"; QUIETFLAG=true ;;
             --idleloop|idleloop)             shift; mpvc_idleloop "${1:-}"; QUIETFLAG=true ;;
             --observe|observe)               shift; mpvc_observe_property "${1:-}"; QUIETFLAG=true ;;
@@ -1156,6 +1154,7 @@ main() {
             -C|--clear|clear)                mpvc_clear_playlist; QUIETFLAG=true;;
             --delay|delay)                   mpvc_delay;;
             --wait|wait)                     mpvc_wait;;
+            --tac|tac)                       mpvc_tac; exit 0;;
 
             --ttysize|ttysize)               mpvc_tty_size; QUIETFLAG=true;;
             --ttycols|ttycols)               mpvc_tty_cols; QUIETFLAG=true;;

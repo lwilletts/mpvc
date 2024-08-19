@@ -91,6 +91,7 @@ Logbook Entries
     <li> <a href="#logbook-20240301">#20240301 On support UNIXes besides GNU/Linux: BSD and MacOS</a></li>
     <li> <a href="#logbook-20240405">#20240405 Introducing mpvc-chapter: helper managing chapters, 5 Apr 2024</a></li>
     <li> <a href="#logbook-20240505">#20240505 Introducing mpvc-osd: interfacing mpvc with a 4x20 USB LCD, 5 May 2024</a></li>
+    <li> <a href="#logbook-20240704">#20240704 Some notes on my current mpvc setup, 4 July 2024</a></li>
 </ul>
 
 <hr />
@@ -389,6 +390,7 @@ $ grep mpvc ~/.bashrc
     alias mcI="mpvc chapter-list-full"
     alias me="mpvc-equalizer"
     alias mtt="mpvc-tui"
+    alias mtth="mpvc-tui -H"
     alias mm="mpvc-mpris"
     alias mw="mpvc-web"
     alias mff="mpvc-fzf"       # fzf on mpvc
@@ -405,7 +407,8 @@ $ grep mpvc ~/.bashrc
     alias mffo="mpvc-fzf -o"   # fzf search and return first ytid URL
     alias mffp="mpvc-fzf -p"   # fzf search and add ytid URLs from Invidious
     alias xargn="xargs -n1"    # xargn mpvc cmd
-    rseq() { seq "$@" | tac; } # rseq | xargn mpvc cmd
+    rseq()  { seq "$@" | tac; } # rseq | xargn mpvc cmd
+    mffo1() { mpvc add $(mpvc-fzf -o "$@" | mpvc-fzf -1); }
 </pre>
 </p>
 
@@ -542,20 +545,20 @@ only clients that provide a valid peer certificate can connect to mpvc-web.
 So, now the following alternatives are available, ordered from less to more secure:
 <ol>
     <li>
-	For local purposes, just run mpvc-web that defaults to `localhost` with: `mpvc-web`.
+        For local purposes, just run mpvc-web that defaults to `localhost` with: `mpvc-web`.
     </li>
     <li>
-	If its safe running plain HTTP on the home LAN, then use: `MPVC_WEB_HOST=0 mpvc-web`.
+        If its safe running plain HTTP on the home LAN, then use: `MPVC_WEB_HOST=0 mpvc-web`.
     </li>
     <li>
-	Otherwise, if its not safe for running plain HTTP on the LAN, then use:
-   `MPVC_WEB_HOST=0 MPVC_WEB_SSL_ENABLE=1 mpvc-web` to require HTTPS.
+        Otherwise, if its not safe for running plain HTTP on the LAN, then use:
+        `MPVC_WEB_HOST=0 MPVC_WEB_SSL_ENABLE=1 mpvc-web` to require HTTPS.
     </li>
     <li>
-   If additionally, the environment can get attacks from malicious users, then
-   require the use of peer certificates, therefore, limiting access only to those
-   clients/peers that have present  valid `stunnel(1)` certificate with:
-   `MPVC_WEB_HOST=0 MPVC_WEB_SSL_ENABLE=1 MPVC_WEB_SSL_VERIFY=2 mpvc-web`
+        If additionally, the environment can get attacks from malicious users, then
+        require the use of peer certificates, therefore, limiting access only to those
+        clients/peers that have present  valid `stunnel(1)` certificate with:
+        `MPVC_WEB_HOST=0 MPVC_WEB_SSL_ENABLE=1 MPVC_WEB_SSL_VERIFY=2 mpvc-web`
     </li>
 </ol>
 </p>
@@ -645,7 +648,46 @@ While mpvc was playing `The Number 4` from Khruangbin's EP `The Infamous Bill` d
     mpvc-tui -S 'echo $(date +"T%H:%M") $(mpvc -f "[%status%] #%position%/%playlistlength% %time% %artist% - %title% - %path%")' 'false'
 </pre>
 And this is how it looks:
-<img src="assets/mpvc-osd-usblcd.jpg" alt="mpvc-osd usblcd" width="95%" />
+<p style="text-align:center">
+<img src="assets/mpvc-osd-usblcd.jpg" alt="mpvc-osd usblcd" width="90%" />
+</p>
+</p>
+
+<h3 id="logbook-20240704">Some notes on my current mpvc setup, 4 July 2024</h3>
+<p>
+
+Some notes on my current mpvc setup, I've setled on having the following commands continuosly running on background: mpvc-tui, mpvc-web, mpvc-autostart, and mpvc-osd:
+
+<ul>
+    <li>
+    mpvc-tui: to manage from the CLI, with the -T option to get desktop notifications.
+    </li>
+    <li>
+    mpvc-web: to manage from the WEB, to access from any browser in the LAN.
+    </li>
+    <li>
+    mpvc-autostart: to automatically start/stop mpvc when a personal device is detected (LAN).
+    </li>
+    <li>
+    mpvc-osd: to have mpvc playing status updated on a USB LCD (see above entry)
+    </li>
+</ul>
+
+For the record, this is the list of commands currently running:
+
+<pre>
+mpvc-tui -T
+mpvc-web -b 0 -s 1 -a 1 -R 60 -t dark -c start
+mpvc-autostart -p 600 -n 6 -i [local_ip]
+# mpvc-osd mpvcosd
+</pre>
+
+Using mpvc-web, on a device with a HDMI display, opens news possibilities of displaying video media, that is beyond just acting as a jukebox for playing music.
+For setups where the mediacenter has a video display with X11 x2x(1) might come handy to send X11 input events from a ssh-client to control the remote mpv running on X11, an example invocation is:
+<pre>
+ssh -X $USER@$HOST x2x -west -to :0 # be sure to read x2x(1)
+</pre>
+
 </p>
 
 <!-- SOF -->
@@ -653,7 +695,7 @@ And this is how it looks:
 <hr/>
 <p>
 <span>
-    <em>Last-Modified: Sunday, 5 May 2024 by <a href="https://gmt4.github.io">gmt4</a></em>
+    <em>Last-Modified: Thursday, 4 July 2024 by <a href="https://gmt4.github.io">gmt4</a></em>
 </span>
 <span style="float: right;">
     <em>Powered by #HTML 🧡 💚 💙 </em>

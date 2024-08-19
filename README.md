@@ -4,11 +4,13 @@
 ![GitHub top language](https://img.shields.io/github/languages/top/lwilletts/mpvc)
 ![GitHub lines of Code](https://sloc.xyz/github/lwilletts/mpvc/?category=code)
 
-# mpvc 🎧
+# mpvc 🎧 [^install]
 
 A terminal music player in POSIX sh(1) that interfaces mpv providing mpc(1) commands + extras.
 Originally a fork of [lwillets/mpvc](https://github.com/lwilletts/mpvc) that evolved on its own, providing some extra goodies such as: improved CLI, TUI, FZF, WEB, EQ, & playing media from YouTube & streaming services.
 Check the [Wiki](../../wiki), [LogBook](../../wiki#logbook) & [Casts](../../wiki#screencasts) for a detailed view of the extra features of this fork.
+
+Skip directly to [Installation](#Installation) to try mpvc!
 
 <details open>
 <summary>mpvc-tui -T: running the mpvc TUI <i>(click to view screenshot)</i></summary>
@@ -18,7 +20,7 @@ Check the [Wiki](../../wiki), [LogBook](../../wiki#logbook) & [Casts](../../wiki
 
 <details>
 <summary>mpvc-fzf -f: running with fzf to manage the playlist <i>(click to view screenshot)</i></summary>
- 
+
 ![mpvc-fzf screenshot](../../blob/master/docs/assets/mpvc-tui-arch.png)
 </details>
 
@@ -26,9 +28,9 @@ Check the [Wiki](../../wiki), [LogBook](../../wiki#logbook) & [Casts](../../wiki
 <summary>mpvc-tui -n: running with mpvc-fzf and desktop notifications on the upper-right corner <i>(click to view screenshot)</i></summary>
 
 ![mpvc tui+fzf+notifications screenshot](../../blob/master/docs/assets/mpvc-tui-fzf.png)
-</details> 
+</details>
 
-## Overview ▶️
+## Overview ▶️ [^install]
 
 [mpvc](../../) player functionality is provided by:
 
@@ -36,6 +38,7 @@ Check the [Wiki](../../wiki), [LogBook](../../wiki#logbook) & [Casts](../../wiki
 - [extras/mpvc-tui](../../blob/master/extras/mpvc-tui): provides a console TUI, using mpvc underneath
 - [extras/mpvc-fzf](../../blob/master/extras/mpvc-fzf): provides FZF integration to mpvc.
 - [extras/mpvc-web](../../blob/master/extras/mpvc-web): a hack to remotely control mpvc from web (handy on mobile)
+- [extras/mpvc-now](../../blob/master/extras/mpvc-now): generates a URL to share the current playlist
 - [extras/mpvc-mpris](../../blob/master/extras/mpvc-mpris): speaks MPRIS to control mpv player through key-bindings.
 - [extras/mpvc-equalizer](../../blob/master/extras/mpvc-equalizer): provides a basic mpv equalizer for the CLI.
 - [extras/mpvc-autostart](../../blob/master/extras/mpvc-autostart): automatic mpv start/stop based on presence.
@@ -52,7 +55,7 @@ Required:
 - `socat`: is preferred due to the differing implementations of `netcat` across UNIXes.
 - `awk`: a sane version of `awk` for the same reason (`gawk` works)
 
-Recommended extras: 
+Recommended extras:
 
 - `curl`
 - `fzf`
@@ -72,6 +75,8 @@ Check for missing dependencies using `mpvc-installer check-reqs`.
 - [Gentoo](#gentoo-mpvc)
 - [Nix](#nix-mpvc)
 
+Installing is just a matter of fetching the scripts either via Git/Curl/etc., scripts can be used directly from the repo, the `mpvc-installer` bit is just there for easiness, to fetch & link them into your `BINDIR=~/bin/` by default,
+
 ### Manual
 
 The easiest install method is just to run the [mpvc-installer](../../blob/master/extras/mpvc-installer) to install under `$HOME/bin`
@@ -83,11 +88,14 @@ curl -fsSL -o mpvc-installer https://github.com/lwilletts/mpvc/raw/master/extras
 
 ### Git
 
+Below is a **Quick Start** guide showcasing mpvc commands usage.
+
 ```sh
  # fetch a local copy of the github repo
  git clone https://github.com/lwilletts/mpvc/
  # use extras/mpvc-installer: just copy/link to your $HOME/bin
  (cd mpvc; extras/mpvc-installer link-user)
+ (cd mpvc; extras/mpvc-installer check-reqs)
 
  # use mpvc-fzf to search and play youtube media
  mpvc-fzf -p 'kupla mirage'
@@ -121,10 +129,10 @@ pacman -Sy mpv gawk curl socat fzf rlwrap jq libnotify
 
 ### BSD
 
-BSD (and pkg(1) based derivatives such as FreeBSD):
+BSD (and pkg(1) based derivatives as FreeBSD, see [FAQ](../../wiki/FAQ)):
 
 ```console
-pkg install -y mpv gawk curl socat fzf rlwrap jq libnotify
+pkg install -y mpv curl socat fzf rlwrap jq libnotify # gawk gsed
 ```
 
 ### MacOS
@@ -132,16 +140,16 @@ pkg install -y mpv gawk curl socat fzf rlwrap jq libnotify
 MacOS (and brew(1) based derivatives see [FAQ](../../wiki/FAQ)):
 
 ```console
-brew install gawk socat fzf rlwrap jq gnu-sed yt-dlp # mpv curl libnotify
+brew install mpv curl socat fzf rlwrap jq libnotify yt-dlp # gawk gnu-sed
 ```
 
 ### Gentoo [mpvc](https://gitlab.com/xy2_/osman)
 
 ```console
 emerge mpvc
-``` 
+```
 
-### Nix [mpvc](http://github.com/nixos/nixpkgs/tree/master/pkgs/applications/misc/mpvc)
+### Nix [mpvc](https://github.com/NixOS/nixpkgs/blob/master/pkgs/by-name/mp/mpvc/)
 
 ```console
 nix-env -i mpvc
@@ -199,7 +207,7 @@ usage: mpvc-fzf -[01ab:cCd:efFg:G:hk:K:n:s:p:P:o:Or:lL:xv] args # @version v1.5 
 
 ## Tricks
 
-There's some basic tricks in [Git](#git) to get you started. 
+There's some basic tricks in [Git](#git) to get you started.
 For more  check the  [LogBook](../../wiki#logbook).
 
 This gives just a sneak peek on what's possible to manage mpv from the command-line, your best chances are to go play and have fun.
@@ -215,3 +223,6 @@ Like any piece of software, mpvc is not perfect:
   all effort has been made to make mpvc as POSIX compliant as possible.
 
 Check out the [Issue Tracker](../../issues) for further improvements to be made.
+
+[^install]: Skip directly to [Installation](#Installation) to try mpvc
+

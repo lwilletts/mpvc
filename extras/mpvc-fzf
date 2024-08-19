@@ -4,6 +4,7 @@
 # @description mpvc fzf, mpv terminal user interface
 # @author gmt4 <gmt4 at github.com> (c) Copyright 2022 GPLv2+
 # @url github.com/gmt4/mpvc
+# SPDX-License-Identifier: GPL-2.0-or-later
 #
 
 PROGNAME=${0##*/}
@@ -42,6 +43,11 @@ mpvcfzf_config()
         mpvcfzf_warn "$PROGNAME: Warning: No fzf, Install to get fuzzy media search & play support!"
         sleep 1
     fi
+}
+
+mpvcfzf_getvideo_id()
+{
+    echo "${1##*/}"
 }
 
 mpvcfzf_isearch_once()
@@ -84,9 +90,47 @@ mpvcfzf_isearch()
     '
 }
 
+mpvcfzf_ssearch()
+{
+    id=${1:-$(mpvc get filename)}
+    id=$(mpvcfzf_getvideo_id "$id")
+    output=$(curl -fsSL -A '' "https://yewtu.be/watch?v=$id")
+    echo "$output" |
+        awk '
+            /<div class="video-card-row">/ { c++; next }
+            c && c-- {
+                sub("^ *<a href=\"/watch\\?v=","https://yewtu.be/");
+                sub("&listen=false\"><p dir=\"auto\">"," ");
+                sub("</p></a>$","");
+                print $0
+            }'
+}
+
+mpvcfzf_splay()
+{
+    mpvcfzf_ssearch "$1" |
+        mpvcfzf_preview --prompt="(similar) " |
+            mpvcfzf_awk1
+}
+
+mpvcfzf_lyrics()
+{
+    id=${1:-$(mpvc get filename)}
+    id=$(mpvcfzf_getvideo_id "$id")
+    output=$(curl -fsSL -A '' "https://yewtu.be/watch?v=$id")
+    echo "$output" |
+        awk -v id=$id '
+            c==0 && /<meta name="description"/  {c=1}
+            c==1 && /^[Ll][Yy][Rr][Ii][Cc][Ss]/ {c=2}
+            c==2 && /<meta name="keywords"/     {c=0;exit}
+            c==2                                {print}
+            END                                 {if (c==1) print "Lyrics: No lyrics found for",id}
+        '
+}
+
 mpvcfzf_nextvideo()
 {
-    id="${1##https://yewtu.be/}"
+    id=$(mpvcfzf_getvideo_id "$id")
     output=$(curl -fsSL -A '' "https://yewtu.be/watch?v=$id")
     next_video=$(echo "$output" | awk '/next_video/ {gsub("[\",]",""); print $2}')
     next_url="https://yewtu.be/$next_video"
@@ -334,7 +378,7 @@ mpvcfzf_version()
     echo "usage: $PROGNAME -[optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
 }
 
-optflags="01ab:B:cCd:efFg:G:hk:K:n:s:p:P:o:Or:lL:xv"
+optflags="01ab:B:cCd:efFg:G:hi:Ik:K:n:s:S:p:P:o:O:r:lL:xy:Y:v"
 mpvcfzf_usage()
 {
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
@@ -344,11 +388,15 @@ mpvcfzf_usage()
     echo "  -f : Start fzf to manage the current mpv playist (fzf*)"
     echo "  -g : Fetch the given YT URL, and store locally (fzf*)"
     echo "  -G : Search on Invidious, fetch, and store locally (fzf*)"
+    echo "  -i : Search given media lyrics on Invidious (fzf*)"
+    echo "  -I : Search current media lyrics on Invidious (fzf*)"
     echo "  -k : Search & play DuckDuckGo videos (fzf*)"
     echo "  -K : Search DuckDuckGo videos (fzf*)"
     echo "  -l : Search & play local media (fzf*)"
     echo "  -s : Search on Invidious (fzf*)"
     echo "  -p : Search & play media found using Invidious (fzf*)"
+    echo "  -y : Search related media on Invidious (fzf*)"
+    echo "  -Y : Search & play related media using Invidious (fzf*)"
     echo "  -x : Starts $PROGNAME in a new $MPVC_TERM (config \$MPVC_TERM) [combine -x with $optflags]"
     echo "*tips: If unsure about where to begin, start with: $PROGNAME -p 'kupla mirage'"
     exit;
@@ -376,19 +424,24 @@ main()
         F) shift; mpvcfzf_preview "$@" ;;
         g) mpvcfzf_fetch "$OPTARG";;
         G) mpvcfzf_fetch $(mpvcfzf_iplay "$OPTARG") ;;
+        i) mpvcfzf_lyrics "${OPTARG:-}";;
+        I) mpvcfzf_lyrics "";;
+        L) echo "https://ddg.gg?ia=lyrics&iax=lyrics&q=lyrics $(mpvc -f '%title%')" ;;
         k) mpvcfzf_ddg_play "$OPTARG";;
         K) mpvcfzf_ddg "$OPTARG";;
         h) mpvcfzf_usage ;;
         l) mpvcfzf_local ;;
-        L) mpvcfzf_isearch_once "$OPTARG" | mpvcfzf_awk1 | mpvc load ;; # lucky
         n) mpvcfzf_nextvideo "$OPTARG" ;;
-        o) mpvcfzf_isearch_once "$OPTARG" ;;
-        O) mpvcfzf_icache_output_dir ;;
-        r) mpvcfzf_fetch_remove "$OPTARG" ;;
+        o) mpvcfzf_isearch_once "$OPTARG" ;; # lucky
+        O) mpvcfzf_isearch_once "$OPTARG" | mpvcfzf_awk1 | mpvc load ;; # lucky
+        #O) mpvcfzf_icache_output_dir ;;
         p) mpvcfzf_iplay "$OPTARG" | mpvc load ;;
         P) mpvcfzf_iplay "$OPTARG" | mpvc loadc ;;
+        r) mpvcfzf_fetch_remove "$OPTARG" ;;
         s) mpvcfzf_isearch "$OPTARG";;
         x) shift; if quiet command -v $MPVC_TERM; then $MPVC_TERM -e "$0" "$@"; fi; exit;;
+        y) mpvcfzf_ssearch "${OPTARG:-}";;
+        Y) mpvcfzf_splay "${OPTARG:-}";;
         v) mpvcfzf_version ;;
         *) mpvcfzf_usage ;;
         esac
