@@ -885,7 +885,7 @@ mpvc_print_status() {
         }
         '
     )
-    mpvc_cmd "expand-text" "${F}" | sed 's/ \\r/\n/g'
+    mpvc_cmd "expand-text" "${F}" | awk '{gsub(" \\\\r","\n");print}'
 }
 
 mpvc_print_status_final() {
