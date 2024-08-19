@@ -61,6 +61,7 @@ Recommended extras:
 - `fzf`
 - `jq`
 - `notify-send`
+- `yt-dlp` (implicit for streaming services, can be installed with `mpvc-installer config-user`) 
 
 Check for missing dependencies using `mpvc-installer check-reqs`.
 
