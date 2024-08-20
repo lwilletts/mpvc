@@ -44,6 +44,7 @@ mpvc_web_defaults()
     MPVC_WEB_CAST_URL=${MPVC_WEB_CAST_URL:-}
     MPVC_WEB_HTML_THEME=${MPVC_WEB_HTML_THEME:-}
     MPVC_WEB_HTML_REFRESH=${MPVC_WEB_HTML_REFRESH:-}
+    MPVC_WEB_CSS_STYLE=${MPVC_WEB_CSS_STYLE:-}
 
     # accesskey keyboard shortcuts
     MPVC_WEB_SHORTCUT_REFRESH=${MPVC_WEB_SHORTCUT_REFRESH:-accesskey=m}
@@ -497,7 +498,7 @@ mpvc_web_setup()
         mpvc_web_index > "$MPVC_WEB_ROOT/index.html"
         mpvc_web_favicon > "$MPVC_WEB_ROOT/favicon.ico"
         mpvc_web_favicon > "$MPVC_WEB_ROOT/apple-touch-icon.svg"
-        [ ! -e "$MPVC_WEB_ROOT/style.css" ] && mpvc_web_style > "$MPVC_WEB_ROOT/style.css"
+        [ -n "$MPVC_WEB_CSS_STYLE" ] && cat "$MPVC_WEB_CSS_STYLE" > "$MPVC_WEB_ROOT/style.css"
         mpvc_web_cgi > "$MPVC_CGI"
         chmod u+x "$MPVC_CGI"
 
@@ -600,7 +601,7 @@ mpvc_web()
     )
 }
 
-optflags="ha:b:c:C:d:p:P:r:R:s:S:t:"
+optflags="ha:b:c:C:d:p:P:r:R:s:S:t:T:"
 usage()
 {
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
@@ -636,6 +637,7 @@ main()
         s) MPVC_WEB_SSL_ENABLE="$OPTARG" ;;
         S) MPVC_WEB_SSL_PEM="$OPTARG" ;;
         t) MPVC_WEB_HTML_THEME="$OPTARG"  ;;
+        T) MPVC_WEB_CSS_STYLE="$OPTARG"  ;;
         a) MPVC_WEB_ARCHIVE_ENABLE="$OPTARG" ;;
         *) usage ;;
         esac
