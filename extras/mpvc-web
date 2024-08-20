@@ -88,7 +88,7 @@ mpvc_web_config()
 
 mpvc_web_style()
 {
-    echo 'body { filter: invert(0.7); }'
+    echo 'body { filter: invert(0.8); }'
 }
 
 mpvc_web_select_form()
@@ -498,7 +498,11 @@ mpvc_web_setup()
         mpvc_web_index > "$MPVC_WEB_ROOT/index.html"
         mpvc_web_favicon > "$MPVC_WEB_ROOT/favicon.ico"
         mpvc_web_favicon > "$MPVC_WEB_ROOT/apple-touch-icon.svg"
-        [ -n "$MPVC_WEB_CSS_STYLE" ] && cat "$MPVC_WEB_CSS_STYLE" > "$MPVC_WEB_ROOT/style.css"
+        if [ -n "$MPVC_WEB_CSS_STYLE" ]; then
+            cat "$MPVC_WEB_CSS_STYLE" > "$MPVC_WEB_ROOT/style.css"
+        else
+            mpvc_web_style > "$MPVC_WEB_ROOT/style.css"
+        fi
         mpvc_web_cgi > "$MPVC_CGI"
         chmod u+x "$MPVC_CGI"
 
