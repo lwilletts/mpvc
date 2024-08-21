@@ -61,7 +61,7 @@ Recommended extras:
 - `fzf`
 - `jq`
 - `notify-send`
-- `yt-dlp` (for online services, see `mpvc-installer config-user`) 
+- `yt-dlp`
 
 Check for missing dependencies using `mpvc-installer check-reqs`.
 
