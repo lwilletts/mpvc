@@ -38,6 +38,7 @@ EOF
     -J | --tracknum         : Jump to playlist item number.
     -A | --playnext         : Add media to playlist after the current track.
     -n | --playnow          : Add media to playlist after the current track, and play it.
+       | --playrand         : Select a random track from the playlist, and play it.
     -o | --save             : Save current playlist to given path.
     -l | --load             : Load playlist from given path (stdin if none is specified).
     -o | --autosave         : Auto save current playlist to ${MPVC_PLAYLIST##$HOME/}.
