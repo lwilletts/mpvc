@@ -88,22 +88,26 @@ mpvc_web_config()
 
 mpvc_web_style()
 {
-cat <<-EOF
-    @media (prefers-color-scheme: light) { html { filter: invert(0.0);  } }
-    @media (prefers-color-scheme: dark)  { html { filter: invert(0.85); } }
+    cat <<-EOF
+:root { --body-font-family: monospace; --body-color: #222; --body-background: #fff; }
+@media (max-width: 768px) { :root { --body-font-size: 13px; } }
+@media (min-width: 768px) { :root { --body-font-size: 17px; } }
 
-    body   { font-family: mono,monospace; }
-    select { width: 95%; }
-    input  { width: 95%; }
-    ul     { padding: 0rem 0.8rem; }
-    a      { padding: 0.05rem 0.05rem; }
+@media (prefers-color-scheme: light) { html { filter: invert(0.0);  } }
+@media (prefers-color-scheme: dark)  { html { filter: invert(0.85); } }
+
+body   { font-family: var(--body-font-family); font-size: var(--body-font-size); color: var(--body-color); background: var(--body-background); }
+select { width: 95%; font-family: var(--body-font-family); }
+input  { width: 95%; font-family: var(--body-font-family); }
+ul     { padding: 0rem 0.8rem; }
+a      { padding: 0.05rem 0.05rem; }
+
 $(
     case "${MPVC_WEB_HTML_THEME:-}" in
     light) echo "html { filter: invert(0.0);  }" ;;
     dark)  echo "html { filter: invert(0.85); }" ;;
     esac
 )
-
 EOF
 }
 
