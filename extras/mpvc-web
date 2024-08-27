@@ -88,7 +88,14 @@ mpvc_web_config()
 
 mpvc_web_style()
 {
-    echo 'body { filter: invert(0.8); }'
+cat <<EOF
+    @media (prefers-color-scheme: light) { html { filter: invert(0.0); } }
+    @media (prefers-color-scheme: dark)  { html { filter: invert(0.85); } }
+    select { width: 95%; }
+    input  { width: 95%; }
+    ul     { padding: 0rem 0.8rem; }
+    a      { padding: 0.05rem 0.05rem; }
+EOF
 }
 
 mpvc_web_select_form()
@@ -282,27 +289,6 @@ mpvc_web_index()
     <link rel="apple-touch-icon" href="apple-touch-icon.svg">
     <title> 🎧$MPVC_WEB_HOSTNAME mpvc</title>
     <style type="text/css" media="all">
-    @media (max-width: 768px) { :root { --body-font-size: 13px; } }
-    @media (min-width: 768px) { :root { --body-font-size: 18px; } }
-    @media (prefers-color-scheme: light) {
-        :root { --body-bg: #fff; --body-color: #111; --pre-bg:#eee; --link-color:#00f; }
-    }
-    @media (prefers-color-scheme: dark) {
-        :root { --body-bg: #222; --body-color: #eee; --pre-bg:#333; --link-color:#07f; }
-    }
-    $(
-    case "${MPVC_WEB_HTML_THEME:-}" in
-    light) echo ":root { --body-bg: #fff; --body-color: #111; --pre-bg:#eee; --link-color:#00f; }";;
-    dark)  echo ":root { --body-bg: #222; --body-color: #eee; --pre-bg:#333; --link-color:#07f; }";;
-    esac
-    )
-    body   { background: var(--body-bg); color: var(--body-color); font-family: monospace; font-size: var(--body-font-size); }
-    select { width: 95%; font-size: var(--body-font-size); }
-    input  { width: 95%; font-size: var(--body-font-size); }
-    code   { background: var(--pre-bg); }
-    pre    { background: var(--pre-bg); }
-    ul     { padding: 0rem 0.8rem; }
-    a      { color: var(--link-color); padding: 0.05rem 0.05rem; }
     </style>
     <link rel="stylesheet" href="style.css" />
     <script type="text/javascript">
