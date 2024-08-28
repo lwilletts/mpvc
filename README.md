@@ -8,7 +8,7 @@
 
 A music player in POSIX sh(1) to control mpv from the terminal + extra goodies 🚀.
 A fork of [lwillets/mpvc](https://github.com/lwilletts/mpvc) evolving on its own, providing extras like: improved mpc(1) CLI, TUI, FZF, WEB, EQ, & play Invidious, YouTube & streaming services.
-Check the [Wiki](../../wiki), [LogBook](../../wiki#logbook) & [Casts](../../wiki#screencasts) for a detailed view of the extra features of this fork.
+Check the [Git](#git) QuickStart Guide, [Wiki](../../wiki), [LogBook](../../wiki#logbook) & [Casts](../../wiki#screencasts) for a detailed view of the extra features of this fork.
 
 Skip directly to [Installation](#Installation) to try mpvc!
 
@@ -44,7 +44,7 @@ Skip directly to [Installation](#Installation) to try mpvc!
 - [extras/mpvc-autostart](../../blob/master/extras/mpvc-autostart): automatic mpv start/stop based on presence.
 - [extras/mpvc-installer](../../blob/master/extras/mpvc-installer): provides an installer to install/update mpvc.
 
-For more details on how to use the above tools have a look at the [LogBook](../../wiki#logbook).
+For more details on how to use the above tools have a look at the [Git](#git) QuickStart Guide, [LogBook](../../wiki#logbook).
 In addition, the [casts/](../../wiki#screencasts) directory to shows some screencasts of mpvc in action.
 
 ## Requirements
@@ -76,7 +76,7 @@ Check for missing dependencies using `mpvc-installer check-reqs`.
 - [Gentoo](#gentoo-mpvc)
 - [Nix](#nix-mpvc)
 
-Installing is just a matter of fetching the scripts either via Git/Curl/etc., scripts can be used directly from the repo, the `mpvc-installer` bit is just there for easiness, to fetch & link them into your `BINDIR=~/bin/` by default,
+Installing is just a matter of fetching the scripts either via [Git](#git)/Curl/etc., scripts can be used directly from the repo, the `mpvc-installer` bit is just there for easiness, to fetch & link them into your `BINDIR=~/bin/` by default,
 
 ### Manual
 
