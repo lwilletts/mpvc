@@ -90,8 +90,8 @@ mpvc_web_style()
 {
     cat <<-EOF
 :root { --body-font-family: monospace; --body-color: #222; --body-background: #fff; --link-color: #707; }
-@media (max-width: 768px) { :root { --body-font-size: 13px; } }
-@media (min-width: 768px) { :root { --body-font-size: 17px; } }
+@media (max-width: 768px) { :root { --body-font-size: 1.12em; } }
+@media (min-width: 768px) { :root { --body-font-size: 18px; } }
 
 @media (prefers-color-scheme: light) { html { filter: invert(0.0);  } :root { } }
 @media (prefers-color-scheme: dark)  { html { filter: invert(0.85); } :root { } }
@@ -100,7 +100,7 @@ body   { font-family: var(--body-font-family); font-size: var(--body-font-size);
 select { width: 95%; font-family: var(--body-font-family); }
 input  { width: 95%; font-family: var(--body-font-family); }
 ul     { padding: 0rem 0.8rem; }
-a      { padding: 0.05rem 0.05rem; color: var(--link-color); }
+a      { padding: 0.08rem 0.02rem; color: var(--link-color); }
 
 $(
     case "${MPVC_WEB_HTML_THEME:-}" in
@@ -352,7 +352,7 @@ mpvc_web_index()
             <a href="?cmd=mpvc repeat">repeat</a>
             <a href="?cmd=mpvc single">single</a>
             <a href="?cmd=mpvc replay">replay</a>
-            <a href="?cmd=mpvc cmd ab-loop">ab-loop</a>
+            <a href="?cmd=mpvc cmd ab-loop">abloop</a>
             <!--
             <a href="?cmd=mpvc seek -10" title="seek fwd">s-</a>
             <a href="?cmd=mpvc seek +10" title="seek bwd">s+</a>
