@@ -6,7 +6,7 @@
 
 # mpvc 🎧 [^install]
 
-A music player in POSIX sh(1) to control mpv for the terminal + extra goodies 🚀.
+A music player in POSIX sh(1) to control mpv from the terminal + extra goodies 🚀.
 A fork of [lwillets/mpvc](https://github.com/lwilletts/mpvc) evolving on its own, providing extras like: improved mpc(1) CLI, TUI, FZF, WEB, EQ, & play Invidious, YouTube & streaming services.
 Check the [Wiki](../../wiki), [LogBook](../../wiki#logbook) & [Casts](../../wiki#screencasts) for a detailed view of the extra features of this fork.
 
