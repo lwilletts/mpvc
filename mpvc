@@ -917,7 +917,7 @@ mpvc_get_terminal_height() {
     lcount="$2"
     if [ "$plpos" = "null" ]; then plpos=0; fi
     lines=$(mpvc_tty_lines)
-    rows=$((lines - ${MPVC_CLINE:-3}))
+    rows=$((lines - ${MPVC_TUI_CLINE:-3}))
     half=$((rows / 2))
     plhalf=$((plpos + half))
 
