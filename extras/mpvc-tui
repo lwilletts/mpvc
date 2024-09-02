@@ -49,6 +49,7 @@ mpvctui_defaults()
     MPVC_TUI_UPDATEC=${MPVC_TUI_UPDATEC:-2}
     MPVC_TUI_CLEARC=${MPVC_TUI_CLEARC:-4}
 
+    MPVC_TUI_HEADER0=${MPVC_TUI_HEADER0:-$PROGNAME}
     MPVC_TUI_TIPS=${MPVC_TUI_TIPS:-true}
     MPVC_TUI_TERM=${MPVC_TUI_TERM:-xterm}
     MPVC_TUI_SHELL=$(readlink -f /proc/$$/exe)
@@ -129,7 +130,7 @@ mpvctui_tips()
 
 mpvctui_watcher()
 {
-    mpvctui_header0 "${PROGNAME}$(mpvctui_tips)"
+    mpvctui_header0 "${MPVC_TUI_HEADER0}$(mpvctui_tips)"
     mpvctui_header1 "Status"
     mpvc status
     mpvctui_header1 "Playlist"
