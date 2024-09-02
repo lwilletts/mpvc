@@ -63,7 +63,7 @@ mpvc_web_defaults()
     MPVC_WEB_SHORTCUT_YTSEARCH=${MPVC_WEB_SHORTCUT_YTSEARCH:-accesskey=y}
     MPVC_WEB_SHORTCUT_HELP=${MPVC_WEB_SHORTCUT_HELP:-accesskey=h}
 
-    MPVC_CGI="$MPVC_WEB_ROOT/cgi-bin/mpvc"
+    MPVC_WEB_CGI="$MPVC_WEB_ROOT/cgi-bin/mpvc"
 
     # if present load user config
     if [ -r "$MPVC_CONFIG" ]; then
@@ -502,8 +502,8 @@ mpvc_web_setup()
         else
             mpvc_web_style > "$MPVC_WEB_ROOT/style.css"
         fi
-        mpvc_web_cgi > "$MPVC_CGI"
-        chmod u+x "$MPVC_CGI"
+        mpvc_web_cgi > "$MPVC_WEB_CGI"
+        chmod u+x "$MPVC_WEB_CGI"
 
         # setup https stunnel if requested
         if [ -n "${MPVC_WEB_SSL_ENABLE}" ]; then
@@ -538,7 +538,7 @@ mpvc_web()
 
         # XXX handle cli commands, rewrite this mess
         python3 -u -m http.server --cgi --bind "$MPVC_WEB_HOST" "$MPVC_WEB_PORT" "$@" 2>&1 |
-            awk -v mpvc="$MPVC_CGI" \
+            awk -v mpvc="$MPVC_WEB_CGI" \
         '
         BEGIN { quiet=1 }
 
