@@ -111,6 +111,8 @@ Below is a **Quick Start** guide showcasing mpvc commands usage.
  mpvc-tui -T
 ```
 
+For more  check the  [LogBook](../../wiki#logbook) (remeber your best chance is to try, play, and have fun).
+
 ### Debian
 
 Debian (and APT derivatives such as Ubuntu):
@@ -205,13 +207,6 @@ usage: mpvc-fzf -[01ab:cCd:efFg:G:hk:K:n:s:p:P:o:Or:lL:xv] args # @version v1.5 
   -x : Starts mpvc-fzf in a new xterm (config $MPVC_TERM) [combine -x with 01ab:cCd:efFg:G:hk:K:n:s:p:P:o:Or:lL:xv]
 *tips: If unsure about where to begin, start with: mpvc-fzf -p 'kupla mirage'
 ```
-
-## Tricks
-
-There's some basic tricks in [Git](#git) to get you started.
-For more  check the  [LogBook](../../wiki#logbook).
-
-This gives just a sneak peek on what's possible to manage mpv from the command-line, your best chances are to go play and have fun.
 
 ## Limitations
 
