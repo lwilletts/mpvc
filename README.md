@@ -30,11 +30,11 @@ Check the [Git](#git) QuickStart Guide, [Wiki](../../wiki), [LogBook](../../wiki
 ![mpvc tui+fzf+notifications screenshot](../../blob/master/docs/assets/mpvc-tui-fzf.png)
 </details>
 
-## Overview ▶️ [^install]
+## ▶️ Overview [^install]
 
-[mpvc](../../) player is a collection of shellscripts written in POSIX sh(1) composed of:
+[mpvc](../../) is a collection of shell scripts in POSIX sh(1) composed of:
 
-- [mpvc](../../blob/master/mpvc): provides the mpvc player core CLI commands
+- [mpvc](../../blob/master/mpvc): provides the core CLI commands to control mpv
 - [extras/mpvc-tui](../../blob/master/extras/mpvc-tui): provides a console TUI, using mpvc underneath
 - [extras/mpvc-fzf](../../blob/master/extras/mpvc-fzf): provides FZF integration to mpvc.
 - [extras/mpvc-web](../../blob/master/extras/mpvc-web): a hack to remotely control mpvc from web (handy on mobile)
