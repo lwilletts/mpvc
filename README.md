@@ -4,9 +4,9 @@
 ![GitHub top language](https://img.shields.io/github/languages/top/lwilletts/mpvc)
 ![GitHub lines of Code](https://sloc.xyz/github/lwilletts/mpvc/?category=code)
 
-# mpvc 🎧 [^install]
+# 🎧 mpvc
 
-A music player in POSIX sh(1) to control mpv from the terminal + extra goodies 🚀.
+A shell script player to control mpv from the terminal + extras/goodies[^install] 🚀.
 A fork of [lwillets/mpvc](https://github.com/lwilletts/mpvc) evolving on its own, providing extras like: improved mpc(1) CLI, TUI, FZF, WEB, EQ, & play Invidious, YouTube & streaming services.
 Check the [Git](#git) QuickStart Guide, [Wiki](../../wiki), [LogBook](../../wiki#logbook) & [Casts](../../wiki#screencasts) for a detailed view of the extra features of this fork.
 
@@ -32,7 +32,7 @@ Check the [Git](#git) QuickStart Guide, [Wiki](../../wiki), [LogBook](../../wiki
 
 ## Overview ▶️ [^install]
 
-[mpvc](../../) player functionality is provided by:
+[mpvc](../../) player is a collection of shellscripts written in POSIX sh(1) composed of:
 
 - [mpvc](../../blob/master/mpvc): provides the mpvc player core CLI commands
 - [extras/mpvc-tui](../../blob/master/extras/mpvc-tui): provides a console TUI, using mpvc underneath
