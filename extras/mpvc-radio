@@ -1,0 +1,40 @@
+#!/usr/bin/env sh
+#
+# @file mpvc-radio
+# @description mpvc-radio, mpvc script for playing radio stations
+# @author gmt4 <gmt4 at github.com> (c) Copyright 2024 GPLv2+
+# @url github.com/gmt4/mpvc
+# SPDX-License-Identifier: GPL-2.0-or-later
+#
+
+PROGNAME=${0##*/}
+PROGVERSION="v1.5"
+PROGAUTHOR=gmt4
+PROGURL="https://github.com/gmt4/mpvc"
+
+set -euf
+
+mpvc_somafm()
+{
+    file=${XDG_CONFIG_HOME:-$HOME/.config}/mpvc/somafm-channels.json
+    [ ! -s "$file" ] && curl -fsSL -o "https://somafm.com/channels.json"
+    jq -r '.channels | sort_by(.listeners | tonumber) | reverse | .[] | (.playlists[3]|.url) + ";" + .listeners + " ls "+.genre+";"+ .title' "$file" | column -s ';' -t | mpvc-fzf -F
+}
+
+usage()
+{
+    echo "usage: $PROGNAME [somafm] # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
+    exit;
+}
+
+main()
+{
+    [ -z "${1:-}" ] && usage
+
+    case "${1:-}" in
+    somafm)  mpvc_somafm "$@";;
+    *) usage;;
+    esac
+}
+
+main "$@"
