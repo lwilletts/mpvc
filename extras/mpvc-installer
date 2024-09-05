@@ -46,9 +46,10 @@ mpvc_config()
 
     for bin in "yt-dlp"
     do
-        echo "Fetch $bin"
-        curl -fsSL -o "$BINDIR/$bin" "https://github.com/$bin/$bin/releases/latest/download/$bin"
-        chmod a+rx "$BINDIR/$bin"
+        file="$BINDIR/$bin"
+        echo "Fetch $file"
+        curl -fsSL -o "$file" "https://github.com/$bin/$bin/releases/latest/download/$bin"
+        chmod a+rx "$file"
     done
 }
 
