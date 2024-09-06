@@ -458,7 +458,7 @@ main()
         -y) shift; mpvcfzf_ssearch "$arg1"; return ;;
         -Y) shift; mpvcfzf_splay "$arg1"; return ;;
         -v) shift; mpvcfzf_version; return ;;
-        *)  shift; mpvcfzf_usage; return ;;
+        #*) shift; mpvcfzf_usage; return ;;
         esac
     done
 }
