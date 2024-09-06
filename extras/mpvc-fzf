@@ -135,7 +135,7 @@ mpvcfzf_lyrics_ddg()
 
 mpvcfzf_nextvideo()
 {
-    id=$(mpvcfzf_getvideo_id "$id")
+    id=$(mpvcfzf_getvideo_id "$1")
     output=$(curl -fsSL -A '' "https://yewtu.be/watch?v=$id")
     next_video=$(echo "$output" | awk '/next_video/ {gsub("[\",]",""); print $2}')
     next_url="https://yewtu.be/$next_video"
@@ -407,7 +407,7 @@ mpvcfzf_usage()
     echo "  -p : Search & play media found using Invidious (fzf*)"
     echo "  -y : Search related media on Invidious (fzf*)"
     echo "  -Y : Search & play related media using Invidious (fzf*)"
-    echo "  -x : Starts $PROGNAME in a new $MPVC_TERM (config \$MPVC_TERM) [combine -x with $optflags]"
+    echo "  -x : Starts $PROGNAME in a new $MPVC_TERM (config \$MPVC_TERM) [combine -x with other opts]"
     echo "*tips: If unsure about where to begin, start with: $PROGNAME -p 'kupla mirage'"
     exit;
 }
@@ -417,43 +417,48 @@ main()
     mpvcfzf_config
     if [ $# -lt 1 ]; then mpvcfzf_usage; fi
 
-    while getopts "$optflags" flag;
+    for arg in "$@";
     do
-        case "$flag" in
-        0) shift; mpvcfzf_awk0;;
-        1) shift; mpvcfzf_awk1;;
+        arg1="${2:-}"
 
-        a) mpvcfzf_stashlist ;;
-        b) mpvcfzf_urlbrowser "$OPTARG" ;;
-        B) mpvcfzf_urlget "$OPTARG" ;;
-        c) mpvcfzf_chapterlist ;;
-        C) shift; mpvcfzf_icache;;
-        d) MPVC_DIR="$OPTARG"; cd "$MPVC_DIR" || return;;
-        e) mpvcfzf_equalizer "$@" ;;
-        f) mpvcfzf_playlist ;;
-        F) shift; mpvcfzf_preview "$@" ;;
-        g) mpvcfzf_fetch "$OPTARG";;
-        G) mpvcfzf_fetch $(mpvcfzf_iplay "$OPTARG") ;;
-        i) mpvcfzf_lyrics "${OPTARG:-}";;
-        I) mpvcfzf_lyrics "";;
-        L) mpvcfzf_lyrics_ddg ;;
-        k) mpvcfzf_ddg_play "$OPTARG";;
-        K) mpvcfzf_ddg "$OPTARG";;
-        h) mpvcfzf_usage ;;
-        l) mpvcfzf_local ;;
-        n) mpvcfzf_nextvideo "$OPTARG" ;;
-        o) mpvcfzf_isearch_once "$OPTARG" ;; # lucky
-        O) mpvcfzf_isearch_once "$OPTARG" | mpvcfzf_awk1 | mpvc load ;; # lucky
-        #O) mpvcfzf_icache_output_dir ;;
-        p) mpvcfzf_iplay "$OPTARG" | mpvc load ;;
-        P) mpvcfzf_iplay "$OPTARG" | mpvc loadc ;;
-        r) mpvcfzf_fetch_remove "$OPTARG" ;;
-        s) mpvcfzf_isearch "$OPTARG";;
-        x) shift; mpvcfzf_launch_term "$@"; exit ;;
-        y) mpvcfzf_ssearch "${OPTARG:-}";;
-        Y) mpvcfzf_splay "${OPTARG:-}";;
-        v) mpvcfzf_version ;;
-        *) mpvcfzf_usage ;;
+        case "$arg" in
+        -0) shift; mpvcfzf_awk0; return ;;
+        -1) shift; mpvcfzf_awk1; return ;;
+
+        -a) shift; mpvcfzf_stashlist; return ;;
+        -b) shift; mpvcfzf_urlbrowser "$arg1"; return ;;
+        -B) shift; mpvcfzf_urlget "$arg1"; return ;;
+        -c) shift; mpvcfzf_chapterlist; return ;;
+        -C) shift; mpvcfzf_icache; return;;
+
+        -d) shift; MPVC_DIR="$arg1"; cd "$MPVC_DIR" || return;;
+        -e) shift; mpvcfzf_equalizer; return ;;
+        -f) shift; mpvcfzf_playlist; return ;;
+        -F) shift; mpvcfzf_preview "$@"; return ;;
+        -g) shift; mpvcfzf_fetch "$arg1"; return ;;
+        -G) shift; mpvcfzf_fetch $(mpvcfzf_iplay "$1"); return ;;
+        -i) shift; mpvcfzf_lyrics "$arg1"; return ;;
+        -I) shift; mpvcfzf_lyrics ""; return ;;
+        -L) shift; mpvcfzf_lyrics_ddg; return ;;
+        -k) shift; mpvcfzf_ddg_play "$arg1"; return ;;
+        -K) shift; mpvcfzf_ddg "$@"; return ;;
+        -h) shift; mpvcfzf_usage; return ;;
+        -l) shift; mpvcfzf_local; return ;;
+        -n) shift; mpvcfzf_nextvideo "$arg1"; return ;;
+
+        -o) shift; mpvcfzf_isearch_once "$arg1" ;; # lucky
+        -O) shift; mpvcfzf_isearch_once "$arg1" | mpvcfzf_awk1 | mpvc load ;; # lucky
+        -#O) mpvcfzf_icache_output_dir ;;
+
+        -p) shift; mpvcfzf_iplay "$arg1" | mpvc load; return ;;
+        -P) shift; mpvcfzf_iplay "$arg1" | mpvc loadc; return ;;
+        -r) shift; mpvcfzf_fetch_remove "$arg1"; return ;;
+        -s) shift; mpvcfzf_isearch "$arg1"; return;;
+        -x) shift; mpvcfzf_launch_term "$@"; exit ;;
+        -y) shift; mpvcfzf_ssearch "$arg1"; return ;;
+        -Y) shift; mpvcfzf_splay "$arg1"; return ;;
+        -v) shift; mpvcfzf_version; return ;;
+        *)  shift; mpvcfzf_usage; return ;;
         esac
     done
 }
