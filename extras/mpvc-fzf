@@ -128,6 +128,11 @@ mpvcfzf_lyrics()
         '
 }
 
+mpvcfzf_lyrics_ddg()
+{
+    echo "https://ddg.gg?ia=lyrics&iax=lyrics&q=lyrics $(mpvc -f '%title%')"
+}
+
 mpvcfzf_nextvideo()
 {
     id=$(mpvcfzf_getvideo_id "$id")
@@ -280,7 +285,7 @@ mpvcfzf_local()
 mpvcfzf_playlist()
 {
     len=$(mpvc gets playlist-count)
-    ( if [ -z "$len" ]; then echo; else mpvc fullplaylist; fi) |
+    (if [ -z "$len" ]; then echo; else mpvc fullplaylist; fi) |
         mpvcfzf_preview --prompt="(playlist) " \
         --bind='ctrl-o:execute-silent(mpvc play {1})' \
         --bind='ctrl-r:reload(mpvc fullplaylist)'
@@ -314,7 +319,7 @@ mpvcfzf_ddg_play()
 mpvcfzf_urlget()
 {
     url=${1:-https://localhost:8443/ytdl-archive/}
-    curl -k -fsSL "$url" |
+    curl -fsSL "$url" |
         awk '/<a href=".*">.*<\/a>/ { h=$0;sub("^.*href=\"","",h);sub("\".*$","",h);print h }'
 }
 
@@ -373,6 +378,11 @@ mpvcfzf_ddg()
             }'
 }
 
+mpvcfzf_launch_term()
+{
+    if quiet command -v "$MPVC_TERM"; then "$MPVC_TERM" -e "$0" "$@"; fi;
+}
+
 mpvcfzf_version()
 {
     echo "usage: $PROGNAME -[optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
@@ -426,7 +436,7 @@ main()
         G) mpvcfzf_fetch $(mpvcfzf_iplay "$OPTARG") ;;
         i) mpvcfzf_lyrics "${OPTARG:-}";;
         I) mpvcfzf_lyrics "";;
-        L) echo "https://ddg.gg?ia=lyrics&iax=lyrics&q=lyrics $(mpvc -f '%title%')" ;;
+        L) mpvcfzf_lyrics_ddg ;;
         k) mpvcfzf_ddg_play "$OPTARG";;
         K) mpvcfzf_ddg "$OPTARG";;
         h) mpvcfzf_usage ;;
@@ -439,7 +449,7 @@ main()
         P) mpvcfzf_iplay "$OPTARG" | mpvc loadc ;;
         r) mpvcfzf_fetch_remove "$OPTARG" ;;
         s) mpvcfzf_isearch "$OPTARG";;
-        x) shift; if quiet command -v $MPVC_TERM; then $MPVC_TERM -e "$0" "$@"; fi; exit;;
+        x) shift; mpvcfzf_launch_term "$@"; exit ;;
         y) mpvcfzf_ssearch "${OPTARG:-}";;
         Y) mpvcfzf_splay "${OPTARG:-}";;
         v) mpvcfzf_version ;;
