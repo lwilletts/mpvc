@@ -378,6 +378,16 @@ mpvcfzf_ddg()
             }'
 }
 
+mpvcfzf_somafm()
+{
+    file=${XDG_CONFIG_HOME:-$HOME/.config}/mpvc/somafm-channels.json
+    [ ! -s "$file" ] && curl -fsSL -o "$file" "https://somafm.com/channels.json"
+    jq -r '
+        .channels | sort_by(.listeners | tonumber) | reverse | .[] |
+            (.playlists[3]|.url) + ";" + .listeners + " ls "+.genre+";"+ .title' "$file" |
+            column -s ';' -t | mpvcfzf_preview
+}
+
 mpvcfzf_launch_term()
 {
     if quiet command -v "$MPVC_TERM"; then "$MPVC_TERM" -e "$0" "$@"; fi;
@@ -455,6 +465,8 @@ main()
         -y|related) shift; mpvcfzf_related_search "$arg1"; return ;;
         -Y|Related) shift; mpvcfzf_related_play "$arg1"; return ;;
         -v|version) shift; mpvcfzf_version; return ;;
+
+        somafm)     shift; mpvcfzf_somafm "$@"; return ;;
         #*)         shift; mpvcfzf_usage; return ;;
         esac
     done
