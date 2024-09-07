@@ -147,7 +147,7 @@ mpvc_defaults()
 
     MPVC_DATABASE="${MPVC_DATABASE:-$MPVC_CONFIG_DIR/db.m3u}"
     MPVC_PLAYLIST="${MPVC_PLAYLIST:-$MPVC_CONFIG_DIR/playlist}"
-    MPVC_CONFIG="${MPVC_CONFIG:-$XDG_CONFIG_HOME/mpvc/mpvc.conf}"
+    MPVC_CONFIG="${MPVC_CONFIG:-$MPVC_CONFIG_DIR/mpvc.conf}"
     MPVC_SOCKET="${MPVC_SOCKET:-$MPVC_CONFIG_DIR/mpvsocket0}"
     MPVC_CURL_CACHE="${MPVC_CURL_CACHE:-$MPVC_CONFIG_DIR/curl-cache.txt}"
     MPVOPTIONS="${MPVOPTIONS:---no-audio-display --no-input-terminal}"
