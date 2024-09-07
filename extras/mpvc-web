@@ -435,7 +435,7 @@ mpvc_web_index()
         <a href="$PROGURL">$PROGVERSION</a>
         <a href="${PROGURL%/*}">@$PROGAUTHOR</a> (c) 2024
         <a href="javascript:alert('$(mpvc_web_help)')" ${MPVC_WEB_SHORTCUT_HELP}>/h</a>
-        <a href="#top">#top</a>
+        <a href="#top">top</a>
     </body>
 </html>
 EOF
