@@ -25,10 +25,13 @@ mpvc() { "$PROGDIR/mpvc" "$@"; } # mpvc-web?
 mpvcfzf_defaults()
 {
     XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}
-    MPVC_CONFIG="${MPVC_CONFIG:-$XDG_CONFIG_HOME/mpvc/mpvc.conf}"
+    MPVC_CONFIG_DIR="${MPVC_CONFIG_DIR:-$XDG_CONFIG_HOME/mpvc}"
+    MPVC_CONFIG="${MPVC_CONFIG:-$MPVC_CONFIG_DIR/mpvc.conf}"
     MPVC_YTDL_ARCHIVE=${MPVC_YTDL_ARCHIVE:-}
     MPVC_YTDL_OUTPUT=${MPVC_YTDL_OUTPUT:-}
     MPVC_TERM=${MPVC_TERM:-xterm}
+
+    mpvc -q
 }
 
 mpvcfzf_config()
@@ -380,13 +383,19 @@ mpvcfzf_ddg()
 
 mpvcfzf_somafm()
 {
-    mpvcfzf_somafm_search | column -s ';' -t |
-        mpvcfzf_preview --prompt="(somafm) "
+    channel=${1:-}
+    if [ -n "$channel" ];
+    then
+        mpvcfzf_somafm_search | awk -F';' -v channel="$channel" '{ if(match($0,channel))print $1}' | mpvc load
+    else
+        mpvcfzf_somafm_search | column -s ';' -t |
+            mpvcfzf_preview --prompt="(somafm) "
+    fi
 }
 
 mpvcfzf_somafm_search()
 {
-    file=${XDG_CONFIG_HOME:-$HOME/.config}/mpvc/somafm-channels.json
+    file=$MPVC_CONFIG_DIR/somafm-channels.json
     [ ! -s "$file" ] && curl -fsSL -o "$file" "https://somafm.com/channels.json"
     jq -r --argjson quality 3 '
         .channels | sort_by(.listeners | tonumber) | reverse | .[] |
@@ -473,7 +482,7 @@ main()
         -Y|Related) shift; mpvcfzf_related_play "$arg1"; return ;;
         -v|version) shift; mpvcfzf_version; return ;;
 
-        somafm)     shift; mpvcfzf_somafm "$@"; return ;;
+        somafm)     shift; mpvcfzf_somafm "$1"; return ;;
         #*)         shift; mpvcfzf_usage; return ;;
         esac
     done
