@@ -380,12 +380,17 @@ mpvcfzf_ddg()
 
 mpvcfzf_somafm()
 {
+    mpvcfzf_somafm_search | column -s ';' -t |
+        mpvcfzf_preview --prompt="(somafm) "
+}
+
+mpvcfzf_somafm_search()
+{
     file=${XDG_CONFIG_HOME:-$HOME/.config}/mpvc/somafm-channels.json
     [ ! -s "$file" ] && curl -fsSL -o "$file" "https://somafm.com/channels.json"
-    jq -r '
+    jq -r --argjson quality 3 '
         .channels | sort_by(.listeners | tonumber) | reverse | .[] |
-            (.playlists[3]|.url) + ";" + .listeners + " ls "+.genre+";"+ .title' "$file" |
-            column -s ';' -t | mpvcfzf_preview
+            (.playlists[$quality]|.url) + ";" + .listeners + " ls "+.genre+";"+ .title' "$file"
 }
 
 mpvcfzf_launch_term()
@@ -401,21 +406,23 @@ mpvcfzf_version()
 mpvcfzf_usage()
 {
     echo "usage: $PROGNAME opts # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
-    echo "  -b : Browse the provided ytdl-archive URL with fzf (fzf*)"
-    echo "  -c : Start fzf to manage the current mpv chapterlist (fzf*)"
-    echo "  -d : Set the WD to the media directory given as argument"
-    echo "  -f : Start fzf to manage the current mpv playist (fzf*)"
-    echo "  -g : Fetch the given YT URL, and store locally (fzf*)"
-    echo "  -G : Search on Invidious, fetch, and store locally (fzf*)"
-    echo "  -i : Search given media lyrics on Invidious (fzf*)"
-    echo "  -k : Search & play DuckDuckGo videos (fzf*)"
-    echo "  -K : Search DuckDuckGo videos (fzf*)"
-    echo "  -l : Search & play local media (fzf*)"
-    echo "  -s : Search on Invidious (fzf*)"
-    echo "  -p : Search & play media found using Invidious (fzf*)"
-    echo "  -y : Search related media on Invidious (fzf*)"
-    echo "  -Y : Search & play related media using Invidious (fzf*)"
-    echo "  -x : Starts $PROGNAME in a new $MPVC_TERM (config \$MPVC_TERM) [combine -x with other opts]"
+    echo "  -b     : Browse the provided ytdl-archive URL with fzf (fzf*)"
+    echo "  -c     : Start fzf to manage the current mpv chapterlist (fzf*)"
+    echo "  -d     : Set the WD to the media directory given as argument"
+    echo "  -f     : Start fzf to manage the current mpv playist (fzf*)"
+    echo "  -g     : Fetch the given YT URL, and store locally (fzf*)"
+    echo "  -G     : Search on Invidious, fetch, and store locally (fzf*)"
+    echo "  -i     : Search given media lyrics on Invidious (fzf*)"
+    echo "  -k     : Search & play DuckDuckGo videos (fzf*)"
+    echo "  -K     : Search DuckDuckGo videos (fzf*)"
+    echo "  -l     : Search & play local media (fzf*)"
+    echo "  -s     : Search on Invidious (fzf*)"
+    echo "  -p     : Search & play media found using Invidious (fzf*)"
+    echo "  -y     : Search related media on Invidious (fzf*)"
+    echo "  -Y     : Search & play related media using Invidious (fzf*)"
+    echo "  -x     : Starts $PROGNAME in a new $MPVC_TERM (config \$MPVC_TERM) [combine -x with other opts]"
+
+    echo "  somafm : Search & play SomaFM channels (fzf*)"
     echo "*tips: If unsure about where to begin, start with: $PROGNAME -p 'kupla mirage'"
     exit;
 }
