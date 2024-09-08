@@ -32,7 +32,7 @@ Check the [Git](#git) QuickStart Guide, [Wiki](../../wiki), [LogBook](../../wiki
 
 ## ▶️ Overview [^install]
 
-[mpvc](../../) is a collection of shell scripts in POSIX sh(1) composed of:
+[mpvc](../../) is a collection of POSIX shell scripts:
 
 - [mpvc](../../blob/master/mpvc): provides the core CLI commands to control mpv
 - [extras/mpvc-tui](../../blob/master/extras/mpvc-tui): provides a console TUI, using mpvc underneath
