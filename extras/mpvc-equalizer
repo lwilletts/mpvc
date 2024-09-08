@@ -104,7 +104,8 @@ mpvc_values()
     mpvc getr af |
         jq '.data | .[] | .params.graph' |
         grep -o "gain_entry = '.*':" |
-        sed -n 's/gain_entry = .//; s/.:$//; s|entry([0-9]\{1,2\},\([-.0-9]*\));*|\n\1 |gp'
+        sed -n 's/gain_entry = .//; s/.:$//; s|entry([0-9]\{1,2\},\([-.0-9]*\));*|\n\1 |gp' |
+        sed '/^$/d'
 }
 
 mpvc_setvals()
@@ -118,8 +119,9 @@ mpvc_bars()
     mpvc_values="$(mpvc_values)"
     if [ -z "$mpvc_values" ]; then usage; fi
     freq_table="$MPVC_FREQ_TABLE"
-    gain_table="$(printf "$mpvc_values" | sed '/^$/d')"
-    preset=$(awk /"$(echo "$gain_table" | awk 'NR<10{s=s""$0} END{print s}')"/' {print $NF}' "$0")
+    gain_table="$(printf "$mpvc_values")"
+    pattern=$(echo "$gain_table" | awk 'NR<10{s=s""$0} END{sub(" $","",s); print s}')
+    preset=$(awk "/$pattern/"' {print $NF}' "$0")
     gain_table=$(echo $gain_table)
 
     awk -v freq="$freq_table" -v gain="$gain_table" -v cols="$(mpvc ttycols)" -v preset="$preset" '
@@ -210,9 +212,9 @@ main()
     change) shift; mpvc_change "$@";;
     preset) shift; mpvc_presets "$@";;
     values) shift; mpvc_values;;
-    vals)  mpvc_vals;;
-    bars)  mpvc_bars;;
-    json)  mpvc_json;;
+    vals)   shift; mpvc_vals;;
+    bars)   shift; mpvc_bars;;
+    json)   shift; mpvc_json;;
 
     inc) shift; mpvc_add "$1"  "${2:-0.1}" ;;
     dec) shift; mpvc_add "$1" "-${2:-0.1}" ;;
