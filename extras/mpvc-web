@@ -28,7 +28,8 @@ mpvc_web_defaults()
     MPVC=$(command -v mpvc)
 
     XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}
-    MPVC_CONFIG="${MPVC_CONFIG:-$XDG_CONFIG_HOME/mpvc/mpvc.conf}"
+    MPVC_CONFIG_DIR="${MPVC_CONFIG_DIR:-$XDG_CONFIG_HOME/mpvc}"
+    MPVC_CONFIG="${MPVC_CONFIG:-$MPVC_CONFIG_DIR/mpvc.conf}"
 
     MPVC_WEB_HOSTNAME=${MPVC_WEB_HOSTNAME:-$(hostname)}
     MPVC_WEB_HOST=${MPVC_WEB_HOST:-localhost}
