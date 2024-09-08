@@ -60,16 +60,20 @@ mpvctui_defaults()
 mpvctui_config()
 {
     mpvctui_defaults
+
     XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}
-    MPVC_TUI_CONFIG="${MPVC_TUI_CONFIG:-$XDG_CONFIG_HOME/mpvc/mpvc.conf}"
+    MPVC_CONFIG_DIR="${MPVC_CONFIG_DIR:-$XDG_CONFIG_HOME/mpvc}"
+    MPVC_CONFIG="${MPVC_CONFIG:-$MPVC_CONFIG_DIR/mpvc.conf}"
+
     MPVC_TUI_HISTORY="${MPVC_TUI_HISTORY:-$XDG_CONFIG_HOME/mpvc/mpvc-tui.history}"
     MPVC_TUI_SCROBBLER="${MPVC_TUI_SCROBBLER:-$XDG_CONFIG_HOME/mpvc/mpvc-tui.scb}"
+
     # if not present, create config dir
-    mkdir -p "$(dirname "$MPVC_TUI_CONFIG")"
+    mkdir -p "$MPVC_CONFIG_DIR"
     touch "$MPVC_TUI_HISTORY"
     # if present load user config
-    if [ -r "$MPVC_TUI_CONFIG" ]; then
-        . "$MPVC_TUI_CONFIG"
+    if [ -r "$MPVC_CONFIG" ]; then
+        . "$MPVC_CONFIG"
     fi
     if ! quiet command -v rlwrap; then
         mpvctui_warn "$PROGNAME: Warning: No rlwrap, Install to get history, filename & completion support!"
@@ -121,7 +125,7 @@ mpvctui_tips()
     0|1|2)    echo ": type control+c to enter prompt";;
     10|11|12) echo ": Check $PROGURL";;
     20|21|22) echo ": Check $SITEURL";;
-    30|31|32) echo ": Config at ${MPVC_TUI_CONFIG##$HOME/}";;
+    30|31|32) echo ": Config at ${MPVC_CONFIG##$HOME/}";;
     40|41|42) echo ": Launch from WM with: $PROGNAME -x";;
     50|51|52) echo ": version $PROGNAME $PROGVERSION at $PROGURL";;
     60|61|62) echo ": Update $MPVC_TUI_UPDATEC secs refresh $((count % MPVC_TUI_CLEARC))/$MPVC_TUI_CLEARC shell $MPVC_TUI_SHELL";;
