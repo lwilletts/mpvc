@@ -158,11 +158,11 @@ mpvc_defaults()
     IMAGEFLAG="${IMAGEFLAG:-}"
     QUIETFLAG="${QUIETFLAG:-}"
     MPVC_LOCAL_CACHE="${MPVC_LOCAL_CACHE:-false}"
-    FORMATSTRING="${FORMATSTRING:-}"
+    MPVC_FORMATSTRING="${MPVC_FORMATSTRING:-}"
 
     # print default status of mpv instance
-    if [ -z "$FORMATSTRING" ]; then
-        FORMATSTRING="\
+    if [ -z "$MPVC_FORMATSTRING" ]; then
+        MPVC_FORMATSTRING="\
 %artist% - %title% \r\
 [%status%] #%position%/%playlistlength% %time%/%length% (%percentage%%%) \r\
 vol:%volume%%% mute:%muted% repeat:%repeat% single:%single% \r\
@@ -859,10 +859,10 @@ mpvc_chapter_search_play()
 
 ## Formatting and Printing Functions ##########################################
 
-# formats and prints according to $FORMATSTRING
+# formats and prints according to $MPVC_FORMATSTRING
 mpvc_print_status() {
     # not that nice, in fact way more ugly, but also way faster
-    F=$(echo "$FORMATSTRING" |
+    F=$(echo "$MPVC_FORMATSTRING" |
         awk -v status=$(mpvc_get_pause_status) '
         {
             split("year genre album comment volume path height width playback-time ab-loop-[ab] speed force-window video screen aspect idle fullscreen chapter chapters =chapter", RE)
@@ -1167,7 +1167,7 @@ main() {
             --ttylines|ttylines)             mpvc_tty_lines; QUIETFLAG=true;;
 
             # global argument parsing
-            -f|--format)                     shift; FORMATSTRING="${1:-}"       ;;
+            -f|--format)                     shift; MPVC_FORMATSTRING="${1:-}"       ;;
             -S|--socket)                     shift; mpvc_handle_socket "${1:-}";;
             -Q|--vid=no)                     MPVOPTIONS="$MPVOPTIONS --vid=no"; ;;
             --image)                         IMAGEFLAG=true;                ;;
