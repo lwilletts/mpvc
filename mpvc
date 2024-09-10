@@ -107,7 +107,7 @@ Formatting:
     %name%, %path%, %dir%, %title%, %artist%, %album%, %albumartist%, comment%,
     %genre%, %year%, %percentage%, %playlistlength%, %position%, %repeat%,
     %single, %status%, %time%, %precisetime%, %speed%, %length%, %remaining%,
-    %volume%, %muted%, %frame%, %width%, %height%, %ab-loop-a%, %ab-loop-b%,
+    %volume%, %mute%, %frame%, %width%, %height%, %ab-loop-a%, %ab-loop-b%,
     %video%, %screen%, %aspect%, %force-window%, %fullscreen%, %idle%,
     %chapter%, %chapters%
 
@@ -165,7 +165,7 @@ mpvc_defaults()
         MPVC_FORMATSTRING="\
 %artist% - %title% \r\
 [%status%] #%position%/%playlistlength% %time%/%length% (%percentage%%%) \r\
-vol:%volume%%% mute:%muted% repeat:%repeat% single:%single% \r\
+vol:%volume%%% mute:%mute% repeat:%repeat% single:%single% \r\
 vid:%video% scr:%screen% win:%force-window% fs:%fullscreen% \r\
 chapter:%chapter% %=chapter%/%chapters% idle:%idle%"
     fi
@@ -865,13 +865,12 @@ mpvc_print_status() {
     F=$(echo "$MPVC_FORMATSTRING" |
         awk -v status=$(mpvc_get_pause_status) '
         {
-            split("year genre album comment volume path height width playback-time ab-loop-[ab] speed force-window video screen aspect idle fullscreen chapter chapters =chapter", RE)
+            split("year genre album comment volume mute path height width playback-time ab-loop-[ab] speed force-window video screen aspect idle fullscreen chapter chapters =chapter", RE)
             for (i in RE) { re=RE[i]; gsub("%"re"%", "${"re":NA}"); }
 
             gsub("%title%", "${media-title}")
             gsub("%artist%", "${?metadata/by-key/artist:${metadata/by-key/artist}}${!metadata/by-key/artist:NA}")
             gsub("%albumartist%", "${?metadata/by-key/album:${metadata/by-key/album}}${!metadata/by-key/album:NA}")
-            gsub("%muted%", "${mute}")
             gsub("%percentage%", "${percent-pos}")
             gsub("%name%", "${filename}")
             gsub("%repeat%", "${loop-playlist}")
