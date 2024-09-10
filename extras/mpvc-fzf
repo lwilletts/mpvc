@@ -482,7 +482,7 @@ main()
         -Y|Related) shift; mpvcfzf_related_play "$arg1"; return ;;
         -v|version) shift; mpvcfzf_version; return ;;
 
-        somafm)     shift; mpvcfzf_somafm "$1"; return ;;
+        somafm)     shift; mpvcfzf_somafm "${1:-}"; return ;;
         #*)         shift; mpvcfzf_usage; return ;;
         esac
     done
