@@ -90,7 +90,7 @@ mpvc_web_config()
 mpvc_web_style()
 {
     cat <<-EOF
-:root { --body-font-family: monospace; --body-color: #222; --body-background: #fff; --link-color: #707; }
+:root { --body-font-family: monospace; --body-color: #222; --body-background: #fff; --link-color: #a0a; }
 @media (max-width: 768px) { :root { --body-font-size: 1.12em; } }
 @media (min-width: 768px) { :root { --body-font-size: 18px; } }
 
@@ -302,9 +302,9 @@ mpvc_web_index()
     <link rel="IconFile" href="apple-touch-icon.svg" sizes="64x64">
     <link rel="apple-touch-icon" href="apple-touch-icon.svg">
     <title> 🎧$MPVC_WEB_HOSTNAME mpvc</title>
+    <link rel="stylesheet" href="style.css">
     <style type="text/css" media="all">
     </style>
-    <link rel="stylesheet" href="style.css">
     <script type="text/javascript">
         $(mpvc_web_index_js)
     </script>
@@ -402,9 +402,10 @@ mpvc_web_index()
 
         <li>
         mpvc theme
-            <a href="#" title="theme 2" onclick="document.body.style.WebkitFilter='invert(0.2)';">th2</a>
-            <a href="#" title="theme 4" onclick="document.body.style.WebkitFilter='invert(0.4)';">th4</a>
-            <a href="#" title="theme 8" onclick="document.body.style.WebkitFilter='invert(0.8)';">th8</a>
+            <a href="#" title="theme 2" onclick="document.body.style.WebkitFilter='invert(0.2)';">t2</a>
+            <a href="#" title="theme 4" onclick="document.body.style.WebkitFilter='invert(0.4)';">t4</a>
+            <a href="#" title="theme 4" onclick="document.body.style.WebkitFilter='invert(0.6)';">t6</a>
+            <a href="#" title="theme 8" onclick="document.body.style.WebkitFilter='invert(0.8)';">t8</a>
             <a href="#" title="toggle" onclick="toggleColorScheme()">cycle</a>
             <a href="." title="reset">rst</a>
         </li>
