@@ -105,11 +105,11 @@ Formatting:
     \`$PROGNAME --format\` will interpret the following delimiters if they are found:
 
     %name%, %path%, %dir%, %title%, %artist%, %album%, %albumartist%, comment%,
-    %genre%, %year%, %percentage%, %playlistlength%, %position%, %repeat%,
-    %single, %status%, %time%, %precisetime%, %speed%, %length%, %remaining%,
-    %volume%, %mute%, %frame%, %width%, %height%, %ab-loop-a%, %ab-loop-b%,
-    %video%, %screen%, %aspect%, %force-window%, %fullscreen%, %idle%,
-    %chapter%, %chapters%
+    %genre%, %year%, %icy-title%, %percentage%, %playlistlength%, %position%,
+    %repeat%, %single, %status%, %time%, %precisetime%, %speed%, %length%,
+    %remaining%, %volume%, %mute%, %frame%, %width%, %height%,
+    %ab-loop-a%, %ab-loop-b%, %video%, %screen%, %aspect%,
+    %force-window%, %fullscreen%, %idle%, %chapter%, %chapters%
 
 MPC compatibility layer:
     mpvc features nearly complete compatibility for mpc(1) commands, in
@@ -869,7 +869,7 @@ mpvc_print_status() {
     F=$(echo "$MPVC_FORMATSTRING" |
         awk -v status=$(mpvc_get_pause_status) '
         {
-            split("year genre album comment volume mute path height width playback-time ab-loop-[ab] speed force-window video screen aspect idle fullscreen chapter chapters =chapter", RE)
+            split("year genre album icy-title comment volume mute path height width playback-time ab-loop-[ab] speed force-window video screen aspect idle fullscreen chapter chapters =chapter", RE)
             for (i in RE) { re=RE[i]; gsub("%"re"%", "${"re":NA}"); }
 
             gsub("%title%", "${media-title}")
