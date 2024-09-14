@@ -199,10 +199,7 @@ mpvc_tac()
     ' "$@"
 }
 
-mpvc_isotime()
-{
-    TZ=UTC date -u +"%Y-%m-%dT%H:%M:%SZ"
-}
+mpvc_isotime() { TZ=UTC date -u +"%Y-%m-%dT%H:%M:%SZ"; }
 
 ## Retrieval Functions ########################################################
 
@@ -457,7 +454,6 @@ mpvc_buffer_stdin()
 mpvc_load_playlist() {
     QUIETFLAG="true"
     buffer=$(mpvc_buffer_stdin)
-
     if [ -z "$buffer" ]; then return; fi
     if [ "${1:-}" = "clear" ]; then mpvc_clear_playlist; fi
     printf "$buffer\n" | while read -r line; do mpvc_appendtracks "$line"; done
@@ -469,11 +465,7 @@ mpvc_stash() {
     QUIETFLAG="true"
     case "$cmd" in
         show|list|ls)
-            if [ -z "${1:-}" ]; then
-                ls -ltr "$MPVC_STASH_DIR" ;
-            else
-                cat "$MPVC_STASH_DIR/$1";
-            fi
+            [ -z "${1:-}" ] && ls -ltr "$MPVC_STASH_DIR" || cat "$MPVC_STASH_DIR/$1"
             ;;
         edit|ed) ${EDITOR:-vi} "$MPVC_STASH_DIR/$1" ;;
         drop|rm) rm -i "$MPVC_STASH_DIR/$1" ;;
@@ -498,8 +490,7 @@ mpvc_stash() {
             fi
             ;;
         apply_current)
-            while read -r line
-            do
+            while read -r line; do
                 case "$line" in
                     "# $PROGNAME "*) echo "$line";;
                     "mpvc --mpv")  mpvc_mpv;;
@@ -633,7 +624,7 @@ mpvc_set_time() {
         *%*) mpvc_set "percent-pos" "${1%%%}"; return ;;
         -*)  mpvc_add "playback-time" "-$(mpvc_parse_time "${1##-}")" ;;
         +*)  mpvc_add "playback-time" "+$(mpvc_parse_time "${1##+}")" ;;
-        *)   mpvc_add "playback-time" "$(mpvc_parse_time "${1}")" ;;
+        *)   mpvc_add "playback-time" "$(mpvc_parse_time "$1")" ;;
     esac
 }
 
@@ -657,7 +648,6 @@ mpvc_move_track() {
     if [ -z "${2:-}" ]; then srcpos=$lpos; dstpos=$1; else srcpos=$1; dstpos=$2; fi
     if [ "$dstpos" = "$" ]; then dstpos="$lcount"; fi
     #isInt "$srcpos" && isInt "$dstpos" || return 1
-
     mpvc_ecmdr "playlist-move" "$srcpos" "$dstpos" || return 1
     #quietcheck mpvc_get_playlist
 }
@@ -847,18 +837,26 @@ mpvc_chapter_cloop()
     mpvc_set ab-loop-b "$abloopb"
 }
 
-mpvc_chapter_replay() { mpvc_chapter_set "$(mpvc_get chapter)"; }
-mpvc_chapter_next()   { mpvc_chapter_set $(( ( $(mpvc_get chapter) + 1 ) % $(mpvc_get chapter-list/count) )); }
-mpvc_chapter_prev()   { mpvc_chapter_set $(( ( $(mpvc_get chapter) - 1 ) % $(mpvc_get chapter-list/count) )); }
-mpvc_chapter_set()    { if [ "$(mpvc_get "chapter-list/count")" -gt 0 ]; then mpvc_set "chapter" "$1"; fi; }
+mpvc_chapter_set() {
+    isInt "$1" || return 1
+    lpos=$(mpvc_get chapter)
+    lcount=$(mpvc_get chapter-list/count)
+    if [ "$lcount" = "0" ]; then return; fi
+    if [ "$lpos" = "null" ]; then lpos=0; fi
+    case "$2" in
+        absolute) newpos=$(( $1 % $lcount )) ;;
+        relative) newpos=$(( ($lpos + $1) % $lcount )) ;;
+    esac
+    mpvc_set "chapter" "$newpos"
+}
 
-mpvc_chapter_play_random() { mpvc_chapter_set "$(( $(mpvc_get_random) % $(mpvc_get "chapters") ))" ; }
+mpvc_chapter_replay() { mpvc_set "chapter" "$(mpvc_get chapter)"; }
 mpvc_chapter_search() { mpvc_nocolor mpvc_chapter_list "full" | awk "/$*/ {print NR-1; exit};"; }
 mpvc_chapter_search_play()
 {
     chapter=$(mpvc_chapter_search "$@")
     if [ -z "$chapter" ]; then return; fi
-    mpvc_chapter_set "$chapter"
+    mpvc_set "chapter" "$chapter"
 }
 
 ## Formatting and Printing Functions ##########################################
@@ -867,7 +865,7 @@ mpvc_chapter_search_play()
 mpvc_print_status() {
     # not that nice, in fact way more ugly, but also way faster
     F=$(echo "$MPVC_FORMATSTRING" |
-        awk -v status=$(mpvc_get_pause_status) '
+        awk -v status="$(mpvc_get_pause_status)" '
         {
             split("year genre album icy-title comment volume mute path height width playback-time ab-loop-[ab] speed force-window video screen aspect idle fullscreen chapter chapters =chapter", RE)
             for (i in RE) { re=RE[i]; gsub("%"re"%", "${"re":NA}"); }
@@ -942,9 +940,9 @@ mpvc_get_terminal_height() {
 
 mpvc_parse_time() {
     if ! echo "$1" | grep -q -e "^\([0-9.]*:\)\{0,2\}[0-9.]*$" -e "^[0-9]*[sSmMhH]$"; then
-        warn "Timestamp formats must match either H:M:S with hour and minute fields optional,"
-        warn "or a single integer number with a unit of time appended: h, m, s."
-        exit 1
+        warn "Timestamp format must match either [H:M]:S with H,M fields optional,"
+        warn "or [0-9]+[hms], an integer followed by the time unit: h, m, s."
+        return 1
     fi
     case "$1" in
         *s|*S|*m|*M|*h|*H)
@@ -964,8 +962,7 @@ mpvc_parse_time() {
 }
 
 mpvc_handle_socket() {
-    if [ $# -eq 0 ];
-    then
+    if [ $# -eq 0 ]; then
         echo "$MPVC_SOCKET"
     else
         MPVC_SOCKET="${1:-}"
@@ -982,7 +979,6 @@ mpvc_validate_socket() {
     if ! test -x "$MPVC_SOCAT" && ! quiet command -v "$MPVC_SOCAT" && ! quiet command -v nc; then
         die 4 "$PROGNAME: Error: No socat found. Install to continue."
     fi
-
     # test if socket exists
     if [ ! -S "$MPVC_SOCKET" ]; then
         die 2 "$PROGNAME: Error: Socket ${MPVC_SOCKET##$HOME/} does not exist. Use mpvc --mpv to start one."
@@ -1132,10 +1128,11 @@ main() {
             ytquery)                         shift; mpvc_curl_cache_title_clean "$@"; return;;
             ytqueryjson)                     shift; mpvc_curl_cache_metadata_json "$@"; return;;
 
-            cprev|--chapter-prev|chapter-prev)            mpvc_chapter_prev ;;
-            cnext|--chapter-next|chapter-next)            mpvc_chapter_next ;;
-            cplay|--chapter-play|chapter-play)            shift; mpvc_chapter_set "${1:-}" ;;
-            cplayrand|--cplayrand)                        shift; mpvc_chapter_play_random "$@" ;;
+            cprev|--chapter-prev|chapter-prev)            mpvc_chapter_set "relative" +1 ;;
+            cnext|--chapter-next|chapter-next)            mpvc_chapter_set "relative" -1 ;;
+            cplay|--chapter-play|chapter-play)            shift; mpvc_chapter_set "absolute" "${1:-}" ;;
+            cplayrand|--cplayrand)                        shift; mpvc_chapter_set "absolute" "$(mpvc_get_random)" ;;
+
             creplay|--chapter-replay|chapter-replay)      mpvc_chapter_replay ;;
             cloop|--chapter-loop|chapter-loop)            mpvc_chapter_cloop ;;
 
