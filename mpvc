@@ -1116,10 +1116,10 @@ main() {
             ytquery)                         shift; mpvc_curl_cache_title_clean "$@"; return;;
             ytqueryjson)                     shift; mpvc_curl_cache_metadata_json "$@"; return;;
 
-            cprev|--chapter-prev|chapter-prev)            mpvc_chapter_set "relative" +1 ;;
-            cnext|--chapter-next|chapter-next)            mpvc_chapter_set "relative" -1 ;;
-            cplay|--chapter-play|chapter-play)            shift; mpvc_chapter_set "absolute" "${1:-}" ;;
-            cplayrand|--cplayrand)                        shift; mpvc_chapter_set "absolute" "$(mpvc_get_random)" ;;
+            cprev|--chapter-prev|chapter-prev)            mpvc_chapter_set +1 "relative" ;;
+            cnext|--chapter-next|chapter-next)            mpvc_chapter_set -1 "relative" ;;
+            cplay|--chapter-play|chapter-play)            shift; mpvc_chapter_set "${1:-}" "absolute" ;;
+            cplayrand|--cplayrand)                        shift; mpvc_chapter_set "$(mpvc_get_random)" "absolute" ;;
 
             creplay|--chapter-replay|chapter-replay)      mpvc_chapter_replay ;;
             cloop|--chapter-loop|chapter-loop)            mpvc_chapter_cloop ;;
