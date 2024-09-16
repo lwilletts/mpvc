@@ -41,9 +41,6 @@ EOF
        | --playrand         : Select a random track from the playlist, and play it.
     -o | --save             : Save current playlist to given path.
     -l | --load             : Load playlist from given path (stdin if none is specified).
-    -o | --autosave         : Auto save current playlist to ${MPVC_PLAYLIST##$HOME/}.
-    -l | --autoload         : Auto load playlist from ${MPVC_PLAYLIST##$HOME/}.
-    -l | --lsplaylists      : List playlist from ${MPVC_PLAYLIST##$HOME/}.
     -c | --crop             : Clear the playlist except for the media currently playing.
     -z | --shuffle          : Shuffle the current playlist.
     -l | --loop             : Loop currently playing playlist.
@@ -289,12 +286,6 @@ mpvc_cycle() { mpvc_ecmdr "cycle" "$1"; }
 mpvc_getr()  { mpvc_cmdr "get_property" "$1"; }
 mpvc_setr()  { mpvc_ecmdr "set_property" "$@"; }
 
-mpvc_get_pause_status() {
-    case "$(mpvc_get pause)" in
-        yes) echo "paused";; no) echo "play" ;; *) echo "NA";;
-    esac
-}
-
 mpvc_get_playlist_json() {
     mpvc_cmdr "get_property" "playlist" |
         grep -o '"data":\[.*\]' |
@@ -437,10 +428,6 @@ mpvc_save_playlist() {
     mpvc_get_playlist_once > "$output"
     QUIETFLAG="true"
 }
-
-mpvc_lsplaylists() { ls -1d "$@" "$MPVC_PLAYLIST"/*; }
-mpvc_autosave_playlist() { mpvc_save_playlist "$MPVC_PLAYLIST/${1:-$(mpvc_isotime)}"; }
-mpvc_autoload_playlist() { mpvc_load_playlist < "$MPVC_PLAYLIST/${1:-$(mpvc_isotime)}"; }
 
 # $buffer stdin: to save the whole stdin in one piece at once
 mpvc_buffer_stdin()
@@ -855,11 +842,12 @@ mpvc_chapter_search_play()
 mpvc_print_status() {
     # not that nice, in fact way more ugly, but also way faster
     F=$(echo "$MPVC_FORMATSTRING" |
-        awk -v status="$(mpvc_get_pause_status)" '
+        awk '
         {
             split("year genre album icy-title comment volume mute path height width playback-time ab-loop-[ab] speed force-window video screen aspect idle fullscreen chapter chapters =chapter", RE)
             for (i in RE) { re=RE[i]; gsub("%"re"%", "${"re":NA}"); }
 
+            gsub("%status%", "${?pause==yes:paused}${?pause==no:play}${!pause:NA}");
             gsub("%title%", "${media-title}")
             gsub("%artist%", "${?metadata/by-key/artist:${metadata/by-key/artist}}${!metadata/by-key/artist:NA}")
             gsub("%albumartist%", "${?metadata/by-key/album:${metadata/by-key/album}}${!metadata/by-key/album:NA}")
@@ -875,8 +863,6 @@ mpvc_print_status() {
             gsub("%precisetime%", "${playback-time}")
             gsub("%playlistlength%", "${playlist-count}")
             gsub("%position%", "${playlist-pos}")
-
-            gsub("%status%", status)
 
             print
         }
@@ -1007,7 +993,6 @@ mpvc_startmpv() {
     fi
 }
 
-
 main() {
     mpvc_config
     arg1=${1:-}
@@ -1015,8 +1000,7 @@ main() {
     ytquery|ytqueryjson|--tac|tac) ;;
     -k|--kill|kill|-K|--killall|killall) ;;
     -c|--crop|crop|-C|--clear|clear|cmd|sockcmd|socklist|--socklist) ;;
-    -a|add|append|-A|playnext|--playnext|-n|playnow|--playnow|mpv|--mpv|stash|--stash|--toggle|toggle|-q|--quiet) ;;
-    load|--load|autoload|--autoload|lsplaylists|--lsplaylists) ;;
+    -a|add|append|-A|load|--load|playnext|--playnext|-n|playnow|--playnow|mpv|--mpv|stash|--stash|--toggle|toggle|-q|--quiet) ;;
     version|--version|-Q|--vid=no|-S|--socket) ;;
     help|--help|-h|long-help|--long-help|-H|--list-options) ;;
     *) mpvc_validate_socket;; # otherwise, validate socket
@@ -1075,9 +1059,6 @@ main() {
             --current|current)               ;;
             --loadc|loadc)                   shift; mpvc_load_playlist "clear"    ;;
             --saven|saven)                   shift; mpvc_get_playlist_once "numbered"; QUIETFLAG=true;;
-            --autosave|autosave)             shift; mpvc_autosave_playlist "${1:-}"; ;;
-            --autoload|autoload)             shift; mpvc_autoload_playlist "${1:-}"; ;;
-            --lsplaylists|lsplaylists)       shift; mpvc_lsplaylists "${1:-}"; QUIETFLAG=true;;
             --cycle|cycle)                   shift; mpvc_cycle "$@"; QUIETFLAG=true;;
             --set|set|s)                     shift; mpvc_set "$@"; return;;
             --get|get|g)                     shift; mpvc_get "${1:-}"; QUIETFLAG=true;;
