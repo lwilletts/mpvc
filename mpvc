@@ -727,12 +727,9 @@ mpvc_shuffle_playlist() {
 
 mpvc_crop_playlist() {
     mpvc_ecmdr "playlist-clear" || return 1
-    quietcheck mpvc_get_playlist
 }
 
 mpvc_clear_playlist() {
-    # kill any running process of mpvc add
-    #if quiet pgrep -f "mpvc add"; then pkill -f "mpvc add"; fi
     mpvc_crop_playlist
     mpvc_remove_track 0
     echo "Playlist cleared."
@@ -1125,8 +1122,8 @@ main() {
             -l|--loopfile|loopfile)          mpvc_toggle_loop "loop-file"     ;;
             -z|--shuffle|shuffle)            mpvc_shuffle_playlist shuffle;;
             -Z|--unshuffle|unshuffle)        mpvc_shuffle_playlist unshuffle;;
-            -c|--crop|crop)                  mpvc_crop_playlist; QUIETFLAG=true;;
-            -C|--clear|clear)                mpvc_clear_playlist; QUIETFLAG=true;;
+            -c|--crop|crop)                  QUIETFLAG=true; mpvc_crop_playlist ;;
+            -C|--clear|clear)                QUIETFLAG=true; mpvc_clear_playlist ;;
             --delay|delay)                   mpvc_delay;;
             --wait|wait)                     mpvc_wait;;
             --tac|tac)                       mpvc_tac; exit 0;;
