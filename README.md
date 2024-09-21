@@ -6,9 +6,9 @@
 
 # 🎧 mpvc
 
-A shell script player to control mpv from the terminal + extras/goodies[^install] 🚀.
-A fork of [lwillets/mpvc](https://github.com/lwilletts/mpvc) evolving on its own, providing extras like: improved mpc(1) CLI, TUI, FZF, WEB, EQ, & play Invidious, YouTube & streaming services.
-Check the [Git](#git) QuickStart Guide, [Wiki](../../wiki), [LogBook](../../wiki#logbook) & [Casts](../../wiki#screencasts) for a detailed view of the extra features of this fork.
+A shell script player to control mpv from the terminal + extras/goodies [^install] 🚀.
+A fork of [lwillets/mpvc](https://github.com/lwilletts/mpvc) evolving on its own adding features like: improved CLI, TUI, FZF, WEB, EQ, & play Invidious, YouTube & streaming services.
+For more on the features of this fork check: [Git](#git) QuickStart, [Wiki](../../wiki), [LogBook](../../wiki#logbook) & [Casts](../../wiki#screencasts).
 
 ⏩ Skip directly to [Installation](#Installation) to try mpvc!
 
