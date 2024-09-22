@@ -204,14 +204,13 @@ mpvctui_mouse_buttons()
 mpvctui_mouse_events()
 {
     # check if $TERM supports mouse
-
     stty -icanon
     printf "\e[?1002h"
 
     # f: 1b5b 4d20 2623 0a
     #       |    |    |
     #       |    |    +----- coord TL 2121 - BR 7b3a: (33,33) - (123,58): (90,25)
-    #       |    +---------- btn press 4020 release 4d23
+    #       |    +---------- btn press 4d20 release 4d23
     #       +--------------- tag for mouse event?
 
     line=$(xxd -l 6 -g 2 -p)
@@ -227,21 +226,21 @@ mpvctui_mouse_events()
         posy=$((0x${coordy} - 0x21))
         #echo "posxy $posx/$(tput cols) $posy/$(tput lines)"
         case "$posx,$posy" in
-            0,$offsety) mpvc -q --mute;;
-            1,$offsety) mpvc -q toggle;;
-            2,$offsety) mpvc -q cycle video;;
-            3,$offsety) mpvc -q cycle cache;;
-            4,$offsety) mpvc -q repeat;;
-            5,$offsety) mpvc -q single;;
-            6,$offsety) mpvc -q cycle idle;;
+            "0,$offsety") mpvc -q --mute;;
+            "1,$offsety") mpvc -q toggle;;
+            "2,$offsety") mpvc -q cycle video;;
+            "3,$offsety") mpvc -q cycle cache;;
+            "4,$offsety") mpvc -q repeat;;
+            "5,$offsety") mpvc -q single;;
+            "6,$offsety") mpvc -q cycle idle;;
 
-            8,$offsety) mpvc -q prev;;
-            9,$offsety) mpvc -q replay;;
-           10,$offsety) mpvc -q next;;
+            "8,$offsety") mpvc -q prev;;
+            "9,$offsety") mpvc -q replay;;
+           "10,$offsety") mpvc -q next;;
 
-           12,$offsety) mpvc chapter-prev;;
-           13,$offsety) mpvc chapter-replay;;
-           14,$offsety) mpvc chapter-next;;
+           "12,$offsety") mpvc chapter-prev;;
+           "13,$offsety") mpvc chapter-replay;;
+           "14,$offsety") mpvc chapter-next;;
 
            16,$offsety) mpvc -q seek -30;;
            17,$offsety) mpvc -q time 0;;
