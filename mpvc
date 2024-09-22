@@ -841,7 +841,7 @@ mpvc_print_status() {
     F=$(echo "$MPVC_FORMATSTRING" |
         awk '
         {
-            split("year genre album icy-title comment volume mute path height width playback-time ab-loop-[ab] speed force-window video screen aspect idle fullscreen chapter chapters =chapter", RE)
+            split("year genre album icy-title comment volume volume-max mute path height width playback-time ab-loop-[ab] speed force-window video screen aspect idle fullscreen chapter chapters =chapter", RE)
             for (i in RE) { re=RE[i]; gsub("%"re"%", "${"re":NA}"); }
 
             gsub("%status%", "${?pause==yes:paused}${?pause==no:play}${!pause:NA}");
