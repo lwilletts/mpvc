@@ -190,13 +190,13 @@ mpvctui_mouse()
 mpvctui_mouse_buttons()
 {
     # groups: flags play chapter seek volume
-    mpvc_button_mute=$( if [ "$(mpvc get mute)" = "true" ]; then echo M; else echo m; fi )
-    mpvc_button_pause=$( if [ "$(mpvc get pause)" = "true" ]; then echo P; else echo p; fi )
-    mpvc_button_video=$( if [ "$(mpvc get video)" = "true" ]; then echo V; else echo v; fi )
-    mpvc_button_cache=$( if [ "$(mpvc get cache)" = "true" ]; then echo C; else echo c; fi )
+    mpvc_button_mute=$( if [ "$(mpvc get mute)" = "yes" ]; then echo M; else echo m; fi )
+    mpvc_button_pause=$( if [ "$(mpvc get pause)" = "yes" ]; then echo P; else echo p; fi )
+    mpvc_button_video=$( if [ "$(mpvc get video)" = "yes" ]; then echo V; else echo v; fi )
+    mpvc_button_cache=$( if [ "$(mpvc get cache)" = "yes" ]; then echo C; else echo c; fi )
     mpvc_button_repeat=$( if [ "$(mpvc get loop-playlist)" = "inf" ]; then echo R; else echo r; fi)
-    mpvc_button_single=$( if [ "$(mpvc get loop-file)" = "true" ]; then echo S; else  echo s; fi)
-    mpvc_button_idle=$( if [ "$(mpvc get idle)" = "true" ]; then echo I; else  echo i; fi )
+    mpvc_button_single=$( if [ "$(mpvc get loop-file)" = "yes" ]; then echo S; else  echo s; fi)
+    mpvc_button_idle=$( if [ "$(mpvc get idle)" = "yes" ]; then echo I; else  echo i; fi )
     mpvc_buttons="${mpvc_button_mute}${mpvc_button_pause}${mpvc_button_video}${mpvc_button_cache}${mpvc_button_repeat}${mpvc_button_single}${mpvc_button_idle} <-> [#] {%} (=)"
     printf "%s" "$mpvc_buttons"
 }
@@ -236,7 +236,7 @@ mpvctui_mouse_events()
             6,$offsety) mpvc -q cycle idle;;
 
             8,$offsety) mpvc -q prev;;
-            9,$offsety) mpvc -q play "$(mpvc get playlist-pos)";;
+            9,$offsety) mpvc -q replay;;
            10,$offsety) mpvc -q next;;
 
            12,$offsety) mpvc chapter-prev;;
@@ -321,6 +321,11 @@ mpvctui_suggest()
     ' "$MPVC_TUI_SCROBBLER"
 }
 
+mpvctui_launch()
+{
+    if quiet command -v $MPVC_TUI_TERM; then $MPVC_TUI_TERM -e "$0" "$@"; fi;
+}
+
 mpvctui_usage()
 {
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
@@ -334,7 +339,7 @@ mpvctui_usage()
     exit;
 }
 
-optflags="d:hHktTm:nNsSP:u:x"
+optflags="d:hHktTm:M:nNsSP:u:x"
 mpvctui_main()
 {
     mpvctui_config
@@ -353,6 +358,7 @@ mpvctui_main()
            ( sleep 1; pgrep -f "$PROGNAME -n" || setsid "$0" -n ) &
            mpvctui_watch
            ;;
+        M) shift; mpvctui_launch "-m$OPTARG"; exit ;; # -g 15x1
         m) shift; mpvctui_mouse "$OPTARG" ;;
         n) shift; mpvctui_notify_loop "${1:-}" ;;
         N) shift; mpvctui_notify "${@}" ;;
@@ -360,7 +366,8 @@ mpvctui_main()
         s) shift; mpvctui_suggest ;;
         S) shift; mpvctui_notify_loop_cli "${1:-}" ;;
         u) shift; MPVC_TUI_UPDATEC="$OPTARG" ;;
-        x) shift; if quiet command -v $MPVC_TUI_TERM; then $MPVC_TUI_TERM -e "$0" "$@"; fi; exit;;
+        x) shift; mpvctui_launch "$@"; exit ;;
+
         *) mpvctui_usage;;
         esac
     done
