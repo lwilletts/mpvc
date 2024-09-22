@@ -197,7 +197,7 @@ mpvctui_mouse_buttons()
     mpvc_button_repeat=$( if [ "$(mpvc get loop-playlist)" = "inf" ]; then echo R; else echo r; fi)
     mpvc_button_single=$( if [ "$(mpvc get loop-file)" = "yes" ]; then echo S; else  echo s; fi)
     mpvc_button_idle=$( if [ "$(mpvc get idle)" = "yes" ]; then echo I; else  echo i; fi )
-    mpvc_buttons="${mpvc_button_mute}${mpvc_button_pause}${mpvc_button_video}${mpvc_button_cache}${mpvc_button_repeat}${mpvc_button_single}${mpvc_button_idle} <-> [#] {%} (=)"
+    mpvc_buttons="${mpvc_button_mute}${mpvc_button_pause}${mpvc_button_video}${mpvc_button_cache}${mpvc_button_repeat}${mpvc_button_single}${mpvc_button_idle} <t> [c] {s} (v)"
     printf "%s" "$mpvc_buttons"
 }
 
@@ -242,13 +242,13 @@ mpvctui_mouse_events()
            "13,$offsety") mpvc chapter-replay;;
            "14,$offsety") mpvc chapter-next;;
 
-           16,$offsety) mpvc -q seek -30;;
-           17,$offsety) mpvc -q time 0;;
-           18,$offsety) mpvc -q seek +60;;
+           "16,$offsety") mpvc -q seek -30;;
+           "17,$offsety") mpvc -q time 0;;
+           "18,$offsety") mpvc -q seek +60;;
 
-           20,$offsety) mpvc -q vol -10;;
-           21,$offsety) mpvc -q vol 70;;
-           22,$offsety) mpvc -q vol +10;;
+           "20,$offsety") mpvc -q vol -10;;
+           "21,$offsety") mpvc -q vol 70;;
+           "22,$offsety") mpvc -q vol +10;;
         esac
     ;;
     1b5b4d23*) # btn1 release
