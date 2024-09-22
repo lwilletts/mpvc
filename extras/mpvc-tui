@@ -197,7 +197,9 @@ mpvctui_mouse_buttons()
     mpvc_button_repeat=$( if [ "$(mpvc get loop-playlist)" = "inf" ]; then echo R; else echo r; fi)
     mpvc_button_single=$( if [ "$(mpvc get loop-file)" = "yes" ]; then echo S; else  echo s; fi)
     mpvc_button_idle=$( if [ "$(mpvc get idle)" = "yes" ]; then echo I; else  echo i; fi )
-    mpvc_buttons="${mpvc_button_mute}${mpvc_button_pause}${mpvc_button_video}${mpvc_button_cache}${mpvc_button_repeat}${mpvc_button_single}${mpvc_button_idle} <t> [c] {s} (v)"
+
+    mpvc_status=$(mpvc -f '%position%/%playlistlength% %=chapter%/%chapters% %percentage%%% %volume%%%')
+    mpvc_buttons="${mpvc_button_mute}${mpvc_button_pause}${mpvc_button_video}${mpvc_button_cache}${mpvc_button_repeat}${mpvc_button_single}${mpvc_button_idle} <t> [c] {s} (v) ${mpvc_status}"
     printf "%s" "$mpvc_buttons"
 }
 
