@@ -384,22 +384,39 @@ mpvcfzf_ddg()
 mpvcfzf_somafm()
 {
     channel=${1:-}
-    if [ -n "$channel" ];
-    then
+    if [ -n "$channel" ]; then
         mpvcfzf_somafm_search | awk -F';' -v channel="$channel" '{ if(match($0,channel))print $1}' | mpvc load
     else
-        mpvcfzf_somafm_search | column -s ';' -t |
-            mpvcfzf_preview --prompt="(somafm) "
+        mpvcfzf_somafm_search | column -s ';' -t | mpvcfzf_preview --prompt="(somafm) "
     fi
 }
 
 mpvcfzf_somafm_search()
 {
+    url="https://somafm.com/channels.json"
     file=$MPVC_CONFIG_DIR/somafm-channels.json
-    [ ! -s "$file" ] && curl -fsSL -o "$file" "https://somafm.com/channels.json"
+    [ ! -s "$file" ] && curl -fsSL -o "$file" "$url"
     jq -r --argjson quality 3 '
         .channels | sort_by(.listeners | tonumber) | reverse | .[] |
             (.playlists[$quality]|.url) + ";" + .listeners + " ls "+.genre+";"+ .title' "$file"
+}
+
+mpvcfzf_radioapi()
+{
+    channel=${1:-}
+    if [ -n "$channel" ]; then
+        mpvcfzf_radioapi_search | awk -F';' -v channel="$channel" '{ if(match($0,channel))print $1}' | mpvc load
+    else
+        mpvcfzf_radioapi_search | column -s ';' -t | mpvcfzf_preview --prompt="(radioapi) "
+    fi
+}
+
+mpvcfzf_radioapi_search()
+{
+    url="https://nl1.api.radio-browser.info/json/stations/topvote"
+    file="$MPVC_CONFIG_DIR/radioapi-stations.json"
+    [ ! -s "$file" ] && curl -d hidebroken=true -d limit=4096 -fsSL -o "$file" "$url"
+    jq -r -c '.[] | select( (.url|length) < 80 ) | (.url+";"+(.votes|tostring)+" "+.name)' "$file"
 }
 
 mpvcfzf_launch_term()
@@ -432,6 +449,7 @@ mpvcfzf_usage()
     echo "  -x     : Starts $PROGNAME in a new $MPVC_TERM (config \$MPVC_TERM) [combine -x with other opts]"
 
     echo "  somafm : Search & play SomaFM channels (fzf*)"
+    echo "  radioapi:Search & play Radio-Browser API channels (fzf*)"
     echo "*tips: If unsure about where to begin, start with: $PROGNAME -p 'kupla mirage'"
     exit;
 }
@@ -483,6 +501,7 @@ main()
         -v|version) shift; mpvcfzf_version; return ;;
 
         somafm)     shift; mpvcfzf_somafm "${1:-}"; return ;;
+        radioapi)   shift; mpvcfzf_radioapi "${1:-}"; return ;;
         #*)         shift; mpvcfzf_usage; return ;;
         esac
     done
