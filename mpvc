@@ -18,106 +18,106 @@ set -euf
 usage() {
     cat >&2 << EOF
 usage: $PROGNAME opts # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
-    -a | --add              : Add media to playlist (see --load for stdin).
-    -s | --stop             : Always stop playback.
-    -P | --play             : Always start playback.
-    -p | --toggle           : Toggle playback.
-       | --next             : Jump to next entry in the playlist
-       | --prev             : Jump to previous entry in the playlist
-    -i | --playlist         : Print filenames of tracks to fit within terminal.
-    -I | --fullplaylist     : Print all filenames of tracks in current playlist.
-    -v | --vol              : Increase/decrease volume relative to current volume.
-    -h | --help             : Prints the short help.
-    -H | --long-help        : Prints the long help.
+ -a | --add              : Add media to playlist (see --load for stdin).
+ -s | --stop             : Always stop playback.
+ -P | --play             : Always start playback.
+ -p | --toggle           : Toggle playback.
+    | --next             : Jump to next entry in the playlist
+    | --prev             : Jump to previous entry in the playlist
+ -i | --playlist         : Print filenames of tracks to fit within terminal.
+ -I | --fullplaylist     : Print all filenames of tracks in current playlist.
+ -v | --vol              : Increase/decrease volume relative to current volume.
+ -h | --help             : Prints the short help.
+ -H | --long-help        : Prints the long help.
 EOF
 
     if [ $# -gt 0 ]; then
-        cat >&2 << EOF
-    -f | --format           : Enter a formatting string.
-    -j | --track            : Go forwards/backwards through the playlist queue.
-    -J | --tracknum         : Jump to playlist item number.
-    -A | --playnext         : Add media to playlist after the current track.
-    -n | --playnow          : Add media to playlist after the current track, and play it.
-       | --playrand         : Select a random track from the playlist, and play it.
-    -o | --save             : Save current playlist to given path.
-    -l | --load             : Load playlist from given path (stdin if none is specified).
-    -c | --crop             : Clear the playlist except for the media currently playing.
-    -z | --shuffle          : Shuffle the current playlist.
-    -l | --loop             : Loop currently playing playlist.
-    -L | --loopfile         : Loop currently playing file.
-    -m | --mute             : Toggle sound.
-    -t | --seek             : Increase/decrease playback time relatively, accepts % values.
-    -T | --time             : Set absolute playback time.
-    -x | --speed            : Increase/decrease speed relative to the current speed.
-    -X | --speedval         : Set absolute speed.
-    -I | --image            : Enable adding of images to the queue.
-    -k | --kill             : Kill the mpv process controlling the given socket.
-    -K | --killall          : Kill all mpv processes indiscriminately.
-    -S | --socket           : Set mpv socket [default: $MPVC_SOCKET].
-    -q | --quiet            : Suppress all text output.
-    -V | --volume           : Set absolute volume.
-    -Q | --vid=no           : Start mpv with video output disabled.
-    -- |                    : After adding files options after -- are passed to mpv.
-       | --version          : Prints the $PROGNAME version.
+     cat >&2 << EOF
+ -f | --format           : Enter a formatting string.
+ -j | --track            : Go forwards/backwards through the playlist queue.
+ -J | --tracknum         : Jump to playlist item number.
+ -A | --playnext         : Add media to playlist after the current track.
+ -n | --playnow          : Add media to playlist after the current track, and play it.
+    | --playrand         : Select a random track from the playlist, and play it.
+ -o | --save             : Save current playlist to given path.
+ -l | --load             : Load playlist from given path (stdin if none is specified).
+ -c | --crop             : Clear the playlist except for the media currently playing.
+ -z | --shuffle          : Shuffle the current playlist.
+ -l | --loop             : Loop currently playing playlist.
+ -L | --loopfile         : Loop currently playing file.
+ -m | --mute             : Toggle sound.
+ -t | --seek             : Increase/decrease playback time relatively, accepts % values.
+ -T | --time             : Set absolute playback time.
+ -x | --speed            : Increase/decrease speed relative to the current speed.
+ -X | --speedval         : Set absolute speed.
+ -I | --image            : Enable adding of images to the queue.
+ -k | --kill             : Kill the mpv process controlling the given socket.
+ -K | --killall          : Kill all mpv processes indiscriminately.
+ -S | --socket           : Set mpv socket [default: $MPVC_SOCKET].
+ -q | --quiet            : Suppress all text output.
+ -V | --volume           : Set absolute volume.
+ -Q | --vid=no           : Start mpv with video output disabled.
+ -- |                    : After adding files options after -- are passed to mpv.
+    | --version          : Prints the $PROGNAME version.
 
-    get                     : Get MPV property from $PROGNAME socket.
-    set                     : Set MPV property from $PROGNAME socket.
-    getr                    : Get JSON MPV property from $PROGNAME socket.
-    setr                    : Set JSON MPV property from $PROGNAME socket.
-    cmd                     : Send command to $PROGNAME socket.
-    cmdr                    : Send command to $PROGNAME socket & retrieve raw JSON.
-    sockcmd                 : Send MPV JSON IPC command to $PROGNAME socket.
-    socklist                : List $PROGNAME sockets.
-    togglec                 : Toggle MPV cache property.
-    togglev                 : Toggle MPV video property.
-    togglew                 : Toggle MPV window property.
-    togglei                 : Toggle MPV idle property.
-    cycle                   : Toggle/Cycle through MPV property values.
-    idleloop                : Listen to MPV events on $PROGNAME socket.
-    observe                 : Observe property in MPV events on $PROGNAME socket.
-    search                  : Search the playlist by filename/url.
-    (--)searchplay|splay    : Search the playlist by filename and play the first match.
-    (--)searchPlay|sPlay    : Search the playlist by title and play the first match.
-    -R | --searchrm | srm   : Search the playlist and remove matching entries.
-    -M | --searchmv | smv   : Search the playlist and move matching entries.
-    stash                   : Manage mpv playing state as in git-stash(1)
-    wait                    : Wait until MPV setups $PROGNAME socket (timeout after 10s)
-    delay                   : Sleep delay, as in: $PROGNAME play 0 delay seek 20% vol 60
+ get                     : Get MPV property from $PROGNAME socket.
+ set                     : Set MPV property from $PROGNAME socket.
+ getr                    : Get JSON MPV property from $PROGNAME socket.
+ setr                    : Set JSON MPV property from $PROGNAME socket.
+ cmd                     : Send command to $PROGNAME socket.
+ cmdr                    : Send command to $PROGNAME socket & retrieve raw JSON.
+ sockcmd                 : Send MPV JSON IPC command to $PROGNAME socket.
+ socklist                : List $PROGNAME sockets.
+ togglec                 : Toggle MPV cache property.
+ togglev                 : Toggle MPV video property.
+ togglew                 : Toggle MPV window property.
+ togglei                 : Toggle MPV idle property.
+ cycle                   : Toggle/Cycle through MPV property values.
+ idleloop                : Listen to MPV events on $PROGNAME socket.
+ observe                 : Observe property in MPV events on $PROGNAME socket.
+ search                  : Search the playlist by filename/url.
+ (--)searchplay|splay    : Search the playlist by filename and play the first match.
+ (--)searchPlay|sPlay    : Search the playlist by title and play the first match.
+ -R | --searchrm | srm   : Search the playlist and remove matching entries.
+ -M | --searchmv | smv   : Search the playlist and move matching entries.
+ stash                   : Manage mpv playing state as in git-stash(1)
+ wait                    : Wait until MPV setups $PROGNAME socket (timeout after 10s)
+ delay                   : Sleep delay, as in: $PROGNAME play 0 delay seek 20% vol 60
 
-    (--)?expand-text        : Expand text as documented in mpv(1) Property Expansion
-    (--)?metadata           : Retrieve current playing media metadata
-    (--)?filename           : Retrieve current playing media filename
-    (--)?replay             : Replay current playing media
+ (--)?expand-text        : Expand text as documented in mpv(1) Property Expansion
+ (--)?metadata           : Retrieve current playing media metadata
+ (--)?filename           : Retrieve current playing media filename
+ (--)?replay             : Replay current playing media
 
-    cprev | chapter-prev    : Jump to previous entry in the chapter-list
-    cnext | chapter-next    : Jump to next entry in the chapter-list
-    cplay | chapter-play    : Play the given chapter
-    creplay | chapter-replay: Replay current chapter
-    clist | chapter-list    : Output current chapter-list
-    clistj|chapter-list-json: Output current chapter-list (json)
-    csearch | chapter-search: Search current chapter-list
-    chapter-searchplay      : Search and play the current chapter-list
+ cprev | chapter-prev    : Jump to previous entry in the chapter-list
+ cnext | chapter-next    : Jump to next entry in the chapter-list
+ cplay | chapter-play    : Play the given chapter
+ creplay | chapter-replay: Replay current chapter
+ clist | chapter-list    : Output current chapter-list
+ clistj|chapter-list-json: Output current chapter-list (json)
+ csearch | chapter-search: Search current chapter-list
+ chapter-searchplay      : Search and play the current chapter-list
 
 Formatting:
-    \`$PROGNAME --format\` will interpret the following delimiters if they are found:
+ \`$PROGNAME --format\` will interpret the following delimiters if they are found:
 
-    %name%, %path%, %dir%, %title%, %artist%, %album%, %albumartist%, comment%,
-    %genre%, %year%, %icy-title%, %percentage%, %playlistlength%, %position%,
-    %repeat%, %single, %status%, %time%, %precisetime%, %speed%, %length%,
-    %remaining%, %volume%, %mute%, %frame%, %width%, %height%,
-    %ab-loop-a%, %ab-loop-b%, %video%, %screen%, %aspect%,
-    %force-window%, %fullscreen%, %idle%, %chapter%, %chapters%
+ %name%, %path%, %dir%, %title%, %artist%, %album%, %albumartist%, comment%,
+ %genre%, %year%, %icy-title%, %percentage%, %playlistlength%, %position%,
+ %repeat%, %single, %status%, %time%, %precisetime%, %speed%, %length%,
+ %remaining%, %volume%, %mute%, %frame%, %width%, %height%,
+ %ab-loop-a%, %ab-loop-b%, %video%, %screen%, %aspect%,
+ %force-window%, %fullscreen%, %idle%, %chapter%, %chapters%
 
 MPC compatibility layer:
-    mpvc features nearly complete compatibility for mpc(1) commands, in
-    addition to GNU style arguments. https://linux.die.net/man/1/mpc
+ mpvc features nearly complete compatibility for mpc(1) commands, in
+ addition to GNU style arguments. https://linux.die.net/man/1/mpc
 
 Exit codes:
-    0: Program ran succesfully.
-    1: Input Argument error.
-    2: Socket does not exist.
-    3: Socket is not currently open.
-    4: Dependency error.
+ 0: Program ran succesfully.
+ 1: Input Argument error.
+ 2: Socket does not exist.
+ 3: Socket is not currently open.
+ 4: Dependency error.
 EOF
     fi
 
@@ -1144,7 +1144,7 @@ main() {
             --list-options)                  usage; exit 0;                 ;;
             -h|--help|h|help)                usage; exit 0;                 ;;
             -H|--long-help|long-help)        usage "$@"; exit 0;            ;;
-            -?)                              usage; exit 1;                 ;;
+            -?)                              usage "$@"; exit 1;            ;;
         esac
         if [ $# -ge 1 ]; then shift; fi
     done
