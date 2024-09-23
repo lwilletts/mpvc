@@ -432,25 +432,26 @@ mpvcfzf_version()
 mpvcfzf_usage()
 {
     echo "usage: $PROGNAME opts # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
-    echo "  -b     : Browse the provided ytdl-archive URL with fzf (fzf*)"
-    echo "  -c     : Start fzf to manage the current mpv chapterlist (fzf*)"
-    echo "  -d     : Set the WD to the media directory given as argument"
-    echo "  -f     : Start fzf to manage the current mpv playist (fzf*)"
-    echo "  -g     : Fetch the given YT URL, and store locally (fzf*)"
-    echo "  -G     : Search on Invidious, fetch, and store locally (fzf*)"
-    echo "  -i     : Search given media lyrics on Invidious (fzf*)"
-    echo "  -k     : Search & play DuckDuckGo videos (fzf*)"
-    echo "  -K     : Search DuckDuckGo videos (fzf*)"
-    echo "  -l     : Search & play local media (fzf*)"
-    echo "  -s     : Search on Invidious (fzf*)"
-    echo "  -p     : Search & play media found using Invidious (fzf*)"
-    echo "  -y     : Search related media on Invidious (fzf*)"
-    echo "  -Y     : Search & play related media using Invidious (fzf*)"
-    echo "  -x     : Starts $PROGNAME in a new $MPVC_TERM (config \$MPVC_TERM) [combine -x with other opts]"
-
-    echo "  somafm : Search & play SomaFM channels (fzf*)"
-    echo "  radioapi:Search & play Radio-Browser API channels (fzf*)"
-    echo "*tips: If unsure about where to begin, start with: $PROGNAME -p 'kupla mirage'"
+    echo " -b|browse   : Browse the provided ytdl-archive URL with fzf"
+    echo " -c|chapters : Start fzf to manage the current mpv chapterlist"
+    echo " -d|dir      : Set the WD to the media directory given as argument"
+    echo " -d|eqz      : Start fzf to manage the equalizer settings"
+    echo " -f|playlist : Start fzf to manage the current mpv playist"
+    echo " -g|fetch    : Fetch the given YT URL, and store locally"
+    echo " -G|Fetch    : Search on Invidious, fetch, and store locally"
+    echo " -i|lyrics   : Search given media lyrics on Invidious"
+    echo " -k|dplay    : Search & play DuckDuckGo videos"
+    echo " -K|dsearch  : Search DuckDuckGo videos"
+    echo " -l|local    : Search & play local media"
+    echo " -s|search   : Search on Invidious"
+    echo " -p|splay    : Search & play media found using Invidious"
+    echo " -y|related  : Search related media on Invidious"
+    echo " -Y|Related  : Search & play related media using Invidious"
+    echo " -x|launch   : Starts $PROGNAME in a new $MPVC_TERM (config \$MPVC_TERM) [combine -x with other opts]"
+    echo " -v|version  : Prints the $PROGNAME version."
+    echo " somafm      : Search & play SomaFM channels"
+    echo " radioapi    : Search & play Radio-Browser API channels"
+    echo "*tips: If unsure about where to begin, start: $PROGNAME -p 'kupla mirage'"
     exit;
 }
 
@@ -473,12 +474,12 @@ main()
         -c|chapters)shift; mpvcfzf_chapterlist; return ;;
         -C|cache)   shift; mpvcfzf_icache; return;;
 
-        -d)         shift; MPVC_DIR="$arg1"; cd "$MPVC_DIR" || return;;
+        -d|dir)     shift; MPVC_DIR="$arg1"; cd "$MPVC_DIR" || return;;
         -e|eqz)     shift; mpvcfzf_equalizer; return ;;
         -f|playlist)shift; mpvcfzf_playlist; return ;;
         -F|preview) shift; mpvcfzf_preview "$@"; return ;;
         -g|fetch)   shift; mpvcfzf_fetch "$arg1"; return ;;
-        -G|sfetch)  shift; mpvcfzf_fetch $(mpvcfzf_iplay "$1"); return ;;
+        -G|Fetch)   shift; mpvcfzf_fetch $(mpvcfzf_iplay "$1"); return ;;
         -i|lyrics)  shift; mpvcfzf_lyrics "$arg1"; return ;;
         -L|Lyrics)  shift; mpvcfzf_lyrics_ddg; return ;;
         -k|dplay)   shift; mpvcfzf_ddg_play "$arg1"; return ;;
