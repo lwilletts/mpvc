@@ -95,7 +95,7 @@ mpvc_presets()
     rock)       echo "4.8  2.8  -3.4 -4.8 -2.0 2.4  5.3  6.7  6.7  6.7" ;; #preset: rock
     techno)     echo "4.8  3.3  0.0  -3.4 -2.9 0.0  4.8  5.7  5.8  5.3" ;; #preset: techno
 
-    ''|help|list) awk '/#preset:/ { print }' "$0";;
+    ''|help|list) awk '/#preset: [a-z]/ { print }' "$0";;
     esac
 }
 
