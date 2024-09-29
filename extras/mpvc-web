@@ -397,7 +397,7 @@ mpvc_web_index()
             $(if [ -n "$MPVC_WEB_ARCHIVE_ENABLE" ]; then find "ytdl-archive/" | awk -F/ '{print "https://"$NF}' | mpvc_web_select_form "mpvc -q add" "${MPVC_WEB_SHORTCUT_ARCHIVE}"; fi)
         </li>
         <li>
-            $(mpvc-equalizer preset | awk '/ # preset: / {print $NF}' | mpvc_web_select_form "mpvc-equalizer load" "${MPVC_WEB_SHORTCUT_EQUALIZER}")
+            $(mpvc-equalizer preset | awk '/ #preset:/ {print $NF}' | mpvc_web_select_form "mpvc-equalizer load" "${MPVC_WEB_SHORTCUT_EQUALIZER}")
         </li>
 
         <li>
