@@ -521,8 +521,8 @@ mpvc_stash() {
             #echo "mpvc set af $(mpvc_get af)"
             #echo "mpvc set working-directory $(mpvc_get working-directory)"
             ;;
-        load)
-            # apply a stash while maintaininng the current playlist (no playist changes)
+        load|append)
+            # apply a stash while keeping the current playlist (append to playlist)
             RE='^mpvc cmd \(playlist-clear\|playlist-remove 0\)$\|^mpvc set \(playlist-pos\|playback-time\) [.0-9]\+$'
             grep -v "$RE" "$MPVC_STASH_DIR/$1" | mpvc_stash apply_current
             ;;
