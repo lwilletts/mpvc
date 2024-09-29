@@ -310,10 +310,11 @@ mpvc_get_playlist_once() {
 # fn args: $1: filename $2: full path flag to skip basename
 mpvc_get_playlist_filename() {
     lid="${1:-}"
-    fullPath="${2:-}"
+    full="${2:-}"
+    if [ "$lid" = "current" ]; then lid=$(mpvc_get playlist-pos); fi
     filename=$(mpvc_get "playlist/$lid/filename")
     result=$filename
-    if [ "$fullPath" != "fullpath" ]; then result=$(mpvc_curl_cache_title_clean "$filename"); fi
+    if [ "$full" != "full" ]; then result=$(mpvc_curl_cache_title_clean "$filename"); fi
     result="${result:-${filename%%*/}}"
     echo "$result"
 }
