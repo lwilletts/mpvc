@@ -17,38 +17,23 @@ set -euf
 
 mpvc() { "$PROGDIR/mpvc" "$@"; } # mpvc-web?
 
-mpvcnow_geturls()
-{
-    mpvc saven
-    #| sed -n "/^https/ ! s/^.*-\([0-9a-zA-Z_-]\{11\}\).opus/https:\/\/yewtu.be\/\1/p"
-}
+mpvc_now_geturls() { mpvc saven; }
+mpvc_now_getvids() { echo "$@" | awk '/youtube|yewtu/ { sub("^.*/",""); sub(".*=",""); sub("^","\\&v="); printf $0; }'; }
 
-mpvcnow_getvids()
-{
-    vids=$( echo "$@" | awk '/youtube|yewtu/ {gsub("^.*/",""); gsub(".*=",""); print }' )
-
-    for f in $vids;
-    do
-        echo -n "&v=$f";
-    done
-}
-
-mpvcnow()
+mpvc_now()
 {
     date=$(date -Idate)
     now="https://gmt4.github.io/mpvc/now/"
-    urls=$(mpvcnow_geturls)
-    vids=$(mpvcnow_getvids "$urls")
+    urls=$(mpvc_now_geturls)
+    vids=$(mpvc_now_getvids "$urls")
+    list=$(mpvc fullplaylist)
 
     echo "$now?t=$date$vids"
     echo
-    bash -c "paste <(echo \"$urls\") <(mpvc -I)"
+    awk -v u="$urls" -v l="$list" 'END{ split(u, au,"\n"); split(l, al,"\n"); for(u in au) {print au[u], al[u]}; }' /dev/null
 }
 
-mpvcnow1()
-{
-    mpvcnow "$@" | head -n1
-}
+mpvc_now1() { mpvcnow | head -n1; }
 
 usage()
 {
@@ -58,12 +43,10 @@ usage()
 
 main()
 {
-    [ -z "${1:-}" ] && usage
-
     case "${1:-}" in
-    now)  mpvcnow "$@";;
-    now1) mpvcnow1 "$@";;
-    *) usage;;
+    now)  mpvc_now;;
+    now1) mpvc_now1;;
+    *)    usage;;
     esac
 }
 
