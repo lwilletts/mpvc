@@ -31,17 +31,17 @@ mpvcfzf_defaults()
     MPVC_YTDL_OUTPUT=${MPVC_YTDL_OUTPUT:-}
     MPVC_TERM=${MPVC_TERM:-xterm}
 
-    mpvc -q
+    MPVC_FZF_SOMAFM_FILE="${MPVC_FZF_SOMAFM_FILE:-$MPVC_CONFIG_DIR/somafm-channels.json}"
+    MPVC_FZF_RADIOAPI_FILE="${MPVC_FZF_RADIOAPI_FILE:-$MPVC_CONFIG_DIR/radioapi-stations.json}"
+    #mpvc -q
 }
 
 mpvcfzf_config()
 {
     mpvcfzf_defaults
+    if [ ! -d "$MPVC_CONFIG_DIR" ]; then mkdir -p "$MPVC_CONFIG_DIR"; fi
     # if present load user config
-    if [ -r "$MPVC_CONFIG" ];
-    then
-        . "$MPVC_CONFIG"
-    fi
+    if [ -r "$MPVC_CONFIG" ]; then . "$MPVC_CONFIG"; fi
     if ! quiet command -v fzf; then
         mpvcfzf_warn "$PROGNAME: Warning: No fzf, Install to get fuzzy media search & play support!"
         sleep 1
@@ -383,9 +383,9 @@ mpvcfzf_ddg()
 
 mpvcfzf_somafm()
 {
-    channel=${1:-}
-    if [ -n "$channel" ]; then
-        mpvcfzf_somafm_search | awk -F';' -v channel="$channel" '{ if(match($0,channel))print $1}' | mpvc load
+    chan=${1:-}
+    if [ -n "$chan" ]; then
+        mpvcfzf_somafm_search | awk -F';' -v chan="$chan" '{ if(match($0,chan))print $1}' | mpvc load
     else
         mpvcfzf_somafm_search | column -s ';' -t | mpvcfzf_preview --prompt="(somafm) "
     fi
@@ -394,7 +394,7 @@ mpvcfzf_somafm()
 mpvcfzf_somafm_search()
 {
     url="https://somafm.com/channels.json"
-    file=$MPVC_CONFIG_DIR/somafm-channels.json
+    file="$MPVC_FZF_SOMAFM_FILE"
     [ ! -s "$file" ] && curl -fsSL -o "$file" "$url"
     jq -r --argjson quality 3 '
         .channels | sort_by(.listeners | tonumber) | reverse | .[] |
@@ -403,9 +403,9 @@ mpvcfzf_somafm_search()
 
 mpvcfzf_radioapi()
 {
-    channel=${1:-}
-    if [ -n "$channel" ]; then
-        mpvcfzf_radioapi_search | awk -F';' -v channel="$channel" '{ if(match($0,channel))print $1}' | mpvc load
+    chan=${1:-}
+    if [ -n "$chan" ]; then
+        mpvcfzf_radioapi_search | awk -F';' -v chan="$chan" '{ if(match($0,chan))print $1}' | mpvc load
     else
         mpvcfzf_radioapi_search | column -s ';' -t | mpvcfzf_preview --prompt="(radioapi) "
     fi
@@ -414,7 +414,7 @@ mpvcfzf_radioapi()
 mpvcfzf_radioapi_search()
 {
     url="https://nl1.api.radio-browser.info/json/stations/topvote"
-    file="$MPVC_CONFIG_DIR/radioapi-stations.json"
+    file="$MPVC_FZF_RADIOAPI_FILE"
     [ ! -s "$file" ] && curl -d hidebroken=true -d limit=4096 -fsSL -o "$file" "$url"
     jq -r -c '.[] | select( (.url|length) < 80 ) | (.url+";"+(.votes|tostring)+" "+.name)' "$file"
 }
