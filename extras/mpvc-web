@@ -246,10 +246,8 @@ main()
         mpvc+chapter-list-nr)   mpvc_cmd chapter-list-nr | mpvc_strip ;;
         mpvc+chapter-list-full) mpvc_cmd chapter-list-full | mpvc_strip ;;
 
-        mpvc-now[+\ ]*)         mpvc_plain "\$($PROGDIR/\$(mpvc_split "\$@"))" ;;
         mpvc-fzf[+\ ]*)         mpvc_plain "\$($PROGDIR/\$(mpvc_split "\$@"))" ;;
         mpvc-equalizer[+\ ]*)   mpvc_plain "\$($PROGDIR/\$(mpvc_split "\$@"))" ;;
-
         mpvc[+\ ]*)             mpvc_plain "\$($PROGDIR/\$(mpvc_split "\$@"))" ;;
     esac
 }
