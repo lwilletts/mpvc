@@ -419,6 +419,21 @@ mpvcfzf_radioapi_search()
     jq -r -c '.[] | select( (.url|length) < 80 ) | (.url+";"+(.votes|tostring)+" "+.name)' "$file"
 }
 
+mpvcfzf_now_geturls() { mpvc saven; }
+mpvcfzf_now_getvids() { echo "$@" | awk '/youtube|yewtu/ { sub("^.*/",""); sub(".*=",""); sub("^","\\&v="); printf $0; }'; }
+mpvcfzf_now()
+{
+    date=$(date -Idate)
+    now="https://gmt4.github.io/mpvc/now/"
+    urls=$(mpvcfzf_now_geturls)
+    vids=$(mpvcfzf_now_getvids "$urls")
+    list=$(mpvc fullplaylist)
+
+    echo "$now?t=$date$vids"
+    echo
+    awk -v u="$urls" -v l="$list" 'END{ split(u, au,"\n"); split(l, al,"\n"); for(u in au) {print au[u], al[u]}; }' /dev/null
+}
+
 mpvcfzf_launch_term()
 {
     if quiet command -v "$MPVC_TERM"; then "$MPVC_TERM" -e "$0" "$@"; fi;
@@ -448,7 +463,8 @@ mpvcfzf_usage()
     echo " -y|related  : Search related media on Invidious"
     echo " -Y|Related  : Search & play related media using Invidious"
     echo " -x|launch   : Starts $PROGNAME in a new $MPVC_TERM (config \$MPVC_TERM) [combine -x with other opts]"
-    echo " -v|version  : Prints the $PROGNAME version."
+    echo " -v|version  : Return the $PROGNAME version."
+    echo " now         : Return a shareable URL to the "now listening" playlist"
     echo " somafm      : Search & play SomaFM channels"
     echo " radioapi    : Search & play Radio-Browser API channels"
     echo "*tips: If unsure about where to begin, start: $PROGNAME -p 'kupla mirage'"
@@ -501,6 +517,7 @@ main()
         -Y|Related) shift; mpvcfzf_related_play "$arg1"; return ;;
         -v|version) shift; mpvcfzf_version; return ;;
 
+        now)        shift; mpvcfzf_now; return ;;
         somafm)     shift; mpvcfzf_somafm "${1:-}"; return ;;
         radioapi)   shift; mpvcfzf_radioapi "${1:-}"; return ;;
         #*)         shift; mpvcfzf_usage; return ;;
