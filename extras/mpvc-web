@@ -128,13 +128,18 @@ mpvc_web_select_form()
     echo '</form>'
 }
 
-mpvc_web_cli()
+mpvc_web_yts()
 {
 cat <<EOF
             <input placeholder="mpvc yts-search" name="mpvc-yts" list="mpvc-yts-datalist" title="mpvc yts-search" ${MPVC_WEB_SHORTCUT_YTSEARCH} onkeydown="mpvcOnKeyDownEvent(event,this)">
             <datalist id="mpvc-yts-datalist">
             </datalist>
-        <br>
+EOF
+}
+
+mpvc_web_cli()
+{
+cat <<EOF
         <form action="/" method="get">
             <input type="text" id="cli" name="cli" ${MPVC_WEB_SHORTCUT_CLI} autocomplete="on" placeholder="mpvc cli ${MPVC_WEB_DEV:-(off)}" title="mpvc cli" onkeydown="if (event.keyCode == 13) { this.form.submit(); return false; }">
         </form>
@@ -321,6 +326,9 @@ mpvc_web_index()
         ]
         <hr>
         <ul>
+        <li>
+            $([ -n "${MPVC_WEB_DEV:-}" ] && mpvc_web_yts)
+        </li>
         <li>
             $([ -n "${MPVC_WEB_DEV:-}" ] && mpvc_web_cli)
         </li>
