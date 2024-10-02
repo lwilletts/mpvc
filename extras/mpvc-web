@@ -98,8 +98,8 @@ mpvc_web_style()
 @media (prefers-color-scheme: dark)  { html { filter: invert(0.85); } :root { } }
 
 body   { font-family: var(--body-font-family); font-size: var(--body-font-size); color: var(--body-color); background: var(--body-background); }
-select { width: 95%; font-family: var(--body-font-family); }
-input  { width: 95%; font-family: var(--body-font-family); }
+select { width: 95%; font-family: var(--body-font-family); font-size: var(--body-font-size); }
+input  { width: 95%; font-family: var(--body-font-family); font-size: var(--body-font-size); }
 ul     { padding: 0rem 0.8rem; }
 a      { padding: 0.08rem 0.02rem; color: var(--link-color); }
 
@@ -323,9 +323,9 @@ mpvc_web_index()
         <ul>
         <li>
             $([ -n "${MPVC_WEB_DEV:-}" ] && mpvc_web_cli)
+        </li>
         <li>
             $(mpvc stash list | awk 'NR>1{print $NF}' | mpvc tac | mpvc_web_select_form "mpvc -q stash apply" "${MPVC_WEB_SHORTCUT_APPLY}")
-        </li>
         </li>
         <li>
             mpvc
