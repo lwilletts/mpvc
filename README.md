@@ -201,7 +201,7 @@ usage: mpvc-fzf opts # @version v1.5 (c) gmt4 https://github.com/gmt4/mpvc
  -b|browse   : Browse the provided ytdl-archive URL with fzf
  -c|chapters : Start fzf to manage the current mpv chapterlist
  -d|dir      : Set the WD to the media directory given as argument
- -d|eqz      : Start fzf to manage the equalizer settings
+ -e|eqz      : Start fzf to manage the equalizer settings
  -f|playlist : Start fzf to manage the current mpv playist
  -g|fetch    : Fetch the given YT URL, and store locally
  -G|Fetch    : Search on Invidious, fetch, and store locally
