@@ -450,7 +450,7 @@ mpvcfzf_usage()
     echo " -b|browse   : Browse the provided ytdl-archive URL with fzf"
     echo " -c|chapters : Start fzf to manage the current mpv chapterlist"
     echo " -d|dir      : Set the WD to the media directory given as argument"
-    echo " -d|eqz      : Start fzf to manage the equalizer settings"
+    echo " -e|eqz      : Start fzf to manage the equalizer settings"
     echo " -f|playlist : Start fzf to manage the current mpv playist"
     echo " -g|fetch    : Fetch the given YT URL, and store locally"
     echo " -G|Fetch    : Search on Invidious, fetch, and store locally"
