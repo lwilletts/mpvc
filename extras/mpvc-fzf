@@ -97,7 +97,7 @@ mpvcfzf_related_search()
 {
     id=${1:-$(mpvc get filename)}
     id=$(mpvcfzf_getvideo_id "$id")
-    output=$(curl -fsSL -A '' "https://yewtu.be/watch?v=$id")
+    output=$(curl -fsSL -A '' "https://yewtu.be/redirect?referer=/watch?v=$id")
     echo "$output" |
         awk '
             /<div class="video-card-row">/ { c++; next }
@@ -120,7 +120,7 @@ mpvcfzf_lyrics()
 {
     id=${1:-$(mpvc get filename)}
     id=$(mpvcfzf_getvideo_id "$id")
-    output=$(curl -fsSL -A '' "https://yewtu.be/watch?v=$id")
+    output=$(curl -fsSL -A '' "https://yewtu.be/redirect?referer=/watch?v=$id")
     echo "$output" |
         awk -v id=$id '
             c==0 && /<meta name="description"/  {c=1}
