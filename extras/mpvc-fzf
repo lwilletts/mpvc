@@ -48,6 +48,11 @@ mpvcfzf_config()
     fi
 }
 
+mpvcfzf_curl()
+{
+    curl -fsSL -A 'Mozilla/5.0' "$@"
+}
+
 mpvcfzf_getvideo_id()
 {
     echo "${1##*/}"
@@ -66,7 +71,7 @@ mpvcfzf_isearch()
     url_search="https://${url_host}/search?$url_query&$url_sort"
 
     echo "$url_search"
-    curl -fsSL -A 'Mozilla/5.0' "$url_search&page=1" "$url_search&page=2" |
+    mpvcfzf_curl "$url_search&page=1" "$url_search&page=2" |
     awk '
         /^.*<p dir="auto">/ {
             gsub("^.*<p dir=\"auto\">",""); gsub("</p>.*$",""); vtitle=$0
@@ -97,7 +102,7 @@ mpvcfzf_related_search()
 {
     id=${1:-$(mpvc get filename)}
     id=$(mpvcfzf_getvideo_id "$id")
-    output=$(curl -fsSL -A '' "https://yewtu.be/redirect?referer=/watch?v=$id")
+    output=$(mpvcfzf_curl "https://yewtu.be/redirect?referer=/watch?v=$id")
     echo "$output" |
         awk '
             /<div class="video-card-row">/ { c++; next }
@@ -120,7 +125,7 @@ mpvcfzf_lyrics()
 {
     id=${1:-$(mpvc get filename)}
     id=$(mpvcfzf_getvideo_id "$id")
-    output=$(curl -fsSL -A '' "https://yewtu.be/redirect?referer=/watch?v=$id")
+    output=$(mpvcfzf_curl "https://yewtu.be/redirect?referer=/watch?v=$id")
     echo "$output" |
         awk -v id=$id '
             c==0 && /<meta name="description"/  {c=1}
@@ -139,7 +144,7 @@ mpvcfzf_lyrics_ddg()
 mpvcfzf_nextvideo()
 {
     id=$(mpvcfzf_getvideo_id "$1")
-    output=$(curl -fsSL -A '' "https://yewtu.be/watch?v=$id")
+    output=$(mpvcfzf_curl "https://yewtu.be/watch?v=$id")
     next_video=$(echo "$output" | awk '/next_video/ {gsub("[\",]",""); print $2}')
     next_url="https://yewtu.be/$next_video"
     echo "$next_url"
@@ -322,7 +327,7 @@ mpvcfzf_ddg_play()
 mpvcfzf_urlget()
 {
     url=${1:-https://localhost:8443/ytdl-archive/}
-    curl -fsSL "$url" |
+    mpvcfzf_curl "$url" |
         awk '/<a href=".*">.*<\/a>/ { h=$0;sub("^.*href=\"","",h);sub("\".*$","",h);print h }'
 }
 
@@ -354,7 +359,7 @@ mpvcfzf_ddg()
     url_search="https://duckduckgo.com/html?q=$*&iax=videos"
 
     echo "$url_search"
-    curl -fsSL -A 'Mozilla/5.0' "$url_search" |
+    mpvcfzf_curl "$url_search" |
         awk  '
             function urldecode(url)
             {
@@ -395,7 +400,7 @@ mpvcfzf_somafm_search()
 {
     url="https://somafm.com/channels.json"
     file="$MPVC_FZF_SOMAFM_FILE"
-    [ ! -s "$file" ] && curl -fsSL -o "$file" "$url"
+    [ ! -s "$file" ] && mpvcfzf_curl -o "$file" "$url"
     jq -r --argjson quality 3 '
         .channels | sort_by(.listeners | tonumber) | reverse | .[] |
             (.playlists[$quality]|.url) + ";" + .listeners + " ls "+.genre+";"+ .title' "$file"
@@ -415,7 +420,7 @@ mpvcfzf_radioapi_search()
 {
     url="https://nl1.api.radio-browser.info/json/stations/topvote"
     file="$MPVC_FZF_RADIOAPI_FILE"
-    [ ! -s "$file" ] && curl -d hidebroken=true -d limit=4096 -fsSL -o "$file" "$url"
+    [ ! -s "$file" ] && mpvcfzf_curl --retry 3 -d hidebroken=true -d limit=4096 -o "$file" "$url"
     jq -r -c '.[] | select( (.url|length) < 80 ) | (.url+";"+(.votes|tostring)+" "+.name)' "$file"
 }
 
