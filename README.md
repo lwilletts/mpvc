@@ -78,12 +78,12 @@ Check for missing dependencies using `mpvc-installer check-reqs`.
 
 Installing is just a matter of fetching the scripts either via [Git](#git)/Curl/etc., scripts can be used directly from the repo, the `mpvc-installer` bit is just there for easiness, to fetch & link them into your `BINDIR=~/bin/` that [mpvc-installer](../../blob/master/extras/mpvc-installer) does by default. 
 
-The easiest for a onetime [Manual](#manual) install, however for @latest/bleeding-edge a [Git](#git) install is recommended.
+The easiest for a onetime [Manual](#manual) install, however for @latest version a [Git](#git) install is recommended.
 
 ### Manual
 
 ```console
-curl -fsSL -o mpvc-installer https://github.com/lwilletts/mpvc/raw/master/extras/mpvc-installer \
+curl -fsSL -O https://github.com/lwilletts/mpvc/raw/master/extras/mpvc-installer \
   && BINDIR=$HOME/bin sh ./mpvc-installer fetch-user
 ```
 
