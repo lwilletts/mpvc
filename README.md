@@ -76,25 +76,26 @@ Check for missing dependencies using `mpvc-installer check-reqs`.
 - [Gentoo](#gentoo-mpvc)
 - [Nix](#nix-mpvc)
 
-Installing is just a matter of fetching the scripts either via [Git](#git)/Curl/etc., scripts can be used directly from the repo, the `mpvc-installer` bit is just there for easiness, to fetch & link them into your `BINDIR=~/bin/` by default,
+Installing is just a matter of fetching the scripts either via [Git](#git)/Curl/etc., scripts can be used directly from the repo, the `mpvc-installer` bit is just there for easiness, to fetch & link them into your `BINDIR=~/bin/` that [mpvc-installer](../../blob/master/extras/mpvc-installer) does by default. 
+
+The easiest for a onetime [Manual](#manual) install, however for @latest/bleeding-edge a [Git](#git) install is recommended.
 
 ### Manual
 
-The easiest install method is just to run the [mpvc-installer](../../blob/master/extras/mpvc-installer) to install under `$HOME/bin`
-
 ```console
 curl -fsSL -o mpvc-installer https://github.com/lwilletts/mpvc/raw/master/extras/mpvc-installer \
-  && sh ./mpvc-installer fetch-user
+  && BINDIR=$HOME/bin sh ./mpvc-installer fetch-user
 ```
 
 ### Git
 
-Below is a **Quick Start** guide showcasing mpvc commands usage.
+Below is a **Quick Start** guide showcasing mpvc git install and usage.
+This does git clone, and symlinks the mpvc scripts to `BINDIR` (default `~/bin`), so updating becomes a matter of just running `git pull`.
 
 ```sh
  # fetch a local copy of the github repo
  git clone https://github.com/lwilletts/mpvc/
- # use extras/mpvc-installer: just copy/link to your $HOME/bin
+ # use extras/mpvc-installer: just copy/link to BINDIR=$HOME/bin (by default)
  (cd mpvc; extras/mpvc-installer link-user)
  (cd mpvc; extras/mpvc-installer check-reqs)
 
@@ -104,6 +105,11 @@ Below is a **Quick Start** guide showcasing mpvc commands usage.
  mpvc add /path/to/your/*.mp3 # or your URLs
  find . -type f -name | mpvc load
  mpvc save my-playlist
+
+ # use mpvc stash to store/recover current mpv state (see the logbook for more)
+ mpvc stash ls
+ mpvc stash push current
+ mpvc stash apply current
 
  # use mpvc-fzf to manage the playlist
  mpvc-fzf -f
