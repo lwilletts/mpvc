@@ -63,8 +63,6 @@ Recommended extras:
 - `notify-send`
 - `yt-dlp`
 
-Check for missing dependencies using `mpvc-installer check-reqs`.
-
 ## Installation
 
 - [Manual](#manual)
@@ -78,7 +76,8 @@ Check for missing dependencies using `mpvc-installer check-reqs`.
 
 Installing is just a matter of fetching the scripts either via [Git](#git)/Curl/etc., scripts can be used directly from the repo, the `mpvc-installer` bit is just there for easiness, to fetch & link them into your `BINDIR=~/bin/` that [mpvc-installer](../../blob/master/extras/mpvc-installer) does by default. 
 
-The easiest for a onetime [Manual](#manual) install, however for @latest version a [Git](#git) install is recommended.
+The easiest for a onetime install is the [Manual](#manual), however for @latest version a [Git](#git) install is recommended.
+Check for missing dependencies/requirements using `mpvc-installer check-reqs`.
 
 ### Manual
 
@@ -235,6 +234,8 @@ Like any piece of software, mpvc is not perfect:
 - mpvc depends on shell tools. If your shell is misconfigured or you are using
   unusual variants of basic UNIX tools, mpvc is not guaranteed to work. However,
   all effort has been made to make mpvc as POSIX compliant as possible.
+  Remember to check for missing dependencies/requirements using `mpvc-installer check-reqs`.
+
 
 Check out the [Issue Tracker](../../issues) for further improvements to be made.
 
