@@ -28,7 +28,8 @@ mpvc_web_defaults()
     MPVC=$(command -v mpvc)
 
     XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}
-    MPVC_CONFIG="${MPVC_CONFIG:-$XDG_CONFIG_HOME/mpvc/mpvc.conf}"
+    MPVC_CONFIG_DIR="${MPVC_CONFIG_DIR:-$XDG_CONFIG_HOME/mpvc}"
+    MPVC_CONFIG="${MPVC_CONFIG:-$MPVC_CONFIG_DIR/mpvc.conf}"
 
     MPVC_WEB_HOSTNAME=${MPVC_WEB_HOSTNAME:-$(hostname)}
     MPVC_WEB_HOST=${MPVC_WEB_HOST:-localhost}
@@ -44,6 +45,7 @@ mpvc_web_defaults()
     MPVC_WEB_CAST_URL=${MPVC_WEB_CAST_URL:-}
     MPVC_WEB_HTML_THEME=${MPVC_WEB_HTML_THEME:-}
     MPVC_WEB_HTML_REFRESH=${MPVC_WEB_HTML_REFRESH:-}
+    MPVC_WEB_CSS_STYLE=${MPVC_WEB_CSS_STYLE:-}
 
     # accesskey keyboard shortcuts
     MPVC_WEB_SHORTCUT_REFRESH=${MPVC_WEB_SHORTCUT_REFRESH:-accesskey=m}
@@ -62,7 +64,7 @@ mpvc_web_defaults()
     MPVC_WEB_SHORTCUT_YTSEARCH=${MPVC_WEB_SHORTCUT_YTSEARCH:-accesskey=y}
     MPVC_WEB_SHORTCUT_HELP=${MPVC_WEB_SHORTCUT_HELP:-accesskey=h}
 
-    MPVC_CGI="$MPVC_WEB_ROOT/cgi-bin/mpvc"
+    MPVC_WEB_CGI="$MPVC_WEB_ROOT/cgi-bin/mpvc"
 
     # if present load user config
     if [ -r "$MPVC_CONFIG" ]; then
@@ -87,7 +89,28 @@ mpvc_web_config()
 
 mpvc_web_style()
 {
-    echo 'body { filter: invert(0.7); }'
+    cat <<-EOF
+:root { --body-font-family: monospace; --body-color: #222; --body-background: #fff; --link-color: #a0a; }
+@media (max-width: 768px) { :root { --body-font-size: 1.06em; } }
+@media (min-width: 768px) { :root { --body-font-size: 1.10em; } }
+
+@media (prefers-color-scheme: light) { html { filter: invert(0.0);  } :root { } }
+@media (prefers-color-scheme: dark)  { html { filter: invert(0.85); } :root { } }
+
+html   { font-family: var(--body-font-family); font-size: var(--body-font-size); }
+body   { font-family: var(--body-font-family); font-size: var(--body-font-size); color: var(--body-color); background: var(--body-background); }
+select { width: 95%; font-family: var(--body-font-family); font-size: var(--body-font-size); }
+input  { width: 95%; font-family: var(--body-font-family); font-size: var(--body-font-size); }
+ul     { padding: 0rem 0.8rem; }
+a      { padding: 0.08rem 0.02rem; color: var(--link-color); }
+
+$(
+    case "${MPVC_WEB_HTML_THEME:-}" in
+    light) echo "html { filter: invert(0.0);  }" ;;
+    dark)  echo "html { filter: invert(0.85); }" ;;
+    esac
+)
+EOF
 }
 
 mpvc_web_select_form()
@@ -106,13 +129,18 @@ mpvc_web_select_form()
     echo '</form>'
 }
 
-mpvc_web_cli()
+mpvc_web_yts()
 {
 cat <<EOF
             <input placeholder="mpvc yts-search" name="mpvc-yts" list="mpvc-yts-datalist" title="mpvc yts-search" ${MPVC_WEB_SHORTCUT_YTSEARCH} onkeydown="mpvcOnKeyDownEvent(event,this)">
             <datalist id="mpvc-yts-datalist">
             </datalist>
-        <br>
+EOF
+}
+
+mpvc_web_cli()
+{
+cat <<EOF
         <form action="/" method="get">
             <input type="text" id="cli" name="cli" ${MPVC_WEB_SHORTCUT_CLI} autocomplete="on" placeholder="mpvc cli ${MPVC_WEB_DEV:-(off)}" title="mpvc cli" onkeydown="if (event.keyCode == 13) { this.form.submit(); return false; }">
         </form>
@@ -199,7 +227,6 @@ mpvc_web_cgi() # /cgi-bin/mpvc
 #!/bin/sh
 set -euf
 mpvc_warn()  { echo "\$@" >&2; }
-mpvc_quiet() { "\$@" >/dev/null; }
 mpvc_strip() { sed '/\x1b\[7m/ { s|\x1b\[7m||; s| |+|; }; s|\x1b\[0m||;'; }
 mpvc_cmd()   { echo "Content-Type: text/plain"; echo; $MPVC "\$@"; }
 mpvc_plain() { echo "Content-Type: text/plain"; echo; echo "\$@"; }
@@ -215,6 +242,7 @@ main()
     fi
     case "\$QUERY_STRING" in
         lyrics)                 mpvc_redir "\$($MPVC-fzf -L '')" ;;
+        filename)               mpvc_redir "\$($MPVC filename current full)" ;;
 
         mpvc+status)            mpvc_cmd status | mpvc_strip ;;
         mpvc+playlist)          mpvc_cmd playlist | mpvc_strip ;;
@@ -224,10 +252,8 @@ main()
         mpvc+chapter-list-nr)   mpvc_cmd chapter-list-nr | mpvc_strip ;;
         mpvc+chapter-list-full) mpvc_cmd chapter-list-full | mpvc_strip ;;
 
-        mpvc-now[+\ ]*)         mpvc_plain "\$($PROGDIR/\$(mpvc_split "\$@"))" ;;
         mpvc-fzf[+\ ]*)         mpvc_plain "\$($PROGDIR/\$(mpvc_split "\$@"))" ;;
         mpvc-equalizer[+\ ]*)   mpvc_plain "\$($PROGDIR/\$(mpvc_split "\$@"))" ;;
-
         mpvc[+\ ]*)             mpvc_plain "\$($PROGDIR/\$(mpvc_split "\$@"))" ;;
     esac
 }
@@ -280,30 +306,9 @@ mpvc_web_index()
     <link rel="IconFile" href="apple-touch-icon.svg" sizes="64x64">
     <link rel="apple-touch-icon" href="apple-touch-icon.svg">
     <title> 🎧$MPVC_WEB_HOSTNAME mpvc</title>
+    <link rel="stylesheet" href="style.css">
     <style type="text/css" media="all">
-    @media (max-width: 768px) { :root { --body-font-size: 13px; } }
-    @media (min-width: 768px) { :root { --body-font-size: 18px; } }
-    @media (prefers-color-scheme: light) {
-        :root { --body-bg: #fff; --body-color: #111; --pre-bg:#eee; --link-color:#00f; }
-    }
-    @media (prefers-color-scheme: dark) {
-        :root { --body-bg: #222; --body-color: #eee; --pre-bg:#333; --link-color:#07f; }
-    }
-    $(
-    case "${MPVC_WEB_HTML_THEME:-}" in
-    light) echo ":root { --body-bg: #fff; --body-color: #111; --pre-bg:#eee; --link-color:#00f; }";;
-    dark)  echo ":root { --body-bg: #222; --body-color: #eee; --pre-bg:#333; --link-color:#07f; }";;
-    esac
-    )
-    body   { background: var(--body-bg); color: var(--body-color); font-family: monospace; font-size: var(--body-font-size); }
-    select { width: 95%; font-size: var(--body-font-size); }
-    input  { width: 95%; font-size: var(--body-font-size); }
-    code   { background: var(--pre-bg); }
-    pre    { background: var(--pre-bg); }
-    ul     { padding: 0rem 0.8rem; }
-    a      { color: var(--link-color); padding: 0.05rem 0.05rem; }
     </style>
-    <link rel="stylesheet" href="style.css" />
     <script type="text/javascript">
         $(mpvc_web_index_js)
     </script>
@@ -311,7 +316,7 @@ mpvc_web_index()
 
     <body>
         [
-            🎧
+            <span>🎧</span>
             <a href="." name="top" ${MPVC_WEB_SHORTCUT_REFRESH}>$PROGNAME</a>
             <a href="#status">#st</a>
             <a href="#mpvc-web-playlist">#ls</a>
@@ -323,10 +328,13 @@ mpvc_web_index()
         <hr>
         <ul>
         <li>
+            $([ -n "${MPVC_WEB_DEV:-}" ] && mpvc_web_yts)
+        </li>
+        <li>
             $([ -n "${MPVC_WEB_DEV:-}" ] && mpvc_web_cli)
+        </li>
         <li>
             $(mpvc stash list | awk 'NR>1{print $NF}' | mpvc tac | mpvc_web_select_form "mpvc -q stash apply" "${MPVC_WEB_SHORTCUT_APPLY}")
-        </li>
         </li>
         <li>
             mpvc
@@ -352,7 +360,7 @@ mpvc_web_index()
             <a href="?cmd=mpvc repeat">repeat</a>
             <a href="?cmd=mpvc single">single</a>
             <a href="?cmd=mpvc replay">replay</a>
-            <a href="?cmd=mpvc cmd ab-loop">ab-loop</a>
+            <a href="?cmd=mpvc cmd ab-loop">abloop</a>
             <!--
             <a href="?cmd=mpvc seek -10" title="seek fwd">s-</a>
             <a href="?cmd=mpvc seek +10" title="seek bwd">s+</a>
@@ -384,7 +392,7 @@ mpvc_web_index()
             $(echo "-15\n-10\n-5\n-2\n-1\n0\n+1\n+2\n+5\n+10\n+15" | mpvc_web_select_form "mpvc -q track" "${MPVC_WEB_SHORTCUT_TRACK}")
         </li>
         <li>
-            $(echo "-10\n-5\n-4\n-2\n-1\n0\n+1\n+2\n+4\n+5\n+10" | mpvc_web_select_form "mpvc -q cplay")
+            $(echo "-30\n-20\n-10\n-5\n-1\n0\n+1\n+5\n+10\n+20\n+30" | mpvc_web_select_form "mpvc -q cplay")
         </li>
         <li>
             $(echo "-30\n-20\n-10\n-5\n0\n+5\n+10\n+20\n+30" | mpvc_web_select_form "mpvc -q vol" "${MPVC_WEB_SHORTCUT_VOL}")
@@ -396,19 +404,24 @@ mpvc_web_index()
             $(if [ -n "$MPVC_WEB_ARCHIVE_ENABLE" ]; then find "ytdl-archive/" | awk -F/ '{print "https://"$NF}' | mpvc_web_select_form "mpvc -q add" "${MPVC_WEB_SHORTCUT_ARCHIVE}"; fi)
         </li>
         <li>
-            $(mpvc-equalizer preset | awk '/ # preset: / {print $NF}' | mpvc_web_select_form "mpvc-equalizer load" "${MPVC_WEB_SHORTCUT_EQUALIZER}")
+            $(mpvc-equalizer preset | awk '/ #preset:/ {print $NF}' | mpvc_web_select_form "mpvc-equalizer load" "${MPVC_WEB_SHORTCUT_EQUALIZER}")
         </li>
 
         <li>
         mpvc theme
-            <a href="#" title="theme 2" onclick="document.body.style.WebkitFilter='invert(0.2)';">th2</a>
-            <a href="#" title="theme 4" onclick="document.body.style.WebkitFilter='invert(0.4)';">th4</a>
-            <a href="#" title="theme 8" onclick="document.body.style.WebkitFilter='invert(0.8)';">th8</a>
+            <a href="#" title="theme 2" onclick="document.body.style.WebkitFilter='invert(0.2)';">t2</a>
+            <a href="#" title="theme 4" onclick="document.body.style.WebkitFilter='invert(0.4)';">t4</a>
+            <a href="#" title="theme 4" onclick="document.body.style.WebkitFilter='invert(0.6)';">t6</a>
+            <a href="#" title="theme 8" onclick="document.body.style.WebkitFilter='invert(0.8)';">t8</a>
             <a href="#" title="toggle" onclick="toggleColorScheme()">cycle</a>
             <a href="." title="reset">rst</a>
         </li>
         </ul>
-        [ <a href="#mpvc-web-status" name="mpvc-web-status">Status</a> <a href="/cgi-bin/mpvc?lyrics">#lyrics</a> ] <hr>
+        [
+            <a href="#mpvc-web-status" name="mpvc-web-status">Status</a>
+            <a href="/cgi-bin/mpvc?lyrics">#lyrics</a>
+            <a href="/cgi-bin/mpvc?filename">#file</a>
+        ] <hr>
         <iframe name="mpvc-status" width="100%" height="100%" frameborder="0" src="/cgi-bin/mpvc?mpvc+status" allowtransparency="true" ></iframe>
         [
           <a href="#mpvc-web-playlist" name="mpvc-web-playlist">Playlist</a>
@@ -435,7 +448,7 @@ mpvc_web_index()
         <a href="$PROGURL">$PROGVERSION</a>
         <a href="${PROGURL%/*}">@$PROGAUTHOR</a> (c) 2024
         <a href="javascript:alert('$(mpvc_web_help)')" ${MPVC_WEB_SHORTCUT_HELP}>/h</a>
-        <a href="#top">#top</a>
+        <a href="#top">top</a>
     </body>
 </html>
 EOF
@@ -497,9 +510,13 @@ mpvc_web_setup()
         mpvc_web_index > "$MPVC_WEB_ROOT/index.html"
         mpvc_web_favicon > "$MPVC_WEB_ROOT/favicon.ico"
         mpvc_web_favicon > "$MPVC_WEB_ROOT/apple-touch-icon.svg"
-        [ ! -e "$MPVC_WEB_ROOT/style.css" ] && mpvc_web_style > "$MPVC_WEB_ROOT/style.css"
-        mpvc_web_cgi > "$MPVC_CGI"
-        chmod u+x "$MPVC_CGI"
+        if [ -n "$MPVC_WEB_CSS_STYLE" ]; then
+            cat "$MPVC_WEB_CSS_STYLE" > "$MPVC_WEB_ROOT/style.css"
+        else
+            mpvc_web_style > "$MPVC_WEB_ROOT/style.css"
+        fi
+        mpvc_web_cgi > "$MPVC_WEB_CGI"
+        chmod u+x "$MPVC_WEB_CGI"
 
         # setup https stunnel if requested
         if [ -n "${MPVC_WEB_SSL_ENABLE}" ]; then
@@ -534,7 +551,7 @@ mpvc_web()
 
         # XXX handle cli commands, rewrite this mess
         python3 -u -m http.server --cgi --bind "$MPVC_WEB_HOST" "$MPVC_WEB_PORT" "$@" 2>&1 |
-            awk -v mpvc="$MPVC_CGI" \
+            awk -v mpvc="$MPVC_WEB_CGI" \
         '
         BEGIN { quiet=1 }
 
@@ -600,7 +617,7 @@ mpvc_web()
     )
 }
 
-optflags="ha:b:c:C:d:p:P:r:R:s:S:t:"
+optflags="ha:b:c:C:d:p:P:r:R:s:S:t:T:"
 usage()
 {
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
@@ -636,6 +653,7 @@ main()
         s) MPVC_WEB_SSL_ENABLE="$OPTARG" ;;
         S) MPVC_WEB_SSL_PEM="$OPTARG" ;;
         t) MPVC_WEB_HTML_THEME="$OPTARG"  ;;
+        T) MPVC_WEB_CSS_STYLE="$OPTARG"  ;;
         a) MPVC_WEB_ARCHIVE_ENABLE="$OPTARG" ;;
         *) usage ;;
         esac

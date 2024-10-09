@@ -36,7 +36,7 @@
 <body>
 <h1 id="gmt4-mpvc-fork"><a href="/">@gmt4</a> mpvc 🎧</h1>
 <ul>
-    <li><strong>about</strong> A minimal mpc-like interface for controlling <a href="https://mpv.io">mpv</a> from the shell.</li>
+    <li><strong>about</strong> A shell script player to control mpv from the terminal + extras/goodies 🚀</li>
     <li><strong>goodies</strong> Support TUI, FZF, WEB, CLI, playing youtube &amp; streaming services (<a href="logbook.html#logbook-20221219">See #20221219</a>)</li>
     <li><strong>tags</strong> music-player terminal minimal mpv tui media-player mplayer posix-sh mpv-player mpvc mpvc-tui</li>
     <li><strong>github</strong> <a href="https://github.com/gmt4/mpvc/" class="uri">https://github.com/gmt4/mpvc/</a></li>
@@ -67,10 +67,10 @@
 <hr />
 <h2 id="gmt4-mpvc-overview">Overview</h2>
 
-<a href="https://github.com/gmt4/mpvc/">mpvc</a> functionality is split in a few pieces/files:
+<a href="https://github.com/gmt4/mpvc/">mpvc</a> is a collection of POSIX shell scripts:
 
 <ul>
-    <li> <a href="https://github.com/gmt4/mpvc/blob/master/mpvc">mpvc</a>: provides the <a href="https://linux.die.net/man/1/mpc">mpc</a> interface commands</li>
+    <li> <a href="https://github.com/gmt4/mpvc/blob/master/mpvc">mpvc</a>: provides the core CLI commands to control mpv</li>
     <li> <a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-tui">extras/mpvc-tui</a>: provides a console TUI, using mpvc underneath</li>
     <li> <a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-fzf">extras/mpvc-fzf</a>: provides <a href="https://github.com/junegunn/fzf">fzf</a> integration to mpvc.</li>
     <li> <a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-web">extras/mpvc-web</a>: a hack to remotely control mpvc from web</li>
@@ -95,12 +95,15 @@ curl -fsSL -o mpvc-installer https://github.com/gmt4/mpvc/raw/master/extras/mpvc
 <hr />
 <h2 id="gmt4-mpvc-quickstart">QuickStart</h2>
 
+Below is a Quick Start guide showcasing mpvc commands usage.
+
 <pre>
 
  <b># fetch a local copy of the github repo</b>
  git clone https://github.com/gmt4/mpvc/
  <b># use extras/mpvc-installer: just copy/link to your $HOME/bin</b>
  (cd mpvc; extras/mpvc-installer link-user)
+ (cd mpvc; extras/mpvc-installer check-reqs)
 
  <b># use mpvc-fzf to search and play youtube media</b>
  mpvc-fzf -p 'kupla mirage'
@@ -112,6 +115,8 @@ curl -fsSL -o mpvc-installer https://github.com/gmt4/mpvc/raw/master/extras/mpvc
  mpvc-tui -T
 
 </pre>
+
+For more check the <a href="#gmt4-mpvc-logbook">#Logbook</a> (remeber your best chance is to try, play, and have fun).
 
 <hr />
 <h2 id="gmt4-mpvc-shots">Screenshots</h2>
@@ -138,7 +143,7 @@ The logbook got big enought to deserve a page on its own, see here: <a href="log
 <hr/>
 <p>
 <span>
-    <em>Last-Modified: Friday, 21 July 2023 by <a href="https://gmt4.github.io">gmt4</a></em>
+    <em>Last-Modified: Friday, 13 September 2024 by <a href="https://gmt4.github.io">gmt4</a></em>
 </span>
 <span style="float: right;">
     <em>Powered by #HTML 🧡 💚 💙 </em>

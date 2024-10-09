@@ -22,50 +22,55 @@ quiet()  { "$@" > /dev/null 2>&1; }
 # Set TUI defaults
 mpvctui_defaults()
 {
-    MPVC_CBLACK='\033[0;30m'
-    MPVC_CRED='\033[0;31m'
-    MPVC_CGREEN='\033[0;32m'
-    MPVC_CGREENL='\033[1;32m'
-    MPVC_CYELLOW='\033[0;33m'
-    MPVC_CYELLOWL='\033[1;33m'
-    MPVC_CBLUE='\033[0;34m'
-    MPVC_CBLUEL='\033[1;34m'
-    MPVC_CPURPLE='\033[0;35m'
-    MPVC_CPURPLEL='\033[1;35m'
-    MPVC_CCYAN='\033[0;36m'
-    MPVC_CCYANL='\033[1;36m'
-    MPVC_CWHITE='\033[0;37m'
-    MPVC_CRST='\033[0m'
+    MPVC_TUI_CBLACK='\033[0;30m'
+    MPVC_TUI_CRED='\033[0;31m'
+    MPVC_TUI_CGREEN='\033[0;32m'
+    MPVC_TUI_CGREENL='\033[1;32m'
+    MPVC_TUI_CYELLOW='\033[0;33m'
+    MPVC_TUI_CYELLOWL='\033[1;33m'
+    MPVC_TUI_CBLUE='\033[0;34m'
+    MPVC_TUI_CBLUEL='\033[1;34m'
+    MPVC_TUI_CPURPLE='\033[0;35m'
+    MPVC_TUI_CPURPLEL='\033[1;35m'
+    MPVC_TUI_CCYAN='\033[0;36m'
+    MPVC_TUI_CCYANL='\033[1;36m'
+    MPVC_TUI_CWHITE='\033[0;37m'
+    MPVC_TUI_CRST='\033[0m'
 
-    MPVC_CLEAR='\033c'
-    MPVC_CUP='\033[1;1H'
+    MPVC_TUI_CLEAR='\033c'
+    MPVC_TUI_CUP='\033[1;1H'
 
     # config defaults
     NO_COLOR="${NO_COLOR:-}"
 
-    MPVC_COLOR0="$MPVC_CGREENL"
-    MPVC_COLOR1="$MPVC_CCYAN"
-    MPVC_COLOR2="$MPVC_CYELLOW"
-    MPVC_UPDATEC=${MPVC_UPDATEC:-2}
-    MPVC_CLEARC=${MPVC_CLEARC:-4}
+    MPVC_TUI_COLOR0="$MPVC_TUI_CGREENL"
+    MPVC_TUI_COLOR1="$MPVC_TUI_CCYAN"
+    MPVC_TUI_COLOR2="$MPVC_TUI_CYELLOW"
+    MPVC_TUI_UPDATEC=${MPVC_TUI_UPDATEC:-2}
+    MPVC_TUI_CLEARC=${MPVC_TUI_CLEARC:-4}
 
-    MPVC_TIPS=${MPVC_TIPS:-true}
-    MPVC_TERM=${MPVC_TERM:-xterm}
-    MPVC_SHELL=$(readlink -f /proc/$$/exe)
-    export MPVC_CLINE=${MPVC_CLINE:-11}
+    MPVC_TUI_HEADER0=${MPVC_TUI_HEADER0:-$PROGNAME}
+    MPVC_TUI_TIPS=${MPVC_TUI_TIPS:-true}
+    MPVC_TUI_TERM=${MPVC_TUI_TERM:-xterm}
+    MPVC_TUI_SHELL=$(readlink -f /proc/$$/exe)
+    export MPVC_TUI_CLINE=${MPVC_TUI_CLINE:-11}
 }
 
 # Load user config
 mpvctui_config()
 {
     mpvctui_defaults
+
     XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}
-    MPVC_CONFIG="${MPVC_CONFIG:-$XDG_CONFIG_HOME/mpvc/mpvc.conf}"
-    MPVC_HISTORY="${MPVC_HISTORY:-$XDG_CONFIG_HOME/mpvc/mpvc-tui.history}"
-    MPVC_SCROBBLER="${MPVC_SCROBBLER:-$XDG_CONFIG_HOME/mpvc/mpvc-tui.scb}"
+    MPVC_CONFIG_DIR="${MPVC_CONFIG_DIR:-$XDG_CONFIG_HOME/mpvc}"
+    MPVC_CONFIG="${MPVC_CONFIG:-$MPVC_CONFIG_DIR/mpvc.conf}"
+
+    MPVC_TUI_HISTORY="${MPVC_TUI_HISTORY:-$XDG_CONFIG_HOME/mpvc/mpvc-tui.history}"
+    MPVC_TUI_SCROBBLER="${MPVC_TUI_SCROBBLER:-$XDG_CONFIG_HOME/mpvc/mpvc-tui.scb}"
+
     # if not present, create config dir
-    mkdir -p "$(dirname "$MPVC_CONFIG")"
-    touch "$MPVC_HISTORY"
+    mkdir -p "$MPVC_CONFIG_DIR"
+    touch "$MPVC_TUI_HISTORY"
     # if present load user config
     if [ -r "$MPVC_CONFIG" ]; then
         . "$MPVC_CONFIG"
@@ -94,7 +99,7 @@ mpvctui_headerc()
     hdr="${char}${char}${cstart}$*${cend}"
     rem=$(( cols - ${#hdr} ))
     # when SHELL=/bin/dash, ${#hdr} is 4 chars smaller
-    if [ "${MPVC_SHELL##*/}" = "dash" ]; then rem=$(( rem + 4 )); fi
+    if [ "${MPVC_TUI_SHELL##*/}" = "dash" ]; then rem=$(( rem + 4 )); fi
     for _ in $(seq 1 $rem)
     do
         hdr="$hdr$char"
@@ -104,17 +109,17 @@ mpvctui_headerc()
         printf "%s" "${hdr}"
     else
         # not using printf "%s" here as sh displays raw escape sequences, instead of colored output
-        printf "${ccolor}${hdr}${MPVC_CRST}"
+        printf "${ccolor}${hdr}${MPVC_TUI_CRST}"
     fi
 }
 
-mpvctui_header0() { mpvctui_headerc '═' '[' ']' "$MPVC_COLOR0" " + $* "; }
-mpvctui_header1() { mpvctui_headerc '─' '[' ']' "$MPVC_COLOR1" " + $* "; }
-mpvctui_header2() { mpvctui_headerc '─' '[' ']' "$MPVC_COLOR2" " + $* "; }
+mpvctui_header0() { mpvctui_headerc '═' '[' ']' "$MPVC_TUI_COLOR0" " + $* "; }
+mpvctui_header1() { mpvctui_headerc '─' '[' ']' "$MPVC_TUI_COLOR1" " + $* "; }
+mpvctui_header2() { mpvctui_headerc '─' '[' ']' "$MPVC_TUI_COLOR2" " + $* "; }
 
 mpvctui_tips()
 {
-    if [ "$MPVC_TIPS" = "false" ]; then return; fi
+    if [ "$MPVC_TUI_TIPS" = "false" ]; then return; fi
     tip=$(( count % 80 ))
     case $tip in
     0|1|2)    echo ": type control+c to enter prompt";;
@@ -123,13 +128,13 @@ mpvctui_tips()
     30|31|32) echo ": Config at ${MPVC_CONFIG##$HOME/}";;
     40|41|42) echo ": Launch from WM with: $PROGNAME -x";;
     50|51|52) echo ": version $PROGNAME $PROGVERSION at $PROGURL";;
-    60|61|62) echo ": Update $MPVC_UPDATEC secs refresh $((count % MPVC_CLEARC))/$MPVC_CLEARC shell $MPVC_SHELL";;
+    60|61|62) echo ": Update $MPVC_TUI_UPDATEC secs refresh $((count % MPVC_TUI_CLEARC))/$MPVC_TUI_CLEARC shell $MPVC_TUI_SHELL";;
     esac
 }
 
 mpvctui_watcher()
 {
-    mpvctui_header0 "${PROGNAME}$(mpvctui_tips)"
+    mpvctui_header0 "${MPVC_TUI_HEADER0}$(mpvctui_tips)"
     mpvctui_header1 "Status"
     mpvc status
     mpvctui_header1 "Playlist"
@@ -139,11 +144,11 @@ mpvctui_watcher()
 
 mpvctui_input()
 {
-    MPVC_PROMPT="($PROGNAME) ${PWD##*/}: "
+    MPVC_TUI_PROMPT="($PROGNAME) ${PWD##*/}: "
     if quiet command -v rlwrap; then
-        cmd=$(rlwrap -o -c -S "$MPVC_PROMPT" -H "$MPVC_HISTORY" -f . -P '' cat)
+        cmd=$(rlwrap -o -c -S "$MPVC_TUI_PROMPT" -H "$MPVC_TUI_HISTORY" -f . -P '' cat)
     else
-        echo "$MPVC_PROMPT"; read -r cmd
+        echo "$MPVC_TUI_PROMPT"; read -r cmd
     fi
     case "$cmd" in
         '!!'*) "${SHELL}" -c "${cmd##!!}";;
@@ -163,11 +168,11 @@ mpvctui_watch()
     while :
     do
         output=$(mpvctui_watcher 2>&1)
-        if [ $(( count % MPVC_CLEARC )) -eq 0 ]; then printf "${MPVC_CLEAR}"; fi
-        printf "${MPVC_CUP}"
+        if [ $(( count % MPVC_TUI_CLEARC )) -eq 0 ]; then printf "${MPVC_TUI_CLEAR}"; fi
+        printf "${MPVC_TUI_CUP}"
         echo "$output"
         count=$(( count + 1 ))
-        sleep $MPVC_UPDATEC
+        sleep $MPVC_TUI_UPDATEC
     done
 }
 
@@ -185,28 +190,29 @@ mpvctui_mouse()
 mpvctui_mouse_buttons()
 {
     # groups: flags play chapter seek volume
-    mpvc_button_mute=$( if [ "$(mpvc get mute)" = "true" ]; then echo M; else echo m; fi )
-    mpvc_button_pause=$( if [ "$(mpvc get pause)" = "true" ]; then echo P; else echo p; fi )
-    mpvc_button_video=$( if [ "$(mpvc get video)" = "true" ]; then echo V; else echo v; fi )
-    mpvc_button_cache=$( if [ "$(mpvc get cache)" = "true" ]; then echo C; else echo c; fi )
+    mpvc_button_mute=$( if [ "$(mpvc get mute)" = "yes" ]; then echo M; else echo m; fi )
+    mpvc_button_pause=$( if [ "$(mpvc get pause)" = "yes" ]; then echo P; else echo p; fi )
+    mpvc_button_video=$( if [ "$(mpvc get video)" = "yes" ]; then echo V; else echo v; fi )
+    mpvc_button_cache=$( if [ "$(mpvc get cache)" = "yes" ]; then echo C; else echo c; fi )
     mpvc_button_repeat=$( if [ "$(mpvc get loop-playlist)" = "inf" ]; then echo R; else echo r; fi)
-    mpvc_button_single=$( if [ "$(mpvc get loop-file)" = "true" ]; then echo S; else  echo s; fi)
-    mpvc_button_idle=$( if [ "$(mpvc get idle)" = "true" ]; then echo I; else  echo i; fi )
-    mpvc_buttons="${mpvc_button_mute}${mpvc_button_pause}${mpvc_button_video}${mpvc_button_cache}${mpvc_button_repeat}${mpvc_button_single}${mpvc_button_idle} <-> [#] {%} (=)"
+    mpvc_button_single=$( if [ "$(mpvc get loop-file)" = "yes" ]; then echo S; else  echo s; fi)
+    mpvc_button_idle=$( if [ "$(mpvc get idle)" = "yes" ]; then echo I; else  echo i; fi )
+
+    mpvc_status=$(mpvc -f '#%position%/%playlistlength% %=chapter%/%chapters% (%percentage%%%) %volume%%%')
+    mpvc_buttons="${mpvc_button_mute}${mpvc_button_pause}${mpvc_button_video}${mpvc_button_cache}${mpvc_button_repeat}${mpvc_button_single}${mpvc_button_idle} <t> [c] {s} (v) ${mpvc_status}"
     printf "%s" "$mpvc_buttons"
 }
 
 mpvctui_mouse_events()
 {
     # check if $TERM supports mouse
-
     stty -icanon
     printf "\e[?1002h"
 
     # f: 1b5b 4d20 2623 0a
     #       |    |    |
     #       |    |    +----- coord TL 2121 - BR 7b3a: (33,33) - (123,58): (90,25)
-    #       |    +---------- btn press 4020 release 4d23
+    #       |    +---------- btn press 4d20 release 4d23
     #       +--------------- tag for mouse event?
 
     line=$(xxd -l 6 -g 2 -p)
@@ -222,29 +228,29 @@ mpvctui_mouse_events()
         posy=$((0x${coordy} - 0x21))
         #echo "posxy $posx/$(tput cols) $posy/$(tput lines)"
         case "$posx,$posy" in
-            0,$offsety) mpvc -q --mute;;
-            1,$offsety) mpvc -q toggle;;
-            2,$offsety) mpvc -q cycle video;;
-            3,$offsety) mpvc -q cycle cache;;
-            4,$offsety) mpvc -q repeat;;
-            5,$offsety) mpvc -q single;;
-            6,$offsety) mpvc -q cycle idle;;
+            "0,$offsety") mpvc -q --mute;;
+            "1,$offsety") mpvc -q toggle;;
+            "2,$offsety") mpvc -q cycle video;;
+            "3,$offsety") mpvc -q cycle cache;;
+            "4,$offsety") mpvc -q repeat;;
+            "5,$offsety") mpvc -q single;;
+            "6,$offsety") mpvc -q cycle idle;;
 
-            8,$offsety) mpvc -q prev;;
-            9,$offsety) mpvc -q play "$(mpvc get playlist-pos)";;
-           10,$offsety) mpvc -q next;;
+            "8,$offsety") mpvc -q prev;;
+            "9,$offsety") mpvc -q replay;;
+           "10,$offsety") mpvc -q next;;
 
-           12,$offsety) mpvc chapter-prev;;
-           13,$offsety) mpvc chapter-replay;;
-           14,$offsety) mpvc chapter-next;;
+           "12,$offsety") mpvc chapter-prev;;
+           "13,$offsety") mpvc chapter-replay;;
+           "14,$offsety") mpvc chapter-next;;
 
-           16,$offsety) mpvc -q seek -30;;
-           17,$offsety) mpvc -q time 0;;
-           18,$offsety) mpvc -q seek +60;;
+           "16,$offsety") mpvc -q seek -30;;
+           "17,$offsety") mpvc -q time 0;;
+           "18,$offsety") mpvc -q seek +60;;
 
-           20,$offsety) mpvc -q vol -10;;
-           21,$offsety) mpvc -q vol 70;;
-           22,$offsety) mpvc -q vol +10;;
+           "20,$offsety") mpvc -q vol -10;;
+           "21,$offsety") mpvc -q vol 70;;
+           "22,$offsety") mpvc -q vol +10;;
         esac
     ;;
     1b5b4d23*) # btn1 release
@@ -254,9 +260,9 @@ mpvctui_mouse_events()
 
 mpvctui_notify()
 {
-    # $MPVC_SCROBBLER: scrobbling file contains one entry per line with tab-separated fields
+    # $MPVC_TUI_SCROBBLER: scrobbling file contains one entry per line with tab-separated fields
     cmd_notify='notify-send -u normal -i info "$(mpvc)";'
-    cmd_scrobble='echo $(mpvc expand-text "$(date +%s)\t\\${=duration}\t\\${path}\t\\${media-title}") >> '"$MPVC_SCROBBLER"
+    cmd_scrobble='echo $(mpvc expand-text "$(date +%s)\t\\${=duration}\t\\${path}\t\\${media-title}") >> '"$MPVC_TUI_SCROBBLER"
 
     awk -v cmd_scrobble="${1:-$cmd_scrobble}" -v cmd_notify="${2:-$cmd_notify}" '
         BEGIN { ot = otn = systime(); do_print = cmd_notify != "false" && cmd_scrobble != "false"; }
@@ -313,23 +319,29 @@ mpvctui_suggest()
             t=tracks[r]
             print r,seen[t],t
         }
-    ' "$MPVC_SCROBBLER"
+    ' "$MPVC_TUI_SCROBBLER"
+}
+
+mpvctui_launch()
+{
+    if quiet command -v $MPVC_TUI_TERM; then $MPVC_TUI_TERM -e "$0" "$@"; fi;
 }
 
 mpvctui_usage()
 {
     echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
-    echo "  -d : Set the WD to the media directory given as argument"
-    echo "  -n : Desktop notification using notify on mpvc events (notify-send*)"
-    echo "  -s : Suggest a random media to play based on previous media played"
-    echo "  -t : Starts the $PROGNAME to manage the mpv playlist (rlwrap*)"
-    echo "  -T : Combo that starts $PROGNAME -t -n, and adds media given as args"
-    echo "  -x : Starts $PROGNAME in a new $MPVC_TERM (config \$MPVC_TERM) [combine -x with $optflags]"
+    echo " -d : Set the WD to the media directory given as argument"
+    echo " -n : Desktop notification using notify on mpvc events (notify-send*)"
+    echo " -s : Suggest a random media to play based on previous media played"
+    echo " -t : Starts the $PROGNAME to manage the mpv playlist (rlwrap*)"
+    echo " -T : Combo that starts $PROGNAME -t -n, and adds media given as args"
+    echo " -x : Starts $PROGNAME in a new $MPVC_TUI_TERM (config \$MPVC_TUI_TERM) [combine -x with other opts]"
+    echo " -v : Prints the $PROGNAME version."
     echo "*tips: If unsure about where to begin, start with: $PROGNAME -d /path/to/media/ -T"
     exit;
 }
 
-optflags="d:hHktTm:nNsSP:u:x"
+optflags="d:hHktTm:M:nNsSP:u:x"
 mpvctui_main()
 {
     mpvctui_config
@@ -338,9 +350,9 @@ mpvctui_main()
     while getopts "$optflags" flag;
     do
         case "$flag" in
-        d) MPVC_DIR="$OPTARG"; cd "$MPVC_DIR" || return;;
+        d) MPVC_TUI_DIR="$OPTARG"; cd "$MPVC_TUI_DIR" || return;;
         h) shift; mpvctui_usage ;;
-        H) shift; cat $MPVC_SCROBBLER ;;
+        H) shift; cat $MPVC_TUI_SCROBBLER ;;
         t) shift; mpvctui_watch ;;
         T) shift;
            mpvc -q --mpv &
@@ -348,14 +360,16 @@ mpvctui_main()
            ( sleep 1; pgrep -f "$PROGNAME -n" || setsid "$0" -n ) &
            mpvctui_watch
            ;;
+        M) shift; mpvctui_launch "-m$OPTARG"; exit ;; # -g 15x1
         m) shift; mpvctui_mouse "$OPTARG" ;;
         n) shift; mpvctui_notify_loop "${1:-}" ;;
         N) shift; mpvctui_notify "${@}" ;;
         k) shift; pkill -f "$PROGNAME" ;;
         s) shift; mpvctui_suggest ;;
         S) shift; mpvctui_notify_loop_cli "${1:-}" ;;
-        u) shift; MPVC_UPDATEC="$OPTARG" ;;
-        x) shift; if quiet command -v $MPVC_TERM; then $MPVC_TERM -e "$0" "$@"; fi; exit;;
+        u) shift; MPVC_TUI_UPDATEC="$OPTARG" ;;
+        x) shift; mpvctui_launch "$@"; exit ;;
+
         *) mpvctui_usage;;
         esac
     done

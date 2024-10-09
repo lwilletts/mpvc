@@ -4,13 +4,14 @@
 ![GitHub top language](https://img.shields.io/github/languages/top/lwilletts/mpvc)
 ![GitHub lines of Code](https://sloc.xyz/github/lwilletts/mpvc/?category=code)
 
-# mpvc 🎧 [^install]
+# 🎧 mpvc
 
-A terminal music player in POSIX sh(1) that interfaces mpv providing mpc(1) commands + extras.
-Originally a fork of [lwillets/mpvc](https://github.com/lwilletts/mpvc) that evolved on its own, providing some extra goodies such as: improved CLI, TUI, FZF, WEB, EQ, & playing media from YouTube & streaming services.
-Check the [Wiki](../../wiki), [LogBook](../../wiki#logbook) & [Casts](../../wiki#screencasts) for a detailed view of the extra features of this fork.
+Music player in POSIX-sh interfacing mpv from the shell + extras/goodies [^install] 🚀.
 
-Skip directly to [Installation](#Installation) to try mpvc!
+A fork of [lwillets/mpvc](https://github.com/lwilletts/mpvc) evolving on its own adding features like: improved CLI, TUI, FZF, WEB, EQ, & play Invidious, YouTube & streaming services.
+For more on the features of this fork check: [Git](#git) QuickStart, [Wiki](../../wiki), [LogBook](../../wiki#logbook) & [Casts](../../wiki#screencasts).
+
+⏩ Skip directly to [Installation](#Installation) to try mpvc!
 
 <details open>
 <summary>mpvc-tui -T: running the mpvc TUI <i>(click to view screenshot)</i></summary>
@@ -30,21 +31,20 @@ Skip directly to [Installation](#Installation) to try mpvc!
 ![mpvc tui+fzf+notifications screenshot](../../blob/master/docs/assets/mpvc-tui-fzf.png)
 </details>
 
-## Overview ▶️ [^install]
+## ▶️ Overview [^install]
 
-[mpvc](../../) player functionality is provided by:
+[mpvc](../../) is a collection of POSIX shell scripts:
 
-- [mpvc](../../blob/master/mpvc): provides the mpvc player core CLI commands
+- [mpvc](../../blob/master/mpvc): provides the core CLI commands to control mpv
 - [extras/mpvc-tui](../../blob/master/extras/mpvc-tui): provides a console TUI, using mpvc underneath
 - [extras/mpvc-fzf](../../blob/master/extras/mpvc-fzf): provides FZF integration to mpvc.
 - [extras/mpvc-web](../../blob/master/extras/mpvc-web): a hack to remotely control mpvc from web (handy on mobile)
-- [extras/mpvc-now](../../blob/master/extras/mpvc-now): generates a URL to share the current playlist
 - [extras/mpvc-mpris](../../blob/master/extras/mpvc-mpris): speaks MPRIS to control mpv player through key-bindings.
 - [extras/mpvc-equalizer](../../blob/master/extras/mpvc-equalizer): provides a basic mpv equalizer for the CLI.
 - [extras/mpvc-autostart](../../blob/master/extras/mpvc-autostart): automatic mpv start/stop based on presence.
 - [extras/mpvc-installer](../../blob/master/extras/mpvc-installer): provides an installer to install/update mpvc.
 
-For more details on how to use the above tools have a look at the [LogBook](../../wiki#logbook).
+For more details on how to use the above tools have a look at the [Git](#git) QuickStart Guide, [LogBook](../../wiki#logbook).
 In addition, the [casts/](../../wiki#screencasts) directory to shows some screencasts of mpvc in action.
 
 ## Requirements
@@ -61,6 +61,7 @@ Recommended extras:
 - `fzf`
 - `jq`
 - `notify-send`
+- `yt-dlp`
 
 Check for missing dependencies using `mpvc-installer check-reqs`.
 
@@ -75,25 +76,26 @@ Check for missing dependencies using `mpvc-installer check-reqs`.
 - [Gentoo](#gentoo-mpvc)
 - [Nix](#nix-mpvc)
 
-Installing is just a matter of fetching the scripts either via Git/Curl/etc., scripts can be used directly from the repo, the `mpvc-installer` bit is just there for easiness, to fetch & link them into your `BINDIR=~/bin/` by default,
+Installing is just a matter of fetching the scripts either via [Git](#git)/Curl/etc., scripts can be used directly from the repo, the `mpvc-installer` bit is just there for easiness, to fetch & link them into your `BINDIR=~/bin/` that [mpvc-installer](../../blob/master/extras/mpvc-installer) does by default. 
+
+The easiest for a onetime [Manual](#manual) install, however for @latest version a [Git](#git) install is recommended.
 
 ### Manual
 
-The easiest install method is just to run the [mpvc-installer](../../blob/master/extras/mpvc-installer) to install under `$HOME/bin`
-
 ```console
-curl -fsSL -o mpvc-installer https://github.com/lwilletts/mpvc/raw/master/extras/mpvc-installer \
-  && sh ./mpvc-installer fetch-user
+curl -fsSL -O https://github.com/lwilletts/mpvc/raw/master/extras/mpvc-installer \
+  && BINDIR=$HOME/bin sh ./mpvc-installer fetch-user
 ```
 
 ### Git
 
-Below is a **Quick Start** guide showcasing mpvc commands usage.
+Below is a **Quick Start** guide showcasing mpvc git install and usage.
+This does git clone, and symlinks the mpvc scripts to `BINDIR` (default `~/bin`), so updating becomes a matter of just running `git pull`.
 
 ```sh
  # fetch a local copy of the github repo
  git clone https://github.com/lwilletts/mpvc/
- # use extras/mpvc-installer: just copy/link to your $HOME/bin
+ # use extras/mpvc-installer: just copy/link to BINDIR=$HOME/bin (by default)
  (cd mpvc; extras/mpvc-installer link-user)
  (cd mpvc; extras/mpvc-installer check-reqs)
 
@@ -104,11 +106,18 @@ Below is a **Quick Start** guide showcasing mpvc commands usage.
  find . -type f -name | mpvc load
  mpvc save my-playlist
 
+ # use mpvc stash to store/recover current mpv state (see the logbook for more)
+ mpvc stash ls
+ mpvc stash push current
+ mpvc stash apply current
+
  # use mpvc-fzf to manage the playlist
  mpvc-fzf -f
  # use mpvc-tui to start the tui + desktop notifications
  mpvc-tui -T
 ```
+
+For more  check the  [LogBook](../../wiki#logbook) (remeber your best chance is to try, play, and have fun).
 
 ### Debian
 
@@ -161,56 +170,61 @@ nix-env -i mpvc
 
 ```console
 usage: mpvc opts # @version v1.5 (c) gmt4 https://github.com/gmt4/mpvc
-    -a | --add              : Add media to playlist (see --load for stdin).
-    -s | --stop             : Always stop playback.
-    -P | --play             : Always start playback.
-    -p | --toggle           : Toggle playback.
-       | --next             : Jump to next entry in the playlist
-       | --prev             : Jump to previous entry in the playlist
-    -i | --playlist         : Print filenames of tracks to fit within terminal.
-    -I | --fullplaylist     : Print all filenames of tracks in current playlist.
-    -v | --vol              : Increase/decrease volume relative to current volume.
-    -h | --help             : Prints the short help.
-    -H | --long-help        : Prints the long help.
+ -a | --add              : Add media to playlist (see --load for stdin).
+ -s | --stop             : Always stop playback.
+ -P | --play             : Always start playback.
+ -p | --toggle           : Toggle playback.
+    | --next             : Jump to next entry in the playlist
+    | --prev             : Jump to previous entry in the playlist
+ -i | --playlist         : Print filenames of tracks to fit within terminal.
+ -I | --fullplaylist     : Print all filenames of tracks in current playlist.
+ -v | --vol              : Increase/decrease volume relative to current volume.
+ -h | --help             : Prints the short help.
+ -H | --long-help        : Prints the long help.
+
 *tips: If unsure about where to begin, have a look at https://gmt4.github.io/mpvc
+
 ```
 
 ### mpvc-tui
 
 ```console
-usage: mpvc-tui -[d:hHktTm:nsSP:x] args # @version v1.5 (c) gmt4 https://github.com/gmt4/mpvc
-  -d : Set the WD to the media directory given as argument
-  -n : Desktop notification using notify on mpvc events (notify-send*)
-  -s : Suggest a random media to play based on previous media played
-  -t : Starts the mpvc-tui to manage the mpv playlist (rlwrap*)
-  -T : Combo that starts mpvc-tui -t -n, and adds media given as args
-  -x : Starts mpvc-tui in a new xterm (config $MPVC_TERM) [combine -x with d:hHktTm:nsSP:x]
+usage: mpvc-tui -[d:hHktTm:M:nNsSP:u:x] args # @version v1.5 (c) gmt4 https://github.com/gmt4/mpvc
+ -d : Set the WD to the media directory given as argument
+ -n : Desktop notification using notify on mpvc events (notify-send*)
+ -s : Suggest a random media to play based on previous media played
+ -t : Starts the mpvc-tui to manage the mpv playlist (rlwrap*)
+ -T : Combo that starts mpvc-tui -t -n, and adds media given as args
+ -x : Starts mpvc-tui in a new xterm (config $MPVC_TUI_TERM) [combine -x with other opts]
+ -v : Prints the mpvc-tui version.
 *tips: If unsure about where to begin, start with: mpvc-tui -d /path/to/media/ -T
 ````
 
 ### mpvc-fzf
 
 ```console
-usage: mpvc-fzf -[01ab:cCd:efFg:G:hk:K:n:s:p:P:o:Or:lL:xv] args # @version v1.5 (c) gmt4 https://github.com/gmt4/mpvc
-  -b : Browse the provided ytdl-archive URL with fzf (fzf*)
-  -c : Start fzf to manage the current mpv chapterlist (fzf*)
-  -d : Set the WD to the media directory given as argument
-  -f : Start fzf to manage the current mpv playist (fzf*)
-  -g : Fetch the given YT URL, and store locally (fzf*)
-  -G : Search on Invidious, fetch, and store locally (fzf*)
-  -l : Search & play local media (fzf*)
-  -s : Search on Invidious (fzf*)
-  -p : Search & play media found using Invidious (fzf*)
-  -x : Starts mpvc-fzf in a new xterm (config $MPVC_TERM) [combine -x with 01ab:cCd:efFg:G:hk:K:n:s:p:P:o:Or:lL:xv]
-*tips: If unsure about where to begin, start with: mpvc-fzf -p 'kupla mirage'
+usage: mpvc-fzf opts # @version v1.5 (c) gmt4 https://github.com/gmt4/mpvc
+ -b|browse   : Browse the provided ytdl-archive URL with fzf
+ -c|chapters : Start fzf to manage the current mpv chapterlist
+ -d|dir      : Set the WD to the media directory given as argument
+ -e|eqz      : Start fzf to manage the equalizer settings
+ -f|playlist : Start fzf to manage the current mpv playist
+ -g|fetch    : Fetch the given YT URL, and store locally
+ -G|Fetch    : Search on Invidious, fetch, and store locally
+ -i|lyrics   : Search given media lyrics on Invidious
+ -k|dplay    : Search & play DuckDuckGo videos
+ -K|dsearch  : Search DuckDuckGo videos
+ -l|local    : Search & play local media
+ -s|search   : Search on Invidious
+ -p|splay    : Search & play media found using Invidious
+ -y|related  : Search related media on Invidious
+ -Y|Related  : Search & play related media using Invidious
+ -x|launch   : Starts mpvc-fzf in a new xterm (config $MPVC_TERM) [combine -x with other opts]
+ -v|version  : Prints the mpvc-fzf version.
+ somafm      : Search & play SomaFM channels
+ radioapi    : Search & play Radio-Browser API channels
+*tips: If unsure about where to begin, start: mpvc-fzf -p 'kupla mirage'
 ```
-
-## Tricks
-
-There's some basic tricks in [Git](#git) to get you started.
-For more  check the  [LogBook](../../wiki#logbook).
-
-This gives just a sneak peek on what's possible to manage mpv from the command-line, your best chances are to go play and have fun.
 
 ## Limitations
 

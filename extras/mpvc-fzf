@@ -25,24 +25,32 @@ mpvc() { "$PROGDIR/mpvc" "$@"; } # mpvc-web?
 mpvcfzf_defaults()
 {
     XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}
-    MPVC_CONFIG="${MPVC_CONFIG:-$XDG_CONFIG_HOME/mpvc/mpvc.conf}"
+    MPVC_CONFIG_DIR="${MPVC_CONFIG_DIR:-$XDG_CONFIG_HOME/mpvc}"
+    MPVC_CONFIG="${MPVC_CONFIG:-$MPVC_CONFIG_DIR/mpvc.conf}"
     MPVC_YTDL_ARCHIVE=${MPVC_YTDL_ARCHIVE:-}
     MPVC_YTDL_OUTPUT=${MPVC_YTDL_OUTPUT:-}
     MPVC_TERM=${MPVC_TERM:-xterm}
+
+    MPVC_FZF_SOMAFM_FILE="${MPVC_FZF_SOMAFM_FILE:-$MPVC_CONFIG_DIR/somafm-channels.json}"
+    MPVC_FZF_RADIOAPI_FILE="${MPVC_FZF_RADIOAPI_FILE:-$MPVC_CONFIG_DIR/radioapi-stations.json}"
+    #mpvc -q
 }
 
 mpvcfzf_config()
 {
     mpvcfzf_defaults
+    if [ ! -d "$MPVC_CONFIG_DIR" ]; then mkdir -p "$MPVC_CONFIG_DIR"; fi
     # if present load user config
-    if [ -r "$MPVC_CONFIG" ];
-    then
-        . "$MPVC_CONFIG"
-    fi
+    if [ -r "$MPVC_CONFIG" ]; then . "$MPVC_CONFIG"; fi
     if ! quiet command -v fzf; then
         mpvcfzf_warn "$PROGNAME: Warning: No fzf, Install to get fuzzy media search & play support!"
         sleep 1
     fi
+}
+
+mpvcfzf_curl()
+{
+    curl -fsSL -A 'Mozilla/5.0' --retry 1 "$@"
 }
 
 mpvcfzf_getvideo_id()
@@ -63,7 +71,7 @@ mpvcfzf_isearch()
     url_search="https://${url_host}/search?$url_query&$url_sort"
 
     echo "$url_search"
-    curl -fsSL -A 'Mozilla/5.0' "$url_search&page=1" "$url_search&page=2" |
+    mpvcfzf_curl "$url_search&page=1" "$url_search&page=2" |
     awk '
         /^.*<p dir="auto">/ {
             gsub("^.*<p dir=\"auto\">",""); gsub("</p>.*$",""); vtitle=$0
@@ -90,11 +98,11 @@ mpvcfzf_isearch()
     '
 }
 
-mpvcfzf_ssearch()
+mpvcfzf_related_search()
 {
     id=${1:-$(mpvc get filename)}
     id=$(mpvcfzf_getvideo_id "$id")
-    output=$(curl -fsSL -A '' "https://yewtu.be/watch?v=$id")
+    output=$(mpvcfzf_curl "https://yewtu.be/redirect?referer=/watch?v=$id")
     echo "$output" |
         awk '
             /<div class="video-card-row">/ { c++; next }
@@ -106,9 +114,9 @@ mpvcfzf_ssearch()
             }'
 }
 
-mpvcfzf_splay()
+mpvcfzf_related_play()
 {
-    mpvcfzf_ssearch "$1" |
+    mpvcfzf_related_search "$1" |
         mpvcfzf_preview --prompt="(similar) " |
             mpvcfzf_awk1
 }
@@ -117,7 +125,7 @@ mpvcfzf_lyrics()
 {
     id=${1:-$(mpvc get filename)}
     id=$(mpvcfzf_getvideo_id "$id")
-    output=$(curl -fsSL -A '' "https://yewtu.be/watch?v=$id")
+    output=$(mpvcfzf_curl "https://yewtu.be/redirect?referer=/watch?v=$id")
     echo "$output" |
         awk -v id=$id '
             c==0 && /<meta name="description"/  {c=1}
@@ -128,10 +136,15 @@ mpvcfzf_lyrics()
         '
 }
 
+mpvcfzf_lyrics_ddg()
+{
+    echo "https://ddg.gg?ia=lyrics&iax=lyrics&q=lyrics $(mpvc -f '%title%')"
+}
+
 mpvcfzf_nextvideo()
 {
-    id=$(mpvcfzf_getvideo_id "$id")
-    output=$(curl -fsSL -A '' "https://yewtu.be/watch?v=$id")
+    id=$(mpvcfzf_getvideo_id "$1")
+    output=$(mpvcfzf_curl "https://yewtu.be/watch?v=$id")
     next_video=$(echo "$output" | awk '/next_video/ {gsub("[\",]",""); print $2}')
     next_url="https://yewtu.be/$next_video"
     echo "$next_url"
@@ -280,7 +293,7 @@ mpvcfzf_local()
 mpvcfzf_playlist()
 {
     len=$(mpvc gets playlist-count)
-    ( if [ -z "$len" ]; then echo; else mpvc fullplaylist; fi) |
+    (if [ -z "$len" ]; then echo; else mpvc fullplaylist; fi) |
         mpvcfzf_preview --prompt="(playlist) " \
         --bind='ctrl-o:execute-silent(mpvc play {1})' \
         --bind='ctrl-r:reload(mpvc fullplaylist)'
@@ -314,7 +327,7 @@ mpvcfzf_ddg_play()
 mpvcfzf_urlget()
 {
     url=${1:-https://localhost:8443/ytdl-archive/}
-    curl -k -fsSL "$url" |
+    mpvcfzf_curl "$url" |
         awk '/<a href=".*">.*<\/a>/ { h=$0;sub("^.*href=\"","",h);sub("\".*$","",h);print h }'
 }
 
@@ -346,7 +359,7 @@ mpvcfzf_ddg()
     url_search="https://duckduckgo.com/html?q=$*&iax=videos"
 
     echo "$url_search"
-    curl -fsSL -A 'Mozilla/5.0' "$url_search" |
+    mpvcfzf_curl "$url_search" |
         awk  '
             function urldecode(url)
             {
@@ -373,32 +386,93 @@ mpvcfzf_ddg()
             }'
 }
 
-mpvcfzf_version()
+mpvcfzf_somafm()
 {
-    echo "usage: $PROGNAME -[optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
+    chan=${1:-}
+    if [ -n "$chan" ]; then
+        mpvcfzf_somafm_search | awk -F';' -v chan="$chan" '{ if(match($0,chan))print $1}' | mpvc load
+    else
+        mpvcfzf_somafm_search | column -s ';' -t | mpvcfzf_preview --prompt="(somafm) "
+    fi
 }
 
-optflags="01ab:B:cCd:efFg:G:hi:Ik:K:n:s:S:p:P:o:O:r:lL:xy:Y:v"
+mpvcfzf_somafm_search()
+{
+    url="https://somafm.com/channels.json"
+    file="$MPVC_FZF_SOMAFM_FILE"
+    [ ! -s "$file" ] && mpvcfzf_curl -o "$file" "$url"
+    jq -r --argjson quality 3 '
+        .channels | sort_by(.listeners | tonumber) | reverse | .[] |
+            (.playlists[$quality]|.url) + ";" + .listeners + " ls "+.genre+";"+ .title' "$file"
+}
+
+mpvcfzf_radioapi()
+{
+    chan=${1:-}
+    if [ -n "$chan" ]; then
+        mpvcfzf_radioapi_search | awk -F';' -v chan="$chan" '{ if(match($0,chan))print $1}' | mpvc load
+    else
+        mpvcfzf_radioapi_search | column -s ';' -t | mpvcfzf_preview --prompt="(radioapi) "
+    fi
+}
+
+mpvcfzf_radioapi_search()
+{
+    url="https://nl1.api.radio-browser.info/json/stations/topvote"
+    file="$MPVC_FZF_RADIOAPI_FILE"
+    [ ! -s "$file" ] && mpvcfzf_curl --retry 2 -d hidebroken=true -d limit=4096 -o "$file" "$url"
+    jq -r -c '.[] | select( (.url|length) < 80 ) | (.url+";"+(.votes|tostring)+" "+.name)' "$file"
+}
+
+mpvcfzf_now_geturls() { mpvc saven; }
+mpvcfzf_now_getvids() { echo "$@" | awk '/youtube|yewtu/ { sub("^.*/",""); sub(".*=",""); sub("^","\\&v="); printf $0; }'; }
+mpvcfzf_now()
+{
+    date=$(date -Idate)
+    now="https://gmt4.github.io/mpvc/now/"
+    urls=$(mpvcfzf_now_geturls)
+    vids=$(mpvcfzf_now_getvids "$urls")
+    list=$(mpvc fullplaylist)
+
+    echo "$now?t=$date$vids"
+    echo
+    awk -v u="$urls" -v l="$list" 'END{ split(u, au,"\n"); split(l, al,"\n"); for(u in au) {print au[u], al[u]}; }' /dev/null
+}
+
+mpvcfzf_launch_term()
+{
+    if quiet command -v "$MPVC_TERM"; then "$MPVC_TERM" -e "$0" "$@"; fi;
+}
+
+mpvcfzf_version()
+{
+    echo "usage: $PROGNAME opts # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
+}
+
 mpvcfzf_usage()
 {
-    echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
-    echo "  -b : Browse the provided ytdl-archive URL with fzf (fzf*)"
-    echo "  -c : Start fzf to manage the current mpv chapterlist (fzf*)"
-    echo "  -d : Set the WD to the media directory given as argument"
-    echo "  -f : Start fzf to manage the current mpv playist (fzf*)"
-    echo "  -g : Fetch the given YT URL, and store locally (fzf*)"
-    echo "  -G : Search on Invidious, fetch, and store locally (fzf*)"
-    echo "  -i : Search given media lyrics on Invidious (fzf*)"
-    echo "  -I : Search current media lyrics on Invidious (fzf*)"
-    echo "  -k : Search & play DuckDuckGo videos (fzf*)"
-    echo "  -K : Search DuckDuckGo videos (fzf*)"
-    echo "  -l : Search & play local media (fzf*)"
-    echo "  -s : Search on Invidious (fzf*)"
-    echo "  -p : Search & play media found using Invidious (fzf*)"
-    echo "  -y : Search related media on Invidious (fzf*)"
-    echo "  -Y : Search & play related media using Invidious (fzf*)"
-    echo "  -x : Starts $PROGNAME in a new $MPVC_TERM (config \$MPVC_TERM) [combine -x with $optflags]"
-    echo "*tips: If unsure about where to begin, start with: $PROGNAME -p 'kupla mirage'"
+    echo "usage: $PROGNAME opts # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
+    echo " -b|browse   : Browse the provided ytdl-archive URL with fzf"
+    echo " -c|chapters : Start fzf to manage the current mpv chapterlist"
+    echo " -d|dir      : Set the WD to the media directory given as argument"
+    echo " -e|eqz      : Start fzf to manage the equalizer settings"
+    echo " -f|playlist : Start fzf to manage the current mpv playist"
+    echo " -g|fetch    : Fetch the given YT URL, and store locally"
+    echo " -G|Fetch    : Search on Invidious, fetch, and store locally"
+    echo " -i|lyrics   : Search given media lyrics on Invidious"
+    echo " -k|dplay    : Search & play DuckDuckGo videos"
+    echo " -K|dsearch  : Search DuckDuckGo videos"
+    echo " -l|local    : Search & play local media"
+    echo " -s|search   : Search on Invidious"
+    echo " -p|splay    : Search & play media found using Invidious"
+    echo " -y|related  : Search related media on Invidious"
+    echo " -Y|Related  : Search & play related media using Invidious"
+    echo " -x|launch   : Starts $PROGNAME in a new $MPVC_TERM (config \$MPVC_TERM) [combine -x with other opts]"
+    echo " -v|version  : Return the $PROGNAME version."
+    echo " now         : Return a shareable URL to the "now listening" playlist"
+    echo " somafm      : Search & play SomaFM channels"
+    echo " radioapi    : Search & play Radio-Browser API channels"
+    echo "*tips: If unsure about where to begin, start: $PROGNAME -p 'kupla mirage'"
     exit;
 }
 
@@ -407,43 +481,51 @@ main()
     mpvcfzf_config
     if [ $# -lt 1 ]; then mpvcfzf_usage; fi
 
-    while getopts "$optflags" flag;
+    for arg in "$@";
     do
-        case "$flag" in
-        0) shift; mpvcfzf_awk0;;
-        1) shift; mpvcfzf_awk1;;
+        arg1="${2:-}"
 
-        a) mpvcfzf_stashlist ;;
-        b) mpvcfzf_urlbrowser "$OPTARG" ;;
-        B) mpvcfzf_urlget "$OPTARG" ;;
-        c) mpvcfzf_chapterlist ;;
-        C) shift; mpvcfzf_icache;;
-        d) MPVC_DIR="$OPTARG"; cd "$MPVC_DIR" || return;;
-        e) mpvcfzf_equalizer "$@" ;;
-        f) mpvcfzf_playlist ;;
-        F) shift; mpvcfzf_preview "$@" ;;
-        g) mpvcfzf_fetch "$OPTARG";;
-        G) mpvcfzf_fetch $(mpvcfzf_iplay "$OPTARG") ;;
-        i) mpvcfzf_lyrics "${OPTARG:-}";;
-        I) mpvcfzf_lyrics "";;
-        L) echo "https://ddg.gg?ia=lyrics&iax=lyrics&q=lyrics $(mpvc -f '%title%')" ;;
-        k) mpvcfzf_ddg_play "$OPTARG";;
-        K) mpvcfzf_ddg "$OPTARG";;
-        h) mpvcfzf_usage ;;
-        l) mpvcfzf_local ;;
-        n) mpvcfzf_nextvideo "$OPTARG" ;;
-        o) mpvcfzf_isearch_once "$OPTARG" ;; # lucky
-        O) mpvcfzf_isearch_once "$OPTARG" | mpvcfzf_awk1 | mpvc load ;; # lucky
-        #O) mpvcfzf_icache_output_dir ;;
-        p) mpvcfzf_iplay "$OPTARG" | mpvc load ;;
-        P) mpvcfzf_iplay "$OPTARG" | mpvc loadc ;;
-        r) mpvcfzf_fetch_remove "$OPTARG" ;;
-        s) mpvcfzf_isearch "$OPTARG";;
-        x) shift; if quiet command -v $MPVC_TERM; then $MPVC_TERM -e "$0" "$@"; fi; exit;;
-        y) mpvcfzf_ssearch "${OPTARG:-}";;
-        Y) mpvcfzf_splay "${OPTARG:-}";;
-        v) mpvcfzf_version ;;
-        *) mpvcfzf_usage ;;
+        case "$arg" in
+        -0|awk0)    shift; mpvcfzf_awk0; return ;;
+        -1|awk1)    shift; mpvcfzf_awk1; return ;;
+
+        -a|stash)   shift; mpvcfzf_stashlist; return ;;
+        -b|browse)  shift; mpvcfzf_urlbrowser "$arg1"; return ;;
+        -B|urlget)  shift; mpvcfzf_urlget "$arg1"; return ;;
+        -c|chapters)shift; mpvcfzf_chapterlist; return ;;
+        -C|cache)   shift; mpvcfzf_icache; return;;
+
+        -d|dir)     shift; MPVC_DIR="$arg1"; cd "$MPVC_DIR" || return;;
+        -e|eqz)     shift; mpvcfzf_equalizer; return ;;
+        -f|playlist)shift; mpvcfzf_playlist; return ;;
+        -F|preview) shift; mpvcfzf_preview "$@"; return ;;
+        -g|fetch)   shift; mpvcfzf_fetch "$arg1"; return ;;
+        -G|Fetch)   shift; mpvcfzf_fetch $(mpvcfzf_iplay "$1"); return ;;
+        -i|lyrics)  shift; mpvcfzf_lyrics "$arg1"; return ;;
+        -L|Lyrics)  shift; mpvcfzf_lyrics_ddg; return ;;
+        -k|dplay)   shift; mpvcfzf_ddg_play "$arg1"; return ;;
+        -K|dsearch) shift; mpvcfzf_ddg "$arg1"; return ;;
+        -h|help)    shift; mpvcfzf_usage; return ;;
+        -l|local)   shift; mpvcfzf_local; return ;;
+        -n|next)    shift; mpvcfzf_nextvideo "$arg1"; return ;;
+
+        -o|osearch) shift; mpvcfzf_isearch_once "$arg1" ;; # lucky
+        -O|Osearch) shift; mpvcfzf_isearch_once "$arg1" | mpvcfzf_awk1 | mpvc load ;; # lucky
+        -#O)         mpvcfzf_icache_output_dir ;;
+
+        -p|splay)   shift; mpvcfzf_iplay "$arg1" | mpvc load; return ;;
+        -P|Splay)   shift; mpvcfzf_iplay "$arg1" | mpvc loadc; return ;;
+        -r|remove)  shift; mpvcfzf_fetch_remove "$arg1"; return ;;
+        -s|search)  shift; mpvcfzf_isearch "$arg1"; return;;
+        -x|launch)  shift; mpvcfzf_launch_term "$@"; exit ;;
+        -y|related) shift; mpvcfzf_related_search "$arg1"; return ;;
+        -Y|Related) shift; mpvcfzf_related_play "$arg1"; return ;;
+        -v|version) shift; mpvcfzf_version; return ;;
+
+        now)        shift; mpvcfzf_now; return ;;
+        somafm)     shift; mpvcfzf_somafm "${1:-}"; return ;;
+        radioapi)   shift; mpvcfzf_radioapi "${1:-}"; return ;;
+        #*)         shift; mpvcfzf_usage; return ;;
         esac
     done
 }
