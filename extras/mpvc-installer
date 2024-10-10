@@ -116,8 +116,8 @@ mpvc_uninstall()
 mpvc_check_requirements()
 {
     # attempt at listing packages required by mpvc & extras/ to work
-    command -v "sh" || echo "$PROGNAME: Error: No sh(1) found. Install to continue."
-    command -v "mpv" || echo "$PROGNAME: Error: No mpv found. Install to continue."
+    command -v "sh"  || echo "$PROGNAME: Error: No sh found. Install to continue"
+    command -v "mpv" || echo "$PROGNAME: Error: No mpv found. Install to continue"
     command -v "fzf" || echo "$PROGNAME: Error: No fzf found, Install to continue"
     command -v "awk" || echo "$PROGNAME: Error: No awk found, Install to continue" # gawk ???
     command -v "sed" || echo "$PROGNAME: Error: No sed found, Install to continue" # gsed ???
