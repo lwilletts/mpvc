@@ -47,6 +47,7 @@ EOF
  -L | --loopfile         : Loop currently playing file.
  -m | --mute             : Toggle sound.
  -t | --seek             : Increase/decrease playback time relatively, accepts % values.
+    | --seekrand         : Set a random playback time.
  -T | --time             : Set absolute playback time.
  -x | --speed            : Increase/decrease speed relative to the current speed.
  -X | --speedval         : Set absolute speed.
@@ -573,6 +574,7 @@ mpvc_appendtracks() {
 
 mpvc_get_random() { od -vAn -N2 -tu2 < /dev/urandom; }
 mpvc_play_random() { mpvc_set_track "$(mpvc_get_random)" "absolute"; }
+mpvc_seek_random() { d=$(mpvc_get duration); mpvc_set_time "absolute" "$(( $(mpvc_get_random) % ${d%%.*} ))"; }
 
 mpvc_play_now() {
     mpvc_play_next "$@"
@@ -585,7 +587,8 @@ mpvc_play_next() {
     mpvc_appendtracks "$@"
     lid_last="$(( $(mpvc_get playlist-count) - 1 ))"
     lid_next="$(( $(mpvc_get playlist-pos) + 1 ))"
-    for f in "$@"; do
+    for f in "$@";
+    do
         mpvc_move_track "$lid_last" "$lid_next"
     done
 }
@@ -1041,6 +1044,7 @@ main() {
             # random) MPV doesn't have this control option!
 
             # GNU-style options
+            --seekrand|seekrand)             shift; mpvc_seek_random;;
             -t|--seek|seek)                  shift; mpvc_set_time "relative" "${1:-}" ;;
             -T|--time|time)                  shift; mpvc_set_time "absolute" "${1:-}" ;;
             -v|--vol)                        shift; mpvc_add "volume" "${1:-}"  ;;
