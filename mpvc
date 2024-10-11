@@ -481,14 +481,14 @@ mpvc_stash() {
         apply_current)
             while read -r line; do
                 case "$line" in
-                    "# $PROGNAME "*) echo "$line";;
-                    "mpvc --mpv")  mpvc_mpv;;
-                    "mpvc --wait") mpvc_wait;;
-                    "mpvc mpv")    mpvc_mpv;;
-                    "mpvc wait")   mpvc_wait;;
-                    "mpvc cmd "*)  mpvc_cmd ${line##mpvc cmd };;
-                    "mpvc set "*)  mpvc_set ${line##mpvc set } || true;;
-                    "mpvc add "*)  mpvc_appendtrack "${line##mpvc add }";;
+                    "# $PROGNAME "*) quietcheck warn "$line";;
+                    "mpvc --mpv")    quietcheck mpvc_mpv;;
+                    "mpvc --wait")   quietcheck mpvc_wait;;
+                    "mpvc mpv")      quietcheck mpvc_mpv;;
+                    "mpvc wait")     quietcheck mpvc_wait;;
+                    "mpvc cmd "*)    quietcheck mpvc_cmd ${line##mpvc cmd };;
+                    "mpvc set "*)    quietcheck mpvc_set ${line##mpvc set } || true;;
+                    "mpvc add "*)    quietcheck mpvc_appendtrack "${line##mpvc add }";;
                 esac
             done
             ;;
@@ -559,7 +559,7 @@ mpvc_appendtrack() {
         # cache media here if media is found in local storage
         if [ "$MPVC_LOCAL_CACHE" = "true" ]; then filename=$(echo "$filename" | $PROGDIR/mpvc-fzf -C); fi
         mpvc_ecmdr "loadfile" "$filename" "append-play" || return 1
-        echo "Adding: $(mpvc_curl_cache_title_clean "$filename")"
+        quietcheck warn "Adding: $(mpvc_curl_cache_title_clean "$filename")"
     fi
 }
 
