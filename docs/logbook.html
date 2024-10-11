@@ -536,8 +536,8 @@ the limitations in authentication and HTTPS security.
 <p>
 The solution has been to change the defaults: so now mpvc-web runs by
 default on localhost, and, a new option: `MPVC_WEB_SSL_ENABLE=1 mpvc-web`
-setups a `stunnel(1)` HTTPS connection, this allows to address the HTTPS security part.
-Next, to address the authentication part, `stunnel(1)` provides peer
+setups a `socat(1)` HTTPS connection, this allows to address the HTTPS security part.
+Next, to address the authentication part, `socat(1)` provides peer
 certificate verification, so using the new option `MPVC_WEB_SSL_ENABLE=1 MPVC_WEB_SSL_VERIFY=2 mpvc-web`
 only clients that provide a valid peer certificate can connect to mpvc-web.
 </p>
@@ -557,7 +557,7 @@ So, now the following alternatives are available, ordered from less to more secu
     <li>
         If additionally, the environment can get attacks from malicious users, then
         require the use of peer certificates, therefore, limiting access only to those
-        clients/peers that have present  valid `stunnel(1)` certificate with:
+        clients/peers that have present  valid `socat(1)` certificate with:
         `MPVC_WEB_HOST=0 MPVC_WEB_SSL_ENABLE=1 MPVC_WEB_SSL_VERIFY=2 mpvc-web`
     </li>
 </ol>
