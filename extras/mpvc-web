@@ -36,9 +36,8 @@ mpvc_web_defaults()
     MPVC_WEB_PORT=${MPVC_WEB_PORT:-8000}
     MPVC_WEB_ROOT=${MPVC_WEB_ROOT:-/tmp/mpvc-web/root}
     MPVC_WEB_SSL_PORT=${MPVC_WEB_SSL_PORT:-8443}
-    MPVC_WEB_SSL_PEM=${MPVC_WEB_SSL_PEM:-$MPVC_WEB_ROOT/../stunnel.pem}
-    MPVC_WEB_SSL_CFG=${MPVC_WEB_SSL_CFG:-$MPVC_WEB_ROOT/../stunnel.cfg}
-    MPVC_WEB_SSL_PID=${MPVC_WEB_SSL_PID:-$MPVC_WEB_ROOT/../stunnel.pid}
+    MPVC_WEB_SSL_PEM=${MPVC_WEB_SSL_PEM:-$MPVC_WEB_ROOT/../ssl.pem}
+    MPVC_WEB_SSL_PID=${MPVC_WEB_SSL_PID:-$MPVC_WEB_ROOT/../ssl.pid}
     MPVC_WEB_SSL_ENABLE=${MPVC_WEB_SSL_ENABLE:-}
     MPVC_WEB_SSL_VERIFY=${MPVC_WEB_SSL_VERIFY:-0}
     MPVC_WEB_ARCHIVE_ENABLE=${MPVC_WEB_ARCHIVE_ENABLE:-}
@@ -82,8 +81,8 @@ mpvc_web_config()
         echo "$PROGNAME: Error: No python3 found, install to continue."
         exit
     fi
-    if ! command -v stunnel >/dev/null; then
-        echo "$PROGNAME: Warning: No stunnel found, install to support SSL."
+    if ! command -v socat >/dev/null; then
+        echo "$PROGNAME: Warning: No socat found, install to support SSL."
     fi
 }
 
@@ -461,30 +460,12 @@ mpvc_web_favicon()
 EOF
 }
 
-mpvc_web_stunnel_cfg()
+mpvc_web_https()
 {
-    cat <<EOF
-# stunnel.cfg for $PROGNAME $PROGVERSION $PROGURL
-sslVersion = all
-options = NO_SSLv2
-options = NO_SSLv3
+    MPVC_WEB_LISTEN="pf=ip4,bind=$MPVC_WEB_HOST,cert=$MPVC_WEB_SSL_PEM,cafile=$MPVC_WEB_SSL_PEM,verify=$MPVC_WEB_SSL_VERIFY"
 
-#socket = a:TCP_NODELAY=1
-#socket = l:TCP_NODELAY=1
-#socket = r:TCP_NODELAY=1
-pid=$MPVC_WEB_SSL_PID
-
-[mpvc-web]
-accept = $MPVC_WEB_HOST:$MPVC_WEB_SSL_PORT
-connect = $MPVC_WEB_HOST:$MPVC_WEB_PORT
-
-cert = ${MPVC_WEB_SSL_PEM}
-key  = ${MPVC_WEB_SSL_PEM}
-cafile = ${MPVC_WEB_SSL_PEM}
-verify=$MPVC_WEB_SSL_VERIFY
-#protocol = proxy
-TIMEOUTclose = 0
-EOF
+    socat "OPENSSL-LISTEN:$MPVC_WEB_SSL_PORT,$MPVC_WEB_LISTEN,reuseaddr,fork" "TCP:$MPVC_WEB_HOST:$MPVC_WEB_PORT" &
+    #echo "$$" > "$MPVC_WEB_SSL_PID"
 }
 
 mpvc_web_setup()
@@ -518,19 +499,18 @@ mpvc_web_setup()
         mpvc_web_cgi > "$MPVC_WEB_CGI"
         chmod u+x "$MPVC_WEB_CGI"
 
-        # setup https stunnel if requested
+        # setup https socat if requested
         if [ -n "${MPVC_WEB_SSL_ENABLE}" ]; then
-            echo "# $PROGNAME Setup $MPVC_WEB_ROOT stunnel: $MPVC_WEB_HOST:$MPVC_WEB_SSL_PORT"
-            mpvc_web_stunnel_cfg > "$MPVC_WEB_SSL_CFG"
+            echo "# $PROGNAME Setup $MPVC_WEB_ROOT socat: $MPVC_WEB_HOST:$MPVC_WEB_SSL_PORT"
             if [ ! -e "$MPVC_WEB_SSL_PEM" ]; then
                 MPVC_WEB_SSL_SUBJ="/C=CN/ST=ST/O=$PROGNAME/CN=$PROGNAME-$MPVC_WEB_HOSTNAME"
                 openssl req -new -x509 -days 365 -nodes -out "$MPVC_WEB_SSL_PEM" -keyout "$MPVC_WEB_SSL_PEM" -subj "$MPVC_WEB_SSL_SUBJ"
                 openssl pkcs12 -export -passout "pass:" -in "$MPVC_WEB_SSL_PEM" -out "$MPVC_WEB_SSL_PEM.p12"
             fi
-            if [ -e "$MPVC_WEB_SSL_PID" ]; then
+            if [ -s "$MPVC_WEB_SSL_PID" ]; then
                 kill "$(cat "$MPVC_WEB_SSL_PID")" || true
             fi
-            stunnel "$MPVC_WEB_SSL_CFG"
+            mpvc_web_https
         fi
 
         if [ -n "${MPVC_WEB_DEV:-}" ]; then
