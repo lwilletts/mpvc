@@ -533,14 +533,13 @@ mpvc_web()
         python3 -u -m http.server --cgi --bind "$MPVC_WEB_HOST" "$MPVC_WEB_PORT" "$@" 2>&1 |
             awk -v mpvcbin="$MPVC_WEB_CGI" \
         '
-        function mpvcdash(cmd) { system(mpvcbin" "cmd); }
-        function mpvc(cmd) { mpvcdash("mpvc -q "cmd); }
+        function mpvcsys(cmd) { system(mpvcbin" "cmd); }
+        function mpvc(cmd)    { mpvcsys("mpvc -q "cmd); }
         function httpreq(r)
         {
             sub("HTTP.*$", "", r);
             sub("^.*GET \\/\\?cli=(mpvc-)", "mpvc-", r);
             sub("^.*GET \\/\\?cli=(mpvc)\\+", "mpvc ", r);
-
             gsub("^("mpvcbin") [^a-zA-Z0-9 ]*", "", r);
             gsub("\\+", " ", r);
             gsub("%22", "\"", r);
@@ -548,7 +547,6 @@ mpvc_web()
             gsub("%23", "#", r);
             gsub("%2F", "/", r);
             gsub("%3A", ":", r);
-
             return r
         }
 
@@ -595,7 +593,7 @@ mpvc_web()
             if (ENVIRON["MPVC_WEB_DEV"] && match(r, "^mpvc"))
             {
                 #print(r)
-                mpvcdash(r) # XXX
+                mpvcsys(r) # XXX
             }
         }
 
