@@ -201,13 +201,18 @@ mpvc_isotime() { TZ=UTC date -u +"%Y-%m-%dT%H:%M:%SZ"; }
 
 ## Retrieval Functions ########################################################
 
+mpvc_curl()
+{
+    curl -A 'Mozilla/5.0' "$@"
+}
+
 mpvc_curl_cache()
 {
     k=$2
     v="$( awk -F'\t' -v k="$k" '{ if ($1 == k) {print $2; exit} }' "$MPVC_CURL_CACHE" )"
 
     if [ "${#v}" -eq 0 ]; then
-        v=$(curl "$@")
+        v=$(mpvc_curl "$@")
         o=$(cat "$MPVC_CURL_CACHE") # append at the top in 2023 :-)
         (echo "$k	$v"; echo "$o") > "$MPVC_CURL_CACHE"
     fi
