@@ -121,7 +121,7 @@ A thing that I'd like to be able to do is to perform <code>mpvc load/save</code>
 
 <h3 id="logbook-20221120">On persistent mpv startup, 20 Nov 2022</h3>
 <p>
-One particular feature where improvement could be done mpvc -a audio.opus, when mpv finishes playing audio.opus, mpv terminates, and, the current playlist is lost. This happens as mpv is started with --idle=once. A solution for this is to start mpv separately with --idle=yes. A shortcut for this is to run `mpvc --mpv` that does exactly this, after this the mpv instance can be manipulated with mpvc, and does not terminate once mpv finishes playing.
+One particular feature where improvement could be done is <code>mpvc -a audio.opus</code>, when mpv finishes playing audio.opus, mpv terminates, and, the current playlist is lost. This happens as mpv is started with --idle=once. A solution for this is to start mpv separately with --idle=yes. A shortcut for this is to run <code>mpvc --mpv</code> that does exactly this, after this the mpv instance can be manipulated with mpvc, and does not terminate once mpv finishes playing.
 </p>
 
 <h3 id="logbook-20221203">On a minimal mpvc-tui, 03 Dec 2022</h3>
@@ -604,10 +604,11 @@ MPRIS stands for <a href="https://www.freedesktop.org/wiki/Specifications/mpris-
 <p>
 Check <a href="https://github.com/hoyon/mpv-mpris">mpv-mpris</a> for docs/setup, below is a quick setup:
 
-<pre>
-mkdir -p ~/.config/mpv/scripts
+<code>
+mkdir -p ~/.config/mpv/scripts;
+
 curl -fsSL -o ~/.config/mpv/scripts/mpris.so https://github.com/hoyon/mpv-mpris/releases/download/1.0/mpris.so
-</pre>
+</code>
 
 Then, start a new instance of mpv player that loads `mpris.so`
 <br/>
@@ -644,9 +645,10 @@ PS: Although the title says "Introducing mpvc-chapter", it has been present for 
 <h3 id="logbook-20240505">Introducing mpvc-osd: interfacing mpvc with a 4x20 USB LCD, 5 May 2024</h3>
 <p>
 While mpvc was playing `The Number 4` from Khruangbin's EP `The Infamous Bill` decided it would be fun to interface mpvc with a USB LCD on the Raspberry PI that acts as a jukebox, so each time a track starts output what's playing now for some seconds, and then poweroff the LCD. Turned out nice and easy by using <code>mpvc-tui -S</code> scrobbling code, and masaging the output to pipe it to the USB LCD for presentation. For the record the output from <code>mpvc-tui</code> is:
-<pre>
+<code>
     mpvc-tui -S 'echo $(date +"T%H:%M") $(mpvc -f "[%status%] #%position%/%playlistlength% %time% %artist% - %title% - %path%")' 'false'
-</pre>
+</code>.
+
 And this is how it looks:
 <p style="text-align:center">
 <img src="assets/mpvc-osd-usblcd.jpg" alt="mpvc-osd usblcd" width="90%" />
