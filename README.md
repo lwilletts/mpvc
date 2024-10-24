@@ -74,7 +74,7 @@ Recommended extras:
 - [Gentoo](#gentoo-mpvc)
 - [Nix](#nix-mpvc)
 
-Installing is just a matter of fetching the scripts either via [Git](#git)/Curl/etc., scripts can be used directly from the repo, the `mpvc-installer` bit is just there for easiness, to fetch & link them into your `BINDIR=~/bin/` that [mpvc-installer](../../blob/master/extras/mpvc-installer) does by default. 
+Installing is just a matter of fetching the scripts either via [Git](#git)/Curl/etc., scripts can be used directly from the repo, the `mpvc-installer` bit is just there for easiness, to fetch & link them into your `BINDIR=~/bin/` that [mpvc-installer](../../blob/master/extras/mpvc-installer) does by default.
 
 The easiest for a onetime install is the [Manual](#manual), however for @latest version a [Git](#git) install is recommended.
 Check for missing dependencies/requirements using `mpvc-installer check-reqs`.
@@ -98,8 +98,6 @@ This does git clone, and symlinks the mpvc scripts to `BINDIR` (default `~/bin`)
  (cd mpvc; extras/mpvc-installer link-user)
  (cd mpvc; extras/mpvc-installer check-reqs)
 
- # use mpvc-fzf to search and play youtube media
- mpvc-fzf -p 'kupla mirage'
  # use mpvc to add/load/save media files or online YT URLs
  mpvc add /path/to/your/*.mp3 # or your URLs
  find . -type f -name | mpvc load
@@ -110,6 +108,10 @@ This does git clone, and symlinks the mpvc scripts to `BINDIR` (default `~/bin`)
  mpvc stash push current
  mpvc stash apply current
 
+ # use mpvc-fzf to manage mpvc stash (see mpvc-fzf -h for more)
+ mpvc-fzf -a
+ # use mpvc-fzf to search and play youtube media
+ mpvc-fzf -p 'kupla mirage'
  # use mpvc-fzf to manage the playlist
  mpvc-fzf -f
  # use mpvc-tui to start the tui + desktop notifications
