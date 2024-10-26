@@ -43,9 +43,9 @@ mpvctui_defaults()
     # config defaults
     NO_COLOR="${NO_COLOR:-}"
 
-    MPVC_TUI_COLOR0="$MPVC_TUI_CGREENL"
-    MPVC_TUI_COLOR1="$MPVC_TUI_CCYAN"
-    MPVC_TUI_COLOR2="$MPVC_TUI_CYELLOW"
+    MPVC_TUI_COLOR0="${MPVC_TUI_COLOR0:-$MPVC_TUI_CGREENL}"
+    MPVC_TUI_COLOR1="${MPVC_TUI_COLOR1:-$MPVC_TUI_CCYAN}"
+    MPVC_TUI_COLOR2="${MPVC_TUI_COLOR2:-$MPVC_TUI_CYELLOW}"
     MPVC_TUI_UPDATEC=${MPVC_TUI_UPDATEC:-2}
     MPVC_TUI_CLEARC=${MPVC_TUI_CLEARC:-4}
 
@@ -53,6 +53,9 @@ mpvctui_defaults()
     MPVC_TUI_TIPS=${MPVC_TUI_TIPS:-true}
     MPVC_TUI_TERM=${MPVC_TUI_TERM:-xterm}
     MPVC_TUI_SHELL=$(readlink -f /proc/$$/exe)
+
+    MPVC_TUI_STATUS_CMD="${MPVC_TUI_STATUS_CMD:-status}"
+    MPVC_TUI_PLAYLIST_CMD="${MPVC_TUI_PLAYLIST_CMD:-playlist}"
     export MPVC_TUI_CLINE=${MPVC_TUI_CLINE:-11}
 }
 
@@ -136,9 +139,9 @@ mpvctui_watcher()
 {
     mpvctui_header0 "${MPVC_TUI_HEADER0}$(mpvctui_tips)"
     mpvctui_header1 "Status"
-    mpvc status
+    mpvc "${MPVC_TUI_STATUS_CMD}"
     mpvctui_header1 "Playlist"
-    mpvc playlist
+    mpvc "${MPVC_TUI_PLAYLIST_CMD}"
     mpvctui_header1 "Prompt"
 }
 
