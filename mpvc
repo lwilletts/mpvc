@@ -874,7 +874,11 @@ mpvc_print_status() {
         }
         '
     )
-    mpvc_cmd "expand-text" "${F}" | awk '{gsub(" \\\\r","\n");print}'
+    mpvc_cmd "expand-text" "${F}" |
+        awk '{
+                # trim/replace times: 00:01:59 -> 01:59
+                gsub(" \\\\r","\n"); gsub(" 00:", " "); gsub("/00:", "/"); print
+        }'
 }
 
 mpvc_print_status_final() {
@@ -1137,6 +1141,7 @@ main() {
             --delay|delay)                   mpvc_delay;;
             --wait|wait)                     mpvc_wait;;
             --tac|tac)                       mpvc_tac; exit 0;;
+            --lowfi|lowfi)                   MPVC_FORMATSTRING='[%status%] ▷ %title% @ %time%/%length% #%position%/%playlistlength% 🎧';;
 
             --ttysize|ttysize)               mpvc_tty_size; QUIETFLAG=true;;
             --ttycols|ttycols)               mpvc_tty_cols; QUIETFLAG=true;;
