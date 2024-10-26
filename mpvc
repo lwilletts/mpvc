@@ -157,6 +157,7 @@ mpvc_defaults()
     QUIETFLAG="${QUIETFLAG:-}"
     MPVC_LOCAL_CACHE="${MPVC_LOCAL_CACHE:-false}"
     MPVC_FORMATSTRING="${MPVC_FORMATSTRING:-}"
+    MPVC_FORMATSTRING_LOFI=${MPVC_FORMATSTRING_LOFI:-'[%status%] ▷ %title% @ %time%/%length% #%position%/%playlistlength% (%volume%%%) 🎧'}
 
     # print default status of mpv instance
     if [ -z "$MPVC_FORMATSTRING" ]; then
@@ -1007,7 +1008,7 @@ main() {
     mpvc_config
     arg1=${1:-}
     case "$arg1" in
-    ytquery|ytqueryjson|--tac|tac) ;;
+    ytquery|ytqueryjson|--tac|tac|--lowfi|lowfi) ;;
     -k|--kill|kill|-K|--killall|killall) ;;
     -c|--crop|crop|-C|--clear|clear|cmd|sockcmd|socklist|--socklist) ;;
     -a|add|append|-A|load|--load|playnext|--playnext|-n|playnow|--playnow|mpv|--mpv|stash|--stash|--toggle|toggle|-q|--quiet) ;;
@@ -1141,7 +1142,7 @@ main() {
             --delay|delay)                   mpvc_delay;;
             --wait|wait)                     mpvc_wait;;
             --tac|tac)                       mpvc_tac; exit 0;;
-            --lowfi|lowfi)                   MPVC_FORMATSTRING='[%status%] ▷ %title% @ %time%/%length% #%position%/%playlistlength% 🎧';;
+            --lowfi|lowfi)                   MPVC_FORMATSTRING="$MPVC_FORMATSTRING_LOFI" ;;
 
             --ttysize|ttysize)               mpvc_tty_size; QUIETFLAG=true;;
             --ttycols|ttycols)               mpvc_tty_cols; QUIETFLAG=true;;
