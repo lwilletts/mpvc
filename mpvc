@@ -157,7 +157,7 @@ mpvc_defaults()
     QUIETFLAG="${QUIETFLAG:-}"
     MPVC_LOCAL_CACHE="${MPVC_LOCAL_CACHE:-false}"
     MPVC_FMTSTR="${MPVC_FMTSTR:-}"
-    MPVC_FMTSTR_LOFI=${MPVC_FMTSTR_LOFI:-'[%status%] %statuslofi% %title% 🎶 %time%/%length% #%position%/%playlistlength% %mutelofi%%volume%%% 🎧'}
+    MPVC_FMTSTR_LOFI=${MPVC_FMTSTR_LOFI:-'[%status%] %statuslofi% %title% 🎶 %time%/%length% #%position%/%playlistlength% %mutelofi%%volume%%% %singlelofi% %repeatlofi% 🎧'}
 
     # print default status of mpv instance
     if [ -z "$MPVC_FMTSTR" ]; then
@@ -856,6 +856,8 @@ mpvc_print_status() {
 
             gsub("%statuslofi%", "${?pause==yes:⏸️}${?pause==no:▷}${!pause:NA}");
             gsub("%mutelofi%", "${?mute==yes:🔇}${?mute==no:🔊}${!mute:NA}");
+            gsub("%singlelofi%", "${?loop-file==inf:🔁}${?loop-file==no:🔂}${!loop-file:NA}")
+            gsub("%repeatlofi%", "${?loop-playlist==inf:🔄}${?loop-playlist==no:🔃}${!loop-playlist:NA}")
 
             gsub("%status%", "${?pause==yes:paused}${?pause==no:play}${!pause:NA}");
             gsub("%title%", "${media-title}")
