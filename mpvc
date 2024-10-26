@@ -156,12 +156,12 @@ mpvc_defaults()
     IMAGEFLAG="${IMAGEFLAG:-}"
     QUIETFLAG="${QUIETFLAG:-}"
     MPVC_LOCAL_CACHE="${MPVC_LOCAL_CACHE:-false}"
-    MPVC_FORMATSTRING="${MPVC_FORMATSTRING:-}"
-    MPVC_FORMATSTRING_LOFI=${MPVC_FORMATSTRING_LOFI:-'[%status%] ▷ %title% 🎶 %time%/%length% #%position%/%playlistlength% 🔊%volume%%% 🎧'}
+    MPVC_FMTSTR="${MPVC_FMTSTR:-}"
+    MPVC_FMTSTR_LOFI=${MPVC_FMTSTR_LOFI:-'[%status%] %statuslofi% %title% 🎶 %time%/%length% #%position%/%playlistlength% %mutelofi%%volume%%% 🎧'}
 
     # print default status of mpv instance
-    if [ -z "$MPVC_FORMATSTRING" ]; then
-        MPVC_FORMATSTRING="\
+    if [ -z "$MPVC_FMTSTR" ]; then
+        MPVC_FMTSTR="\
 %artist% - %title% \r\
 [%status%] #%position%/%playlistlength% %time%/%length% (%percentage%%%) \r\
 vol:%volume%%% mute:%mute% repeat:%repeat% single:%single% \r\
@@ -845,14 +845,17 @@ mpvc_chapter_search_play()
 
 ## Formatting and Printing Functions ##########################################
 
-# formats and prints according to $MPVC_FORMATSTRING
+# formats and prints according to $MPVC_FMTSTR
 mpvc_print_status() {
     # not that nice, in fact way more ugly, but also way faster
-    F=$(echo "$MPVC_FORMATSTRING" |
+    F=$(echo "$MPVC_FMTSTR" |
         awk '
         {
             split("year genre album icy-title comment volume volume-max mute path height width playback-time ab-loop-[ab] speed force-window video screen aspect idle fullscreen chapter chapters =chapter", RE)
             for (i in RE) { re=RE[i]; gsub("%"re"%", "${"re":NA}"); }
+
+            gsub("%statuslofi%", "${?pause==yes:⏸️}${?pause==no:▷}${!pause:NA}");
+            gsub("%mutelofi%", "${?mute==yes:🔇}${?mute==no:🔊}${!mute:NA}");
 
             gsub("%status%", "${?pause==yes:paused}${?pause==no:play}${!pause:NA}");
             gsub("%title%", "${media-title}")
@@ -1142,14 +1145,14 @@ main() {
             --delay|delay)                   mpvc_delay;;
             --wait|wait)                     mpvc_wait;;
             --tac|tac)                       mpvc_tac; exit 0;;
-            --lowfi|lowfi)                   MPVC_FORMATSTRING="$MPVC_FORMATSTRING_LOFI" ;;
+            --lowfi|lowfi)                   MPVC_FMTSTR="$MPVC_FMTSTR_LOFI" ;;
 
             --ttysize|ttysize)               mpvc_tty_size; QUIETFLAG=true;;
             --ttycols|ttycols)               mpvc_tty_cols; QUIETFLAG=true;;
             --ttylines|ttylines)             mpvc_tty_lines; QUIETFLAG=true;;
 
             # global argument parsing
-            -f|--format)                     shift; MPVC_FORMATSTRING="${1:-}"       ;;
+            -f|--format)                     shift; MPVC_FMTSTR="${1:-}"       ;;
             -S|--socket)                     shift; mpvc_handle_socket "${1:-}";;
             -Q|--vid=no)                     MPVOPTIONS="$MPVOPTIONS --vid=no"; ;;
             --image)                         IMAGEFLAG=true;                ;;
@@ -1164,7 +1167,7 @@ main() {
         esac
         if [ $# -ge 1 ]; then shift; fi
     done
-    # produce format strings last
+    # output mpvc status last
     quietcheck mpvc_print_status_final
 }
 
