@@ -157,7 +157,7 @@ mpvc_defaults()
     QUIETFLAG="${QUIETFLAG:-}"
     MPVC_LOCAL_CACHE="${MPVC_LOCAL_CACHE:-false}"
     MPVC_FORMATSTRING="${MPVC_FORMATSTRING:-}"
-    MPVC_FORMATSTRING_LOFI=${MPVC_FORMATSTRING_LOFI:-'[%status%] ▷ %title% @ %time%/%length% #%position%/%playlistlength% (%volume%%%) 🎧'}
+    MPVC_FORMATSTRING_LOFI=${MPVC_FORMATSTRING_LOFI:-'[%status%] ▷ %title% 🎶 %time%/%length% #%position%/%playlistlength% 🔊%volume%%% 🎧'}
 
     # print default status of mpv instance
     if [ -z "$MPVC_FORMATSTRING" ]; then
