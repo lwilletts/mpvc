@@ -328,15 +328,20 @@ mpvcfzf_urlget()
 {
     url=${1:-https://localhost:8443/ytdl-archive/}
     mpvcfzf_curl "$url" |
-        awk '/<a href=".*">.*<\/a>/ { h=$0;sub("^.*href=\"","",h);sub("\".*$","",h);print h }'
+        awk -v url="$url" '
+            /<a href=".*">.*<\/a>/ {
+                href=$0; sub("^.*href=\"", "", href)
+                sub("\".*$","",href)
+                print (href !~ url) ? url"/"href : href
+            }
+        '
 }
 
 mpvcfzf_urlbrowser()
 {
     url=${1:-https://localhost:8443/ytdl-archive/}
     mpvcfzf_urlget "$url" |
-        mpvcfzf_preview --prompt="(urlbrowse) " |
-            awk -v url="$url" '{ print url$0 }'
+        mpvcfzf_preview --prompt="(urlbrowse) "
 }
 
 mpvcfzf_equalizer()
