@@ -82,7 +82,7 @@ Check for missing dependencies/requirements using `mpvc-installer check-reqs`.
 ### Manual
 
 ```console
-curl -fsSL -O https://github.com/lwilletts/mpvc/raw/master/extras/mpvc-installer \
+curl -LO https://github.com/lwilletts/mpvc/raw/master/extras/mpvc-installer \
   && BINDIR=$HOME/bin sh ./mpvc-installer fetch-user
 ```
 
