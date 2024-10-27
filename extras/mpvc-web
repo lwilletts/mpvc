@@ -149,6 +149,12 @@ EOF
 mpvc_web_index_js()
 {
     cat <<EOF
+function toggleLinkColor()
+{
+    var linkcolor = document.getElementById("link-color").value;
+    document.styleSheets[0].rules[0].style.setProperty("--link-color", linkcolor);
+}
+
 function toggleColorScheme(mode="dark")
 {
     var i = 0;
@@ -414,6 +420,7 @@ mpvc_web_index()
             <a href="#" title="theme 8" onclick="document.body.style.WebkitFilter='invert(0.8)';">t8</a>
             <a href="#" title="toggle" onclick="toggleColorScheme()">cycle</a>
             <a href="." title="reset">rst</a>
+            <input type="color" id="link-color" name="link-color" onchange="toggleLinkColor()"  width="1em" style="width: 1em !important">
         </li>
         </ul>
         [
