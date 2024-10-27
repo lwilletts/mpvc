@@ -478,6 +478,7 @@ mpvcfzf_usage()
     echo " -x|launch   : Starts $PROGNAME in a new $MPVC_TERM (config \$MPVC_TERM) [combine -x with other opts]"
     echo " -v|version  : Return the $PROGNAME version."
     echo " now         : Return a shareable URL to the "now listening" playlist"
+    echo " lofi        : Search & play Lo-Fi channels"
     echo " somafm      : Search & play SomaFM channels"
     echo " radioapi    : Search & play Radio-Browser API channels"
     echo "*tips: If unsure about where to begin, start: $PROGNAME -p 'kupla mirage'"
@@ -531,6 +532,7 @@ main()
         -v|version) shift; mpvcfzf_version; return ;;
 
         now)        shift; mpvcfzf_now; return ;;
+        lofi)       shift; mpvcfzf_urlbrowser "https://lofigirl.com/wp-content/uploads/2023/06/" ;;
         somafm)     shift; mpvcfzf_somafm "${1:-}"; return ;;
         radioapi)   shift; mpvcfzf_radioapi "${1:-}"; return ;;
         #*)         shift; mpvcfzf_usage; return ;;
