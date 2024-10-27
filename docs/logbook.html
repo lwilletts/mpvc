@@ -57,10 +57,12 @@
 
 <ul>
 <li> <a href="#gmt4-mpvc-logbook">Logbook</a> </li>
+<li> <a href="#gmt4-mpvc-logbook-the-end">End</a> </li>
 </ul>
 
 Logbook Entries
 <ul>
+    2022
     <li> <a href="#logbook-20220330">#20220330 On playing URLs</a> </li>
     <li> <a href="#logbook-20221114">#20221114 On securing mpv socket location</a> </li>
     <li> <a href="#logbook-20221118">#20221118 On load/save functionality</a> </li>
@@ -75,6 +77,8 @@ Logbook Entries
     <li> <a href="#logbook-20221219">#20221219 On playing music from streaming services as youtube &amp; co.</a> </li>
     <li> <a href="#logbook-20221221">#20221221 On subscribing and receiving mpv events</a> </li>
     <li> <a href="#logbook-20221227">#20221227 On using mpv together with the fzf fuzzy finder</a> </li>
+
+    2023
     <li> <a href="#logbook-20230112">#20230112 On using mpv together with the fzf fuzzy finder</a> </li>
     <li> <a href="#logbook-20230119">#20230119 On controlling multiple remotely running mpv instances</a> </li>
     <li> <a href="#logbook-20230219">#20230219 On stashing mpv media player state to restore later</a> </li>
@@ -86,12 +90,15 @@ Logbook Entries
     <li> <a href="#logbook-20230916">#20230916 On mpvc usage patterns for playing music/videos</a></li>
     <li> <a href="#logbook-20231026">#20231026 On observing mpv property changes</a></li>
     <li> <a href="#logbook-20231117">#20231117 On the security of mpvc-web</a></li>
+
+    2024
     <li> <a href="#logbook-20240116">#20240116 On http-streaming media using mpvc-web</a></li>
     <li> <a href="#logbook-20240214">#20240214 On MPRIS support</a></li>
     <li> <a href="#logbook-20240301">#20240301 On support UNIXes besides GNU/Linux: BSD and MacOS</a></li>
     <li> <a href="#logbook-20240405">#20240405 Introducing mpvc-chapter: helper managing chapters, 5 Apr 2024</a></li>
     <li> <a href="#logbook-20240505">#20240505 Introducing mpvc-osd: interfacing mpvc with a 4x20 USB LCD, 5 May 2024</a></li>
     <li> <a href="#logbook-20240704">#20240704 Some notes on my current mpvc setup, 4 July 2024</a></li>
+    <li> <a href="#logbook-20241026">#20241026 On mpvc lowfi and mpvc-fzf URL browser, 26 October 2024</a></li>
 </ul>
 
 <hr />
@@ -324,7 +331,7 @@ An example of the `mpvc-equalizer` to set equalizer values for classical music:
 
 <h3 id="logbook-20230602">On applying ffmpeg AV filters using the MPV JSON IPC, 2 June 2023</h3>
 <p>
-Continuing with the topic of the previous post about mpvc-equalizer, one reason for starting mpvc, was to ease was to managing audio from the CLI. In that sense mpv integrates well with ffmpeg to apply AV filters. However you've to, either start mpv specifying the ffmpeg cli flags for the AV-filters, or add keyboard shortcuts into the input.conf to be triggedred during runtime.
+Continuing with the topic of the previous post about mpvc-equalizer, one reason for starting mpvc, was to ease was to managing audio from the CLI. In that sense mpv integrates well with ffmpeg to apply AV filters (<a href="https://ffmpeg.org/ffmpeg-filters.html">##https://ffmpeg.org/ffmpeg-filters.html"</a>). However you've to, either start mpv specifying the ffmpeg cli flags for the AV-filters, or add keyboard shortcuts into the input.conf to be triggedred during runtime.
 </p>
 
 <p>
@@ -367,6 +374,12 @@ mpvc cmdr vf toggle "@showvolume:lavfi=[showvolume]"
 mpvc cmdr vf toggle "@showwaves:lavfi=[showwaves]"
 mpvc cmdr vf toggle "@showspectrum:lavfi=[showspectrum]"
 mpvc cmdr vf toggle "@avectorscope:lavfi=[avectorscope]"
+
+mpvc cmdr vf toggle "@mirrorbottom:lavfi=[[vid1]split[main][tmp];[tmp]crop=iw:ih/2:0:ih/2,vflip[flip];[main][flip]overlay[vo]]"
+mpvc cmdr vf toggle "@mirrorleft:lavfi=[[vid1]split[main][tmp];[tmp]crop=iw/2:ih:0:0,hflip[flip];[main][flip]overlay=W/2[vo]]"
+mpvc cmdr vf toggle "@mirrorright:lavfi=[[vid1]split[main][tmp];[tmp]crop=iw/2:ih:iw/2:0,hflip[flip];[main][flip]overlay[vo]]"
+mpvc cmdr vf toggle "@hstack:lavfi=[[vid1]split[v1][v2];[v1][v2]hstack[t]]"
+mpvc cmdr vf toggle "@vstack:lavfi=[[vid1]split[v1][v2];[v1][v2]vstack[t]]"
 </pre>
 </p>
 
@@ -691,17 +704,47 @@ For setups where the mediacenter has a video display with X11 x2x(1) might come 
 ssh -X $USER@$HOST x2x -west -to :0 # be sure to read x2x(1)
 </pre>
 
+<h3 id="logbook-20241026">On mpvc lowfi and mpvc-fzf URL browser, 26 October 2024</h3>
+<p>
+Recently landed <code>mpvc lowfi</code> which features a minimal mpvc status that leverages emojis to represent a one-line compressed playing status (<code>aliased to m="mpvc lowfi"</code> above <a href="#logbook-20230721">#logbook-20230721</a>):
+<pre>
+
+[play] ▷ Polaris 🎶 02:35/04:50 #3/33 🔊60% 🔂 🔄 🎧
+
+</pre>
+This goes hand in hand with the hability to browse HTTP server listings and add music as in:
+<pre>
+
+% mpvc-fzf -b https://lofigirl.com/wp-content/uploads/2023/05
+Adding https://lofigirl.com/wp-content/uploads/2023/05/6.Downtown-Binary-_-The-Present-Sound-Polaris.mp3
+[play] ▷ Polaris 🎶 02:35/04:50 #3/33 🔊60% 🔂 🔄 🎧
+
+</pre>
+The <code>mpvc-fzf -b [URL]</code> browser works as follows:
+
+<ul>
+    <li>1) gets all <code>hrefs</code> and outputs all the links that point to the current host, </li>
+    <li>2) if the link is a media file (say opus/mp3 file) then it can be added with ctrl+t), </li>
+    <li>3) if the link points to another directory/page, then it can be browsed with ctrl+[yu] </li>
+</ul>
+
+The above <code>ctrl+[tyu]</code> shortcuts for mpvc-fzf work as well for local, remote, and other media URLs.
+
 </p>
+
+<h2 id="gmt4-mpvc-logbook-the-end">The End</h2>
+
+Return to the <a href="#gmt4-mpvc-fork">Start</a>
 
 <!-- SOF -->
 
 <hr/>
 <p>
 <span>
-    <em>Last-Modified: Thursday, 4 July 2024 by <a href="https://gmt4.github.io">gmt4</a></em>
+    <em>📅 Sat, 26 Oct 2024 by <a href="https://gmt4.github.io">gmt4</a></em>
 </span>
 <span style="float: right;">
-    <em>Powered by #HTML 🧡 💚 💙 </em>
+    <em>⚡ PoweredBy #HTML</em>
 </span>
 </p>
 
