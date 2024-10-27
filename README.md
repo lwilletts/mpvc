@@ -112,7 +112,7 @@ This does git clone, and symlinks the mpvc scripts to `BINDIR` (default `~/bin`)
  mpvc-fzf -a
  # use mpvc-fzf to search and play youtube media
  mpvc-fzf -p 'kupla mirage'
- # use mpvc-fzf to browse lofi girl uploads and play music
+ # use mpvc-fzf to browse & play lofi girl music
  mpvc-fzf -b https://lofigirl.com/wp-content/uploads/2023/06
  # use mpvc-fzf to manage the playlist
  mpvc-fzf -f
