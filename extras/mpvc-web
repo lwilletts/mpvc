@@ -131,7 +131,7 @@ mpvc_web_select_form()
 mpvc_web_yts()
 {
 cat <<EOF
-            <input placeholder="mpvc yts-search" name="mpvc-yts" list="mpvc-yts-datalist" title="mpvc yts-search" ${MPVC_WEB_SHORTCUT_YTSEARCH} onkeydown="mpvcOnKeyDownEvent(event,this)">
+            <input type="text" placeholder="mpvc yts-search" name="mpvc-yts" list="mpvc-yts-datalist" title="mpvc yts-search" ${MPVC_WEB_SHORTCUT_YTSEARCH} onkeydown="mpvcOnKeyDownEvent(event,this)">
             <datalist id="mpvc-yts-datalist">
             </datalist>
 EOF
@@ -418,9 +418,9 @@ mpvc_web_index()
             <a href="#" title="theme 4" onclick="document.body.style.WebkitFilter='invert(0.4)';">t4</a>
             <a href="#" title="theme 4" onclick="document.body.style.WebkitFilter='invert(0.6)';">t6</a>
             <a href="#" title="theme 8" onclick="document.body.style.WebkitFilter='invert(0.8)';">t8</a>
-            <a href="#" title="toggle" onclick="toggleColorScheme()">cycle</a>
+            <a href="#" title="toggle" onclick="toggleColorScheme()">tg</a>
             <a href="." title="reset">rst</a>
-            <input type="color" id="link-color" name="link-color" onchange="toggleLinkColor()"  width="1em" style="width: 1em !important">
+            <input type="color" id="link-color" name="link-color" onchange="toggleLinkColor()" style="width: 1em !important; height: 1em; padding:0 0;">
         </li>
         </ul>
         [
