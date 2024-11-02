@@ -52,6 +52,8 @@ EOF
  -x | --speed            : Increase/decrease speed relative to the current speed.
  -X | --speedval         : Set absolute speed.
  -I | --image            : Enable adding of images to the queue.
+    | --color            : Enable color (NO_COLOR=)
+    | --nocolor          : Disable color (NO_COLOR=true)
  -k | --kill             : Kill the mpv process controlling the given socket.
  -K | --killall          : Kill all mpv processes indiscriminately.
  -S | --socket           : Set mpv socket [default: $MPVC_SOCKET].
@@ -225,39 +227,40 @@ mpvc_curl_cache_json()
     mpvc_curl_cache -sL "https://youtube.com/oembed?url=$1"
 }
 
-mpvc_curl_cache_metadata_json_once() {
-    filename="${1:-}"
-    result="${1:-}"
-    case "$filename" in
+mpvc_ytquery_json_once() {
+    for i in "$@"
+    do
+        filename="${i:-}"
+        case "$filename" in
         https://youtu.be/watch*|https://youtube.com/watch*|https://www.youtube.com/watch*)
             filename="$(echo "$filename" | sed 's|\(www.\)\?youtube.com|youtu.be|; s|/watch/\??v=|/|')"
-            result="$(mpvc_curl_cache_json "$filename")"
             ;;
         https://youtu.be/*|https://youtube.com/*|https://www.youtube.com/*)
-            result="$(mpvc_curl_cache_json "$filename")"
+            result=$(mpvc_curl_cache_json "$filename")
             ;;
         https://yewtu.be/watch*)
             filename="$(echo "$filename" | sed 's|://yewtu.be|://youtu.be|; s|/watch?v=|/|')"
-            result="$(mpvc_curl_cache_json "$filename")"
+            result=$(mpvc_curl_cache_json "$filename")
             ;;
         https://yewtu.be/*)
             filename="$(echo "$filename" | sed 's|://yewtu.be|://youtu.be|')"
-            result="$(mpvc_curl_cache_json "$filename")"
+            result=$(mpvc_curl_cache_json "$filename")
             ;;
         *) # otherwise, assume its a local file
             result="{ \"title\":${filename##*/}, }"
             ;;
-    esac
-    printf "$result\n"
+        esac
+        printf "$result\n"
+    done
 }
 
-mpvc_curl_cache_metadata_json() {
-    for i in "$@"; do mpvc_curl_cache_metadata_json_once "$i"; done
+mpvc_ytquery_json() {
+    mpvc_ytquery_json_once "$@"
 }
 
 # fn args: given a file/url return its title (may use curl to query YT)
-mpvc_curl_cache_title_clean() {
-    mpvc_curl_cache_metadata_json "$@" | mpvc_getjson 'title'
+mpvc_ytquery() {
+    mpvc_ytquery_json "$@" | mpvc_getjson 'title'
 }
 
 mpvc_getjson() {
@@ -321,7 +324,7 @@ mpvc_get_playlist_filename() {
     if [ "$lid" = "current" ]; then lid=$(mpvc_get playlist-pos); fi
     filename=$(mpvc_get "playlist/$lid/filename")
     result=$filename
-    if [ "$full" != "full" ]; then result=$(mpvc_curl_cache_title_clean "$filename"); fi
+    if [ "$full" != "full" ]; then result=$(mpvc_ytquery "$filename"); fi
     result="${result:-${filename%%*/}}"
     echo "$result"
 }
@@ -339,8 +342,9 @@ mpvc_get_playlist() {
     fi
 
     #mpvc_isinteractive=""; if [ -t 1 ]; then mpvc_isinteractive=1; fi
+    pct=$(mpvc_cmd expand-text '${percent-pos}')
     mpvc_get_playlist_once |
-        awk -v mpvc="$0" -v lpos="$lpos" -v cols="$(mpvc_tty_cols)" -v firstlast="$firstlast" \
+        awk -v mpvc="$0" -v pct="$pct" -v lpos="$lpos" -v cols="$(mpvc_tty_cols)" -v firstlast="$firstlast" \
         '
         BEGIN {
             # truncate lines x cols when interactive (configurable) TBD
@@ -394,27 +398,20 @@ mpvc_get_playlist() {
                 next
             }
 
+            title=mpvc_ytquery($0)
+            line=sprintf("%2d  %s", lid, truncate(title))
             if (lpos == lid)
             {
-                if (ENVIRON["NO_COLOR"])
+                if (!ENVIRON["NO_COLOR"])
                 {
-                    title=mpvc_ytquery($0)
-                    printf("%2d  %s\n", lid, title)
-                }
-                else
-                {
-                    mpvc " cmd expand-text \\${percent-pos}" | getline pct
                     count=int((cols) * (pct/100))
-                    title=mpvc_ytquery($0)
-                    line=sprintf("%2d  %s", lid, truncate(title))
                     fmtstr="\033[7m%-"count"s\033[0m\n"
-                    printf(fmtstr, line)
                 }
+                printf(fmtstr, line)
             }
             else
             {
-                title=mpvc_ytquery($0)
-                printf("%2d  %s\n", lid, truncate(title))
+                print line
             }
         }
     '
@@ -565,7 +562,7 @@ mpvc_appendtrack() {
         # cache media here if media is found in local storage
         if [ "$MPVC_LOCAL_CACHE" = "true" ]; then filename=$(echo "$filename" | $PROGDIR/mpvc-fzf -C); fi
         mpvc_ecmdr "loadfile" "$filename" "append-play" || return 1
-        quietcheck warn "Adding: $(mpvc_curl_cache_title_clean "$filename")"
+        quietcheck warn "Adding: $(mpvc_ytquery "$filename")"
     fi
 }
 
@@ -1107,8 +1104,8 @@ main() {
             --filename|filename)             shift; mpvc_get_playlist_filename "$@"; return;;
             --replay|replay)                 mpvc_set_time "absolute" 0 ;;
 
-            ytquery)                         shift; mpvc_curl_cache_title_clean "$@"; return;;
-            ytqueryjson)                     shift; mpvc_curl_cache_metadata_json "$@"; return;;
+            ytquery)                         shift; mpvc_ytquery "$@"; return;;
+            ytqueryjson)                     shift; mpvc_ytquery_json "$@"; return;;
 
             cprev|--chapter-prev|chapter-prev)            mpvc_chapter_set +1 "relative" ;;
             cnext|--chapter-next|chapter-next)            mpvc_chapter_set -1 "relative" ;;
