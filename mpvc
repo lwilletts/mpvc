@@ -102,7 +102,7 @@ EOF
 Formatting:
  \`$PROGNAME --format\` will interpret the following delimiters if they are found:
 
- %name%, %path%, %dir%, %title%, %artist%, %album%, %albumartist%, comment%,
+ %filename%, %path%, %dir%, %title%, %artist%, %album%, %albumartist%, comment%,
  %genre%, %year%, %icy-title%, %percentage%, %playlistlength%, %position%,
  %repeat%, %single, %status%, %time%, %precisetime%, %speed%, %length%,
  %remaining%, %volume%, %mute%, %frame%, %width%, %height%,
@@ -851,7 +851,7 @@ mpvc_print_status() {
     F=$(echo "$MPVC_FMTSTR" |
         awk '
         {
-            split("year genre album icy-title comment volume volume-max mute path height width playback-time ab-loop-[ab] speed force-window video screen aspect idle fullscreen chapter chapters =chapter", RE)
+            split("year genre album icy-title comment volume volume-max working-directory mute filename path height width playback-time ab-loop-[ab] speed force-window video screen aspect idle fullscreen chapter chapters =chapter", RE)
             for (i in RE) { re=RE[i]; gsub("%"re"%", "${"re":NA}"); }
 
             gsub("%statuslofi%", "${?pause==yes:⏸️}${?pause==no:▷}${!pause:NA}");
@@ -864,11 +864,9 @@ mpvc_print_status() {
             gsub("%artist%", "${?metadata/by-key/artist:${metadata/by-key/artist}}${!metadata/by-key/artist:NA}")
             gsub("%albumartist%", "${?metadata/by-key/album:${metadata/by-key/album}}${!metadata/by-key/album:NA}")
             gsub("%percentage%", "${percent-pos}")
-            gsub("%name%", "${filename}")
             gsub("%repeat%", "${loop-playlist}")
             gsub("%single%", "${loop-file}")
             gsub("%frame%", "${estimated-frame-number}")
-            gsub("%dir%", "${working-directory}")
             gsub("%remaining%", "${playtime-remaining}")
             gsub("%length%", "${duration}")
             gsub("%time%", "${playback-time}")
@@ -880,11 +878,9 @@ mpvc_print_status() {
         }
         '
     )
+    # trim/replace times: 00:01:59 -> 01:59
     mpvc_cmd "expand-text" "${F}" |
-        awk '{
-                # trim/replace times: 00:01:59 -> 01:59
-                gsub(" \\\\r","\n"); gsub(" 00:", " "); gsub("/00:", "/"); print
-        }'
+        awk '{ gsub(" \\\\r","\n"); gsub(" 00:", " "); gsub("/00:", "/"); print }'
 }
 
 mpvc_print_status_final() {
