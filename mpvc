@@ -398,21 +398,15 @@ mpvc_get_playlist() {
                 next
             }
 
+            fmtstr="%2d  %s"
             title=mpvc_ytquery($0)
-            line=sprintf("%2d  %s", lid, truncate(title))
             if (lpos == lid)
             {
                 if (!ENVIRON["NO_COLOR"])
-                {
-                    count=int((cols) * (pct/100))
-                    fmtstr="\033[7m%-"count"s\033[0m\n"
-                }
-                printf(fmtstr, line)
+                    fmtstr="\033[7m%2d  %-"int((cols) * (pct/100))"s\033[0m"
             }
-            else
-            {
-                print line
-            }
+            line=sprintf(fmtstr, lid, truncate(title))
+            print line
         }
     '
     QUIETFLAG="true"
