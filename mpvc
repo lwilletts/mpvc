@@ -206,12 +206,12 @@ mpvc_isotime() { TZ=UTC date -u +"%Y-%m-%dT%H:%M:%SZ"; }
 
 mpvc_curl()
 {
-    curl -A 'Mozilla/5.0' "$@"
+    curl -sL -A 'Mozilla/5.0' "$@"
 }
 
 mpvc_curl_cache()
 {
-    k=$2
+    k=$1
     v="$( awk -F'\t' -v k="$k" '{ if ($1 == k) {print $2; exit} }' "$MPVC_CURL_CACHE" )"
 
     if [ "${#v}" -eq 0 ]; then
@@ -224,7 +224,7 @@ mpvc_curl_cache()
 
 mpvc_curl_cache_json()
 {
-    mpvc_curl_cache -sL "https://youtube.com/oembed?url=$1"
+    mpvc_curl_cache "https://youtube.com/oembed?url=$1"
 }
 
 mpvc_ytquery_json_once() {
