@@ -274,7 +274,7 @@ mpvcfzf_preview()
         --bind='ctrl-t:execute-silent(mpvc add {+1} &)' \
         --bind='ctrl-space:execute-silent(mpvc toggle &)' \
         \
-        --preview-window='up:5' \
+        --preview-window="up:$(mpvc statussz)" \
         --preview="mpvc" \
         "$@"
 }
