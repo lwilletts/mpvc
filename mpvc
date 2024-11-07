@@ -899,7 +899,7 @@ mpvc_tty_size() {
 mpvc_tty_lines() { ttysize=$(mpvc_tty_size); echo "${ttysize%% *}"; }
 mpvc_tty_cols() { ttysize=$(mpvc_tty_size); echo "${ttysize##* }"; }
 
-mpvc_status_size() { printf "%s" "$MPVC_FMTSTR\\r" | grep -o '\\r' | wc -l ; }
+mpvc_status_size() { printf "%s" "$MPVC_FMTSTR" | awk '{r=split($0,a,/\\r/); print r}'; }
 
 mpvc_get_terminal_height() {
     plpos="$1"
