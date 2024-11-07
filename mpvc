@@ -159,7 +159,7 @@ mpvc_defaults()
     QUIETFLAG="${QUIETFLAG:-}"
     MPVC_LOCAL_CACHE="${MPVC_LOCAL_CACHE:-false}"
     MPVC_FMTSTR="${MPVC_FMTSTR:-}"
-    MPVC_FMTSTR_LOFI=${MPVC_FMTSTR_LOFI:-'[%status%] %statuslofi% %title% 🎶 %time%/%length% #%position%/%playlistlength% %mutelofi%%volume%%% %singlelofi% %repeatlofi% 🎧'}
+    MPVC_FMTSTR_LOFI=${MPVC_FMTSTR_LOFI:-'[%status%] %statuslofi% %title% 🎶 %time%/%length% #%position%/%playlistlength% %mutelofi%%volume%%% %singlelofi% %repeatlofi%%videolofi%'}
 
     # print default status of mpv instance
     if [ -z "$MPVC_FMTSTR" ]; then
@@ -850,6 +850,7 @@ mpvc_print_status() {
             gsub("%mutelofi%", "${?mute==yes:🔇}${?mute==no:🔊}${!mute:NA}");
             gsub("%singlelofi%", "${?loop-file==yes:🔁}${?loop-file==no:🔂}${!loop-file:NA}")
             gsub("%repeatlofi%", "${?loop-playlist==inf:🔄}${?loop-playlist==no:🔃}${!loop-playlist:NA}")
+            gsub("%videolofi%", "${?video!=no:📀}${?video==no:🎧}${!video:NA}")
 
             gsub("%status%", "${?pause==yes:paused}${?pause==no:play}${!pause:NA}");
             gsub("%title%", "${media-title}")
@@ -897,6 +898,8 @@ mpvc_tty_size() {
 }
 mpvc_tty_lines() { ttysize=$(mpvc_tty_size); echo "${ttysize%% *}"; }
 mpvc_tty_cols() { ttysize=$(mpvc_tty_size); echo "${ttysize##* }"; }
+
+mpvc_status_size() { printf "%s" "$MPVC_FMTSTR\\r" | grep -o '\\r' | wc -l ; }
 
 mpvc_get_terminal_height() {
     plpos="$1"
@@ -1140,6 +1143,7 @@ main() {
             --ttysize|ttysize)               mpvc_tty_size; QUIETFLAG=true;;
             --ttycols|ttycols)               mpvc_tty_cols; QUIETFLAG=true;;
             --ttylines|ttylines)             mpvc_tty_lines; QUIETFLAG=true;;
+            --statussz|statussz)             mpvc_status_size; QUIETFLAG=true;;
 
             # global argument parsing
             -f|--format)                     shift; MPVC_FMTSTR="${1:-}"       ;;
