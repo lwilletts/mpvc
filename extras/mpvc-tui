@@ -180,6 +180,14 @@ mpvctui_watch()
     done
 }
 
+mpvctui_watch_auto()
+{
+   mpvc -q --mpv &
+   ( sleep 2 && if [ "$#" -gt 0 ]; then mpvc --append "$@"; fi )
+   ( sleep 1; pgrep -f "$PROGNAME -n" || setsid "$0" -n ) &
+   mpvctui_watch
+}
+
 mpvctui_mouse()
 {
     clear
@@ -354,25 +362,20 @@ mpvctui_main()
     while getopts "$optflags" flag;
     do
         case "$flag" in
-        d) MPVC_TUI_DIR="$OPTARG"; cd "$MPVC_TUI_DIR" || return;;
-        h) shift; mpvctui_usage ;;
-        H) shift; cat $MPVC_TUI_SCROBBLER ;;
-        t) shift; mpvctui_watch ;;
-        T) shift;
-           mpvc -q --mpv &
-           ( sleep 2 && if [ "$#" -gt 0 ]; then mpvc --append "$@"; fi )
-           ( sleep 1; pgrep -f "$PROGNAME -n" || setsid "$0" -n ) &
-           mpvctui_watch
-           ;;
-        M) shift; mpvctui_launch "-m$OPTARG"; exit ;; # -g 15x1
-        m) shift; mpvctui_mouse "$OPTARG" ;;
-        n) shift; mpvctui_notify_loop "${1:-}" ;;
-        N) shift; mpvctui_notify "${@}" ;;
-        k) shift; pkill -f "$PROGNAME" ;;
-        s) shift; mpvctui_suggest ;;
-        S) shift; mpvctui_notify_loop_cli "${1:-}" ;;
-        u) shift; MPVC_TUI_UPDATEC="$OPTARG" ;;
-        x) shift; mpvctui_launch "$@"; exit ;;
+        d|dir)      MPVC_TUI_DIR="$OPTARG"; cd "$MPVC_TUI_DIR" || return;;
+        h|help)     shift; mpvctui_usage ;;
+        H|history)  shift; cat "$MPVC_TUI_SCROBBLER" ;;
+        t|tui)      shift; mpvctui_watch ;;
+        T|Tui)      shift; mpvctui_watch_auto "$@" ;;
+        M|Mouse)    shift; mpvctui_launch "-m$OPTARG"; exit ;; # -g 15x1
+        m|mouse)    shift; mpvctui_mouse "$OPTARG" ;;
+        n|Notify)   shift; mpvctui_notify_loop "${1:-}" ;;
+        N|notify)   shift; mpvctui_notify "${@}" ;;
+        k|kill)     shift; pkill -f "$PROGNAME" ;;
+        s|suggest)  shift; mpvctui_suggest ;;
+        S|scrobler) shift; mpvctui_notify_loop_cli "${1:-}" ;;
+        u|updatec)  shift; MPVC_TUI_UPDATEC="$OPTARG" ;;
+        x|launch)   shift; mpvctui_launch "$@"; exit ;;
 
         *) mpvctui_usage;;
         esac
