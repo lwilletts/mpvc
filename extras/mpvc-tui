@@ -341,41 +341,43 @@ mpvctui_launch()
 
 mpvctui_usage()
 {
-    echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
-    echo " -d : Set the WD to the media directory given as argument"
-    echo " -n : Desktop notification using notify on mpvc events (notify-send*)"
-    echo " -s : Suggest a random media to play based on previous media played"
-    echo " -t : Starts the $PROGNAME to manage the mpv playlist (rlwrap*)"
-    echo " -T : Combo that starts $PROGNAME -t -n, and adds media given as args"
-    echo " -x : Starts $PROGNAME in a new $MPVC_TUI_TERM (config \$MPVC_TUI_TERM) [combine -x with other opts]"
-    echo " -v : Prints the $PROGNAME version."
+    echo "usage: $PROGNAME opts # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
+    echo " -d|dir     : Set the WD to the media directory given as argument"
+    echo " -n|notify  : Desktop notification using notify on mpvc events (notify-send*)"
+    echo " -s|suggest : Suggest a random media to play based on previous media played"
+    echo " -S|scrobler: Starts the $PROGNAME scrobbler"
+    echo " -H|history : Starts the $PROGNAME history"
+    echo " -t|tui     : Starts the $PROGNAME to manage the mpv playlist (rlwrap*)"
+    echo " -T|Tui     : Combo that starts $PROGNAME -t -n, and adds media given as args"
+    echo " -x|launch  : Starts $PROGNAME in a new $MPVC_TUI_TERM (\$MPVC_TUI_TERM) # combine with <opts>"
+    echo " -v|version : Prints the $PROGNAME version."
     echo "*tips: If unsure about where to begin, start with: $PROGNAME -d /path/to/media/ -T"
     exit;
 }
 
-optflags="d:hHktTm:M:nNsSP:u:x"
 mpvctui_main()
 {
     mpvctui_config
     if [ $# -eq 0 ]; then mpvctui_usage; fi
 
-    while getopts "$optflags" flag;
+    for arg in "$@";
     do
-        case "$flag" in
-        d|dir)      MPVC_TUI_DIR="$OPTARG"; cd "$MPVC_TUI_DIR" || return;;
-        h|help)     shift; mpvctui_usage ;;
-        H|history)  shift; cat "$MPVC_TUI_SCROBBLER" ;;
-        t|tui)      shift; mpvctui_watch ;;
-        T|Tui)      shift; mpvctui_watch_auto "$@" ;;
-        M|Mouse)    shift; mpvctui_launch "-m$OPTARG"; exit ;; # -g 15x1
-        m|mouse)    shift; mpvctui_mouse "$OPTARG" ;;
-        n|Notify)   shift; mpvctui_notify_loop "${1:-}" ;;
-        N|notify)   shift; mpvctui_notify "${@}" ;;
-        k|kill)     shift; pkill -f "$PROGNAME" ;;
-        s|suggest)  shift; mpvctui_suggest ;;
-        S|scrobler) shift; mpvctui_notify_loop_cli "${1:-}" ;;
-        u|updatec)  shift; MPVC_TUI_UPDATEC="$OPTARG" ;;
-        x|launch)   shift; mpvctui_launch "$@"; exit ;;
+        arg1="${2:-}"
+        case "$arg" in
+        -d|dir)      shift; MPVC_TUI_DIR="$arg1"; cd "$MPVC_TUI_DIR" || return;;
+        -h|help)     shift; mpvctui_usage ;;
+        -H|history)  shift; cat "$MPVC_TUI_SCROBBLER" ;;
+        -t|tui)      shift; mpvctui_watch ;;
+        -T|Tui)      shift; mpvctui_watch_auto "$@" ;;
+        -M|Mouse)    shift; mpvctui_launch "-m$arg1"; exit ;; # -g 15x1
+        -m|mouse)    shift; mpvctui_mouse "$arg1" ;;
+        -n|Notify)   shift; mpvctui_notify_loop "${1:-}" ;;
+        -N|notify)   shift; mpvctui_notify "$@" ;;
+        -k|kill)     shift; pkill -f "$PROGNAME" ;;
+        -s|suggest)  shift; mpvctui_suggest ;;
+        -S|scrobler) shift; mpvctui_notify_loop_cli "${1:-}" ;;
+        -u|updatec)  shift; MPVC_TUI_UPDATEC="$arg1" ;;
+        -x|launch)   shift; mpvctui_launch "$@"; exit ;;
 
         *) mpvctui_usage;;
         esac
