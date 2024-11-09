@@ -1006,6 +1006,7 @@ main() {
     arg1=${1:-}
     case "$arg1" in
     ytquery|ytqueryjson|--tac|tac|--lowfi|lowfi) ;;
+    --ttysize|ttysize|--ttycols|ttycols|--ttylines|ttylines|--statussz|statussz) ;;
     -k|--kill|kill|-K|--killall|killall) ;;
     -c|--crop|crop|-C|--clear|clear|cmd|sockcmd|socklist|--socklist) ;;
     -a|add|append|-A|load|--load|playnext|--playnext|-n|playnow|--playnow|mpv|--mpv|stash|--stash|--toggle|toggle|-q|--quiet) ;;
