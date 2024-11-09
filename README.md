@@ -192,14 +192,16 @@ usage: mpvc opts # @version v1.5 (c) gmt4 https://github.com/gmt4/mpvc
 ### mpvc-tui
 
 ```console
-usage: mpvc-tui -[d:hHktTm:M:nNsSP:u:x] args # @version v1.5 (c) gmt4 https://github.com/gmt4/mpvc
- -d : Set the WD to the media directory given as argument
- -n : Desktop notification using notify on mpvc events (notify-send*)
- -s : Suggest a random media to play based on previous media played
- -t : Starts the mpvc-tui to manage the mpv playlist (rlwrap*)
- -T : Combo that starts mpvc-tui -t -n, and adds media given as args
- -x : Starts mpvc-tui in a new xterm (config $MPVC_TUI_TERM) [combine -x with other opts]
- -v : Prints the mpvc-tui version.
+usage: mpvc-tui opts # @version v1.5 (c) gmt4 https://github.com/gmt4/mpvc
+ -d|dir     : Set the WD to the media directory given as argument
+ -n|notify  : Desktop notification using notify on mpvc events (notify-send*)
+ -s|suggest : Suggest a random media to play based on previous media played
+ -S|scrobler: Starts the mpvc-tui scrobbler
+ -H|history : Starts the mpvc-tui history
+ -t|tui     : Starts the mpvc-tui to manage the mpv playlist (rlwrap*)
+ -T|Tui     : Combo that starts mpvc-tui -t -n, and adds media given as args
+ -x|launch  : Starts mpvc-tui in a new xterm ($MPVC_TUI_TERM) # combine with <opts>
+ -v|version : Prints the mpvc-tui version.
 *tips: If unsure about where to begin, start with: mpvc-tui -d /path/to/media/ -T
 ````
 
