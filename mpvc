@@ -344,9 +344,8 @@ mpvc_get_playlist() {
     fi
 
     #mpvc_isinteractive=""; if [ -t 1 ]; then mpvc_isinteractive=1; fi
-    pct=$(mpvc_cmd expand-text '${percent-pos}')
     mpvc_get_playlist_once |
-        awk -v mpvc="$0" -v pct="$pct" -v lpos="$lpos" -v cols="$(mpvc_tty_cols)" -v firstlast="$firstlast" \
+        awk -v mpvc="$0" -v lpos="$lpos" -v cols="$(mpvc_tty_cols)" -v firstlast="$firstlast" \
         '
         BEGIN {
             # truncate lines x cols when interactive (configurable) TBD
@@ -405,7 +404,11 @@ mpvc_get_playlist() {
             if (lpos == lid)
             {
                 if (!ENVIRON["NO_COLOR"])
-                    fmtstr="\033[7m%2d  %-"int((cols) * (pct/100))"s\033[0m"
+                {
+                    mpvc " cmd expand-text \\${percent-pos}" | getline pct
+                    count=int((cols-4) * (pct/100))
+                    fmtstr="\033[7m%2d  %-"count"s\033[0m"
+                }
             }
             line=sprintf(fmtstr, lid, truncate(title))
             print line
