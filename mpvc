@@ -1008,7 +1008,7 @@ main() {
     mpvc_config
     arg1=${1:-}
     case "$arg1" in
-    ytquery|ytqueryjson|--tac|tac|--lowfi|lowfi) ;;
+    ytquery|ytqueryjson|--tac|tac|--lowfi|lowfi|--hifi|hifi) ;;
     --ttysize|ttysize|--ttycols|ttycols|--ttylines|ttylines|--statussz|statussz) ;;
     -k|--kill|kill|-K|--killall|killall) ;;
     -c|--crop|crop|-C|--clear|clear|cmd|sockcmd|socklist|--socklist) ;;
@@ -1143,12 +1143,15 @@ main() {
             --delay|delay)                   mpvc_delay;;
             --wait|wait)                     mpvc_wait;;
             --tac|tac)                       mpvc_tac; exit 0;;
-            --lowfi|lowfi)                   MPVC_FMTSTR="$MPVC_FMTSTR_LOFI" ;;
 
             --ttysize|ttysize)               mpvc_tty_size; QUIETFLAG=true;;
             --ttycols|ttycols)               mpvc_tty_cols; QUIETFLAG=true;;
             --ttylines|ttylines)             mpvc_tty_lines; QUIETFLAG=true;;
             --statussz|statussz)             mpvc_status_size; QUIETFLAG=true;;
+
+            --hifi|hifi)                     MPVC_FMTSTR="$MPVC_FMTSTR_DFLT" ;;
+            --lowfi|lowfi)                   MPVC_FMTSTR="$MPVC_FMTSTR_LOFI" ;;
+            --status|status)                 ;;
 
             # global argument parsing
             -f|--format)                     shift; MPVC_FMTSTR="${1:-}"       ;;
