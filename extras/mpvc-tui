@@ -57,7 +57,7 @@ mpvctui_defaults()
     MPVC_CMD_STATUS="${MPVC_CMD_STATUS:-status}"
     MPVC_CMD_PLAYLIST="${MPVC_CMD_PLAYLIST:-playlist}"
 
-    export MPVC_TUI_CLINE=${MPVC_TUI_CLINE:-11}
+    export MPVC_TUI_CLINE=${MPVC_TUI_CLINE:-$(( $(mpvc statussz) + 6 ))}
 }
 
 # Load user config
