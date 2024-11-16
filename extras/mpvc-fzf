@@ -354,8 +354,8 @@ mpvcfzf_equalizer()
     mpvc-equalizer preset |
         mpvcfzf_preview --prompt="(equalizer) " \
         --header="$PROGNAME help: $MPVC_FZF_BIND_HELP" \
-        --bind='ctrl-x:execute(mpvc-equalizer dec {1} &)' \
-        --bind='ctrl-v:execute(mpvc-equalizer inc {1} &)' \
+        --bind='ctrl-x:execute-silent(mpvc-equalizer dec {1} &)' \
+        --bind='ctrl-v:execute-silent(mpvc-equalizer inc {1} &)' \
         --bind='ctrl-space:execute-silent(mpvc-equalizer reset)' \
         --bind='ctrl-o:execute-silent(mpvc-equalizer preset {-1} | mpvc-equalizer load)' \
         --bind='ctrl-s:reload(mpvc-equalizer bars)' \
