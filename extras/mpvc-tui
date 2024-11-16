@@ -124,7 +124,7 @@ mpvctui_header2() { mpvctui_headerc '─' '[' ']' "$MPVC_TUI_COLOR2" " + $* "; }
 mpvctui_tips()
 {
     if [ "$MPVC_TUI_TIPS" = "false" ]; then return; fi
-    tip=$(( count % 80 ))
+    tip=$(( mpvctui_count % 80 ))
     case $tip in
     0|1|2)    echo ": type control+c to enter prompt";;
     10|11|12) echo ": Check $PROGURL";;
@@ -132,12 +132,14 @@ mpvctui_tips()
     30|31|32) echo ": Config at ${MPVC_CONFIG##$HOME/}";;
     40|41|42) echo ": Launch from WM with: $PROGNAME -x";;
     50|51|52) echo ": version $PROGNAME $PROGVERSION at $PROGURL";;
-    60|61|62) echo ": Update $MPVC_TUI_UPDATEC secs refresh $((count % MPVC_TUI_CLEARC))/$MPVC_TUI_CLEARC shell $MPVC_TUI_SHELL";;
+    60|61|62) echo ": Update $MPVC_TUI_UPDATEC secs refresh $((mpvctui_count % MPVC_TUI_CLEARC))/$MPVC_TUI_CLEARC shell $MPVC_TUI_SHELL";;
     esac
 }
 
 mpvctui_watcher()
 {
+    # c=$(mpvc get playlist-count) cc=$(mpvc get chapters) if [ $c -eq 1 -a $cc -gt 0 ] then MPVC_CMD_PLAYLIST=chapter-list; else MPVC_CMD_PLAYLIST=playlist; fi
+
     mpvctui_header0 "${MPVC_TUI_HEADER0}$(mpvctui_tips)"
     mpvctui_header1 "Status"
     mpvc "${MPVC_CMD_STATUS}"
@@ -167,15 +169,15 @@ mpvctui_input()
 
 mpvctui_watch()
 {
-    count=0
+    mpvctui_count=0
     trap mpvctui_input INT
     while :
     do
         output=$(mpvctui_watcher 2>&1)
-        if [ $(( count % MPVC_TUI_CLEARC )) -eq 0 ]; then printf "${MPVC_TUI_CLEAR}"; fi
+        if [ $(( mpvctui_count % MPVC_TUI_CLEARC )) -eq 0 ]; then printf "${MPVC_TUI_CLEAR}"; fi
         printf "${MPVC_TUI_CUP}"
         echo "$output"
-        count=$(( count + 1 ))
+        mpvctui_count=$(( mpvctui_count + 1 ))
         sleep $MPVC_TUI_UPDATEC
     done
 }
