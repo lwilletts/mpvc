@@ -159,7 +159,7 @@ mpvc_defaults()
     QUIETFLAG="${QUIETFLAG:-}"
     MPVC_LOCAL_CACHE="${MPVC_LOCAL_CACHE:-false}"
     MPVC_FMTSTR="${MPVC_FMTSTR:-}"
-    MPVC_FMTSTR_LOFI=${MPVC_FMTSTR_LOFI:-'[%status%] %statuslofi% %title% 🎶 %time%/%length% #%position%/%playlistlength% 📚%=chapter%/%chapters% %mutelofi%%volume%%% %singlelofi%%repeatlofi%%videolofi%'}
+    MPVC_FMTSTR_LOFI=${MPVC_FMTSTR_LOFI:-'[%status%] %statuslofi% %title% 🎶 %time%/%length% #%position%/%playlistlength% %=chapter%/%chapters% %mutelofi%%volume%%% %singlelofi%%repeatlofi%%idlelofi%%videolofi%'}
     MPVC_FMTSTR_DFLT="\
 %artist% - %title% \r\
 [%status%] #%position%/%playlistlength% %time%/%length% (%percentage%%%) \r\
@@ -848,15 +848,16 @@ mpvc_print_status() {
         awk '
         {
             split("year genre album icy-title comment volume volume-max working-directory mute filename path height width playback-time ab-loop-[ab] speed force-window video screen aspect idle fullscreen chapter chapters =chapter", RE)
-            for (i in RE) { re=RE[i]; gsub("%"re"%", "${"re":NA}"); }
+            for (i in RE) { re=RE[i]; gsub("%"re"%", "${"re":0}"); }
 
             gsub("%statuslofi%", "${?pause==yes:⏸️}${?pause==no:▷}${!pause:NA}");
             gsub("%mutelofi%", "${?mute==yes:🔇}${?mute==no:🔊}${!mute:NA}");
             gsub("%singlelofi%", "${?loop-file==yes:🔁}${?loop-file==no:🔂}${!loop-file:NA}")
             gsub("%repeatlofi%", "${?loop-playlist==inf:🔄}${?loop-playlist==no:🔃}${!loop-playlist:NA}")
             gsub("%videolofi%", "${?video!=no:📀}${?video==no:🎧}${!video:NA}")
+            gsub("%idlelofi%", "${?idle==yes:∞}${?idle==no:∅}${!idle:NA}")
 
-            gsub("%status%", "${?pause==yes:paused}${?pause==no:play}${!pause:NA}");
+            gsub("%status%", "${?pause==yes:pause}${?pause==no:play}${!pause:NA}");
             gsub("%title%", "${media-title}")
             gsub("%artist%", "${?metadata/by-key/artist:${metadata/by-key/artist}}${!metadata/by-key/artist:NA}")
             gsub("%albumartist%", "${?metadata/by-key/album:${metadata/by-key/album}}${!metadata/by-key/album:NA}")
