@@ -147,7 +147,7 @@ mpvctui_watcher()
     mpvc "${MPVC_CMD_STATUS}"
     mpvctui_header1 "Playlist"
     mpvc "${MPVC_CMD_PLAYLIST}"
-    if [ "$c" -eq 1 -a "$cc" -gt 0 ]
+    if [ "$cc" != "null" ] && [ "$c" -eq 1 -a "$cc" -gt 0 ]
     then
         mpvctui_header2 "Chapterlist"
         mpvc "${MPVC_CMD_CHAPTERLIST}"
