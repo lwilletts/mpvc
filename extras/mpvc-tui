@@ -56,6 +56,7 @@ mpvctui_defaults()
 
     MPVC_CMD_STATUS="${MPVC_CMD_STATUS:-status}"
     MPVC_CMD_PLAYLIST="${MPVC_CMD_PLAYLIST:-playlist}"
+    MPVC_CMD_CHAPTERLIST=${MPVC_CMD_CHAPTERLIST:-chapter-list}
 
     export MPVC_TUI_CLINE=${MPVC_TUI_CLINE:-$(( $(mpvc statussz) + 6 ))}
 }
@@ -138,13 +139,19 @@ mpvctui_tips()
 
 mpvctui_watcher()
 {
-    # c=$(mpvc get playlist-count) cc=$(mpvc get chapters) if [ $c -eq 1 -a $cc -gt 0 ] then MPVC_CMD_PLAYLIST=chapter-list; else MPVC_CMD_PLAYLIST=playlist; fi
+    c=$(mpvc get playlist-count)
+    cc=$(mpvc get chapters)
 
     mpvctui_header0 "${MPVC_TUI_HEADER0}$(mpvctui_tips)"
     mpvctui_header1 "Status"
     mpvc "${MPVC_CMD_STATUS}"
     mpvctui_header1 "Playlist"
     mpvc "${MPVC_CMD_PLAYLIST}"
+    if [ "$c" -eq 1 -a "$cc" -gt 0 ]
+    then
+        mpvctui_header2 "Chapterlist"
+        mpvc "${MPVC_CMD_CHAPTERLIST}"
+    fi
     mpvctui_header1 "Prompt"
 }
 
