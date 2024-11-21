@@ -1111,8 +1111,8 @@ main() {
             ytquery)                         shift; mpvc_ytquery "$@"; return;;
             ytqueryjson)                     shift; mpvc_ytquery_json "$@"; return;;
 
-            cprev|--chapter-prev|chapter-prev)            mpvc_chapter_set +1 "relative" ;;
-            cnext|--chapter-next|chapter-next)            mpvc_chapter_set -1 "relative" ;;
+            cprev|--chapter-prev|chapter-prev)            mpvc_chapter_set -1 "relative" ;;
+            cnext|--chapter-next|chapter-next)            mpvc_chapter_set +1 "relative" ;;
             cplay|--chapter-play|chapter-play)            shift; mpvc_chapter_set "${1:-}" "absolute" ;;
             cplayrand|--cplayrand)                        shift; mpvc_chapter_set "$(mpvc_get_random)" "absolute" ;;
 
