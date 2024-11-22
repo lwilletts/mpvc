@@ -165,7 +165,7 @@ mpvcfzf_icache_output_dir() {
     else
         MPVC_YTDL_OUTPUT=$(mpvcfzf_icache_output)
         MPVC_YTDL_OUTPUT=${MPVC_YTDL_OUTPUT%/*}
-        eval echo $MPVC_YTDL_OUTPUT
+        echo "$MPVC_YTDL_OUTPUT" | sed "s|^~|$HOME|"
     fi
 }
 
@@ -223,30 +223,6 @@ mpvcfzf_fetch()
         fi
     done
     "$ytdlp" $ytdl_opts ${YTDL_OPTS:-} "$@"
-}
-
-mpvcfzf_fetch_remove()
-{
-    if [ -z "$1" ]; then
-        mpvcfzf_warn "$PROGNAME: Error missing ytdl-video-id to remove"
-        return
-    fi
-    ytdl_id="$1"
-
-    ytdl_json=$(mpvc getr ytdl-raw-options)
-    ytdl_archive=$(echo $ytdl_json | jq -r '.data."download-archive"')
-    ytdl_output=$(echo $ytdl_json | jq -r ".data.output")
-    ytdl_archive=$(eval echo $ytdl_archive)
-    ytdl_dir=$(dirname $ytdl_output)
-    ytdl_dir=$(eval echo $ytdl_dir)
-
-    if [ -z "$ytdl_json" -o ! -r "$ytdl_archive" -o ! -n "$ytdl_output" ]; then
-        mpvcfzf_warn "$PROGNAME: Error cache not enabled: undefined ytdl-raw-options"
-        return
-    fi
-
-    rm -i "$(find "$ytdl_dir" | grep "$ytdl_id")"
-    sed -i "/$ytdl_id/ s|^|#|" "$ytdl_archive"
 }
 
 mpvcfzf_preview()
@@ -395,6 +371,11 @@ mpvcfzf_ddg()
             }'
 }
 
+mpvcfzf_lofi()
+{
+    mpvcfzf_urlbrowser "${1:-https://lofigirl.com/wp-content/uploads/2023/06/}"
+}
+
 mpvcfzf_somafm()
 {
     chan=${1:-}
@@ -521,11 +502,10 @@ main()
 
         -o|osearch) shift; mpvcfzf_isearch_once "$arg1" ;; # lucky
         -O|Osearch) shift; mpvcfzf_isearch_once "$arg1" | mpvcfzf_awk1 | mpvc load ;; # lucky
-        -#O)         mpvcfzf_icache_output_dir ;;
+        -OO)        shift; mpvcfzf_icache_output_dir ;;
 
         -p|splay)   shift; mpvcfzf_iplay "$arg1" | mpvc load; return ;;
         -P|Splay)   shift; mpvcfzf_iplay "$arg1" | mpvc loadc; return ;;
-        -r|remove)  shift; mpvcfzf_fetch_remove "$arg1"; return ;;
         -s|search)  shift; mpvcfzf_isearch "$arg1"; return;;
         -x|launch)  shift; mpvcfzf_launch_term "$@"; exit ;;
         -y|related) shift; mpvcfzf_related_search "$arg1"; return ;;
@@ -533,7 +513,7 @@ main()
         -v|version) shift; mpvcfzf_version; return ;;
 
         now)        shift; mpvcfzf_now; return ;;
-        lofi)       shift; mpvcfzf_urlbrowser "${1:-https://lofigirl.com/wp-content/uploads/2023/06/}" ;;
+        lofi)       shift; mpvcfzf_lofi "${1:-}"; return ;;
         somafm)     shift; mpvcfzf_somafm "${1:-}"; return ;;
         radioapi)   shift; mpvcfzf_radioapi "${1:-}"; return ;;
         #*)         shift; mpvcfzf_usage; return ;;
