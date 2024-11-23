@@ -371,7 +371,7 @@ mpvc_get_playlist() {
         {
             gsub("^ *", "", url)
             ytitle=url
-            if (url ~ "^https?:" && url ~ "youtu.be|youtube.com|yewtu.be")
+            if (url ~ "^https?://(youtu.be|(www.)?youtube.com|yewtu.be)")
             {
                 ytcmd=sprintf("%s ytquery \"%s\"", mpvc, url)
                 ytcmd | getline ytitle
