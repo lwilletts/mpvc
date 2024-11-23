@@ -228,7 +228,7 @@ mpvc_curl_cache_json()
     mpvc_curl_cache "https://youtube.com/oembed?url=$1"
 }
 
-mpvc_ytquery_json_once() {
+mpvc_ytquery_json() {
     for i in "$@"
     do
         filename="${i:-}"
@@ -254,10 +254,6 @@ mpvc_ytquery_json_once() {
         esac
         printf "$result\n"
     done
-}
-
-mpvc_ytquery_json() {
-    mpvc_ytquery_json_once "$@"
 }
 
 # fn args: given a file/url return its title (may use curl to query YT)
