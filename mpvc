@@ -296,14 +296,13 @@ mpvc_setr()  { mpvc_ecmdr "set_property" "$@"; }
 
 mpvc_get_playlist_json() {
     mpvc_cmdr "get_property" "playlist" |
-        grep -o '"data":\[.*\]' |
-        awk '{ sub("^\"data\":",""); gsub("{\"filename\":","\n\t{\"filename\":");  } ! /^\[\]$/ { sub("]$","\n]"); } {print}'
+        grep -Eo '"[^"]*" *(: *([0-9]*|"[^"]*")[^{}\["]*|,)?|[^"\]\[\}\{]*|\{|\},?|\[|\],?|[0-9 ]*,?'
     QUIETFLAG="true"
 }
 
 mpvc_get_playlist_once() {
     mpvc_get_playlist_json |
-        sed 's|,"current":true||; s|,"playing":true||; s|,"id":[0-9]*||; s|{"filename":"\(.*\)"}|\1|; s|","title":.*||; s/,$//; /^\[$/d; /\]$/d' |
+        sed -n '/"\(current\|playing\)":true/d; /"\(id\|title\)":.*/d; s|"filename":"\(.*\)",|\1|p;' |
         awk -v numbered="${1:-}" '
         {
             gsub("^[ \t]*", " ")
