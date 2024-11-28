@@ -172,7 +172,7 @@ nix-env -i mpvc
 ### mpvc
 
 ```console
-usage: mpvc opts # @version v1.5 (c) gmt4 https://github.com/gmt4/mpvc
+usage: mpvc opts # @version v1.6 (c) gmt4 https://github.com/gmt4/mpvc
  -a | --add              : Add media to playlist (see --load for stdin).
  -s | --stop             : Always stop playback.
  -P | --play             : Always start playback.
@@ -184,15 +184,13 @@ usage: mpvc opts # @version v1.5 (c) gmt4 https://github.com/gmt4/mpvc
  -v | --vol              : Increase/decrease volume relative to current volume.
  -h | --help             : Prints the short help.
  -H | --long-help        : Prints the long help.
-
 *tips: If unsure about where to begin, have a look at https://gmt4.github.io/mpvc
-
 ```
 
 ### mpvc-tui
 
 ```console
-usage: mpvc-tui opts # @version v1.5 (c) gmt4 https://github.com/gmt4/mpvc
+usage: mpvc-tui opts # @version v1.6 (c) gmt4 https://github.com/gmt4/mpvc
  -d|dir     : Set the WD to the media directory given as argument
  -n|notify  : Desktop notification using notify on mpvc events (notify-send*)
  -s|suggest : Suggest a random media to play based on previous media played
@@ -208,7 +206,7 @@ usage: mpvc-tui opts # @version v1.5 (c) gmt4 https://github.com/gmt4/mpvc
 ### mpvc-fzf
 
 ```console
-usage: mpvc-fzf opts # @version v1.5 (c) gmt4 https://github.com/gmt4/mpvc
+usage: mpvc-fzf opts # @version v1.6 (c) gmt4 https://github.com/gmt4/mpvc
  -b|browse   : Browse the provided ytdl-archive URL with fzf
  -c|chapters : Start fzf to manage the current mpv chapterlist
  -d|dir      : Set the WD to the media directory given as argument
@@ -225,7 +223,9 @@ usage: mpvc-fzf opts # @version v1.5 (c) gmt4 https://github.com/gmt4/mpvc
  -y|related  : Search related media on Invidious
  -Y|Related  : Search & play related media using Invidious
  -x|launch   : Starts mpvc-fzf in a new xterm (config $MPVC_TERM) [combine -x with other opts]
- -v|version  : Prints the mpvc-fzf version.
+ -v|version  : Return the mpvc-fzf version.
+ now         : Return a shareable URL to the now listening playlist
+ lofi        : Search & play Lo-Fi channels
  somafm      : Search & play SomaFM channels
  radioapi    : Search & play Radio-Browser API channels
 *tips: If unsure about where to begin, start: mpvc-fzf -p 'kupla mirage'
