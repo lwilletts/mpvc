@@ -28,7 +28,7 @@ usage: $PROGNAME opts # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
  -I | --fullplaylist     : Print all filenames of tracks in current playlist.
  -v | --vol              : Increase/decrease volume relative to current volume.
  -h | --help             : Prints the short help.
- -H | --long-help        : Prints the long help.
+ -H | --help-long        : Prints the long help.
 EOF
 
     if [ $# -gt 0 ]; then
@@ -61,7 +61,8 @@ EOF
  -V | --volume           : Set absolute volume.
  -Q | --vid=no           : Start mpv with video output disabled.
  -- |                    : After adding files options after -- are passed to mpv.
-    | --version          : Prints the $PROGNAME version.
+    | --version          : Prints the short version.
+    | --version-long     : Prints the long version.
 
  get                     : Get MPV property from $PROGNAME socket.
  set                     : Set MPV property from $PROGNAME socket.
@@ -977,8 +978,10 @@ mpvc_validate_socket() {
 
 mpvc_get_version() {
     echo "version: $PROGNAME # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL (forks lwillets/mpvc)"
-    echo
-    "$MPVC_MPV" --version
+    if [ $# -gt 0 ]; then
+        echo
+        "$MPVC_MPV" --version
+    fi
 }
 
 mpvc_idleloop() { $MPVC_SOCAT -t0 -,ignoreeof "$MPVC_SOCKET"; }
@@ -1008,8 +1011,8 @@ main() {
     -k|--kill|kill|-K|--killall|killall) ;;
     -c|--crop|crop|-C|--clear|clear|cmd|sockcmd|socklist|--socklist) ;;
     -a|add|append|-A|load|--load|playnext|--playnext|-n|playnow|--playnow|mpv|--mpv|stash|--stash|--toggle|toggle|-q|--quiet) ;;
-    version|--version|-Q|--vid=no|-S|--socket) ;;
-    help|--help|-h|long-help|--long-help|-H|--list-options) ;;
+    version|--version|version-long|--version-long|-Q|--vid=no|-S|--socket) ;;
+    help|--help|-h|help-long|--help-long|-H|--list-options) ;;
     *) mpvc_validate_socket;; # otherwise, validate socket
     esac
     for arg in "$@"; do
@@ -1156,10 +1159,11 @@ main() {
             -q|--quiet)                      QUIETFLAG=true;                ;;
             --color|color)                   unset NO_COLOR                 ;;
             --nocolor|nocolor)               export NO_COLOR=true           ;;
-            --version|version)               mpvc_get_version; exit 0;      ;;
+            --version|version)               mpvc_get_version;      exit 0; ;;
+            --version-long|version-long)     mpvc_get_version "$@"; exit 0; ;;
             --list-options)                  usage; exit 0;                 ;;
             -h|--help|h|help)                usage; exit 0;                 ;;
-            -H|--long-help|long-help)        usage "$@"; exit 0;            ;;
+            -H|--help-long|help-long)        usage "$@"; exit 0;            ;;
             -?)                              usage "$@"; exit 1;            ;;
         esac
         if [ $# -ge 1 ]; then shift; fi
