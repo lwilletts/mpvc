@@ -282,7 +282,7 @@ mpvctui_mouse_events()
 mpvctui_notify()
 {
     # $MPVC_TUI_SCROBBLER: scrobbling file contains one entry per line with tab-separated fields
-    cmd_notify='notify-send -u normal -i info "$(mpvc)";'
+    cmd_notify='notify-send -u normal -i info "mpvc" "$(mpvc)";'
     cmd_scrobble='echo $(mpvc expand-text "$(date +%s)\t\\${=duration}\t\\${path}\t\\${media-title}") >> '"$MPVC_TUI_SCROBBLER"
 
     awk -v cmd_scrobble="${1:-$cmd_scrobble}" -v cmd_notify="${2:-$cmd_notify}" '
