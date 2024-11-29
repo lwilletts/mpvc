@@ -873,7 +873,7 @@ mpvc_print_status() {
     )
     # trim/replace times: 00:01:59 -> 01:59
     mpvc_cmd "expand-text" "${F}" |
-        awk '{ gsub(" \\\\r","\n"); gsub(" 00:", " "); gsub("/00:", "/"); print }'
+        awk '{ gsub(" \\\\r","\n"); gsub(" -?00:", " "); gsub("/00:", "/"); print }'
 }
 
 mpvc_print_status_final() {
