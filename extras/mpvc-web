@@ -89,9 +89,9 @@ mpvc_web_config()
 mpvc_web_style()
 {
     cat <<-EOF
-:root { --body-font-family: monospace; --body-color: #222; --body-background: #fff; --link-color: #a0a; }
-@media (max-width: 768px) { :root { --body-font-size: 1.06em; } }
-@media (min-width: 768px) { :root { --body-font-size: 1.10em; } }
+:root { --body-font-family: monospace,monospace; --body-color: #222; --body-background: #fff; --link-color: #a0a; }
+@media (max-width: 768px) { :root { --body-font-size: 0.92em; } }
+@media (min-width: 768px) { :root { --body-font-size: 1.00em; } }
 
 @media (prefers-color-scheme: light) { html { filter: invert(0.0);  } :root { } }
 @media (prefers-color-scheme: dark)  { html { filter: invert(0.85); } :root { } }
@@ -312,8 +312,6 @@ mpvc_web_index()
     <link rel="apple-touch-icon" href="apple-touch-icon.svg">
     <title> 🎧$MPVC_WEB_HOSTNAME mpvc</title>
     <link rel="stylesheet" href="style.css">
-    <style type="text/css" media="all">
-    </style>
     <script type="text/javascript">
         $(mpvc_web_index_js)
     </script>
@@ -428,7 +426,7 @@ mpvc_web_index()
             <a href="/cgi-bin/mpvc?lyrics">#lyrics</a>
             <a href="/cgi-bin/mpvc?filename">#file</a>
         ] <hr>
-        <iframe name="mpvc-status" width="100%" height="100%" frameborder="0" src="/cgi-bin/mpvc?mpvc+status" allowtransparency="true" ></iframe>
+        <iframe name="mpvc-status" width="100%" height="100%" frameborder="0" src="/cgi-bin/mpvc?mpvc+status" ></iframe>
         [
           <a href="#mpvc-web-playlist" name="mpvc-web-playlist">Playlist</a>
           <a href="#mpvc-web-fullplaylist" name="mpvc-web-fullplaylist">full</a>
@@ -437,8 +435,8 @@ mpvc_web_index()
           <a href="javascript:window.location.reload()" >load</a>
         ] <hr>
         <div style="display:flex">
-        <iframe name="mpvc-playlist" width="100%" frameborder="0" src="/cgi-bin/mpvc?mpvc+playlist" allowtransparency="true" style="margin:auto;" ></iframe>
-        <script>
+        <iframe name="mpvc-playlist" width="100%" frameborder="0" src="/cgi-bin/mpvc?mpvc+playlist" style="margin:auto;" ></iframe>
+        <script type="text/javascript">
         var pl = document.getElementsByName('mpvc-playlist')[0];
         switch (window.location.hash) {
         case '#mpvc-web-playlist':           { pl.src='/cgi-bin/mpvc?mpvc+playlist'; break; }
@@ -453,8 +451,8 @@ mpvc_web_index()
         <a href="$PROGURL">$PROGNAME</a>
         <a href="$PROGURL">$PROGVERSION</a>
         <a href="${PROGURL%/*}">@$PROGAUTHOR</a> (c) 2024
-        <a href="javascript:alert('$(mpvc_web_help)')" ${MPVC_WEB_SHORTCUT_HELP}>/h</a>
-        <a href="#top">top</a>
+        <a href="javascript:alert('$(mpvc_web_help)')" title="help" ${MPVC_WEB_SHORTCUT_HELP}>/h</a>
+        <a href="#top" title="top">top</a>
     </body>
 </html>
 EOF
