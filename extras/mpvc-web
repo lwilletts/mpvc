@@ -426,7 +426,7 @@ mpvc_web_index()
             <a href="/cgi-bin/mpvc?lyrics">#lyrics</a>
             <a href="/cgi-bin/mpvc?filename">#file</a>
         ] <hr>
-        <iframe name="mpvc-status" width="100%" height="100%" frameborder="0" src="/cgi-bin/mpvc?mpvc+status" ></iframe>
+        <iframe name="mpvc-status" width="100%" height="100%" frameborder="0" allowtransparency="true" src="/cgi-bin/mpvc?mpvc+status" ></iframe>
         [
           <a href="#mpvc-web-playlist" name="mpvc-web-playlist">Playlist</a>
           <a href="#mpvc-web-fullplaylist" name="mpvc-web-fullplaylist">full</a>
@@ -435,7 +435,7 @@ mpvc_web_index()
           <a href="javascript:window.location.reload()" >load</a>
         ] <hr>
         <div style="display:flex">
-        <iframe name="mpvc-playlist" width="100%" frameborder="0" src="/cgi-bin/mpvc?mpvc+playlist" style="margin:auto;" ></iframe>
+        <iframe name="mpvc-playlist" width="100%" frameborder="0" allowtransparency="true" style="margin:auto;" src="/cgi-bin/mpvc?mpvc+playlist" ></iframe>
         <script type="text/javascript">
         var pl = document.getElementsByName('mpvc-playlist')[0];
         switch (window.location.hash) {
