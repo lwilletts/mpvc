@@ -401,7 +401,7 @@ mpvc_get_playlist() {
                 if (!ENVIRON["NO_COLOR"])
                 {
                     mpvc " cmd expand-text \\${percent-pos}" | getline pct
-                    count=int((cols-(length(lid)+1+1)) * (pct/100))
+                    count=int((cols-(length(lid)+1+1+1)) * (pct/100))
                     fmtstr="\033[7m%2d  %-"count"s\033[0m"
                 }
             }
