@@ -339,13 +339,13 @@ Instead of that, for quickly testing combinations of filters, I was looking for 
 
 <pre>
 # start adding a rubberband filter
-mpvc cmdr af toggle "@rubberband:lavfi=[rubberband=pitch=1:tempo=1]"
+mpvc cmdr af toggle '@rubberband:lavfi=[rubberband=pitch=1:tempo=1]'
 # Change the AV filter is easy, rerun the command with the changes
-mpvc cmdr af toggle "@rubberband:lavfi=[rubberband=pitch=0.98:tempo=1]"
+mpvc cmdr af toggle '@rubberband:lavfi=[rubberband=pitch=0.98:tempo=1]'
 # Removing the filter is as expected
-mpvc cmdr af remove "@rubberband:lavfi=[rubberband=pitch=0.98:tempo=1]"
+mpvc cmdr af remove '@rubberband:lavfi=[rubberband=pitch=0.98:tempo=1]'
 # Another option is toggling the AV filters on and off with
-mpvc cmdr af toggle "@rubberband:lavfi=[rubberband=pitch=0.98:tempo=1]"
+mpvc cmdr af toggle '@rubberband:lavfi=[rubberband=pitch=0.98:tempo=1]'
 
 # The same goes for what filters are currently applied
 mpvc getr af | jq
@@ -359,27 +359,27 @@ mpvc setr msg-level all=warn
 mpvc setr msg-level all=info
 
 # Some af filters
-mpvc cmdr af toggle "@afade:lavfi=[afade=t=in:ss=0:d=15]"
-mpvc cmdr af toggle "@flanger:lavfi=[flanger=delay=1]"
-mpvc cmdr af toggle "@tremolo:lavfi=[tremolo]"
-mpvc cmdr af toggle "@vibrato:lavfi=[vibrato]"
-mpvc cmdr af toggle "@apulsator:lavfi=[apulsator]"
-mpvc cmdr af toggle "@aphaser:lavfi=[aphaser]"
-mpvc cmdr af toggle "@aecho:lavfi=[aecho=in_gain=0.9:out_gain=0.9:delays=1:decays=0.9]"
-mpvc cmdr af toggle "@lofi:lavfi=[ladspa=cmt:lofi:controls=c0=80|c1=20|c2=9000]"
+mpvc cmdr af toggle '@afade:lavfi=[afade=t=in:ss=0:d=15]'
+mpvc cmdr af toggle '@flanger:lavfi=[flanger=delay=1]'
+mpvc cmdr af toggle '@tremolo:lavfi=[tremolo]'
+mpvc cmdr af toggle '@vibrato:lavfi=[vibrato]'
+mpvc cmdr af toggle '@apulsator:lavfi=[apulsator]'
+mpvc cmdr af toggle '@aphaser:lavfi=[aphaser]'
+mpvc cmdr af toggle '@aecho:lavfi=[aecho=in_gain=0.9:out_gain=0.9:delays=1:decays=0.9]'
+mpvc cmdr af toggle '@lofi:lavfi=[ladspa=cmt:lofi:controls=c0=80|c1=20|c2=9000]'
 
 # Some vf filters
-mpvc cmdr vf toggle "@life:lavfi=[life]"
-mpvc cmdr vf toggle "@showvolume:lavfi=[showvolume]"
-mpvc cmdr vf toggle "@showwaves:lavfi=[showwaves]"
-mpvc cmdr vf toggle "@showspectrum:lavfi=[showspectrum]"
-mpvc cmdr vf toggle "@avectorscope:lavfi=[avectorscope]"
+mpvc cmdr vf toggle '@life:lavfi=[life]'
+mpvc cmdr vf toggle '@showvolume:lavfi=[showvolume]'
+mpvc cmdr vf toggle '@showwaves:lavfi=[showwaves]'
+mpvc cmdr vf toggle '@showspectrum:lavfi=[showspectrum]'
+mpvc cmdr vf toggle '@avectorscope:lavfi=[avectorscope]'
 
-mpvc cmdr vf toggle "@mirrorbottom:lavfi=[[vid1]split[main][tmp];[tmp]crop=iw:ih/2:0:ih/2,vflip[flip];[main][flip]overlay[vo]]"
-mpvc cmdr vf toggle "@mirrorleft:lavfi=[[vid1]split[main][tmp];[tmp]crop=iw/2:ih:0:0,hflip[flip];[main][flip]overlay=W/2[vo]]"
-mpvc cmdr vf toggle "@mirrorright:lavfi=[[vid1]split[main][tmp];[tmp]crop=iw/2:ih:iw/2:0,hflip[flip];[main][flip]overlay[vo]]"
-mpvc cmdr vf toggle "@hstack:lavfi=[[vid1]split[v1][v2];[v1][v2]hstack[t]]"
-mpvc cmdr vf toggle "@vstack:lavfi=[[vid1]split[v1][v2];[v1][v2]vstack[t]]"
+mpvc cmdr vf toggle '@mirrorbottom:lavfi=[[vid1]split[main][tmp];[tmp]crop=iw:ih/2:0:ih/2,vflip[flip];[main][flip]overlay[vo]]'
+mpvc cmdr vf toggle '@mirrorleft:lavfi=[[vid1]split[main][tmp];[tmp]crop=iw/2:ih:0:0,hflip[flip];[main][flip]overlay=W/2[vo]]'
+mpvc cmdr vf toggle '@mirrorright:lavfi=[[vid1]split[main][tmp];[tmp]crop=iw/2:ih:iw/2:0,hflip[flip];[main][flip]overlay[vo]]'
+mpvc cmdr vf toggle '@hstack:lavfi=[[vid1]split[v1][v2];[v1][v2]hstack[t]]'
+mpvc cmdr vf toggle '@vstack:lavfi=[[vid1]split[v1][v2];[v1][v2]vstack[t]]'
 </pre>
 </p>
 
@@ -704,6 +704,7 @@ For setups where the mediacenter has a video display with X11 x2x(1) might come 
 <pre>
 ssh -X $USER@$HOST x2x -west -to :0 # be sure to read x2x(1)
 </pre>
+</p>
 
 <h3 id="logbook-20241026">On mpvc lowfi and mpvc-fzf URL browser, 26 October 2024</h3>
 <p>
