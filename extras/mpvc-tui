@@ -297,7 +297,7 @@ mpvctui_notify()
             if (do_print) print tn, $0, "notify"
         }
 
-        /playback-restartproperty-change||metadata-update/ {
+        /playback-restartproperty-change|metadata-update/ {
             t=systime()
             if (t - ot > 1)
                 system(cmd_scrobble);
