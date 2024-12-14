@@ -164,15 +164,17 @@ mpvc_chapter_edit()
 
 usage()
 {
-    echo "usage: $PROGNAME args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
-    echo "  file : Show current ffmetadata chapter-file"
-    echo "  info : Info current ffmetadata chapter-file"
-    echo "  reset: Reset current ffmetadata chapter-file"
-    echo "  load : Load current ffmetadata chapter-file"
-    echo "  add  : Add new chapter to current ffmetadata chapter-file"
-    echo "  gen  : Gen a ffmetadata chapter-file from a < chapterlist.txt"
-    echo "  list : List ffmetadata chapter-files"
-    echo "  merge: Merge ffmetadata chapter-file to audio file"
+    cat <<EOF
+usage: $PROGNAME args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
+ file : Show current ffmetadata chapter-file
+ info : Info current ffmetadata chapter-file
+ reset: Reset current ffmetadata chapter-file
+ load : Load current ffmetadata chapter-file
+ add  : Add new chapter to current ffmetadata chapter-file
+ gen  : Gen a ffmetadata chapter-file from a < chapterlist.txt
+ list : List ffmetadata chapter-files
+ merge: Merge ffmetadata chapter-file to audio file
+EOF
     exit;
 }
 
