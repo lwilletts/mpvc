@@ -53,13 +53,15 @@ mpvc_autoscan()
 optflags="hi:n:p:m:M:"
 usage()
 {
-    echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
-    echo "  -i : The IP of the device to detect ping presence for $PROGNAME (*required)"
-    echo "  -p : The number of seconds between ping presence checks"
-    echo "  -n : The number of failed ping presence checks after which to pause mpvc"
-    echo "  -m : The minimum hour when to start ping presence (for example morning: 7 AM)"
-    echo "  -M : The maximum hour when to stop ping presence (for example night: 20 PM)"
-    echo "*tips: If unsure where to begin, run: $PROGNAME -i 192.168.0.2 # your tablet/phone LAN IP"
+    cat <<EOF
+usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
+ -i : The IP of the device to detect ping presence for $PROGNAME (*required)
+ -p : The number of seconds between ping presence checks
+ -n : The number of failed ping presence checks after which to pause mpvc
+ -m : The minimum hour when to start ping presence (for example morning: 7 AM)
+ -M : The maximum hour when to stop ping presence (for example night: 20 PM)
+*tips: If unsure where to begin, run: $PROGNAME -i 192.168.0.2 # your tablet/phone LAN IP
+EOF
     exit;
 }
 
