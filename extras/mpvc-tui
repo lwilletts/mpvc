@@ -351,17 +351,19 @@ mpvctui_launch()
 
 mpvctui_usage()
 {
-    echo "usage: $PROGNAME opts # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
-    echo " -d|dir     : Set the WD to the media directory given as argument"
-    echo " -n|notify  : Desktop notification using notify on mpvc events (notify-send*)"
-    echo " -s|suggest : Suggest a random media to play based on previous media played"
-    echo " -S|scrobler: Starts the $PROGNAME scrobbler"
-    echo " -H|history : Starts the $PROGNAME history"
-    echo " -t|tui     : Starts the $PROGNAME to manage the mpv playlist (rlwrap*)"
-    echo " -T|Tui     : Combo that starts $PROGNAME -t -n, and adds media given as args"
-    echo " -x|launch  : Starts $PROGNAME in a new $MPVC_TUI_TERM (\$MPVC_TUI_TERM) # combine with <opts>"
-    echo " -v|version : Prints the $PROGNAME version."
-    echo "*tips: If unsure about where to begin, start with: $PROGNAME -d /path/to/media/ -T"
+    cat <<EOF
+usage: $PROGNAME opts # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
+ -d|dir     : Set the WD to the media directory given as argument
+ -n|notify  : Desktop notification using notify on mpvc events (notify-send*)
+ -s|suggest : Suggest a random media to play based on previous media played
+ -S|scrobler: Starts the $PROGNAME scrobbler
+ -H|history : Starts the $PROGNAME history
+ -t|tui     : Starts the $PROGNAME to manage the mpv playlist (rlwrap*)
+ -T|Tui     : Combo that starts $PROGNAME -t -n, and adds media given as args
+ -x|launch  : Starts $PROGNAME in a new $MPVC_TUI_TERM (\$MPVC_TUI_TERM) # combine with <opts>
+ -v|version : Prints the $PROGNAME version.
+*tips: If unsure about where to begin, start with: $PROGNAME -d /path/to/media/ -T
+EOF
     exit;
 }
 
