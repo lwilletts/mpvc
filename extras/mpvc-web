@@ -610,15 +610,17 @@ mpvc_web()
 optflags="ha:b:c:C:d:p:P:r:R:s:S:t:T:"
 usage()
 {
-    echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
-    echo "  -c : Set $PROGNAME HTTP server command: [start,stop] (*required)"
-    echo "  -b : Set $PROGNAME HTTP server bind address (default $MPVC_WEB_HOST)"
-    echo "  -p : Set $PROGNAME HTTP server port (default $MPVC_WEB_PORT)"
-    echo "  -r : Set $PROGNAME HTTP server root dir (default $MPVC_WEB_ROOT)"
-    echo "  -R : Set $PROGNAME HTTP server HTML refresh (default $MPVC_WEB_HTML_REFRESH)"
-    echo "  -s : Set $PROGNAME HTTP server SSL/TLS (default $MPVC_WEB_SSL_ENABLE)"
-    echo "  -a : Set $PROGNAME HTTP server to include ytdl-archive/ (default $MPVC_WEB_ARCHIVE_ENABLE)"
-    echo "*tips: If unsure where to begin, run: $PROGNAME -p 8000 -c start # serves @ http://localhost:8000"
+    cat <<EOF
+usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
+  -c : Set $PROGNAME HTTP server command: [start,stop] (*required)
+  -b : Set $PROGNAME HTTP server bind address (default $MPVC_WEB_HOST)
+  -p : Set $PROGNAME HTTP server port (default $MPVC_WEB_PORT)
+  -r : Set $PROGNAME HTTP server root dir (default $MPVC_WEB_ROOT)
+  -R : Set $PROGNAME HTTP server HTML refresh (default $MPVC_WEB_HTML_REFRESH)
+  -s : Set $PROGNAME HTTP server SSL/TLS (default $MPVC_WEB_SSL_ENABLE)
+  -a : Set $PROGNAME HTTP server to include ytdl-archive/ (default $MPVC_WEB_ARCHIVE_ENABLE)
+*tips: If unsure where to begin, run: $PROGNAME -p 8000 -c start # serves @ http://localhost:8000
+EOF
     exit
 }
 
