@@ -243,7 +243,7 @@ main()
 {
     QUERY_STRING="\${QUERY_STRING:-\$@}"
     if [ -n "\${USER:-}" ]; then
-        env -i PATH="/usr/bin:/bin" HOME="\$HOME" TERM="\$TERM" QUERY_STRING="\${QUERY_STRING:-}" "\$0" "\$@"; exit;
+        env -i PATH="/usr/local/bin:/usr/bin:/bin" HOME="\$HOME" TERM="\$TERM" QUERY_STRING="\${QUERY_STRING:-}" "\$0" "\$@"; exit;
     fi
     case "\$QUERY_STRING" in
         lyrics)                 mpvc_redir "\$($MPVC-fzf -L '')" ;;
