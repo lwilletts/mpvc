@@ -432,7 +432,7 @@ mpvc_web_index()
           <a href="#mpvc-web-fullplaylist" name="mpvc-web-fullplaylist">full</a>
           <a href="#mpvc-web-rawplaylist" name="mpvc-web-rawplaylist">raw</a>
           <a href="#mpvc-web-chapter-list-nr" name="mpvc-web-chapter-list-nr">chapters</a>
-          <a href="javascript:window.location.reload()" >load</a>
+          <a href="" >load</a>
         ] <hr>
         <div style="display:flex">
         <iframe name="mpvc-playlist" width="100%" frameborder="0" allowtransparency="true" style="margin:auto;" src="/cgi-bin/mpvc?mpvc+playlist" ></iframe>
