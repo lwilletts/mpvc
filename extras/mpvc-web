@@ -423,6 +423,7 @@ mpvc_web_index()
         </ul>
         [
             <a href="#mpvc-web-status" name="mpvc-web-status">Status</a>
+            <a href="/cgi-bin/mpvc?related">#related</a>
             <a href="/cgi-bin/mpvc?lyrics">#lyrics</a>
             <a href="/cgi-bin/mpvc?filename">#file</a>
         ] <hr>
