@@ -416,6 +416,7 @@ mpvcfzf_radioapi_search()
 
 mpvcfzf_now_geturls() { mpvc saven; }
 mpvcfzf_now_getvids() { echo "$@" | awk '/youtube|yewtu/ { sub("^.*/",""); sub(".*=",""); sub("^","\\&v="); printf $0; }'; }
+
 mpvcfzf_now()
 {
     date=$(date -Idate)
@@ -426,7 +427,7 @@ mpvcfzf_now()
 
     echo "$now?t=$date$vids"
     echo
-    awk -v u="$urls" -v l="$list" 'END{ split(u, au,"\n"); split(l, al,"\n"); for(u in au) {print au[u], al[u]}; }' /dev/null
+    gawk -v u="$urls" -v l="$list" 'END{ split(u,au,"\n"); split(l,al,"\n"); for(u in au) {print au[u], al[u]}; }' /dev/null
 }
 
 mpvcfzf_launch_term()
@@ -487,6 +488,7 @@ main()
         -B|urlget)  shift; mpvcfzf_urlget "$arg1"; return ;;
         -c|chapters)shift; mpvcfzf_chapterlist; return ;;
         -C|cache)   shift; mpvcfzf_icache; return;;
+        -CC|cmds)   shift; mpvcfzf_preview --prompt '(cmds)' --bind='ctrl-o:execute(sh -c {})' "$@"; return ;;
 
         -d|dir)     shift; MPVC_DIR="$arg1"; cd "$MPVC_DIR" || return;;
         -e|eqz)     shift; mpvcfzf_equalizer; return ;;
