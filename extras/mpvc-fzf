@@ -430,6 +430,11 @@ mpvcfzf_now()
     gawk -v u="$urls" -v l="$list" 'END{ split(u,au,"\n"); split(l,al,"\n"); for(u in au) {print au[u], al[u]}; }' /dev/null
 }
 
+mpvcfzf_cmds()
+{
+    mpvcfzf_preview --prompt '(cmds)' --bind='ctrl-o:execute(sh -c {})' "$@";
+}
+
 mpvcfzf_launch_term()
 {
     if quiet command -v "$MPVC_TERM"; then "$MPVC_TERM" -e "$0" "$@"; fi;
@@ -488,7 +493,7 @@ main()
         -B|urlget)  shift; mpvcfzf_urlget "$arg1"; return ;;
         -c|chapters)shift; mpvcfzf_chapterlist; return ;;
         -C|cache)   shift; mpvcfzf_icache; return;;
-        -CC|cmds)   shift; mpvcfzf_preview --prompt '(cmds)' --bind='ctrl-o:execute(sh -c {})' "$@"; return ;;
+        -CC|cmds)   shift; mpvcfzf_cmds "$@"; return;;
 
         -d|dir)     shift; MPVC_DIR="$arg1"; cd "$MPVC_DIR" || return;;
         -e|eqz)     shift; mpvcfzf_equalizer; return ;;
