@@ -358,22 +358,25 @@ mpvc setr msg-level all=error
 mpvc setr msg-level all=warn
 mpvc setr msg-level all=info
 
-# Some af filters
+# Some af filters (see mpv --af=help)
+mpvc cmdr af toggle '@dynaudnorm:lavfi=[dynaudnorm]'
 mpvc cmdr af toggle '@afade:lavfi=[afade=t=in:ss=0:d=15]'
 mpvc cmdr af toggle '@flanger:lavfi=[flanger=delay=1]'
 mpvc cmdr af toggle '@tremolo:lavfi=[tremolo]'
 mpvc cmdr af toggle '@vibrato:lavfi=[vibrato]'
 mpvc cmdr af toggle '@apulsator:lavfi=[apulsator]'
 mpvc cmdr af toggle '@aphaser:lavfi=[aphaser]'
+mpvc cmdr af toggle '@aphasemeter:lavfi=[aphasemeter]'
 mpvc cmdr af toggle '@aecho:lavfi=[aecho=in_gain=0.9:out_gain=0.9:delays=1:decays=0.9]'
 mpvc cmdr af toggle '@lofi:lavfi=[ladspa=cmt:lofi:controls=c0=80|c1=20|c2=9000]'
 
-# Some vf filters
+# Some vf filters (see mpv --vf=help)
 mpvc cmdr vf toggle '@life:lavfi=[life]'
 mpvc cmdr vf toggle '@showvolume:lavfi=[showvolume]'
 mpvc cmdr vf toggle '@showwaves:lavfi=[showwaves]'
 mpvc cmdr vf toggle '@showspectrum:lavfi=[showspectrum]'
 mpvc cmdr vf toggle '@avectorscope:lavfi=[avectorscope]'
+mpvc cmdr vf toggle '@oscilloscope:lavfi=[oscilloscope]'
 
 mpvc cmdr vf toggle '@mirrorbottom:lavfi=[[vid1]split[main][tmp];[tmp]crop=iw:ih/2:0:ih/2,vflip[flip];[main][flip]overlay[vo]]'
 mpvc cmdr vf toggle '@mirrorleft:lavfi=[[vid1]split[main][tmp];[tmp]crop=iw/2:ih:0:0,hflip[flip];[main][flip]overlay=W/2[vo]]'
@@ -382,6 +385,12 @@ mpvc cmdr vf toggle '@hstack:lavfi=[[vid1]split[v1][v2];[v1][v2]hstack[t]]'
 mpvc cmdr vf toggle '@vstack:lavfi=[[vid1]split[v1][v2];[v1][v2]vstack[t]]'
 </pre>
 </p>
+
+For more on this, the above filters can be piped to mpvc-fzf to applied using (c-x apply):
+
+<pre>
+grep '^mpvc cmdr' docs/logbook.html | mpvc-fzf cmds
+</pre>
 
 <h3 id="logbook-20230721">Introducing mpvc-web: a mpvc-tui like hack for the web/browser, 21 July 2023</h3>
 <p>
