@@ -140,19 +140,19 @@ mpvctui_tips()
 
 mpvctui_watcher()
 {
-    c=$(equiet mpvc get playlist-count)
-    cc=$(equiet mpvc get chapters)
+#    c=$(equiet mpvc get playlist-count)
+#    cc=$(equiet mpvc get chapters)
 
     mpvctui_header0 "${MPVC_TUI_HEADER0}$(mpvctui_tips)"
     mpvctui_header1 "Status"
     mpvc "${MPVC_CMD_STATUS}"
     mpvctui_header1 "Playlist"
     mpvc "${MPVC_CMD_PLAYLIST}"
-    if [ "${c:-}" != "" ] && [ "${cc:-}" != "null" ] && [ "$c" -eq 1 -a "$cc" -gt 0 ]
-    then
-        mpvctui_header2 "Chapterlist"
-        mpvc "${MPVC_CMD_CHAPTERLIST}"
-    fi
+#    if [ "${c:-}" != "" ] && [ "${cc:-}" != "null" ] && [ "$c" -eq 1 -a "$cc" -gt 0 ]
+#    then
+#        mpvctui_header2 "Chapterlist"
+#        mpvc "${MPVC_CMD_CHAPTERLIST}"
+#    fi
     mpvctui_header1 "Prompt"
 }
 
