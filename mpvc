@@ -204,7 +204,7 @@ mpvc_tac()
 
 mpvc_isotime() { TZ=UTC date -u +"%Y-%m-%dT%H:%M:%SZ"; }
 
-## Retrieval Functions ########################################################
+## Fetch Functions ########################################################
 
 mpvc_curl()
 {
@@ -262,41 +262,45 @@ mpvc_ytquery() {
     mpvc_ytquery_json "$@" | mpvc_getjson 'title'
 }
 
+## JSON-IPC Functions ########################################################
+
 mpvc_getjson() {
     awk '/'"$1"'/{ sub(".*'"$1"'\":\"?",""); sub("\"?,\".+\".*",""); sub(", }$", ""); print }'
 }
 
+mpvc_sockecho() { echo "$@" | mpvc_sockrepl; }
+mpvc_sockcmd()  { mpvc_sockecho "{ \"command\": [ "$@" ] }"; }
 mpvc_sockrepl() { $MPVC_SOCAT - "$MPVC_SOCKET" || nc -U -N "$MPVC_SOCKET"; }
-mpvc_sockcmd_() { echo "$@" | mpvc_sockrepl; }
-mpvc_sockcmd()  { oquiet mpvc_sockcmd_ "$@"; }
+mpvc_idleloop() { $MPVC_SOCAT -t0 -,ignoreeof "$MPVC_SOCKET"; }
+
 mpvc_socklist() {
     for f in $(find "$MPVC_CONFIG_DIR" -type s); do
-        idle_active=$(MPVC_SOCKET=$f mpvc_get idle-active)
-        echo "$f:	idle-active=${idle_active:-}"
+        echo "$f:	idle-active=$(MPVC_SOCKET=$f mpvc_get idle-active)"
     done
 }
 
-mpvc_cmdr_() {
-    command=$(for i in "$@"; do printf "$q$i$q, "; done)
-    echo "{ \"command\": [ $command ] }"
-}
-mpvc_cmdr() { equiet mpvc_sockcmd_ "$(q='"' mpvc_cmdr_ "$@")"; }
+mpvc_cmdr_() { echo "{ \"command\": [ $(for i in "$@"; do printf "$q$i$q, "; done) ] }"; }
+mpvc_cmdr()  { equiet mpvc_sockecho "$(q='"' mpvc_cmdr_ "$@")"; }
 mpvc_ecmdr() {
-    ret=$(mpvc_cmdr "$@")
-    case "$ret" in *"success"*|'') ;; *) echo "$ret"; return 1 ;; esac
+    r=$(mpvc_cmdr "$@"); case "$r" in *"success"*|'') ;; *) echo "$r"; return 1 ;; esac
 }
 
 mpvc_cmd()   { mpvc_cmdr "$@" | mpvc_getjson 'data'; }
 mpvc_add()   { mpvc_ecmdr "add" "$@"; }
-mpvc_get()   { mpvc_cmd "get_property_string" "$1"; }
+mpvc_get()   { mpvc_sockcmd '"get_property_string", "'$1'",' | mpvc_getjson 'data'; }
 mpvc_set()   { mpvc_ecmdr "set_property_string" "$@"; }
-mpvc_cycle() { mpvc_ecmdr "cycle" "$1"; }
+mpvc_cycle() { oquiet mpvc_sockcmd '"cycle", "'$1'",'; }
 
-mpvc_getr()  { mpvc_cmdr "get_property" "$1"; }
+mpvc_getr()  { mpvc_sockcmd '"get_property", "'$1'",'; }
 mpvc_setr()  { mpvc_ecmdr "set_property" "$@"; }
 
+mpvc_observe() { echo '{ "command": [ "observe_property_string", 1, "'$1'", ] }' | mpvc_idleloop; }
+mpvc_idle()    { mpvc_observe "$1" | awk "/$1/ { print; exit }"; }
+
+## Playlist Functions ##########################################################
+
 mpvc_get_playlist_json() {
-    mpvc_cmdr "get_property" "playlist" |
+    mpvc_getr "playlist" |
         grep -Eo '"[^"]*" *(: *([0-9]*|"[^"]*")[^{}\["]*|,)?|[^"\]\[\}\{]*|\{|\},?|\[|\],?|[0-9 ]*,?'
     QUIETFLAG="true"
 }
@@ -569,7 +573,7 @@ mpvc_appendtracks() {
     done
 }
 
-mpvc_get_random() { od -vAn -N2 -tu2 < /dev/urandom; }
+mpvc_get_random()  { od -vAn -N2 -tu2 < /dev/urandom; }
 mpvc_play_random() { mpvc_set_track "$(mpvc_get_random)" "absolute"; }
 mpvc_seek_random() { d=$(mpvc_get duration); mpvc_set_time "absolute" "$(( $(mpvc_get_random) % ${d%%.*} ))"; }
 
@@ -956,10 +960,10 @@ mpvc_handle_socket() {
 
 mpvc_validate_socket() {
     # validate deps
-    if ! test -x "$MPVC_MPV" && ! quiet command -v "$MPVC_MPV"; then
+    if ! quiet command -v "$MPVC_MPV"; then
         die 4 "$PROGNAME: Error: No mpv found. Install to continue."
     fi
-    if ! test -x "$MPVC_SOCAT" && ! quiet command -v "$MPVC_SOCAT" && ! quiet command -v nc; then
+    if ! quiet command -v "$MPVC_SOCAT" && ! quiet command -v nc; then
         die 4 "$PROGNAME: Error: No socat found. Install to continue."
     fi
     # test if socket exists
@@ -971,9 +975,9 @@ mpvc_validate_socket() {
         die 3 "$PROGNAME: Error: No files added to ${MPVC_SOCKET##$HOME/}."
     fi
     # test if socat works on socket
-    if ! mpvc_sockcmd '{ "command": [ "get_property_string", "idle-active" ] }'; then
-        die 4 "$PROGNAME: Error: $MPVC_SOCAT failed. Install socat to continue."
-    fi
+#    if ! oquiet mpvc_sockcmd '"get_property_string", "idle-active",'; then
+#        die 4 "$PROGNAME: Error: $MPVC_SOCAT failed. Install socat to continue."
+#    fi
 }
 
 mpvc_get_version() {
@@ -983,10 +987,6 @@ mpvc_get_version() {
         "$MPVC_MPV" --version
     fi
 }
-
-mpvc_idleloop() { $MPVC_SOCAT -t0 -,ignoreeof "$MPVC_SOCKET"; }
-mpvc_idle() { mpvc_observe_property "$1" | awk "/$1/ { print; exit }"; }
-mpvc_observe_property() { q='' mpvc_cmdr_ '"observe_property_string"' 1 "\"$1\"" | mpvc_idleloop; }
 
 mpvc_delay() { sleep "${1:-0.1}"; }
 mpvc_wait()  { for i in $(seq 0 100); do mpvc_delay "${1:-}"; [ -n "$(mpvc_get idle-active)" ] && break; done; }
@@ -1084,10 +1084,10 @@ main() {
             --togglef|togglef)               shift; mpvc_cycle "fullscreen" ;;
             --idle|idle)                     shift; mpvc_idle "${1:-}"; QUIETFLAG=true ;;
             --idleloop|idleloop)             shift; mpvc_idleloop "${1:-}"; QUIETFLAG=true ;;
-            --observe|observe)               shift; mpvc_observe_property "${1:-}"; QUIETFLAG=true ;;
+            --observe|observe)               shift; mpvc_observe "${1:-}"; QUIETFLAG=true ;;
             --cmd|cmd)                       shift; mpvc_cmd "$@"; return ;;
             --cmdr|cmdr)                     shift; mpvc_cmdr "$@"; return ;;
-            --sockcmd|sockcmd)               shift; mpvc_sockcmd_ "${1:-}"; QUIETFLAG=true ;;
+            --sockcmd|sockcmd)               shift; mpvc_sockecho "${1:-}"; QUIETFLAG=true ;;
             --sockrepl|sockrepl)             shift; mpvc_sockrepl; QUIETFLAG=true ;;
             --socklist|socklist)             shift; mpvc_socklist "${1:-}"; QUIETFLAG=true ;;
 
