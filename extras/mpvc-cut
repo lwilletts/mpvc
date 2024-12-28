@@ -67,10 +67,11 @@ mpvc_cut_vres()
 
 mpvc_cut_asrc()
 {
-    pactl list sources | awk '
-        /^Source #.*/ {
-            s=$2; sub("#","",s);} / *Description: Monitor of Built-in Audio Analog Stereo/ {print s; exit
-        }'
+    pactl list sources |
+        awk '
+        /^Source #.*/ { s=$2; sub("#","",s); }
+        / *Description: Monitor of / {print s; exit }
+        '
 }
 
 mpvc_screencast()
@@ -78,7 +79,7 @@ mpvc_screencast()
     vres=$(mpvc_cut_vres)
     asrc=$(mpvc_cut_asrc)
 
-    fout="${fout:-mpvc-cast-$(date -Isec | sed 's/:/-/g').mkv}"
+    fout="${fout:-mpvc-cast-$(date -Iseconds | sed 's/:/-/g').mkv}"
     loglevel=${loglevel:-warning}
     framerate=${framerate:-25}
 
@@ -91,7 +92,17 @@ mpvc_screencast()
 
 usage()
 {
-    echo "usage: $PROGNAME -[vdlLh] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
+    cat <<EOF
+usage: $PROGNAME -[vdlLh] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
+ -a|asrc    : Show default pactl audio output (used as source for screencast)
+ -c|cast    : Record an screencast using x11+pulse
+ -d|default : Cut current media between ab-loop points using defaults (copy)
+ -l|lossy   : Cut current media between ab-loop points using lossy compression.
+ -L|lossless: Cut current media between ab-loop points using lossless compression.
+ -v|vidcord : Cut current media between ab-loop points using vidcord compression.
+ -h|help    : This help
+*tips: If unsure about where to begin, start with: $PROGNAME preset
+EOF
     exit "${1:-0}"
 }
 
@@ -106,7 +117,7 @@ main()
     -L|--lossless|lossless)  operation="lossless" mpvc_cut ;;
     -v|--vidcord|vidcord)    operation="vidcord" mpvc_cut ;;
     -d|--default|default|'') operation="default" mpvc_cut ;;
-    cast)                    mpvc_screencast "$@" ;;
+    -c|cast)                 mpvc_screencast "$@" ;;
     *)                       usage ;;
     esac
 }
