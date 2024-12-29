@@ -449,6 +449,7 @@ mpvcfzf_usage()
 {
     cat <<EOF
 usage: $PROGNAME opts # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
+ -a|stash    : Search & play previously saved stashes
  -b|browse   : Browse the provided ytdl-archive URL with fzf
  -c|chapters : Start fzf to manage the current mpv chapterlist
  -d|dir      : Set the WD to the media directory given as argument
