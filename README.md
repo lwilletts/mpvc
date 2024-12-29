@@ -8,7 +8,7 @@
 
 Music player in POSIX-sh interfacing mpv from the shell + extras/goodies [^install] 🚀.
 
-A fork of [lwillets/mpvc](https://github.com/lwilletts/mpvc) evolving on its own adding features like: improved CLI, TUI, FZF, WEB, EQ, & play Invidious, YouTube & streaming services.
+A fork of [lwillets/mpvc](https://github.com/lwilletts/mpvc) evolving on its own adding features such as: improved interfaces to CLI, TUI, FZF, WEB, EQZ, & play streaming services as YouTube/Invidious.
 For more on the features of this fork check: [Git](#git) QuickStart, [Wiki](../../wiki), [LogBook](../../wiki#logbook) & [Casts](../../wiki#screencasts).
 
 ⏩ Skip directly to [Installation](#Installation) to try mpvc!
