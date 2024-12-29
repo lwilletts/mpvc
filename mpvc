@@ -268,18 +268,18 @@ mpvc_getjson() {
     awk '/'"$1"'/{ sub(".*'"$1"'\":\"?",""); sub("\"?,\".+\".*",""); sub(", }$", ""); print }'
 }
 
-mpvc_sockecho() { echo "$@" | mpvc_sockrepl; }
-mpvc_sockcmd()  { mpvc_sockecho "{ \"command\": [ "$@" ] }"; }
-mpvc_sockrepl() { $MPVC_SOCAT - "$MPVC_SOCKET" || nc -U -N "$MPVC_SOCKET"; }
-mpvc_idleloop() { $MPVC_SOCAT -t0 -,ignoreeof "$MPVC_SOCKET"; }
-
 mpvc_socklist() {
     for f in $(find "$MPVC_CONFIG_DIR" -type s); do
         echo "$f:	idle-active=$(MPVC_SOCKET=$f mpvc_get idle-active)"
     done
 }
 
-mpvc_cmdr_() { echo "{ \"command\": [ $(for i in "$@"; do printf "$q$i$q, "; done) ] }"; }
+mpvc_sockecho() { echo "$@" | mpvc_sockrepl; }
+mpvc_sockcmd()  { mpvc_sockecho "{ \"command\": [ $* ] }"; }
+mpvc_sockrepl() { $MPVC_SOCAT - "$MPVC_SOCKET" || nc -U -N "$MPVC_SOCKET"; }
+mpvc_idleloop() { $MPVC_SOCAT -t0 -,ignoreeof "$MPVC_SOCKET"; }
+
+mpvc_cmdr_() { echo "{ \"command\": [ $(for i in "$@"; do printf "%s" "$q$i$q, "; done) ] }"; }
 mpvc_cmdr()  { equiet mpvc_sockecho "$(q='"' mpvc_cmdr_ "$@")"; }
 mpvc_ecmdr() {
     r=$(mpvc_cmdr "$@"); case "$r" in *"success"*|'') ;; *) echo "$r"; return 1 ;; esac
@@ -287,14 +287,14 @@ mpvc_ecmdr() {
 
 mpvc_cmd()   { mpvc_cmdr "$@" | mpvc_getjson 'data'; }
 mpvc_add()   { mpvc_ecmdr "add" "$@"; }
-mpvc_get()   { mpvc_sockcmd '"get_property_string", "'$1'",' | mpvc_getjson 'data'; }
+mpvc_get()   { mpvc_sockcmd "\"get_property_string\", \"$1\"," | mpvc_getjson 'data'; }
 mpvc_set()   { mpvc_ecmdr "set_property_string" "$@"; }
-mpvc_cycle() { oquiet mpvc_sockcmd '"cycle", "'$1'",'; }
+mpvc_cycle() { oquiet mpvc_sockcmd "\"cycle\", \"$1\","; }
 
-mpvc_getr()  { mpvc_sockcmd '"get_property", "'$1'",'; }
+mpvc_getr()  { mpvc_sockcmd "\"get_property\", \"$1\","; }
 mpvc_setr()  { mpvc_ecmdr "set_property" "$@"; }
 
-mpvc_observe() { echo '{ "command": [ "observe_property_string", 1, "'$1'", ] }' | mpvc_idleloop; }
+mpvc_observe() { echo "{ \"command\": [ \"observe_property_string\", 1, \"$1\", ] }" | mpvc_idleloop; }
 mpvc_idle()    { mpvc_observe "$1" | awk "/$1/ { print; exit }"; }
 
 ## Playlist Functions ##########################################################
@@ -558,7 +558,7 @@ mpvc_appendtrack() {
     esac
     if [ -n "$filename" ]; then
         # cache media here if media is found in local storage
-        if [ "$MPVC_LOCAL_CACHE" = "true" ]; then filename=$(echo "$filename" | $PROGDIR/mpvc-fzf -C); fi
+        if [ "$MPVC_LOCAL_CACHE" = "true" ]; then filename=$(echo "$filename" | "$PROGDIR/mpvc-fzf" -C); fi
         mpvc_ecmdr "loadfile" "$filename" "append-play" || return 1
         quietcheck warn "Adding: $(mpvc_ytquery "$filename")"
     fi
@@ -884,7 +884,7 @@ mpvc_print_status_final() {
     if [ "$QUIETFLAG" = "true" ]; then return; fi
     # catches if mpv is idle or not
     if [ "$(mpvc_get idle-active)" = "true" ]; then
-        warn "MPV on ${MPVC_SOCKET##$HOME/} is currently idle."; return
+        warn "MPV on ${MPVC_SOCKET##"$HOME/"} is currently idle."; return
     fi
     mpvc_print_status
 }
@@ -968,11 +968,11 @@ mpvc_validate_socket() {
     fi
     # test if socket exists
     if [ ! -S "$MPVC_SOCKET" ]; then
-        die 2 "$PROGNAME: Error: Socket ${MPVC_SOCKET##$HOME/} does not exist. Use mpvc --mpv to start one."
+        die 2 "$PROGNAME: Error: Socket ${MPVC_SOCKET##"$HOME/"} does not exist. Use mpvc --mpv to start one."
     fi
     # test if socket is open
     if [ "$(mpvc_get pause)" = "" ]; then
-        die 3 "$PROGNAME: Error: No files added to ${MPVC_SOCKET##$HOME/}."
+        die 3 "$PROGNAME: Error: No files added to ${MPVC_SOCKET##"$HOME/"}."
     fi
     # test if socat works on socket
 #    if ! oquiet mpvc_sockcmd '"get_property_string", "idle-active",'; then
