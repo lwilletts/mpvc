@@ -16,7 +16,7 @@
 
 PROGNAME=${0##*/}
 PROGDIR=${0%/*}
-PROGVERSION="v1.5"
+PROGVERSION="v1.6"
 PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
 PROGINFO="A hack to remotely control mpvc from web # DISCLAIMER * Use at Your Own Risk *"
@@ -36,9 +36,8 @@ mpvc_web_defaults()
     MPVC_WEB_PORT=${MPVC_WEB_PORT:-8000}
     MPVC_WEB_ROOT=${MPVC_WEB_ROOT:-/tmp/mpvc-web/root}
     MPVC_WEB_SSL_PORT=${MPVC_WEB_SSL_PORT:-8443}
-    MPVC_WEB_SSL_PEM=${MPVC_WEB_SSL_PEM:-$MPVC_WEB_ROOT/../stunnel.pem}
-    MPVC_WEB_SSL_CFG=${MPVC_WEB_SSL_CFG:-$MPVC_WEB_ROOT/../stunnel.cfg}
-    MPVC_WEB_SSL_PID=${MPVC_WEB_SSL_PID:-$MPVC_WEB_ROOT/../stunnel.pid}
+    MPVC_WEB_SSL_PEM=${MPVC_WEB_SSL_PEM:-$MPVC_WEB_ROOT/../ssl.pem}
+    MPVC_WEB_SSL_PID=${MPVC_WEB_SSL_PID:-$MPVC_WEB_ROOT/../ssl.pid}
     MPVC_WEB_SSL_ENABLE=${MPVC_WEB_SSL_ENABLE:-}
     MPVC_WEB_SSL_VERIFY=${MPVC_WEB_SSL_VERIFY:-0}
     MPVC_WEB_ARCHIVE_ENABLE=${MPVC_WEB_ARCHIVE_ENABLE:-}
@@ -82,17 +81,17 @@ mpvc_web_config()
         echo "$PROGNAME: Error: No python3 found, install to continue."
         exit
     fi
-    if ! command -v stunnel >/dev/null; then
-        echo "$PROGNAME: Warning: No stunnel found, install to support SSL."
+    if ! command -v socat >/dev/null; then
+        echo "$PROGNAME: Warning: No socat found, install to support SSL."
     fi
 }
 
 mpvc_web_style()
 {
     cat <<-EOF
-:root { --body-font-family: monospace; --body-color: #222; --body-background: #fff; --link-color: #a0a; }
-@media (max-width: 768px) { :root { --body-font-size: 1.06em; } }
-@media (min-width: 768px) { :root { --body-font-size: 1.10em; } }
+:root { --body-font-family: monospace,monospace; --body-color: #222; --body-background: #fff; --link-color: #a0a; }
+@media (max-width: 768px) { :root { --body-font-size: 0.92em; } }
+@media (min-width: 768px) { :root { --body-font-size: 1.00em; } }
 
 @media (prefers-color-scheme: light) { html { filter: invert(0.0);  } :root { } }
 @media (prefers-color-scheme: dark)  { html { filter: invert(0.85); } :root { } }
@@ -132,7 +131,7 @@ mpvc_web_select_form()
 mpvc_web_yts()
 {
 cat <<EOF
-            <input placeholder="mpvc yts-search" name="mpvc-yts" list="mpvc-yts-datalist" title="mpvc yts-search" ${MPVC_WEB_SHORTCUT_YTSEARCH} onkeydown="mpvcOnKeyDownEvent(event,this)">
+            <input type="text" placeholder="mpvc yts-search" name="mpvc-yts" list="mpvc-yts-datalist" title="mpvc yts-search" ${MPVC_WEB_SHORTCUT_YTSEARCH} onkeydown="mpvcOnKeyDownEvent(event,this)">
             <datalist id="mpvc-yts-datalist">
             </datalist>
 EOF
@@ -150,6 +149,12 @@ EOF
 mpvc_web_index_js()
 {
     cat <<EOF
+function toggleLinkColor()
+{
+    var linkcolor = document.getElementById("link-color").value;
+    document.styleSheets[0].rules[0].style.setProperty("--link-color", linkcolor);
+}
+
 function toggleColorScheme(mode="dark")
 {
     var i = 0;
@@ -238,7 +243,9 @@ main()
 {
     QUERY_STRING="\${QUERY_STRING:-\$@}"
     if [ -n "\${USER:-}" ]; then
-        env -i PATH="/usr/bin:/bin" HOME="\$HOME" TERM="\$TERM" QUERY_STRING="\${QUERY_STRING:-}" "\$0" "\$@"; exit;
+        PATH=/usr/local/bin:/usr/bin:/bin
+        env -i PATH="\$PATH" HOME="\$HOME" TERM="\$TERM" QUERY_STRING="\${QUERY_STRING:-}" "\$0" "\$@";
+        exit;
     fi
     case "\$QUERY_STRING" in
         lyrics)                 mpvc_redir "\$($MPVC-fzf -L '')" ;;
@@ -307,8 +314,6 @@ mpvc_web_index()
     <link rel="apple-touch-icon" href="apple-touch-icon.svg">
     <title> 🎧$MPVC_WEB_HOSTNAME mpvc</title>
     <link rel="stylesheet" href="style.css">
-    <style type="text/css" media="all">
-    </style>
     <script type="text/javascript">
         $(mpvc_web_index_js)
     </script>
@@ -389,16 +394,16 @@ mpvc_web_index()
             <a href="?cmd=mpvc cnext" title="cnext">ch+</a>
         </li>
         <li>
-            $(echo "-15\n-10\n-5\n-2\n-1\n0\n+1\n+2\n+5\n+10\n+15" | mpvc_web_select_form "mpvc -q track" "${MPVC_WEB_SHORTCUT_TRACK}")
+            $(printf " -15\n-10\n-5\n-2\n-1\n0\n+1\n+2\n+5\n+10\n+15" | mpvc_web_select_form "mpvc -q track" "${MPVC_WEB_SHORTCUT_TRACK}")
         </li>
         <li>
-            $(echo "-30\n-20\n-10\n-5\n-1\n0\n+1\n+5\n+10\n+20\n+30" | mpvc_web_select_form "mpvc -q cplay")
+            $(printf " -30\n-20\n-10\n-5\n-1\n0\n+1\n+5\n+10\n+20\n+30" | mpvc_web_select_form "mpvc -q cplay")
         </li>
         <li>
-            $(echo "-30\n-20\n-10\n-5\n0\n+5\n+10\n+20\n+30" | mpvc_web_select_form "mpvc -q vol" "${MPVC_WEB_SHORTCUT_VOL}")
+            $(printf " -30\n-20\n-10\n-5\n0\n+5\n+10\n+20\n+30" | mpvc_web_select_form "mpvc -q vol" "${MPVC_WEB_SHORTCUT_VOL}")
         </li>
         <li>
-            $(echo "-120\n-60\n-25\n+25\n+60\n+120" | mpvc_web_select_form "mpvc -q seek" "${MPVC_WEB_SHORTCUT_SEEK}")
+            $(printf " -120\n-60\n-25\n+25\n+60\n+120" | mpvc_web_select_form "mpvc -q seek" "${MPVC_WEB_SHORTCUT_SEEK}")
         </li>
         <li>
             $(if [ -n "$MPVC_WEB_ARCHIVE_ENABLE" ]; then find "ytdl-archive/" | awk -F/ '{print "https://"$NF}' | mpvc_web_select_form "mpvc -q add" "${MPVC_WEB_SHORTCUT_ARCHIVE}"; fi)
@@ -413,26 +418,28 @@ mpvc_web_index()
             <a href="#" title="theme 4" onclick="document.body.style.WebkitFilter='invert(0.4)';">t4</a>
             <a href="#" title="theme 4" onclick="document.body.style.WebkitFilter='invert(0.6)';">t6</a>
             <a href="#" title="theme 8" onclick="document.body.style.WebkitFilter='invert(0.8)';">t8</a>
-            <a href="#" title="toggle" onclick="toggleColorScheme()">cycle</a>
+            <a href="#" title="toggle" onclick="toggleColorScheme()">tg</a>
             <a href="." title="reset">rst</a>
+            <input type="color" id="link-color" name="link-color" onchange="toggleLinkColor()" style="width: 1em !important; height: 1em; padding:0 0;">
         </li>
         </ul>
         [
             <a href="#mpvc-web-status" name="mpvc-web-status">Status</a>
+            <a href="/cgi-bin/mpvc?related">#related</a>
             <a href="/cgi-bin/mpvc?lyrics">#lyrics</a>
             <a href="/cgi-bin/mpvc?filename">#file</a>
         ] <hr>
-        <iframe name="mpvc-status" width="100%" height="100%" frameborder="0" src="/cgi-bin/mpvc?mpvc+status" allowtransparency="true" ></iframe>
+        <iframe name="mpvc-status" width="100%" height="100%" frameborder="0" allowtransparency="true" src="/cgi-bin/mpvc?mpvc+status" ></iframe>
         [
           <a href="#mpvc-web-playlist" name="mpvc-web-playlist">Playlist</a>
           <a href="#mpvc-web-fullplaylist" name="mpvc-web-fullplaylist">full</a>
           <a href="#mpvc-web-rawplaylist" name="mpvc-web-rawplaylist">raw</a>
           <a href="#mpvc-web-chapter-list-nr" name="mpvc-web-chapter-list-nr">chapters</a>
-          <a href="javascript:window.location.reload()" >load</a>
+          <a href="" >load</a>
         ] <hr>
         <div style="display:flex">
-        <iframe name="mpvc-playlist" width="100%" frameborder="0" src="/cgi-bin/mpvc?mpvc+playlist" allowtransparency="true" style="margin:auto;" ></iframe>
-        <script>
+        <iframe name="mpvc-playlist" width="100%" frameborder="0" allowtransparency="true" style="margin:auto;" src="/cgi-bin/mpvc?mpvc+playlist" ></iframe>
+        <script type="text/javascript">
         var pl = document.getElementsByName('mpvc-playlist')[0];
         switch (window.location.hash) {
         case '#mpvc-web-playlist':           { pl.src='/cgi-bin/mpvc?mpvc+playlist'; break; }
@@ -447,8 +454,8 @@ mpvc_web_index()
         <a href="$PROGURL">$PROGNAME</a>
         <a href="$PROGURL">$PROGVERSION</a>
         <a href="${PROGURL%/*}">@$PROGAUTHOR</a> (c) 2024
-        <a href="javascript:alert('$(mpvc_web_help)')" ${MPVC_WEB_SHORTCUT_HELP}>/h</a>
-        <a href="#top">top</a>
+        <a href="javascript:alert('$(mpvc_web_help)')" title="help" ${MPVC_WEB_SHORTCUT_HELP}>/h</a>
+        <a href="#top" title="top">top</a>
     </body>
 </html>
 EOF
@@ -461,30 +468,12 @@ mpvc_web_favicon()
 EOF
 }
 
-mpvc_web_stunnel_cfg()
+mpvc_web_https()
 {
-    cat <<EOF
-# stunnel.cfg for $PROGNAME $PROGVERSION $PROGURL
-sslVersion = all
-options = NO_SSLv2
-options = NO_SSLv3
+    MPVC_WEB_LISTEN="bind=$MPVC_WEB_HOST,cert=$MPVC_WEB_SSL_PEM,cafile=$MPVC_WEB_SSL_PEM,verify=$MPVC_WEB_SSL_VERIFY"
 
-#socket = a:TCP_NODELAY=1
-#socket = l:TCP_NODELAY=1
-#socket = r:TCP_NODELAY=1
-pid=$MPVC_WEB_SSL_PID
-
-[mpvc-web]
-accept = $MPVC_WEB_HOST:$MPVC_WEB_SSL_PORT
-connect = $MPVC_WEB_HOST:$MPVC_WEB_PORT
-
-cert = ${MPVC_WEB_SSL_PEM}
-key  = ${MPVC_WEB_SSL_PEM}
-cafile = ${MPVC_WEB_SSL_PEM}
-verify=$MPVC_WEB_SSL_VERIFY
-#protocol = proxy
-TIMEOUTclose = 0
-EOF
+    socat "OPENSSL-LISTEN:$MPVC_WEB_SSL_PORT,$MPVC_WEB_LISTEN,reuseaddr,fork" "TCP:$MPVC_WEB_HOST:$MPVC_WEB_PORT" &
+    #echo "$$" > "$MPVC_WEB_SSL_PID"
 }
 
 mpvc_web_setup()
@@ -518,19 +507,18 @@ mpvc_web_setup()
         mpvc_web_cgi > "$MPVC_WEB_CGI"
         chmod u+x "$MPVC_WEB_CGI"
 
-        # setup https stunnel if requested
+        # setup https socat if requested
         if [ -n "${MPVC_WEB_SSL_ENABLE}" ]; then
-            echo "# $PROGNAME Setup $MPVC_WEB_ROOT stunnel: $MPVC_WEB_HOST:$MPVC_WEB_SSL_PORT"
-            mpvc_web_stunnel_cfg > "$MPVC_WEB_SSL_CFG"
+            echo "# $PROGNAME Setup $MPVC_WEB_ROOT socat: $MPVC_WEB_HOST:$MPVC_WEB_SSL_PORT"
             if [ ! -e "$MPVC_WEB_SSL_PEM" ]; then
                 MPVC_WEB_SSL_SUBJ="/C=CN/ST=ST/O=$PROGNAME/CN=$PROGNAME-$MPVC_WEB_HOSTNAME"
                 openssl req -new -x509 -days 365 -nodes -out "$MPVC_WEB_SSL_PEM" -keyout "$MPVC_WEB_SSL_PEM" -subj "$MPVC_WEB_SSL_SUBJ"
                 openssl pkcs12 -export -passout "pass:" -in "$MPVC_WEB_SSL_PEM" -out "$MPVC_WEB_SSL_PEM.p12"
             fi
-            if [ -e "$MPVC_WEB_SSL_PID" ]; then
+            if [ -s "$MPVC_WEB_SSL_PID" ]; then
                 kill "$(cat "$MPVC_WEB_SSL_PID")" || true
             fi
-            stunnel "$MPVC_WEB_SSL_CFG"
+            mpvc_web_https
         fi
 
         if [ -n "${MPVC_WEB_DEV:-}" ]; then
@@ -551,64 +539,69 @@ mpvc_web()
 
         # XXX handle cli commands, rewrite this mess
         python3 -u -m http.server --cgi --bind "$MPVC_WEB_HOST" "$MPVC_WEB_PORT" "$@" 2>&1 |
-            awk -v mpvc="$MPVC_WEB_CGI" \
+            awk -v mpvcbin="$MPVC_WEB_CGI" \
         '
+        function mpvcsys(cmd) { system(mpvcbin" "cmd); }
+        function mpvc(cmd)    { mpvcsys("mpvc -q "cmd); }
+        function httpreq(r)
+        {
+            sub("HTTP.*$", "", r);
+            sub("^.*GET \\/\\?cli=(mpvc-)", "mpvc-", r);
+            sub("^.*GET \\/\\?cli=(mpvc)\\+", "mpvc ", r);
+            gsub("^("mpvcbin") [^a-zA-Z0-9 ]*", "", r);
+            gsub("\\+", " ", r);
+            gsub("%22", "\"", r);
+            gsub("%2B", "+", r);
+            gsub("%23", "#", r);
+            gsub("%2F", "/", r);
+            gsub("%3A", ":", r);
+            return r
+        }
+
         BEGIN { quiet=1 }
 
-        /GET \/\?cmd=mpvc%20mpv/          { system(mpvc" mpvc -q mpv") }
-        /GET \/\?cmd=mpvc%20clear/        { system(mpvc" mpvc -q clear") }
-        /GET \/\?cmd=mpvc%20kill/         { system(mpvc" mpvc -q kill") }
-        /GET \/\?cmd=mpvc%20vol%20-5/     { system(mpvc" mpvc -q vol -5") }
-        /GET \/\?cmd=mpvc%20vol%20\+5/    { system(mpvc" mpvc -q vol +5") }
+        /GET \/\?cmd=mpvc%20mpv/          { mpvc("mpv") }
+        /GET \/\?cmd=mpvc%20clear/        { mpvc("clear") }
+        /GET \/\?cmd=mpvc%20kill/         { mpvc("kill") }
+        /GET \/\?cmd=mpvc%20vol%20-5/     { mpvc("vol -5") }
+        /GET \/\?cmd=mpvc%20vol%20\+5/    { mpvc("vol +5") }
 
-        /GET \/\?cmd=mpvc%20--mute/       { system(mpvc" mpvc -q --mute") }
-        /GET \/\?cmd=mpvc%20toggle/       { system(mpvc" mpvc -q toggle") }
-        /GET \/\?cmd=mpvc%20play/         { system(mpvc" mpvc -q play") }
-        /GET \/\?cmd=mpvc%20start%200/    { system(mpvc" mpvc -q start 0") }
-        /GET \/\?cmd=mpvc%20start%20$/    { system(mpvc" mpvc -q start $") }
-        /GET \/\?cmd=mpvc%20stop/         { system(mpvc" mpvc -q stop") }
-        /GET \/\?cmd=mpvc%20prev/         { system(mpvc" mpvc -q prev") }
-        /GET \/\?cmd=mpvc%20next/         { system(mpvc" mpvc -q next") }
-        /GET \/\?cmd=mpvc%20playrand/     { system(mpvc" mpvc -q playrand") }
+        /GET \/\?cmd=mpvc%20--mute/       { mpvc("--mute") }
+        /GET \/\?cmd=mpvc%20toggle/       { mpvc("toggle") }
+        /GET \/\?cmd=mpvc%20play/         { mpvc("play") }
+        /GET \/\?cmd=mpvc%20start%200/    { mpvc("start 0") }
+        /GET \/\?cmd=mpvc%20start%20$/    { mpvc("start $") }
+        /GET \/\?cmd=mpvc%20stop/         { mpvc("stop") }
+        /GET \/\?cmd=mpvc%20prev/         { mpvc("prev") }
+        /GET \/\?cmd=mpvc%20next/         { mpvc("next") }
+        /GET \/\?cmd=mpvc%20playrand/     { mpvc("playrand") }
 
-        /GET \/\?cmd=mpvc%20shuffle/      { system(mpvc" mpvc -q shuffle") }
-        /GET \/\?cmd=mpvc%20unshuffle/    { system(mpvc" mpvc -q unshuffle") }
+        /GET \/\?cmd=mpvc%20shuffle/      { mpvc("shuffle") }
+        /GET \/\?cmd=mpvc%20unshuffle/    { mpvc("unshuffle") }
 
-        /GET \/\?cmd=mpvc%20repeat/       { system(mpvc" mpvc -q repeat") }
-        /GET \/\?cmd=mpvc%20single/       { system(mpvc" mpvc -q single") }
-        /GET \/\?cmd=mpvc%20replay/       { system(mpvc" mpvc -q replay") }
+        /GET \/\?cmd=mpvc%20repeat/       { mpvc("repeat") }
+        /GET \/\?cmd=mpvc%20single/       { mpvc("single") }
+        /GET \/\?cmd=mpvc%20replay/       { mpvc("replay") }
 
-        /GET \/\?cmd=mpvc%20togglev/      { system(mpvc" mpvc -q togglev") }
-        /GET \/\?cmd=mpvc%20aspect/       { system(mpvc" mpvc -q aspect") }
-        /GET \/\?cmd=mpvc%20togglew/      { system(mpvc" mpvc -q togglew") }
-        /GET \/\?cmd=mpvc%20togglef/      { system(mpvc" mpvc -q togglef") }
-        /GET \/\?cmd=mpvc%20togglei/      { system(mpvc" mpvc -q togglei") }
+        /GET \/\?cmd=mpvc%20togglev/      { mpvc("togglev") }
+        /GET \/\?cmd=mpvc%20aspect/       { mpvc("aspect") }
+        /GET \/\?cmd=mpvc%20togglew/      { mpvc("togglew") }
+        /GET \/\?cmd=mpvc%20togglef/      { mpvc("togglef") }
+        /GET \/\?cmd=mpvc%20togglei/      { mpvc("togglei") }
 
-        /GET \/\?cmd=mpvc%20cstart/       { system(mpvc" mpvc -q cplay 0") }
-        /GET \/\?cmd=mpvc%20creplay/      { system(mpvc" mpvc -q chapter-replay") }
-        /GET \/\?cmd=mpvc%20cloop/        { system(mpvc" mpvc -q chapter-loop") }
-        /GET \/\?cmd=mpvc%20cprev/        { system(mpvc" mpvc -q chapter-prev") }
-        /GET \/\?cmd=mpvc%20cnext/        { system(mpvc" mpvc -q chapter-next") }
-        /GET \/\?cmd=mpvc%20cplayrand/    { system(mpvc" mpvc -q cplayrand") }
+        /GET \/\?cmd=mpvc%20cstart/       { mpvc("cplay 0") }
+        /GET \/\?cmd=mpvc%20creplay/      { mpvc("chapter-replay") }
+        /GET \/\?cmd=mpvc%20cloop/        { mpvc("chapter-loop") }
+        /GET \/\?cmd=mpvc%20cprev/        { mpvc("chapter-prev") }
+        /GET \/\?cmd=mpvc%20cnext/        { mpvc("chapter-next") }
+        /GET \/\?cmd=mpvc%20cplayrand/    { mpvc("cplayrand") }
 
         /GET \/\?cli=mpvc/                {
-            r=$0;
-            gsub("HTTP.*$", "", r);
-            gsub("^.*GET \\/\\?cli=(mpvc-)", mpvc" mpvc-", r);
-            gsub("^.*GET \\/\\?cli=(mpvc)\\+", mpvc" mpvc ", r);
-
-            if (ENVIRON["MPVC_WEB_DEV"] && match(r, "^"mpvc))
+            r=httpreq($0)
+            if (ENVIRON["MPVC_WEB_DEV"] && match(r, "^mpvc"))
             {
-                gsub("^("mpvc") [^a-zA-Z0-9 ]*", mpvc" ", r);
-                gsub("\\+", " ", r);
-                gsub("%22", "\"", r);
-                gsub("%2B", "+", r);
-                gsub("%23", "#", r);
-                gsub("%2F", "/", r);
-                gsub("%3A", ":", r);
-
-                #print(r);
-                system(r); # XXX
+                #print(r)
+                mpvcsys(r) # XXX
             }
         }
 
@@ -620,15 +613,17 @@ mpvc_web()
 optflags="ha:b:c:C:d:p:P:r:R:s:S:t:T:"
 usage()
 {
-    echo "usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
-    echo "  -c : Set $PROGNAME HTTP server command: [start,stop] (*required)"
-    echo "  -b : Set $PROGNAME HTTP server bind address (default $MPVC_WEB_HOST)"
-    echo "  -p : Set $PROGNAME HTTP server port (default $MPVC_WEB_PORT)"
-    echo "  -r : Set $PROGNAME HTTP server root dir (default $MPVC_WEB_ROOT)"
-    echo "  -R : Set $PROGNAME HTTP server HTML refresh (default $MPVC_WEB_HTML_REFRESH)"
-    echo "  -s : Set $PROGNAME HTTP server SSL/TLS (default $MPVC_WEB_SSL_ENABLE)"
-    echo "  -a : Set $PROGNAME HTTP server to include ytdl-archive/ (default $MPVC_WEB_ARCHIVE_ENABLE)"
-    echo "*tips: If unsure where to begin, run: $PROGNAME -p 8000 -c start # serves @ http://localhost:8000"
+    cat <<EOF
+usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
+  -c : Set $PROGNAME HTTP server command: [start,stop] (*required)
+  -b : Set $PROGNAME HTTP server bind address (default $MPVC_WEB_HOST)
+  -p : Set $PROGNAME HTTP server port (default $MPVC_WEB_PORT)
+  -r : Set $PROGNAME HTTP server root dir (default $MPVC_WEB_ROOT)
+  -R : Set $PROGNAME HTTP server HTML refresh (default $MPVC_WEB_HTML_REFRESH)
+  -s : Set $PROGNAME HTTP server SSL/TLS (default $MPVC_WEB_SSL_ENABLE)
+  -a : Set $PROGNAME HTTP server to include ytdl-archive/ (default $MPVC_WEB_ARCHIVE_ENABLE)
+*tips: If unsure where to begin, run: $PROGNAME -p 8000 -c start # serves @ http://localhost:8000
+EOF
     exit
 }
 

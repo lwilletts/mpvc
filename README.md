@@ -63,8 +63,6 @@ Recommended extras:
 - `notify-send`
 - `yt-dlp`
 
-Check for missing dependencies using `mpvc-installer check-reqs`.
-
 ## Installation
 
 - [Manual](#manual)
@@ -76,14 +74,15 @@ Check for missing dependencies using `mpvc-installer check-reqs`.
 - [Gentoo](#gentoo-mpvc)
 - [Nix](#nix-mpvc)
 
-Installing is just a matter of fetching the scripts either via [Git](#git)/Curl/etc., scripts can be used directly from the repo, the `mpvc-installer` bit is just there for easiness, to fetch & link them into your `BINDIR=~/bin/` that [mpvc-installer](../../blob/master/extras/mpvc-installer) does by default. 
+Installing is just a matter of fetching the scripts either via [Git](#git)/Curl/etc., scripts can be used directly from the repo, the `mpvc-installer` bit is just there for easiness, to fetch & link them into your `BINDIR=~/bin/` that [mpvc-installer](../../blob/master/extras/mpvc-installer) does by default.
 
-The easiest for a onetime [Manual](#manual) install, however for @latest version a [Git](#git) install is recommended.
+The easiest for a onetime install is the [Manual](#manual), however for @latest version a [Git](#git) install is recommended.
+Check for missing dependencies/requirements using `mpvc-installer check-reqs`.
 
 ### Manual
 
 ```console
-curl -fsSL -O https://github.com/lwilletts/mpvc/raw/master/extras/mpvc-installer \
+curl -LO https://github.com/lwilletts/mpvc/raw/master/extras/mpvc-installer \
   && BINDIR=$HOME/bin sh ./mpvc-installer fetch-user
 ```
 
@@ -99,8 +98,6 @@ This does git clone, and symlinks the mpvc scripts to `BINDIR` (default `~/bin`)
  (cd mpvc; extras/mpvc-installer link-user)
  (cd mpvc; extras/mpvc-installer check-reqs)
 
- # use mpvc-fzf to search and play youtube media
- mpvc-fzf -p 'kupla mirage'
  # use mpvc to add/load/save media files or online YT URLs
  mpvc add /path/to/your/*.mp3 # or your URLs
  find . -type f -name | mpvc load
@@ -111,6 +108,12 @@ This does git clone, and symlinks the mpvc scripts to `BINDIR` (default `~/bin`)
  mpvc stash push current
  mpvc stash apply current
 
+ # use mpvc-fzf to manage mpvc stash (see mpvc-fzf -h for more)
+ mpvc-fzf -a
+ # use mpvc-fzf to search and play youtube media
+ mpvc-fzf -p 'kupla mirage'
+ # use mpvc-fzf to browse & play lofi girl music
+ mpvc-fzf -b https://lofigirl.com/wp-content/uploads/2023/06
  # use mpvc-fzf to manage the playlist
  mpvc-fzf -f
  # use mpvc-tui to start the tui + desktop notifications
@@ -169,7 +172,7 @@ nix-env -i mpvc
 ### mpvc
 
 ```console
-usage: mpvc opts # @version v1.5 (c) gmt4 https://github.com/gmt4/mpvc
+usage: mpvc opts # @version v1.6 (c) gmt4 https://github.com/gmt4/mpvc
  -a | --add              : Add media to playlist (see --load for stdin).
  -s | --stop             : Always stop playback.
  -P | --play             : Always start playback.
@@ -181,29 +184,29 @@ usage: mpvc opts # @version v1.5 (c) gmt4 https://github.com/gmt4/mpvc
  -v | --vol              : Increase/decrease volume relative to current volume.
  -h | --help             : Prints the short help.
  -H | --long-help        : Prints the long help.
-
 *tips: If unsure about where to begin, have a look at https://gmt4.github.io/mpvc
-
 ```
 
 ### mpvc-tui
 
 ```console
-usage: mpvc-tui -[d:hHktTm:M:nNsSP:u:x] args # @version v1.5 (c) gmt4 https://github.com/gmt4/mpvc
- -d : Set the WD to the media directory given as argument
- -n : Desktop notification using notify on mpvc events (notify-send*)
- -s : Suggest a random media to play based on previous media played
- -t : Starts the mpvc-tui to manage the mpv playlist (rlwrap*)
- -T : Combo that starts mpvc-tui -t -n, and adds media given as args
- -x : Starts mpvc-tui in a new xterm (config $MPVC_TUI_TERM) [combine -x with other opts]
- -v : Prints the mpvc-tui version.
+usage: mpvc-tui opts # @version v1.6 (c) gmt4 https://github.com/gmt4/mpvc
+ -d|dir     : Set the WD to the media directory given as argument
+ -n|notify  : Desktop notification using notify on mpvc events (notify-send*)
+ -s|suggest : Suggest a random media to play based on previous media played
+ -S|scrobler: Starts the mpvc-tui scrobbler
+ -H|history : Starts the mpvc-tui history
+ -t|tui     : Starts the mpvc-tui to manage the mpv playlist (rlwrap*)
+ -T|Tui     : Combo that starts mpvc-tui -t -n, and adds media given as args
+ -x|launch  : Starts mpvc-tui in a new xterm ($MPVC_TUI_TERM) # combine with <opts>
+ -v|version : Prints the mpvc-tui version.
 *tips: If unsure about where to begin, start with: mpvc-tui -d /path/to/media/ -T
 ````
 
 ### mpvc-fzf
 
 ```console
-usage: mpvc-fzf opts # @version v1.5 (c) gmt4 https://github.com/gmt4/mpvc
+usage: mpvc-fzf opts # @version v1.6 (c) gmt4 https://github.com/gmt4/mpvc
  -b|browse   : Browse the provided ytdl-archive URL with fzf
  -c|chapters : Start fzf to manage the current mpv chapterlist
  -d|dir      : Set the WD to the media directory given as argument
@@ -220,7 +223,9 @@ usage: mpvc-fzf opts # @version v1.5 (c) gmt4 https://github.com/gmt4/mpvc
  -y|related  : Search related media on Invidious
  -Y|Related  : Search & play related media using Invidious
  -x|launch   : Starts mpvc-fzf in a new xterm (config $MPVC_TERM) [combine -x with other opts]
- -v|version  : Prints the mpvc-fzf version.
+ -v|version  : Return the mpvc-fzf version.
+ now         : Return a shareable URL to the now listening playlist
+ lofi        : Search & play Lo-Fi channels
  somafm      : Search & play SomaFM channels
  radioapi    : Search & play Radio-Browser API channels
 *tips: If unsure about where to begin, start: mpvc-fzf -p 'kupla mirage'
@@ -235,6 +240,8 @@ Like any piece of software, mpvc is not perfect:
 - mpvc depends on shell tools. If your shell is misconfigured or you are using
   unusual variants of basic UNIX tools, mpvc is not guaranteed to work. However,
   all effort has been made to make mpvc as POSIX compliant as possible.
+  Remember to check for missing dependencies/requirements using `mpvc-installer check-reqs`.
+
 
 Check out the [Issue Tracker](../../issues) for further improvements to be made.
 

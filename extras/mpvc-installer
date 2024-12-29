@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 #
 # @file mpvc-installer
 # @version v1.0
@@ -9,7 +9,7 @@
 #
 
 PROGNAME=${0##*/}
-PROGVERSION="v1.5"
+PROGVERSION="v1.6"
 PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
 
@@ -116,7 +116,8 @@ mpvc_uninstall()
 mpvc_check_requirements()
 {
     # attempt at listing packages required by mpvc & extras/ to work
-    command -v "mpv" || echo "$PROGNAME: Error: No mpv found. Install to continue."
+    command -v "sh"  || echo "$PROGNAME: Error: No sh found. Install to continue"
+    command -v "mpv" || echo "$PROGNAME: Error: No mpv found. Install to continue"
     command -v "fzf" || echo "$PROGNAME: Error: No fzf found, Install to continue"
     command -v "awk" || echo "$PROGNAME: Error: No awk found, Install to continue" # gawk ???
     command -v "sed" || echo "$PROGNAME: Error: No sed found, Install to continue" # gsed ???
@@ -150,19 +151,21 @@ mpvc_version()
 
 usage()
 {
-    echo "usage: $PROGNAME args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
-    echo "  check-update   : Check for updates"
-    echo "  check-reqs     : Check for required packages"
-    echo "  config         : Fetch mpv config"
-    echo "  config-user    : Fetch mpv config to BINDIR=$HOME/bin"
-    echo "  config-sys     : Fetch mpv config to BINDIR=$PREFIX/bin"
-    echo "  fetch-user     : Fetch to BINDIR=$HOME/bin"
-    echo "  link-user      : Symlink to BINDIR=$HOME/bin"
-    echo "  install-user   : Install to BINDIR=$HOME/bin"
-    echo "  install-sys    : Install to BINDIR=$PREFIX/bin"
-    echo "  uninstall-sys  : Uninstall from BINDIR=$PREFIX/bin"
-    echo "  uninstall-user : Uninstall from BINDIR=$HOME/bin}"
-    echo "*tips: If unsure where to start, start with: $PROGNAME fetch-user"
+    cat <<EOF
+usage: $PROGNAME args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
+  check-update   : Check for updates
+  check-reqs     : Check for required packages
+  config         : Fetch mpv config
+  config-user    : Fetch mpv config to BINDIR=$HOME/bin
+  config-sys     : Fetch mpv config to BINDIR=$PREFIX/bin
+  fetch-user     : Fetch to BINDIR=$HOME/bin
+  link-user      : Symlink to BINDIR=$HOME/bin
+  install-user   : Install to BINDIR=$HOME/bin
+  install-sys    : Install to BINDIR=$PREFIX/bin
+  uninstall-sys  : Uninstall from BINDIR=$PREFIX/bin
+  uninstall-user : Uninstall from BINDIR=$HOME/bin
+*tips: If unsure where to start, start with: $PROGNAME fetch-user
+EOF
     exit
 }
 
