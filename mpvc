@@ -271,7 +271,7 @@ mpvc_getjson() {
 
 mpvc_socklist() {
     for f in $(find "$MPVC_CONFIG_DIR" -type s); do
-        echo "$f:	idle-active=$(MPVC_SOCKET=$f equiet mpvc_get idle-active)"
+        echo "$f:	idle-active=$(MPVC_SOCKET=$f mpvc_get idle-active)"
     done
 }
 
@@ -288,7 +288,7 @@ mpvc_ecmdr() {
 
 mpvc_cmd()   { mpvc_cmdr "$@" | mpvc_getjson 'data'; }
 mpvc_add()   { mpvc_ecmdr "add" "$@"; }
-mpvc_get()   { mpvc_sockcmd "\"get_property_string\", \"$1\"," | mpvc_getjson 'data'; }
+mpvc_get()   { equiet mpvc_sockcmd "\"get_property_string\", \"$1\"," | mpvc_getjson 'data'; }
 mpvc_set()   { mpvc_ecmdr "set_property_string" "$@"; }
 mpvc_cycle() { oquiet mpvc_sockcmd "\"cycle\", \"$1\","; }
 
@@ -883,9 +883,9 @@ mpvc_print_status() {
 mpvc_print_status_final() {
     if [ "$QUIETFLAG" = "true" ]; then return; fi
     # catches if mpv is idle or not
-    if [ "$(mpvc_get idle-active)" = "true" ]; then
-        warn "MPV on ${MPVC_SOCKET##"$HOME/"} is currently idle."; return
-    fi
+    case "$(mpvc_get idle-active)" in
+    "true") warn "MPV on ${MPVC_SOCKET##"$HOME/"} is currently idle."; return;;
+    esac
     mpvc_print_status
 }
 
@@ -1006,7 +1006,7 @@ main() {
     mpvc_config
     arg1=${1:-}
     case "$arg1" in
-    ytquery|ytqueryjson|--tac|tac|--lowfi|lowfi|--hifi|hifi) ;;
+    ytquery|ytqueryjson|--tac|tac) ;;
     --ttysize|ttysize|--ttycols|ttycols|--ttylines|ttylines|--statussz|statussz) ;;
     -k|--kill|kill|-K|--killall|killall) ;;
     -c|--crop|crop|-C|--clear|clear|cmd|sockcmd|socklist|--socklist) ;;
