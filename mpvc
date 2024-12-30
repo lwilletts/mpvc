@@ -266,18 +266,18 @@ mpvc_ytquery() {
 
 mpvc_getjson() {
     #awk '/'"$1"'/{ sub(".*'"$1"'\":\"?",""); sub("\"?,\".+\".*",""); sub(", }$", ""); print }'
-    read line; line1="${line##'{"'$1'":"'}"; echo "${line1%%'",'*}"
+    read -r l1; l1=${l1##'{"'$1'":'}; l1=${l1%%','*}; l1=${l1##'"'}; l1=${l1%%'"'}; echo $l1;
 }
 
 mpvc_socklist() {
     for f in $(find "$MPVC_CONFIG_DIR" -type s); do
-        echo "$f:	idle-active=$(MPVC_SOCKET=$f mpvc_get idle-active)"
+        echo "$f:	idle-active=$(MPVC_SOCKET=$f equiet mpvc_get idle-active)"
     done
 }
 
 mpvc_sockecho() { echo "$@" | mpvc_sockrepl; }
 mpvc_sockcmd()  { echo "{ \"command\": [ $* ] }" | mpvc_sockrepl; }
-mpvc_sockrepl() { $MPVC_SOCAT - "$MPVC_SOCKET" || nc -U -N "$MPVC_SOCKET"; }
+mpvc_sockrepl() { $MPVC_SOCAT - "$MPVC_SOCKET"; }
 mpvc_idleloop() { $MPVC_SOCAT -t0 -,ignoreeof "$MPVC_SOCKET"; }
 
 mpvc_cmdr_() { echo "{ \"command\": [ $(for i in "$@"; do printf "%s" "$q$i$q, "; done) ] }"; }
