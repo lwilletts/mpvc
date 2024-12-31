@@ -50,6 +50,7 @@ mpvc_web_defaults()
     MPVC_WEB_SHORTCUT_REFRESH=${MPVC_WEB_SHORTCUT_REFRESH:-accesskey=m}
     MPVC_WEB_SHORTCUT_CLI=${MPVC_WEB_SHORTCUT_CLI:-accesskey=i}
     MPVC_WEB_SHORTCUT_APPLY=${MPVC_WEB_SHORTCUT_APPLY:-accesskey=a}
+    MPVC_WEB_SHORTCUT_RELATED=${MPVC_WEB_SHORTCUT_RELATED:-accesskey=r}
     MPVC_WEB_SHORTCUT_TRACK=${MPVC_WEB_SHORTCUT_TRACK:-accesskey=t}
     MPVC_WEB_SHORTCUT_PREV=${MPVC_WEB_SHORTCUT_PREV:-accesskey=p}
     MPVC_WEB_SHORTCUT_NEXT=${MPVC_WEB_SHORTCUT_NEXT:-accesskey=n}
@@ -275,6 +276,7 @@ $PROGNAME HTML accesskeys shortcuts:\n
 \n
 - $MPVC_WEB_SHORTCUT_HELP: this help\n
 - $MPVC_WEB_SHORTCUT_APPLY: select stash\n
+- $MPVC_WEB_SHORTCUT_RELATED: select related\n
 - $MPVC_WEB_SHORTCUT_CLI: select cli\n
 - $MPVC_WEB_SHORTCUT_EQUALIZER: select equalizer\n
 - $MPVC_WEB_SHORTCUT_REFRESH: refresh\n
@@ -340,6 +342,9 @@ mpvc_web_index()
         </li>
         <li>
             $(mpvc stash list | awk 'NR>1{print $NF}' | mpvc tac | mpvc_web_select_form "mpvc -q stash apply" "${MPVC_WEB_SHORTCUT_APPLY}")
+        </li>
+        <li>
+            $(mpvc-fzf relatedo | awk '{ sub(" ", " # "); print }' | mpvc_web_select_form "mpvc -q add" "${MPVC_WEB_SHORTCUT_RELATED}")
         </li>
         <li>
             mpvc
