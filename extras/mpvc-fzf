@@ -121,6 +121,11 @@ mpvcfzf_related_play()
             mpvcfzf_awk1
 }
 
+mpvcfzf_related_once()
+{
+    mpvcfzf_related_search "$(mpvcfzf_isearch_once "$(mpvc get media-title)" | mpvcfzf_awk1)"
+}
+
 mpvcfzf_lyrics()
 {
     id=${1:-$(mpvc get filename)}
@@ -463,15 +468,16 @@ usage: $PROGNAME opts # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
  -l|local    : Search & play local media
  -s|search   : Search on Invidious
  -p|splay    : Search & play media found using Invidious
+ -x|launch   : Starts $PROGNAME in a new $MPVC_TERM (config \$MPVC_TERM) [combine -x with other opts]
  -y|related  : Search related media on Invidious
  -Y|Related  : Search & play related media using Invidious
- -x|launch   : Starts $PROGNAME in a new $MPVC_TERM (config \$MPVC_TERM) [combine -x with other opts]
+ -z|relatedo : Search current media-title on Invidious and return related media
  -v|version  : Return the $PROGNAME version.
 
- now         : Return a shareable URL to the "now listening" playlist
- lofi        : Search & play Lo-Fi channels
- somafm      : Search & play SomaFM channels
- radioapi    : Search & play Radio-Browser API channels
+    now      : Return a shareable URL to the "now listening" playlist
+    lofi     : Search & play Lo-Fi channels
+    somafm   : Search & play SomaFM channels
+    radioapi : Search & play Radio-Browser API channels
 *tips: If unsure about where to begin, start: $PROGNAME -p 'kupla mirage'
 EOF
     exit;
@@ -520,7 +526,7 @@ main()
         -x|launch)  shift; mpvcfzf_launch_term "$@"; exit ;;
         -y|related) shift; mpvcfzf_related_search "$arg1"; return ;;
         -Y|Related) shift; mpvcfzf_related_play "$arg1"; return ;;
-        -YY|Related)shift; mpvcfzf_related_search $(mpvcfzf_isearch_once "$(mpvc get media-title)" | mpvcfzf_awk1) ;;
+        -z|relatedo)shift; mpvcfzf_related_once "$arg1"; return ;;
         -v|version) shift; mpvcfzf_version; return ;;
 
         now)        shift; mpvcfzf_now; return ;;
