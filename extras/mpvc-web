@@ -91,7 +91,7 @@ mpvc_web_style()
 {
     cat <<-EOF
 :root { --body-font-family: monospace,monospace; --body-color: #222; --body-background: #fff; --link-color: #a0a; }
-@media (max-width: 768px) { :root { --body-font-size: 0.92em; } }
+@media (max-width: 768px) { :root { --body-font-size: 0.95em; } }
 @media (min-width: 768px) { :root { --body-font-size: 1.00em; } }
 
 @media (prefers-color-scheme: light) { html { filter: invert(0.0);  } :root { } }
@@ -101,8 +101,8 @@ html   { font-family: var(--body-font-family); font-size: var(--body-font-size);
 body   { font-family: var(--body-font-family); font-size: var(--body-font-size); color: var(--body-color); background: var(--body-background); }
 select { width: 95%; font-family: var(--body-font-family); font-size: var(--body-font-size); }
 input  { width: 95%; font-family: var(--body-font-family); font-size: var(--body-font-size); }
-ul     { padding: 0rem 0.8rem; }
-a      { padding: 0.08rem 0.02rem; color: var(--link-color); }
+ul     { padding: 0rem 0.4rem; }
+a      { padding: 0.04rem 0.00rem; color: var(--link-color); }
 
 $(
     case "${MPVC_WEB_HTML_THEME:-}" in
@@ -145,6 +145,12 @@ cat <<EOF
             <input type="text" id="cli" name="cli" ${MPVC_WEB_SHORTCUT_CLI} autocomplete="on" placeholder="mpvc cli ${MPVC_WEB_DEV:-(off)}" title="mpvc cli" onkeydown="if (event.keyCode == 13) { this.form.submit(); return false; }">
         </form>
 EOF
+}
+
+mpvc_web_rlt()
+{
+    true
+    #mpvc-fzf relatedo | awk '{ sub(" "," # "); print }' | mpvc_web_select_form "mpvc -q add" "${MPVC_WEB_SHORTCUT_RELATED}"
 }
 
 mpvc_web_index_js()
@@ -335,16 +341,7 @@ mpvc_web_index()
         <hr>
         <ul>
         <li>
-            $([ -n "${MPVC_WEB_DEV:-}" ] && mpvc_web_yts)
-        </li>
-        <li>
-            $([ -n "${MPVC_WEB_DEV:-}" ] && mpvc_web_cli)
-        </li>
-        <li>
             $(mpvc stash list | awk 'NR>1{print $NF}' | mpvc tac | mpvc_web_select_form "mpvc -q stash apply" "${MPVC_WEB_SHORTCUT_APPLY}")
-        </li>
-        <li>
-            $(mpvc-fzf relatedo | awk '{ sub(" ", " # "); print }' | mpvc_web_select_form "mpvc -q add" "${MPVC_WEB_SHORTCUT_RELATED}")
         </li>
         <li>
             mpvc
@@ -399,35 +396,51 @@ mpvc_web_index()
             <a href="?cmd=mpvc cnext" title="cnext">ch+</a>
         </li>
         <li>
-            $(printf " -15\n-10\n-5\n-2\n-1\n0\n+1\n+2\n+5\n+10\n+15" | mpvc_web_select_form "mpvc -q track" "${MPVC_WEB_SHORTCUT_TRACK}")
-        </li>
-        <li>
-            $(printf " -30\n-20\n-10\n-5\n-1\n0\n+1\n+5\n+10\n+20\n+30" | mpvc_web_select_form "mpvc -q cplay")
-        </li>
-        <li>
             $(printf " -30\n-20\n-10\n-5\n0\n+5\n+10\n+20\n+30" | mpvc_web_select_form "mpvc -q vol" "${MPVC_WEB_SHORTCUT_VOL}")
         </li>
-        <li>
-            $(printf " -120\n-60\n-25\n+25\n+60\n+120" | mpvc_web_select_form "mpvc -q seek" "${MPVC_WEB_SHORTCUT_SEEK}")
-        </li>
-        <li>
-            $(if [ -n "$MPVC_WEB_ARCHIVE_ENABLE" ]; then find "ytdl-archive/" | awk -F/ '{print "https://"$NF}' | mpvc_web_select_form "mpvc -q add" "${MPVC_WEB_SHORTCUT_ARCHIVE}"; fi)
-        </li>
-        <li>
-            $(mpvc-equalizer preset | awk '/ #preset:/ {print $NF}' | mpvc_web_select_form "mpvc-equalizer load" "${MPVC_WEB_SHORTCUT_EQUALIZER}")
-        </li>
+    </ul>
 
-        <li>
-        mpvc theme
-            <a href="#" title="theme 2" onclick="document.body.style.WebkitFilter='invert(0.2)';">t2</a>
-            <a href="#" title="theme 4" onclick="document.body.style.WebkitFilter='invert(0.4)';">t4</a>
-            <a href="#" title="theme 4" onclick="document.body.style.WebkitFilter='invert(0.6)';">t6</a>
-            <a href="#" title="theme 8" onclick="document.body.style.WebkitFilter='invert(0.8)';">t8</a>
-            <a href="#" title="toggle" onclick="toggleColorScheme()">tg</a>
-            <a href="." title="reset">rst</a>
-            <input type="color" id="link-color" name="link-color" onchange="toggleLinkColor()" style="width: 1em !important; height: 1em; padding:0 0;">
-        </li>
-        </ul>
+    <hr>
+    <ul>
+        <details>
+        <summary>mpvc (toggle open/close)</summary>
+            <li>
+            mpvc theme
+                <a href="#" title="theme 2" onclick="document.body.style.WebkitFilter='invert(0.2)';">t2</a>
+                <a href="#" title="theme 4" onclick="document.body.style.WebkitFilter='invert(0.4)';">t4</a>
+                <a href="#" title="theme 4" onclick="document.body.style.WebkitFilter='invert(0.6)';">t6</a>
+                <a href="#" title="theme 8" onclick="document.body.style.WebkitFilter='invert(0.8)';">t8</a>
+                <a href="#" title="toggle" onclick="toggleColorScheme()">tg</a>
+                <a href="." title="reset">rst</a>
+                <input type="color" id="link-color" name="link-color" onchange="toggleLinkColor()" style="width: 1em !important; height: 1em; padding:0 0;">
+            </li>
+            <li>
+                $([ -n "${MPVC_WEB_DEV:-}" ] && mpvc_web_cli)
+            </li>
+            <li>
+                $([ -n "${MPVC_WEB_DEV:-}" ] && mpvc_web_yts)
+            </li>
+            <li>
+                $([ -n "${MPVC_WEB_DEV:-}" ] && mpvc_web_rlt)
+            </li>
+            <li>
+                $(mpvc-equalizer preset | awk '/ #preset:/ {print $NF}' | mpvc_web_select_form "mpvc-equalizer load" "${MPVC_WEB_SHORTCUT_EQUALIZER}")
+            </li>
+            <li>
+                $(printf " -15\n-10\n-5\n-2\n-1\n0\n+1\n+2\n+5\n+10\n+15" | mpvc_web_select_form "mpvc -q track" "${MPVC_WEB_SHORTCUT_TRACK}")
+            </li>
+            <li>
+                $(printf " -30\n-20\n-10\n-5\n-1\n0\n+1\n+5\n+10\n+20\n+30" | mpvc_web_select_form "mpvc -q cplay")
+            </li>
+            <li>
+                $(printf " -120\n-60\n-25\n+25\n+60\n+120" | mpvc_web_select_form "mpvc -q seek" "${MPVC_WEB_SHORTCUT_SEEK}")
+            </li>
+            <li>
+                $(if [ -n "$MPVC_WEB_ARCHIVE_ENABLE" ]; then find "ytdl-archive/" | awk -F/ '{print "https://"$NF}' | mpvc_web_select_form "mpvc -q add" "${MPVC_WEB_SHORTCUT_ARCHIVE}"; fi)
+            </li>
+        </details>
+    </ul>
+
         [
             <a href="#mpvc-web-status" name="mpvc-web-status">Status</a>
             <a href="/cgi-bin/mpvc?related">#related</a>
@@ -437,10 +450,9 @@ mpvc_web_index()
         <iframe name="mpvc-status" width="100%" height="100%" frameborder="0" allowtransparency="true" src="/cgi-bin/mpvc?mpvc+status" ></iframe>
         [
           <a href="#mpvc-web-playlist" name="mpvc-web-playlist">Playlist</a>
-          <a href="#mpvc-web-fullplaylist" name="mpvc-web-fullplaylist">full</a>
-          <a href="#mpvc-web-rawplaylist" name="mpvc-web-rawplaylist">raw</a>
-          <a href="#mpvc-web-chapter-list-nr" name="mpvc-web-chapter-list-nr">chapters</a>
-          <a href="" >load</a>
+          <a href="#mpvc-web-fullplaylist" name="mpvc-web-fullplaylist">#full</a>
+          <a href="#mpvc-web-rawplaylist" name="mpvc-web-rawplaylist">#raw</a>
+          <a href="#mpvc-web-chapter-list-nr" name="mpvc-web-chapter-list-nr">#chapters</a>
         ] <hr>
         <div style="display:flex">
         <iframe name="mpvc-playlist" width="100%" frameborder="0" allowtransparency="true" style="margin:auto;" src="/cgi-bin/mpvc?mpvc+playlist" ></iframe>
@@ -458,9 +470,9 @@ mpvc_web_index()
         <hr>
         <a href="$PROGURL">$PROGNAME</a>
         <a href="$PROGURL">$PROGVERSION</a>
-        <a href="${PROGURL%/*}">@$PROGAUTHOR</a> (c) 2024
+        <a href="${PROGURL%/*}">$PROGAUTHOR</a> (c) 2024
         <a href="javascript:alert('$(mpvc_web_help)')" title="help" ${MPVC_WEB_SHORTCUT_HELP}>/h</a>
-        <a href="#top" title="top">top</a>
+        <a href="#top" title="top">up</a>
     </body>
 </html>
 EOF
