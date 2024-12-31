@@ -1,10 +1,10 @@
+# 🎧 mpvc
+
 ![GitHub](https://img.shields.io/github/license/lwilletts/mpvc)
 ![GitHub Release Date](https://img.shields.io/github/release-date/lwilletts/mpvc)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/lwilletts/mpvc)
 ![GitHub top language](https://img.shields.io/github/languages/top/lwilletts/mpvc)
 ![GitHub lines of Code](https://sloc.xyz/github/lwilletts/mpvc/?category=code)
-
-# 🎧 mpvc
 
 Music player in POSIX-sh interfacing mpv from the shell + extras/goodies [^install] 🚀.
 
@@ -53,7 +53,7 @@ Required:
 
 - `mpv`
 - `socat`: is preferred due to the differing implementations of `netcat` across UNIXes.
-- `awk`: a sane version of `awk` for the same reason (`gawk` works)
+- `awk`: a sane version of `awk` for the same reason (GNU/BSD `awk` works)
 
 Recommended extras:
 
