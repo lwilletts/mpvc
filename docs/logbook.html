@@ -430,6 +430,7 @@ $ grep mpvc ~/.bashrc
     alias mffl="mpvc-fzf -l"   # fzf over local files
     alias mffo="mpvc-fzf -o"   # fzf search and return first ytid URL
     alias mffp="mpvc-fzf -p"   # fzf search and add ytid URLs from Invidious
+    alias mffz="mpvc-fzf -z"   # fzf search for songs related to the current
     alias xargn="xargs -n1"    # xargn mpvc cmd
     rseq()  { seq "$@" | tac; } # rseq | xargn mpvc cmd
     mffo1() { mpvc add $(mpvc-fzf -o "$@" | mpvc-fzf -1); }
