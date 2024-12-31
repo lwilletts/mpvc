@@ -403,7 +403,7 @@ mpvc_web_index()
     <hr>
     <ul>
         <details>
-        <summary>mpvc (toggle open/close)</summary>
+        <summary>mpvc extra (toggle open close)</summary>
             <li>
             mpvc theme
                 <a href="#" title="theme 2" onclick="document.body.style.WebkitFilter='invert(0.2)';">t2</a>
