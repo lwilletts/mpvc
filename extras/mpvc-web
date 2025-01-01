@@ -50,7 +50,6 @@ mpvc_web_defaults()
     MPVC_WEB_SHORTCUT_REFRESH=${MPVC_WEB_SHORTCUT_REFRESH:-accesskey=m}
     MPVC_WEB_SHORTCUT_CLI=${MPVC_WEB_SHORTCUT_CLI:-accesskey=i}
     MPVC_WEB_SHORTCUT_APPLY=${MPVC_WEB_SHORTCUT_APPLY:-accesskey=a}
-    MPVC_WEB_SHORTCUT_RELATED=${MPVC_WEB_SHORTCUT_RELATED:-accesskey=r}
     MPVC_WEB_SHORTCUT_TRACK=${MPVC_WEB_SHORTCUT_TRACK:-accesskey=t}
     MPVC_WEB_SHORTCUT_PREV=${MPVC_WEB_SHORTCUT_PREV:-accesskey=p}
     MPVC_WEB_SHORTCUT_NEXT=${MPVC_WEB_SHORTCUT_NEXT:-accesskey=n}
@@ -147,12 +146,6 @@ cat <<EOF
 EOF
 }
 
-mpvc_web_rlt()
-{
-    true
-    #mpvc-fzf relatedo | awk '{ sub(" "," # "); print }' | mpvc_web_select_form "mpvc -q add" "${MPVC_WEB_SHORTCUT_RELATED}"
-}
-
 mpvc_web_index_js()
 {
     cat <<EOF
@@ -199,12 +192,15 @@ function toggleColorScheme(mode="dark")
 
 function mpvcOnKeyDownEvent(event, that)
 {
+    var url='';
+    var datalist=document.getElementById('mpvc-yts-datalist');
     if (event.keyCode == 13)
     {
         if (! that.value.startsWith('http'))
         {
-            var datalist=document.getElementById('mpvc-yts-datalist')
-            var url='/cgi-bin/mpvc?mpvc-fzf+-s+'+that.value;
+            url='/cgi-bin/mpvc?mpvc-fzf+-z+';
+            if (that.value !== '')
+                url='/cgi-bin/mpvc?mpvc-fzf+-s+'+that.value;
             data=mpvcHttpGet(url);
 
             lines=data.split('\n');
@@ -282,7 +278,6 @@ $PROGNAME HTML accesskeys shortcuts:\n
 \n
 - $MPVC_WEB_SHORTCUT_HELP: this help\n
 - $MPVC_WEB_SHORTCUT_APPLY: select stash\n
-- $MPVC_WEB_SHORTCUT_RELATED: select related\n
 - $MPVC_WEB_SHORTCUT_CLI: select cli\n
 - $MPVC_WEB_SHORTCUT_EQUALIZER: select equalizer\n
 - $MPVC_WEB_SHORTCUT_REFRESH: refresh\n
@@ -419,9 +414,6 @@ mpvc_web_index()
             </li>
             <li>
                 $([ -n "${MPVC_WEB_DEV:-}" ] && mpvc_web_yts)
-            </li>
-            <li>
-                $([ -n "${MPVC_WEB_DEV:-}" ] && mpvc_web_rlt)
             </li>
             <li>
                 $(mpvc-equalizer preset | awk '/ #preset:/ {print $NF}' | mpvc_web_select_form "mpvc-equalizer load" "${MPVC_WEB_SHORTCUT_EQUALIZER}")
