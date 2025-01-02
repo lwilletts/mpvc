@@ -118,7 +118,7 @@ mpvc_web_select_form()
     arg="${2:-}"
 
     echo "<form action=/ method=get>"
-    echo "<span title="$arg" ></span>"
+    echo "<span title=$arg ></span>"
     echo "<select name=cli $arg onchange=this.form.submit() >"
     awk -v cmd="$cmd" '
         BEGIN  { print "<option value=\"\" selected># "cmd }
@@ -132,6 +132,11 @@ mpvc_web_yts()
 {
 cat <<EOF
             <input type="text" placeholder="mpvc yts-search" name="mpvc-yts" list="mpvc-yts-datalist" title="mpvc yts-search" ${MPVC_WEB_SHORTCUT_YTSEARCH} onkeydown="mpvcOnKeyDownEvent(event,this)">
+            <form action=/ method=get>
+                <select name=cli id="mpvc-yts-select" placeholder="mpvc yts-select" width=1 size=1 onchange=this.form.submit() >
+                <option value="" selected># mpvc-yts-select
+                </select>
+            </form>
             <datalist id="mpvc-yts-datalist">
             </datalist>
 EOF
@@ -193,6 +198,7 @@ function toggleColorScheme(mode="dark")
 function mpvcOnKeyDownEvent(event, that)
 {
     var url='';
+    var select=document.getElementById('mpvc-yts-select');
     var datalist=document.getElementById('mpvc-yts-datalist');
     if (event.keyCode == 13)
     {
@@ -206,8 +212,10 @@ function mpvcOnKeyDownEvent(event, that)
             lines=data.split('\n');
             for (i in lines)
             {
-                var option = '<option value="'+lines[i]+'">'
-                datalist.innerHTML += option
+                var line=lines[i];
+                var url=line.split(' ');
+                datalist.innerHTML += '<option value="'+url[0]+'">'+line+'</option>';;
+                select.innerHTML += '<option value="mpvc add '+url[0]+'">'+line+'</option>';;
             }
         }
         else
