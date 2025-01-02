@@ -265,7 +265,8 @@ mpvc_ytquery() {
 ## JSON-IPC Functions ########################################################
 
 mpvc_getjson() {
-    awk '/'"$1"'/{ sub(".*'"$1"'\":\"?",""); sub("\"?,\".+\".*",""); sub(", }$", ""); print }'
+    #awk '/'"$1"'/{ sub(".*'"$1"'\":\"?",""); sub("\"?,\".+\".*",""); sub(", }$", ""); print }'
+    read -r l1; l1=${l1##'{"'$1'":'}; l1=${l1%%','*}; l1=${l1##'"'}; l1=${l1%%'"'}; echo $l1;
 }
 
 mpvc_socklist() {
@@ -275,19 +276,19 @@ mpvc_socklist() {
 }
 
 mpvc_sockecho() { echo "$@" | mpvc_sockrepl; }
-mpvc_sockcmd()  { mpvc_sockecho "{ \"command\": [ $* ] }"; }
-mpvc_sockrepl() { $MPVC_SOCAT - "$MPVC_SOCKET" || nc -U -N "$MPVC_SOCKET"; }
+mpvc_sockcmd()  { echo "{ \"command\": [ $* ] }" | mpvc_sockrepl; }
+mpvc_sockrepl() { $MPVC_SOCAT - "$MPVC_SOCKET"; }
 mpvc_idleloop() { $MPVC_SOCAT -t0 -,ignoreeof "$MPVC_SOCKET"; }
 
 mpvc_cmdr_() { echo "{ \"command\": [ $(for i in "$@"; do printf "%s" "$q$i$q, "; done) ] }"; }
-mpvc_cmdr()  { equiet mpvc_sockecho "$(q='"' mpvc_cmdr_ "$@")"; }
+mpvc_cmdr()  { equiet echo "$(q='"' mpvc_cmdr_ "$@")" | mpvc_sockrepl; }
 mpvc_ecmdr() {
     r=$(mpvc_cmdr "$@"); case "$r" in *"success"*|'') ;; *) echo "$r"; return 1 ;; esac
 }
 
 mpvc_cmd()   { mpvc_cmdr "$@" | mpvc_getjson 'data'; }
 mpvc_add()   { mpvc_ecmdr "add" "$@"; }
-mpvc_get()   { mpvc_sockcmd "\"get_property_string\", \"$1\"," | mpvc_getjson 'data'; }
+mpvc_get()   { equiet mpvc_sockcmd "\"get_property_string\", \"$1\"," | mpvc_getjson 'data'; }
 mpvc_set()   { mpvc_ecmdr "set_property_string" "$@"; }
 mpvc_cycle() { oquiet mpvc_sockcmd "\"cycle\", \"$1\","; }
 
@@ -334,16 +335,15 @@ mpvc_get_playlist_filename() {
 # print filenames in the current playlist, mode=numbered disables filenames/URLs to title expansion
 mpvc_get_playlist() {
     mode="${1:-}"
-    lcount=$(mpvc_get playlist-count)
-    lpos=$(mpvc_get playlist-pos)
 
-    if [ -z "$lcount" ]; then return; fi
-    firstlast=$(mpvc_get_terminal_height "$lpos" "$lcount")
     if [ "$mode" = "numbered" ]; then
         mpvc_get_playlist_once "$mode"; return
     fi
 
-    #mpvc_isinteractive=""; if [ -t 1 ]; then mpvc_isinteractive=1; fi
+    lpos=$(mpvc_get playlist-pos)
+    lcount=$(mpvc_get playlist-count)
+    if [ -z "$lcount" ]; then return; fi
+    firstlast=$(mpvc_get_terminal_height "$lpos" "$lcount")
     mpvc_get_playlist_once |
         awk -v mpvc="$0" -v lpos="$lpos" -v cols="$(mpvc_tty_cols)" -v firstlast="$firstlast" \
         '
@@ -534,7 +534,7 @@ mpvc_stash() {
             printf "$buffer\n" | mpvc_stash apply
             ;;
         help)
-            echo "usage: $PROGNAME stash [list|current|edit|show|push|drop|apply|replay]"
+            echo "usage: $PROGNAME stash [list|current|edit|show|push|drop|apply|append|replay]"
             ;;
         *)
             warn "$PROGNAME stash: error: unknown subcommand $cmd (see $PROGNAME stash help)."
@@ -883,9 +883,9 @@ mpvc_print_status() {
 mpvc_print_status_final() {
     if [ "$QUIETFLAG" = "true" ]; then return; fi
     # catches if mpv is idle or not
-    if [ "$(mpvc_get idle-active)" = "true" ]; then
-        warn "MPV on ${MPVC_SOCKET##"$HOME/"} is currently idle."; return
-    fi
+    case "$(mpvc_get idle-active)" in
+    "true") warn "MPV on ${MPVC_SOCKET##"$HOME/"} is currently idle."; return;;
+    esac
     mpvc_print_status
 }
 
@@ -1006,7 +1006,7 @@ main() {
     mpvc_config
     arg1=${1:-}
     case "$arg1" in
-    ytquery|ytqueryjson|--tac|tac|--lowfi|lowfi|--hifi|hifi) ;;
+    ytquery|ytqueryjson|--tac|tac) ;;
     --ttysize|ttysize|--ttycols|ttycols|--ttylines|ttylines|--statussz|statussz) ;;
     -k|--kill|kill|-K|--killall|killall) ;;
     -c|--crop|crop|-C|--clear|clear|cmd|sockcmd|socklist|--socklist) ;;

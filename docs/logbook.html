@@ -402,7 +402,7 @@ Check <a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-web">extras/
 As a minor thing I've started aliasing <code>mpvc</code> commands that I use frequently to their "m" counterparts in bash, not perfect, but handy enough, and saves some typing:
 <pre>
 $ grep mpvc ~/.bashrc
-    alias m="mpvc lowfi"
+    alias m="mpvc"
     alias mh="alias | grep mpvc"
     alias mi="mpvc -i"
     alias mI="mpvc -I"
@@ -424,12 +424,13 @@ $ grep mpvc ~/.bashrc
     alias mffd="mpvc-fzf -d"   # fzf on -d /path/to/music/
     alias mffe="mpvc-fzf -e"   # fzf on mpvc-equalizer
     alias mfff="mpvc-fzf -f"   # fzf on mpvc play-list
-    alias mffF="mpvc-fzf -F"   # fzf on mpvc play-list
+    alias mffF="mpvc-fzf -F"   # fzf on stdin input
     alias mffg="mpvc-fzf -g"   # fzf get/fetch ytid URL to ytdl-archive
     alias mffG="mpvc-fzf -G"   # bis
     alias mffl="mpvc-fzf -l"   # fzf over local files
     alias mffo="mpvc-fzf -o"   # fzf search and return first ytid URL
     alias mffp="mpvc-fzf -p"   # fzf search and add ytid URLs from Invidious
+    alias mffz="mpvc-fzf -z"   # fzf search for songs related to the current
     alias xargn="xargs -n1"    # xargn mpvc cmd
     rseq()  { seq "$@" | tac; } # rseq | xargn mpvc cmd
     mffo1() { mpvc add $(mpvc-fzf -o "$@" | mpvc-fzf -1); }
@@ -443,7 +444,7 @@ Check the <a href="now/">Now Playing @ now/</a> that builds upon <code>mpvc-tui<
 <h3 id="logbook-20230915">Introducing mpvc-autostart: automatic start/stop based on presence, 15 Sep 2023</h3>
 <p>
 A simple need to have some background music automatically playing while I'm near the device where <code>mpvc</code> is running, lets say, in media center mode, and, pausing the audio when I'm away.
-A solution for this was to write a small script in <a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-autostart">extras/mpvc-autostart</a> that periodically pings an IP (for example your phone LAN IP, or alternatively detecting the presence of a Bluetooth device you carry with yourself), then, if the presence of the device is detected, the audio is resumed, otherwise, the audio is paused.
+A solution for this was to write a small script in <a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-autostart">extras/mpvc-autostart</a> that periodically pings an IP (for example the LAN IP of your phone , or alternatively detecting the presence of a Bluetooth device you carry with yourself), then, if the presence of the device is detected, the audio is resumed, otherwise, the audio is paused.
 </p>
 <p>
 For an example of its usage, just run <code>PERIOD=300 NCHECK=3 mpvc-autostart -i 192.168.0.2</code> where <code>192.168.0.2</code> must be replaced by the LAN IP of your phone. The listing below show the output <code>mpvc-autostart</code> doing periodic pings at 300 sec (5 minutes) intervals. When NCHECK=3 consecutive ping checks fail to detect the device, the audio is paused (pause=true). As soon as one ping check succeeds, the audio is resumed (pause=false). This means that each 300 * 3 seconds (15 minutes) the audio can be paused, and in 5 minutes resumed. Personally I prefer to raise NCHECKS=6, to have about 30 minutes of audio without pauses, anyway, the parameters are there for catter for your needs, just play with them.
@@ -717,7 +718,7 @@ ssh -X $USER@$HOST x2x -west -to :0 # be sure to read x2x(1)
 
 <h3 id="logbook-20241026">On mpvc lowfi and mpvc-fzf URL browser, 26 October 2024</h3>
 <p>
-Recently landed <code>mpvc lowfi</code> which features a minimal mpvc status that leverages emojis to represent a one-line compressed playing status (<code>aliased to m="mpvc lowfi"</code> above <a href="#logbook-20230721">#logbook-20230721</a>):
+Recently landed <code>mpvc lowfi</code> which features a minimal mpvc status that leverages emojis to represent a one-line compressed playing status. This is done by defining a custom <code>MPVC_FMTSTR</code> at <code>mpvc.conf</code>, and the end result looks like:
 <pre>
 
 [play] ▷ Polaris 🎶 02:35/04:50 #3/33 🔊60% 🔂 🔄 🎧
