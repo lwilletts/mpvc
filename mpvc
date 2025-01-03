@@ -257,16 +257,19 @@ mpvc_ytquery_json() {
     done
 }
 
-# fn args: given a file/url return its title (may use curl to query YT)
-mpvc_ytquery() {
-    mpvc_ytquery_json "$@" | mpvc_getjson 'title'
+mpvc_ytquery_field()
+{
+    field=$1; shift; mpvc_ytquery_json "$@" | mpvc_getjson "$field";
 }
+
+# fn args: given a file/url return its title (may use curl to query YT)
+mpvc_ytquery() { mpvc_ytquery_field 'title' "$@"; }
 
 ## JSON-IPC Functions ########################################################
 
 mpvc_getjson() {
     #awk '/'"$1"'/{ sub(".*'"$1"'\":\"?",""); sub("\"?,\".+\".*",""); sub(", }$", ""); print }'
-    read -r l1; l1=${l1##'{"'$1'":'}; l1=${l1%%','*}; l1=${l1##'"'}; l1=${l1%%'"'}; echo $l1;
+    read -r l1; l1=${l1##*'"'$1'":'}; l1=${l1%%','*}; l1=${l1##'"'}; l1=${l1%%'"'}; echo $l1;
 }
 
 mpvc_socklist() {
@@ -1006,7 +1009,7 @@ main() {
     mpvc_config
     arg1=${1:-}
     case "$arg1" in
-    ytquery|ytqueryjson|--tac|tac) ;;
+    ytquery|ytqueryjson|ytqueryfield|--tac|tac) ;;
     --ttysize|ttysize|--ttycols|ttycols|--ttylines|ttylines|--statussz|statussz) ;;
     -k|--kill|kill|-K|--killall|killall) ;;
     -c|--crop|crop|-C|--clear|clear|cmd|sockcmd|socklist|--socklist) ;;
@@ -1101,12 +1104,13 @@ main() {
                --searchPlay|searchPlay|sPlay)shift; mpvc_search_play "numbered" "${1:-}" ;;
             --stash|stash)                   shift; mpvc_stash "${1:-}" "${2:-}";;
             --expand-text|expand-text)       shift; mpvc_cmd expand-text "$@"; return;;
-            --metadata|metadata)             shift; mpvc_cmdr get_property metadata "$@"; return;;
+            --metadata|metadata)             shift; mpvc_getr metadata "$@"; return;;
             --filename|filename)             shift; mpvc_get_playlist_filename "$@"; return;;
             --replay|replay)                 mpvc_set_time "absolute" 0 ;;
 
             ytquery)                         shift; mpvc_ytquery "$@"; return;;
             ytqueryjson)                     shift; mpvc_ytquery_json "$@"; return;;
+            ytqueryfield)                    shift; mpvc_ytquery_field "$@"; return;;
 
             cprev|--chapter-prev|chapter-prev)            mpvc_chapter_set -1 "relative" ;;
             cnext|--chapter-next|chapter-next)            mpvc_chapter_set +1 "relative" ;;
