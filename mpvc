@@ -269,7 +269,7 @@ mpvc_ytquery() { mpvc_ytquery_field 'title' "$@"; }
 
 mpvc_getjson() {
     #awk '/'"$1"'/{ sub(".*'"$1"'\":\"?",""); sub("\"?,\".+\".*",""); sub(", }$", ""); print }'
-    while read -r l1; do l1=${l1##*'"'$1'":'}; l1=${l1%%','*}; l1=${l1##'"'}; l1=${l1%%'"'}; echo $l1; done
+    while read -r l1; do l1=${l1##*'"'$1'":'}; l1=${l1%%'",'*}; l1=${l1##'"'}; l1=${l1%%'"'}; echo $l1; done
 }
 
 mpvc_socklist() {
