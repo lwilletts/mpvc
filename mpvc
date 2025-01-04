@@ -250,7 +250,7 @@ mpvc_ytquery_json() {
             result=$(mpvc_curl_cache_json "$filename")
             ;;
         *) # otherwise, assume its a local file
-            result="{ \"title\":${filename##*/}, }" # basenamed
+            result="{ \"title\":\"${filename##*/}\", }" # basenamed
             ;;
         esac
         printf "$result\n"
@@ -269,7 +269,7 @@ mpvc_ytquery() { mpvc_ytquery_field 'title' "$@"; }
 
 mpvc_getjson() {
     #awk '/'"$1"'/{ sub(".*'"$1"'\":\"?",""); sub("\"?,\".+\".*",""); sub(", }$", ""); print }'
-    while read -r l1; do l1=${l1##*'"'$1'":'}; l1=${l1%%'",'*}; l1=${l1##'"'}; l1=${l1%%'"'}; echo $l1; done
+    while read -r l1; do l1=${l1##*'"'$1'":'}; l1=${l1%%'",'*}; l1=${l1##'"'}; l1=${l1%%'"'}; echo "$l1"; done
 }
 
 mpvc_socklist() {
@@ -393,12 +393,11 @@ mpvc_get_playlist() {
                 next
             }
             lines[++nlines]=$0
+            urls=urls" "$0
         }
 
         END {
-            for (nr=1; nr<=nlines; nr++) urls=urls" "lines[nr]
             ntitles=split(mpvc_ytquery(urls), titles, "\n")
-
             for (nr=1; nr<=nlines; nr++)
             {
                lid = first + nr - 1
