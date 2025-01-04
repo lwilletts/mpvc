@@ -392,16 +392,16 @@ mpvc_get_playlist() {
             {
                 next
             }
-            lines[NR]=$0
+            lines[++nlines]=$0
         }
 
         END {
-            for (nr=1; nr<=length(lines); nr++)    urls=urls" "lines[nr]
-            split(mpvc_ytquery(urls), titles, "\n")
+            for (nr=1; nr<=nlines; nr++) urls=urls" "lines[nr]
+            ntitles=split(mpvc_ytquery(urls), titles, "\n")
 
-            for (nr=1; nr<=length(lines); nr++) # for (nr in lines)
+            for (nr=1; nr<=nlines; nr++)
             {
-               lid = nr - 1
+               lid = first + nr - 1
                line=lines[nr]
                title=titles[nr]
 
@@ -411,8 +411,8 @@ mpvc_get_playlist() {
                    if (!ENVIRON["NO_COLOR"])
                    {
                        mpvc " cmd expand-text \\${percent-pos}" | getline pct
-                       count=int((cols-(length(lid)+1+1+1)) * (pct/100))
-                       fmtstr="\033[7m%2d  %-"count"s\033[0m"
+                       nchars=int((cols-(length(lid)+1+1+1)) * (pct/100))
+                       fmtstr="\033[7m%2d  %-"nchars"s\033[0m"
                    }
                }
                line=sprintf(fmtstr, lid, truncate(title))
@@ -917,7 +917,7 @@ mpvc_get_terminal_height() {
     lcount="$2"
     if [ "$plpos" = "null" ]; then plpos=0; fi
     lines=$(mpvc_tty_lines)
-    rows=$((lines - ${MPVC_TUI_CLINE:-3}))
+    rows=$((lines - ${MPVC_TUI_CLINE:-2}))
     half=$((rows / 2))
     plhalf=$((plpos + half))
 
