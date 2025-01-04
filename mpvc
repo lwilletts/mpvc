@@ -250,7 +250,7 @@ mpvc_ytquery_json() {
             result=$(mpvc_curl_cache_json "$filename")
             ;;
         *) # otherwise, assume its a local file
-            result="{ \"title\":${filename##*/}, }"
+            result="{ \"title\":${filename##*/}, }" # basenamed
             ;;
         esac
         printf "$result\n"
@@ -269,7 +269,7 @@ mpvc_ytquery() { mpvc_ytquery_field 'title' "$@"; }
 
 mpvc_getjson() {
     #awk '/'"$1"'/{ sub(".*'"$1"'\":\"?",""); sub("\"?,\".+\".*",""); sub(", }$", ""); print }'
-    read -r l1; l1=${l1##*'"'$1'":'}; l1=${l1%%','*}; l1=${l1##'"'}; l1=${l1%%'"'}; echo $l1;
+    while read -r l1; do l1=${l1##*'"'$1'":'}; l1=${l1%%','*}; l1=${l1##'"'}; l1=${l1%%'"'}; echo $l1; done
 }
 
 mpvc_socklist() {
@@ -356,12 +356,6 @@ mpvc_get_playlist() {
             split(firstlast, flarray, " ")
             first=flarray[1]; last=flarray[2]
         }
-
-        function basename(url, fields, n)
-        {
-            n=split(url, fields, "/")
-            return fields[n]
-        }
         function truncate(str)
         {
             trunclen=cols - (length("123 ")+length(" ...\n"))
@@ -372,12 +366,13 @@ mpvc_get_playlist() {
 
         function mpvc_ytquery(url,  ytcmd, ytitle)
         {
-            gsub("^ *", "", url)
             ytitle=url
-            if (url ~ "^https?://(youtu.be|(www.)?youtube.com|yewtu.be)")
+            if (url ~ "https?://(youtu.be|(www.)?youtube.com|yewtu.be)")
             {
-                ytcmd=sprintf("%s ytquery \"%s\"", mpvc, url)
+                ORS=RS; RS=""
+                ytcmd=sprintf("%s ytquery %s", mpvc, url)
                 ytcmd | getline ytitle
+                RS=ORS
 
                 gsub("\\\\u00", "\\x", ytitle)
                 gsub("\\\\x22", "\x22", ytitle)
@@ -387,10 +382,7 @@ mpvc_get_playlist() {
                 gsub("\\\\x27", "\x27", ytitle)
                 gsub("\\\\xa0", "\xa0", ytitle)
                 gsub("\\\\u[0-9a-f]{4}", "", ytitle)
-            } else {
-                ytitle=basename(url)
             }
-
             return ytitle
         }
 
@@ -400,20 +392,32 @@ mpvc_get_playlist() {
             {
                 next
             }
+            lines[NR]=$0
+        }
 
-            fmtstr="%2d  %s"
-            title=mpvc_ytquery($0)
-            if (lpos == lid)
+        END {
+            for (i in lines) urls=urls" "lines[i]
+            split(mpvc_ytquery(urls), titles, "\n")
+
+            for (nr in lines)
             {
-                if (!ENVIRON["NO_COLOR"])
-                {
-                    mpvc " cmd expand-text \\${percent-pos}" | getline pct
-                    count=int((cols-(length(lid)+1+1+1)) * (pct/100))
-                    fmtstr="\033[7m%2d  %-"count"s\033[0m"
-                }
+               lid = nr -1
+               line=lines[nr]
+               title=titles[nr]
+
+               fmtstr="%2d  %s"
+               if (lpos == lid)
+               {
+                   if (!ENVIRON["NO_COLOR"])
+                   {
+                       mpvc " cmd expand-text \\${percent-pos}" | getline pct
+                       count=int((cols-(length(lid)+1+1+1)) * (pct/100))
+                       fmtstr="\033[7m%2d  %-"count"s\033[0m"
+                   }
+               }
+               line=sprintf(fmtstr, lid, truncate(title))
+               print line
             }
-            line=sprintf(fmtstr, lid, truncate(title))
-            print line
         }
     '
     QUIETFLAG="true"
