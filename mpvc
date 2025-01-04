@@ -393,7 +393,7 @@ mpvc_get_playlist() {
                 next
             }
             lines[++nlines]=$0
-            urls=urls" "$0
+            urls=urls" \""$0"\""
         }
 
         END {
