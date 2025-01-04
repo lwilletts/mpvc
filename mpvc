@@ -233,6 +233,7 @@ mpvc_ytquery_json() {
     for i in "$@"
     do
         filename="${i:-}"
+        filename=${filename##'"'}; filename=${filename%%'"'}
         case "$filename" in
         https://youtu.be/watch*|https://youtube.com/watch*|https://www.youtube.com/watch*)
             filename="$(echo "$filename" | sed 's|\(www.\)\?youtube.com|youtu.be|; s|/watch/\??v=|/|')"
@@ -392,6 +393,7 @@ mpvc_get_playlist() {
             {
                 next
             }
+            sub("^ ","",$0)
             lines[++nlines]=$0
             urls=urls" \""$0"\""
         }
