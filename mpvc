@@ -396,7 +396,7 @@ mpvc_get_playlist() {
         }
 
         END {
-            for (i in lines) urls=urls" "lines[i]
+            for (nr=1; nr<=length(lines); nr++)    urls=urls" "lines[nr]
             split(mpvc_ytquery(urls), titles, "\n")
 
             for (nr=1; nr<=length(lines); nr++) # for (nr in lines)
