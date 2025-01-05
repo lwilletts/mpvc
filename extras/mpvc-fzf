@@ -123,7 +123,7 @@ mpvcfzf_related_play()
 
 mpvcfzf_related_once()
 {
-    mpvcfzf_related_search "$(mpvcfzf_isearch_once "$(mpvc get media-title)" | mpvcfzf_awk1)"
+    mpvcfzf_related_search "$(mpvcfzf_isearch_once "${1:-$(mpvc get media-title)}" | mpvcfzf_awk1)"
 }
 
 mpvcfzf_lyrics()
