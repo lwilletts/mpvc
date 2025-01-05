@@ -111,6 +111,9 @@ main()
         usage "$PROGNAME: Error no player found that speaks MPRIS. Check that you started mpv with mpris.so in ~/.config/mpv/scripts/";
     fi
 
+    volincr=0.1
+    sink=@DEFAULT_SINK@
+
     cmd="$1"
     case "$cmd" in
     get)       shift; mpris_get "$@" ;;
@@ -128,14 +131,14 @@ main()
     open)      shift; mpris_method OpenUri "string:$1" ;;
     #loop)      shift; mpris_get "string:LoopStatus" ;;
 
-    volon)     $PACTL set-sink-mute @DEFAULT_SINK@ off ;;
-    voloff)    $PACTL set-sink-mute @DEFAULT_SINK@ on  ;;
-    volmute)   $PACTL set-sink-mute @DEFAULT_SINK@ toggle || mpris_set_volume "$cmd" ;;
-    voldown)   $PACTL set-sink-volume @DEFAULT_SINK@ -250 || mpris_set_volume "$cmd" ;;
-    volup)     $PACTL set-sink-volume @DEFAULT_SINK@ +250 || mpris_set_volume "$cmd" ;;
-    volset)    $PACTL set-sink-volume @DEFAULT_SINK@ "${2:-}" || mpris_set_volume "$cmd" "${2:-}";;
-    volget)    $PACTL list sinks | awk '/^\s*Volume:/{print $5}';;
-    volstatus) $PACTL list sinks | awk '/^\s*Mute:/{print "mute:"$2}';;
+    volon)     $PACTL set-sink-mute $sink off ;;
+    voloff)    $PACTL set-sink-mute $sink on  ;;
+    volmute)   $PACTL set-sink-mute $sink toggle || mpris_set_volume "$cmd" ;;
+    voldown)   $PACTL set-sink-volume $sink -${2:-$volincr} || mpris_set_volume "$cmd" ;;
+    volup)     $PACTL set-sink-volume $sink +${2:-$volincr} || mpris_set_volume "$cmd" ;;
+    volset)    $PACTL set-sink-volume $sink "${2:-}" || mpris_set_volume "$cmd" "${2:-}";;
+    volget)    $PACTL list sinks | awk '/^\t+Volume:/{print $5}';;
+    volstatus) $PACTL list sinks | awk '/^\t+Mute:/{print "mute:"$2}';;
 
     *) usage "$PROGNAME: unknown command: $cmd" ;;
     esac
