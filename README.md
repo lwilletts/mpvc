@@ -144,7 +144,7 @@ pacman -Sy mpv gawk curl socat fzf rlwrap jq libnotify
 BSD (and pkg(1) based derivatives as FreeBSD, see [FAQ](../../wiki/FAQ)):
 
 ```console
-pkg install -y mpv curl socat fzf rlwrap jq libnotify # gawk gsed
+pkg install -y mpv curl socat fzf rlwrap jq libnotify # mpv-mpris
 ```
 
 ### MacOS
@@ -152,7 +152,7 @@ pkg install -y mpv curl socat fzf rlwrap jq libnotify # gawk gsed
 MacOS (and brew(1) based derivatives see [FAQ](../../wiki/FAQ)):
 
 ```console
-brew install mpv curl socat fzf rlwrap jq libnotify yt-dlp # gawk gnu-sed
+brew install mpv curl socat fzf rlwrap jq libnotify yt-dlp
 ```
 
 ### Gentoo [mpvc](https://gitlab.com/xy2_/osman)
