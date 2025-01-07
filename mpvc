@@ -251,7 +251,7 @@ mpvc_ytquery_json() {
             result=$(mpvc_curl_cache_json "$filename")
             ;;
         *) # otherwise, assume its a local file
-            result="{ \"title\":\"${filename##*/}\", }" # basenamed
+            result='{ "title":"'"${filename##*/}"'","request_id":0 }' # basenamed
             ;;
         esac
         printf "$result\n"
@@ -270,7 +270,7 @@ mpvc_ytquery() { mpvc_ytquery_field 'title' "$@"; }
 
 mpvc_getjson() {
     #awk '/'"$1"'/{ sub(".*'"$1"'\":\"?",""); sub("\"?,\".+\".*",""); sub(", }$", ""); print }'
-    while read -r l1; do l1=${l1##*'"'$1'":'}; l1=${l1%%'",'*}; l1=${l1##'"'}; l1=${l1%%'"'}; echo "$l1"; done
+    while read -r l1; do l1=${l1##*'"'$1'":'}; l1=${l1%%',"'*}; l1=${l1##'"'}; l1=${l1%%'"'}; echo "$l1"; done
 }
 
 mpvc_socklist() {
