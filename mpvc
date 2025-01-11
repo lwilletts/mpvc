@@ -199,7 +199,7 @@ mpvc_tac()
         NR == 1 { lines=$0 }
         NR  > 1 { lines=$0"\n"lines }
         END     { print lines }
-    ' "$@"
+    '
 }
 
 mpvc_isotime() { TZ=UTC date -u +"%Y-%m-%dT%H:%M:%SZ"; }
@@ -284,8 +284,8 @@ mpvc_sockcmd()  { echo "{ \"command\": [ $* ] }" | mpvc_sockrepl; }
 mpvc_sockrepl() { $MPVC_SOCAT - "$MPVC_SOCKET"; }
 mpvc_idleloop() { $MPVC_SOCAT -t0 -,ignoreeof "$MPVC_SOCKET"; }
 
-mpvc_cmdr_() { echo "{ \"command\": [ $(for i in "$@"; do printf "%s" "$q$i$q, "; done) ] }"; }
-mpvc_cmdr()  { equiet echo "$(q='"' mpvc_cmdr_ "$@")" | mpvc_sockrepl; }
+mpvc_cmdr_() { echo "{ \"command\": [ $(for i in "$@"; do printf "\"%s\", " "$i"; done) ] }"; }
+mpvc_cmdr()  { equiet echo "$(mpvc_cmdr_ "$@")" | mpvc_sockrepl; }
 mpvc_ecmdr() {
     r=$(mpvc_cmdr "$@"); case "$r" in *"success"*|'') ;; *) echo "$r"; return 1 ;; esac
 }
@@ -461,7 +461,7 @@ mpvc_stash() {
     QUIETFLAG="true"
     case "$cmd" in
         show|list|ls)
-            [ -z "${1:-}" ] && ls -ltr "$MPVC_STASH_DIR" || cat "$MPVC_STASH_DIR/$1"
+            if [ -z "${1:-}" ]; then ls -ltr "$MPVC_STASH_DIR"; else cat "$MPVC_STASH_DIR/$1"; fi
             ;;
         edit|ed) ${EDITOR:-vi} "$MPVC_STASH_DIR/$1" ;;
         drop|rm) rm -i "$MPVC_STASH_DIR/$1" ;;
@@ -623,8 +623,8 @@ mpvc_set_track() {
     if [ "$lcount" = "0" ]; then return; fi
     if [ "$lpos" = "null" ]; then lpos=0; fi
     case "$2" in
-        absolute) newpos=$(( $1 % $lcount )) ;;
-        relative) newpos=$(( ($lpos + $1) % $lcount )) ;;
+        absolute) newpos=$(( $1 % lcount )) ;;
+        relative) newpos=$(( (lpos + $1) % lcount )) ;;
     esac
     mpvc_set "playlist-pos" "$newpos"
 }
@@ -811,7 +811,7 @@ mpvc_chapter_cloop()
     abloopb="no"
     cpos=$(mpvc_get chapter)
     if [ "$cpos" = "null" ]; then return; fi
-    if [ "$(mpvc_get ab-loop-a)" = "no" -a "$cpos" -ge 0 ]; then
+    if [ "$(mpvc_get ab-loop-a)" = "no" ] && [ "$cpos" -ge 0 ]; then
         chapterlist="$(mpvc getr chapter-list)"
         chapter="$(echo "$chapterlist" | jq ".data | .[$cpos + 0] | .title")"
         abloopa="$(echo "$chapterlist" | jq ".data | .[$cpos + 0] | .time")"
@@ -829,8 +829,8 @@ mpvc_chapter_set() {
     if [ "$lcount" = "0" ]; then return; fi
     if [ "$lpos" = "null" ]; then lpos=0; fi
     case "$2" in
-        absolute) newpos=$(( $1 % $lcount )) ;;
-        relative) newpos=$(( ($lpos + $1) % $lcount )) ;;
+        absolute) newpos=$(( $1 % lcount )) ;;
+        relative) newpos=$(( (lpos + $1) % lcount )) ;;
     esac
     mpvc_set "chapter" "$newpos"
 }
