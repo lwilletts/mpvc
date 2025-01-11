@@ -19,7 +19,7 @@ PROGDIR=${0%/*}
 PROGVERSION="v1.6"
 PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
-PROGINFO="A hack to remotely control mpvc from web # DISCLAIMER * Use at Your Own Risk *"
+#PROGINFO="A hack to remotely control mpvc from web # DISCLAIMER * Use at Your Own Risk *"
 
 set -euf
 
@@ -343,7 +343,7 @@ mpvc_web_index()
             <a title="#now" href="https://gmt4.github.io/mpvc/now/">#n</a>
             <a title="#extras" href="/extras/">#x</a>
             $([ -n "$MPVC_WEB_ARCHIVE_ENABLE" ] && echo '<a title="#arc" href="ytdl-archive" >#a</a>'; )
-            $([ -n "$MPVC_WEB_CAST_URL" ] && echo "<a title=#cast href="$MPVC_WEB_CAST_URL">#c</a>"; )
+            $([ -n "$MPVC_WEB_CAST_URL" ] && echo "<a title=#cast href=$MPVC_WEB_CAST_URL>#c</a>"; )
         ]
         <hr>
         <ul>
@@ -681,7 +681,7 @@ main()
 
     case "${MPVC_WEB_CMD:-}" in
     status) ps auxww | grep "$PROGNAME" ;;
-    start)  mpvc_web ;;
+    start)  mpvc_web "";;
     stop)   pkill -f "$PROGNAME" ;;
     *)      usage ;;
     esac
