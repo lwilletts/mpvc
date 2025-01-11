@@ -47,7 +47,7 @@ mpvc_chapter_gen()
 
     while read -r line
     do
-        timepos=$(echo "$line" | awk -v otp=${otimepos:-0} '{ tp=$1; if (tp ~ ":") { split(tp, a, ":"); tp = a[1]*60 + a[2] } print otp + tp; }')
+        timepos=$(echo "$line" | awk -v otp="${otimepos:-0}" '{ tp=$1; if (tp ~ ":") { split(tp, a, ":"); tp = a[1]*60 + a[2] } print otp + tp; }')
         title=$(echo "$line" | awk '{ sub($1" *", ""); print }')
         mpvc_chapter_add_new "$chaptersfile" "$timepos" "$title"
         otimepos=$timepos
@@ -110,7 +110,6 @@ EOF
 
     start_time=$(awk -F'=' 'BEGIN{s=0} /^END=[0-9]+/ {s=$2} END{print s}' "$chaptersfile")
     end_time=$timepos
-    chapter=$(awk -F'=' 'BEGIN{s=0} /^title=[0-9]+/ {s=$2} END{print ++s}' "$chaptersfile")
 
     if [ "$#" -gt 0 ]
     then
