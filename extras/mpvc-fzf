@@ -132,7 +132,7 @@ mpvcfzf_lyrics()
     id=$(mpvcfzf_getvideo_id "$id")
     output=$(mpvcfzf_curl "https://yewtu.be/redirect?referer=/watch?v=$id")
     echo "$output" |
-        awk -v id=$id '
+        awk -v id="$id" '
             c==0 && /<meta name="description"/  {c=1}
             c==1 && /^[Ll][Yy][Rr][Ii][Cc][Ss]/ {c=2}
             c==2 && /<meta name="keywords"/     {c=0;exit}
@@ -181,7 +181,7 @@ mpvcfzf_icache()
     ytdl_output="$(mpvcfzf_icache_output_dir)"
     ytdl_dir="$ytdl_output"
 
-    if [ ! -n "$ytdl_output" -o ! -n "$ytdl_output" ]; then
+    if [ -z "$ytdl_output" ] || [ -z "$ytdl_output" ]; then
         #quiet mpvc get ytdl-raw-options || cat
         mpvcfzf_warn "$PROGNAME: Error cache not enabled: undefined ytdl-raw-options"
         if cat; then return; fi
@@ -191,8 +191,8 @@ mpvcfzf_icache()
     do
         url=$(echo "$line" | awk '/https:/ { gsub("watch\\?v=",""); print $1 }')
         vid=$(basename "$url")
-        file=$(find $ytdl_dir/ 2>/dev/null | awk "/$vid/ { print; exit }")
-        if [ -n "$url" -a -e "$file" ]; then
+        file=$(find "$ytdl_dir/" 2>/dev/null | awk "/$vid/ { print; exit }")
+        if [ -n "$url" ] && [ -e "$file" ]; then
             echo "$file"
         else
             echo "$line"
@@ -503,11 +503,11 @@ main()
         -CC|cmds)   shift; mpvcfzf_cmds "$@"; return;;
 
         -d|dir)     shift; MPVC_DIR="$arg1"; cd "$MPVC_DIR" || return;;
-        -e|eqz)     shift; mpvcfzf_equalizer; return ;;
+        -e|eqz)     shift; mpvcfzf_equalizer ""; return ;;
         -f|playlist)shift; mpvcfzf_playlist; return ;;
         -F|preview) shift; mpvcfzf_preview "$@"; return ;;
         -g|fetch)   shift; mpvcfzf_fetch "$arg1"; return ;;
-        -G|Fetch)   shift; mpvcfzf_fetch $(mpvcfzf_iplay "$1"); return ;;
+        -G|Fetch)   shift; mpvcfzf_fetch "$(mpvcfzf_iplay "$1")"; return ;;
         -i|lyrics)  shift; mpvcfzf_lyrics "$arg1"; return ;;
         -L|Lyrics)  shift; mpvcfzf_lyrics_ddg; return ;;
         -k|dplay)   shift; mpvcfzf_ddg_play "$arg1"; return ;;
