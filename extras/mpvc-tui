@@ -59,7 +59,7 @@ mpvctui_defaults()
     MPVC_CMD_PLAYLIST="${MPVC_CMD_PLAYLIST:-playlist}"
     MPVC_CMD_CHAPTERLIST=${MPVC_CMD_CHAPTERLIST:-chapter-list}
 
-    export MPVC_TUI_CLINE=${MPVC_TUI_CLINE:-$(( $(mpvc statussz) + 6 ))}
+    export MPVC_TUI_CLINE="${MPVC_TUI_CLINE:-$(( $(mpvc statussz) + 6 ))}"
 }
 
 # Load user config
@@ -131,7 +131,7 @@ mpvctui_tips()
     0|1|2)    echo ": type control+c to enter prompt";;
     10|11|12) echo ": Check $PROGURL";;
     20|21|22) echo ": Check $SITEURL";;
-    30|31|32) echo ": Config at ${MPVC_CONFIG##$HOME/}";;
+    30|31|32) echo ": Config at ${MPVC_CONFIG##"$HOME/"}";;
     40|41|42) echo ": Launch from WM with: $PROGNAME -x";;
     50|51|52) echo ": version $PROGNAME $PROGVERSION at $PROGURL";;
     60|61|62) echo ": Update $MPVC_TUI_UPDATEC secs refresh $((mpvctui_count % MPVC_TUI_CLEARC))/$MPVC_TUI_CLEARC shell $MPVC_TUI_SHELL";;
@@ -178,7 +178,7 @@ mpvctui_watch()
         printf "${MPVC_TUI_CUP}"
         echo "$output"
         mpvctui_count=$(( mpvctui_count + 1 ))
-        sleep $MPVC_TUI_UPDATEC
+        sleep "$MPVC_TUI_UPDATEC"
     done
 }
 
@@ -335,7 +335,7 @@ mpvctui_suggest()
 
 mpvctui_launch()
 {
-    if quiet command -v $MPVC_TUI_TERM; then $MPVC_TUI_TERM -e "$0" "$@"; fi;
+    if quiet command -v "$MPVC_TUI_TERM"; then "$MPVC_TUI_TERM" -e "$0" "$@"; fi;
 }
 
 mpvctui_usage()
