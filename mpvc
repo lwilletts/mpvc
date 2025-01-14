@@ -452,7 +452,7 @@ mpvc_load_playlist() {
     buffer=$(mpvc_buffer_stdin)
     if [ -z "$buffer" ]; then return; fi
     if [ "${1:-}" = "clear" ]; then mpvc_clear_playlist; fi
-    printf "%s\n" "$buffer" | while read -r line; do mpvc_appendtracks "$line"; done
+    echo "$buffer" | while read -r line; do mpvc_appendtracks "$line"; done
 }
 
 # mpvc stash [list|show|push|drop|apply]
