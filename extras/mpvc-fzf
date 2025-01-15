@@ -230,6 +230,10 @@ mpvcfzf_fetch()
     "$ytdlp" $ytdl_opts ${YTDL_OPTS:-} "$@"
 }
 
+#
+# fzf wrappers
+#
+
 mpvcfzf_preview()
 {
     MPVC_FZF_BIND_HELP="C-u:go C-x:ls C-v:yt C-\\:fs C-s:chapter C-t:add C-o:play C-r:reload C-spc:toggle"
@@ -286,7 +290,7 @@ mpvcfzf_playlist()
 mpvcfzf_chapterlist()
 {
     len=$(mpvc gets chapter-list/count)
-    ( if [ -z "$len" ]; then echo; else mpvc chapter-list-nr; fi) |
+    (if [ -z "$len" ]; then echo; else mpvc chapter-list-nr; fi) |
         mpvcfzf_preview --prompt="(chapter) " \
         --bind='ctrl-o:execute-silent(mpvc set chapter {1})' \
         --bind='ctrl-r:reload(mpvc chapter-list-nr)'
@@ -503,7 +507,7 @@ main()
         -CC|cmds)   shift; mpvcfzf_cmds "$@"; return;;
 
         -d|dir)     shift; MPVC_DIR="$arg1"; cd "$MPVC_DIR" || return;;
-        -e|eqz)     shift; mpvcfzf_equalizer ""; return ;;
+        -e|eqz)     shift; mpvcfzf_equalizer "$@"; return ;;
         -f|playlist)shift; mpvcfzf_playlist; return ;;
         -F|preview) shift; mpvcfzf_preview "$@"; return ;;
         -g|fetch)   shift; mpvcfzf_fetch "$arg1"; return ;;
