@@ -261,7 +261,7 @@ main()
         exit;
     fi
     case "\$QUERY_STRING" in
-        lyrics)                 mpvc_redir "\$($MPVC-fzf -L '')" ;;
+        lyrics)                 mpvc_redir "\$($MPVC-fzf Lyrics '')" ;;
         filename)               mpvc_redir "\$($MPVC filename current full)" ;;
         metadata)               mpvc_plain "\$($MPVC metadata)" ;;
         thumbnail_url)          mpvc_redir "\$($MPVC ytqueryfield thumbnail_url \$($MPVC filename current full))" ;;
@@ -681,7 +681,7 @@ main()
 
     case "${MPVC_WEB_CMD:-}" in
     status) ps auxww | grep "$PROGNAME" ;;
-    start)  mpvc_web "";;
+    start)  mpvc_web "$@";;
     stop)   pkill -f "$PROGNAME" ;;
     *)      usage ;;
     esac
