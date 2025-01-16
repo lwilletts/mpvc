@@ -254,7 +254,7 @@ mpvc_ytquery_json() {
             result='{ "title":"'"${filename##*/}"'","request_id":0 }' # basenamed
             ;;
         esac
-        printf "%s\n" "$result"
+        echo "$result"
     done
 }
 
@@ -441,9 +441,11 @@ mpvc_save_playlist() {
 # $buffer stdin: to save the whole stdin in one piece at once
 mpvc_buffer_stdin()
 {
+    nl='
+'
     buffer=""
-    while read -r line; do buffer="${buffer}\n${line}"; done
-    printf "%s\n" "$buffer"
+    while read -r line; do buffer="${buffer}${nl}${line}"; done
+    echo "$buffer"
 }
 
 # loads a playlist from stdin.
@@ -536,8 +538,7 @@ mpvc_stash() {
             grep -v "$RE" "$MPVC_STASH_DIR/$1" | mpvc_stash apply_current
             ;;
         replay)
-            buffer=$(mpvc_stash current "replay" | mpvc_buffer_stdin)
-            printf "%s\n" "$buffer" | mpvc_stash apply
+            mpvc_stash current "replay" | mpvc_buffer_stdin | mpvc_stash apply
             ;;
         help)
             echo "usage: $PROGNAME stash [list|current|edit|show|push|drop|apply|append|replay]"
