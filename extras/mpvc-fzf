@@ -318,10 +318,11 @@ mpvcfzf_urlget()
     mpvcfzf_curl "$url" |
         awk -v url="$url" '
             /<a href=".*">.*<\/a>/ {
-                match(url, "https?://[^/]+/", host);
+                match(url, "https?://[^/]+/");
+                host = substr($0, RSTART, RLENGTH)
                 href=$0; sub("^.*href=\"", "", href) sub("\".*$", "", href)
-                if (href ~ "^/") href = host[0]"/"href
-                print (href !~ host[0]) ? url"/"href : href
+                if (href ~ "^/") href = host"/"href
+                print (href !~ host) ? url"/"href : href
             }
         '
 }
