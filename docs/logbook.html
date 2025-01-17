@@ -718,13 +718,13 @@ ssh -X $USER@$HOST x2x -west -to :0 # be sure to read x2x(1)
 
 <h3 id="logbook-20241026">On mpvc lowfi and mpvc-fzf URL browser, 26 October 2024</h3>
 <p>
-Recently landed <code>mpvc lowfi</code> which features a minimal mpvc status that leverages emojis to represent a one-line compressed playing status. This is done by defining a custom <code>MPVC_FMTSTR</code> at <code>mpvc.conf</code>, and the end result looks like:
+Recently landed the commands <code>mpvc lowfi/hifi</code>, <code>lowfi</code> features a minimal mpvc status that leverages emojis to represent a one-line compressed playing status. This is done by defining a custom <code>MPVC_FMTSTR</code> at <code>mpvc.conf</code>, and the end result looks like:
 <pre>
 
 [play] ▷ Polaris 🎶 02:35/04:50 #3/33 🔊60% 🔂 🔄 🎧
 
 </pre>
-This goes hand in hand with the hability to browse HTTP server listings and add music as in:
+This goes hand in hand with the hability to browse HTTP/s server listings and add music as in:
 <pre>
 
 % mpvc-fzf -b https://lofigirl.com/wp-content/uploads/2023/05
