@@ -50,8 +50,8 @@ In addition, the [casts/](../../wiki#screencasts) directory to shows some screen
 ## Requirements
 
 Required:
-
-- `mpv`
+- `sh`: a POSIX compliant shell (`/bin/sh` works)
+- `mpv`: the mpv media player (see https://mpv.io)
 - `socat`: is preferred due to the differing implementations of `netcat` across UNIXes.
 - `awk`: a sane version of `awk` for the same reason (GNU/BSD `awk` works)
 
@@ -77,7 +77,7 @@ Recommended extras:
 Installing is just a matter of fetching the scripts either via [Git](#git)/Curl/etc., scripts can be used directly from the repo, the `mpvc-installer` bit is just there for easiness, to fetch & link them into your `BINDIR=~/bin/` that [mpvc-installer](../../blob/master/extras/mpvc-installer) does by default.
 
 The easiest for a onetime install is the [Manual](#manual), however for @latest version a [Git](#git) install is recommended.
-Check for missing dependencies/requirements using `mpvc-installer check-reqs`.
+Remember to check your installation for missing dependencies/requirements using `mpvc-installer check-reqs`, and, if you encounter any issue file an [Issue](../../issues).
 
 ### Manual
 
@@ -230,20 +230,6 @@ usage: mpvc-fzf opts # @version v1.6 (c) gmt4 https://github.com/gmt4/mpvc
  radioapi    : Search & play Radio-Browser API channels
 *tips: If unsure about where to begin, start: mpvc-fzf -p 'kupla mirage'
 ```
-
-## Limitations
-
-Like any piece of software, mpvc is not perfect:
-- mpvc does not resolve individual files in a directory unless it is
-  currently in or has been inside that directory, giving misleading results about
-  the total number of files in the current playlist. This is a limitation of mpv.
-- mpvc depends on shell tools. If your shell is misconfigured or you are using
-  unusual variants of basic UNIX tools, mpvc is not guaranteed to work. However,
-  all effort has been made to make mpvc as POSIX compliant as possible.
-  Remember to check for missing dependencies/requirements using `mpvc-installer check-reqs`.
-
-
-Check out the [Issue Tracker](../../issues) for further improvements to be made.
 
 [^install]: Skip directly to [Installation](#Installation) to try mpvc
 
