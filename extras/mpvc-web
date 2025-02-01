@@ -261,6 +261,7 @@ main()
         exit;
     fi
     case "\$QUERY_STRING" in
+        now-short)              mpvc_redir "\$($MPVC-fzf now short)" ;;
         lyrics)                 mpvc_redir "\$($MPVC-fzf Lyrics '')" ;;
         filename)               mpvc_redir "\$($MPVC filename current full)" ;;
         metadata)               mpvc_plain "\$($MPVC metadata)" ;;
@@ -340,7 +341,7 @@ mpvc_web_index()
             <a href="." name="top" ${MPVC_WEB_SHORTCUT_REFRESH}>$PROGNAME</a>
             <a href="#status">#st</a>
             <a href="#mpvc-web-playlist">#ls</a>
-            <a title="#now" href="https://gmt4.github.io/mpvc/now/">#n</a>
+            <a title="#now" href="/cgi-bin/mpvc?now-short">#n</a>
             <a title="#extras" href="/extras/">#x</a>
             $([ -n "$MPVC_WEB_ARCHIVE_ENABLE" ] && echo '<a title="#arc" href="ytdl-archive" >#a</a>'; )
             $([ -n "$MPVC_WEB_CAST_URL" ] && echo "<a title=#cast href=$MPVC_WEB_CAST_URL>#c</a>"; )
