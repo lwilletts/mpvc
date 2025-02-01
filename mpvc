@@ -100,7 +100,8 @@ EOF
  clist | chapter-list    : Output current chapter-list
  clistj|chapter-list-json: Output current chapter-list (json)
  csearch | chapter-search: Search current chapter-list
- chapter-searchplay      : Search and play the current chapter-list
+ csplay | csearchplay    : Search and play the current chapter-list
+ cloop | chapter-loop    : Loop/repeat the current chapter
 
 Formatting:
  \`$PROGNAME --format\` will interpret the following delimiters if they are found:
