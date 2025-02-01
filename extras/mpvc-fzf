@@ -441,8 +441,11 @@ mpvcfzf_now()
     list=$(mpvc fullplaylist)
 
     echo "$now?t=$date$vids"
-    echo
-    gawk -v u="$urls" -v l="$list" 'END{ split(u,au,"\n"); split(l,al,"\n"); for(u in au) {print au[u], al[u]}; }' /dev/null
+    if [ "$1" != "short" ]
+    then
+        echo
+        gawk -v u="$urls" -v l="$list" 'END{ split(u,au,"\n"); split(l,al,"\n"); for(u in au) {print au[u], al[u]}; }' /dev/null
+    fi
 }
 
 mpvcfzf_launch_term()
@@ -534,7 +537,7 @@ main()
         -z|relatedo)shift; mpvcfzf_related_once "$arg1"; return ;;
         -v|version) shift; mpvcfzf_version; return ;;
 
-        now)        shift; mpvcfzf_now; return ;;
+        now)        shift; mpvcfzf_now "${1:-}"; return ;;
         lofi)       shift; mpvcfzf_lofi "${1:-}"; return ;;
         somafm)     shift; mpvcfzf_somafm "${1:-}"; return ;;
         radioapi)   shift; mpvcfzf_radioapi "${1:-}"; return ;;
