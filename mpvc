@@ -96,12 +96,12 @@ EOF
  cprev | chapter-prev    : Jump to previous entry in the chapter-list
  cnext | chapter-next    : Jump to next entry in the chapter-list
  cplay | chapter-play    : Play the given chapter
+ cloop | chapter-loop    : Loop/repeat the current chapter
  creplay | chapter-replay: Replay current chapter
  clist | chapter-list    : Output current chapter-list
  clistj|chapter-list-json: Output current chapter-list (json)
  csearch | chapter-search: Search current chapter-list
  csplay | csearchplay    : Search and play the current chapter-list
- cloop | chapter-loop    : Loop/repeat the current chapter
 
 Formatting:
  \`$PROGNAME --format\` will interpret the following delimiters if they are found:
@@ -1122,8 +1122,8 @@ main() {
             cplay|--chapter-play|chapter-play)            shift; mpvc_chapter_set "${1:-}" "absolute" ;;
             cplayrand|--cplayrand)                        shift; mpvc_chapter_set "$(mpvc_get_random)" "absolute" ;;
 
-            creplay|--chapter-replay|chapter-replay)      mpvc_chapter_replay ;;
             cloop|--chapter-loop|chapter-loop)            mpvc_chapter_cloop ;;
+            creplay|--chapter-replay|chapter-replay)      mpvc_chapter_replay ;;
 
             clist|--chapter-list|chapter-list)            mpvc_chapter_list "short";;
             clistf|--chapter-list-full|chapter-list-full) mpvc_chapter_list "full";;
