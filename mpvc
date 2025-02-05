@@ -18,10 +18,10 @@ set -euf
 usage() {
     cat >&2 << EOF
 usage: $PROGNAME opts # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
- -a | --apend | add       : Add media to playlist (see --load for stdin).
- -r | --remove | rm | del : Remove media by id from playlist (see searchrm for rm by title)
- -s | --stop  | stop      : Always stop playback.
- -P | --play  | play      : Always start playback.
+ -a | --add | add         : Add media to playlist (see --load for stdin).
+ -r | --remove | rm       : Remove media by id from playlist (see searchrm for rm by title)
+ -s | --stop | stop       : Always stop playback.
+ -P | --play | play       : Always start playback.
  -p | --toggle            : Toggle playback.
     | --next              : Jump to next entry in the playlist
     | --prev              : Jump to previous entry in the playlist
@@ -1019,7 +1019,7 @@ main() {
     --ttysize|ttysize|--ttycols|ttycols|--ttylines|ttylines|--statussz|statussz) ;;
     -k|--kill|kill|-K|--killall|killall) ;;
     -c|--crop|crop|-C|--clear|clear|cmd|sockcmd|socklist|--socklist) ;;
-    -a|add|append|-A|load|--load|playnext|--playnext|-n|playnow|--playnow|mpv|--mpv|stash|--stash|--toggle|toggle|-q|--quiet) ;;
+    -a|add|--add|-A|load|--load|playnext|--playnext|-n|playnow|--playnow|mpv|--mpv|stash|--stash|--toggle|toggle|-q|--quiet) ;;
     version|--version|version-long|--version-long|-Q|--vid=no|-S|--socket) ;;
     help|--help|-h|help-long|--help-long|-H|--list-options) ;;
     *) mpvc_validate_socket;; # otherwise, validate socket
@@ -1052,7 +1052,7 @@ main() {
             pretty)         die 1 "$PROGNAME: Error $* not implemented" ;;
             find)           die 1 "$PROGNAME: Error $* not implemented" ;;
 
-            -a|add|--add|--append)   shift; mpvc_appendtracks "$@"; ;;
+            -a|add|--add)            shift; mpvc_appendtracks "$@"; ;;
             -A|--playnext|playnext)  shift; mpvc_play_next "$@" ;;
             -n|--playnow|playnow)    shift; mpvc_play_now "$@" ;;
                --playrand|playrand)  shift; mpvc_play_random "$@" ;;
@@ -1071,7 +1071,7 @@ main() {
             -X|--speedval)                   shift; mpvc_set "speed" "${1:-}"  ;;
             -j|--track|track)                shift; mpvc_set_track "${1:-}" relative  ;;
             -J|--tracknum|tracknum)          shift; mpvc_set_track "${1:-}" absolute  ;;
-            -r|--remove|rm|remove|del)       shift; mpvc_remove_track "${1:-}"; QUIETFLAG=true;;
+            -r|--remove|rm|remove)           shift; mpvc_remove_track "${1:-}"; QUIETFLAG=true;;
             -o|--save|save)                  shift; mpvc_save_playlist "${1:-}" ;;
             --load|load)                     shift; mpvc_load_playlist      ;;
 
