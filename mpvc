@@ -19,8 +19,9 @@ usage() {
     cat >&2 << EOF
 usage: $PROGNAME opts # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
  -a | --add              : Add media to playlist (see --load for stdin).
- -s | --stop             : Always stop playback.
- -P | --play             : Always start playback.
+ -r |--remove | rm | del : Remove media by id from playlist (see searchrm for rm by title)
+ -s | --stop  | stop     : Always stop playback.
+ -P | --play  | play     : Always start playback.
  -p | --toggle           : Toggle playback.
     | --next             : Jump to next entry in the playlist
     | --prev             : Jump to previous entry in the playlist
@@ -1135,7 +1136,7 @@ main() {
             -k|--kill|kill)                  mpvc_ecmdr "quit"; QUIETFLAG=true ;;
             -K|--killall|killall)            quiet pkill -9 -f "$MPVC_MPV "; QUIETFLAG=true ;;
             -s|--stop|stop)                  mpvc_set "pause" "yes"; mpvc_set_time "absolute" 0 ;;
-            -P|--play)                       mpvc_always_play ;;
+            -P|--play|play)                  mpvc_always_play ;;
             -p|--toggle|toggle)              mpvc_cycle "pause" ;;
             -m|--mute)                       mpvc_cycle "mute"                ;;
             -i|--playlist|playlist)          mpvc_get_playlist "";            ;;
