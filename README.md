@@ -173,17 +173,18 @@ nix-env -i mpvc
 
 ```console
 usage: mpvc opts # @version v1.6 (c) gmt4 https://github.com/gmt4/mpvc
- -a | --add              : Add media to playlist (see --load for stdin).
- -s | --stop             : Always stop playback.
- -P | --play             : Always start playback.
- -p | --toggle           : Toggle playback.
-    | --next             : Jump to next entry in the playlist
-    | --prev             : Jump to previous entry in the playlist
- -i | --playlist         : Print filenames of tracks to fit within terminal.
- -I | --fullplaylist     : Print all filenames of tracks in current playlist.
- -v | --vol              : Increase/decrease volume relative to current volume.
- -h | --help             : Prints the short help.
- -H | --long-help        : Prints the long help.
+ -a | --add | add         : Add media to playlist (see --load for stdin).
+ -r | --remove | rm       : Remove media by id from playlist (see searchrm for rm by title)
+ -s | --stop | stop       : Always stop playback.
+ -P | --play | play       : Always start playback.
+ -p | --toggle            : Toggle playback.
+    | --next              : Jump to next entry in the playlist
+    | --prev              : Jump to previous entry in the playlist
+ -i | --playlist          : Print filenames of tracks to fit within terminal.
+ -I | --fullplaylist      : Print all filenames of tracks in current playlist.
+ -v | --vol               : Increase/decrease volume relative to current volume.
+ -h | --help              : Prints the short help.
+ -H | --help-long         : Prints the long help.
 *tips: If unsure about where to begin, have a look at https://gmt4.github.io/mpvc
 ```
 
