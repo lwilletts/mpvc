@@ -999,7 +999,7 @@ mpvc_get_version() {
 
 mpvc_delay() { sleep "${1:-0.1}"; }
 mpvc_wait()  { for i in $(seq 0 100); do mpvc_delay "${1:-}"; [ -n "$(mpvc_get idle-active)" ] && break; done; }
-mpvc_mpv() { mpvc_startmpv --really-quiet --idle=once; }
+mpvc_mpv() { mpvc_startmpv --really-quiet --idle=once "$@"; }
 # mpvc_mpv: exec & wait until mpv starts up
 mpvc_startmpv() {
     if [ -z "$(mpvc_get idle-active)" ]; then
@@ -1075,7 +1075,7 @@ main() {
             -o|--save|save)                  shift; mpvc_save_playlist "${1:-}" ;;
             --load|load)                     shift; mpvc_load_playlist      ;;
 
-            mpv|--mpv)                       mpvc_mpv ;;
+            mpv|--mpv)                       mpvc_mpv "$@";;
             --current|current)               ;;
             --loadc|loadc)                   shift; mpvc_load_playlist "clear"    ;;
             --saven|saven)                   shift; mpvc_get_playlist_once "numbered"; QUIETFLAG=true;;
