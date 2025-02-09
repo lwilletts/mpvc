@@ -1052,7 +1052,7 @@ main() {
             pretty)         die 1 "$PROGNAME: Error $* not implemented" ;;
             find)           die 1 "$PROGNAME: Error $* not implemented" ;;
 
-            -a|add|--add)            shift; mpvc_appendtracks "$@"; ;;
+            -a|--add|add)            shift; mpvc_appendtracks "$@"; ;;
             -A|--playnext|playnext)  shift; mpvc_play_next "$@" ;;
             -n|--playnow|playnow)    shift; mpvc_play_now "$@" ;;
                --playrand|playrand)  shift; mpvc_play_random "$@" ;;
@@ -1071,7 +1071,7 @@ main() {
             -X|--speedval)                   shift; mpvc_set "speed" "${1:-}"  ;;
             -j|--track|track)                shift; mpvc_set_track "${1:-}" relative  ;;
             -J|--tracknum|tracknum)          shift; mpvc_set_track "${1:-}" absolute  ;;
-            -r|--remove|rm|remove)           shift; mpvc_remove_track "${1:-}"; QUIETFLAG=true;;
+            -r|--remove|rm|remove|del)       shift; mpvc_remove_track "${1:-}"; QUIETFLAG=true;;
             -o|--save|save)                  shift; mpvc_save_playlist "${1:-}" ;;
             --load|load)                     shift; mpvc_load_playlist      ;;
 
