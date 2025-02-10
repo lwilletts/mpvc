@@ -860,8 +860,8 @@ mpvc_print_status() {
 
             gsub("%statuslofi%", "${?pause==yes:⏸️}${?pause==no:▷}${!pause:NA}");
             gsub("%mutelofi%", "${?mute==yes:🔇}${?mute==no:🔊}${!mute:NA}");
-            gsub("%singlelofi%", "${?loop-file==yes:🔁}${?loop-file==no:🔂}${!loop-file:NA}")
-            gsub("%repeatlofi%", "${?loop-playlist==inf:🔄}${?loop-playlist==no:🔃}${!loop-playlist:NA}")
+            gsub("%singlelofi%", "${?loop-file==inf:🔁}${!loop-file==inf:🔂}${!loop-file:NA}")
+            gsub("%repeatlofi%", "${?loop-playlist==inf:🔄}${!loop-playlist==inf:🔃}${!loop-playlist:NA}")
             gsub("%videolofi%", "${!video==no:📀}${?video==no:🎧}${!video:NA}")
             gsub("%idlelofi%", "${?idle==yes:♾️}${?idle==no:∅}${!idle:NA}")
 
