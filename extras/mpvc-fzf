@@ -60,9 +60,9 @@ mpvcfzf_getvideo_id()
 
 mpvcfzf_cparse()
 {
-    awk '
+    awk -v video=1 -v playlist=0 '
         /^.*<p dir="auto">/ {
-            gsub("^.*<p dir=\"auto\">",""); gsub("</p>.*$",""); vtitle=$0
+            l=$0; gsub("^.*<p dir=\"auto\">","", l); gsub("</p>.*$","", l); vtitle=l
         }
         /<p class="video-data" dir="auto">/ {
             gsub("^ *<p class=\"video-data\" dir=\"auto\">",""); gsub(" views",""); gsub("</p>",""); shared=$0
@@ -70,10 +70,19 @@ mpvcfzf_cparse()
         /^ *<p class="length">/ {
             gsub("^ *<p class=\"length\">",""); gsub("</p>",""); vlength=$0
         }
+
         /^ *<a title="Audio mode/ {
             gsub("^ *<a title=\"Audio mode\" href=\"",""); gsub("\">","");
             gsub("/watch\\?v=", "https://yewtu.be/"); gsub("&listen=1","");
-            printf "%s %4s %7s %s\n", $0, shared, vlength, vtitle
+            if (video)
+                printf "%s %4s %7s %s\n", $0, shared, vlength, vtitle
+        }
+
+        /^ *<a href="\/playlist/ {
+            gsub("^ *<a href=\"",""); gsub("\">.*","");
+            gsub("/playlist", "https://yewtu.be/playlist");
+            if (playlist)
+                printf "%s %7s %s\n", $0, vlength, vtitle
         }
 
         END {
