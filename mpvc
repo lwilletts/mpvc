@@ -164,10 +164,10 @@ mpvc_defaults()
     MPVC_FMTSTR="${MPVC_FMTSTR:-}"
     MPVC_FMTSTR_LOFI=${MPVC_FMTSTR_LOFI:-'[%status%] %statuslofi% %title% 🎶 %time%/%length% #%position%/%playlistlength% %=chapter%/%chapters% %mutelofi%%volume%%% %singlelofi%%repeatlofi%%idlelofi%%videolofi%'}
     MPVC_FMTSTR_DFLT="\
-%artist% - %title% \r\
-[%status%] #%position%/%playlistlength% %time%/%length% (%percentage%%%) \r\
-vol:%volume%%% mute:%mute% repeat:%repeat% single:%single% \r\
-vid:%video% scr:%screen% win:%force-window% fs:%fullscreen% \r\
+%artist% - %title% \\r\
+[%status%] #%position%/%playlistlength% %time%/%length% (%percentage%%%) \\r\
+vol:%volume%%% mute:%mute% repeat:%repeat% single:%single% \\r\
+vid:%video% scr:%screen% win:%force-window% fs:%fullscreen% \\r\
 chapter:%chapter% %=chapter%/%chapters% idle:%idle%"
 
     # print default status of mpv instance
@@ -886,7 +886,9 @@ mpvc_print_status() {
     )
     # trim/replace times: 00:01:59 -> 01:59
     mpvc_cmd "expand-text" "${F}" |
-        awk '{ gsub(" \\\\r","\n"); gsub(" -?00:", " "); gsub("/00:", "/"); print }'
+        awk '
+            BEGIN{ isgawk = PROCINFO["platform"]; cr = isgawk ? "\\r" : "\\\\r"; }
+            { gsub(" "cr,"\n"); gsub(" -?00:", " "); gsub("/00:", "/"); print }'
 }
 
 mpvc_print_status_final() {
