@@ -481,7 +481,7 @@ mpvcfzf_ntsradio_search()
     url="https://www.nts.live/api/v2/mixtapes"
     file="$MPVC_FZF_NTSRADIO_FILE"
     [ ! -s "$file" ] && mpvcfzf_curl -o "$file" "$url"
-    jq -r '.results | .[] | (.audio_stream_endpoint+";"+.title+";"+.subtitle+"\n")'  < /tmp/mix | column -t -s ';'
+    jq -r '.results | .[] | (.audio_stream_endpoint+";"+.title+";"+.subtitle+"\n")'  "$file"
 }
 
 mpvcfzf_now_geturls() { mpvc saven; }
