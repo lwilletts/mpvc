@@ -33,6 +33,7 @@ mpvcfzf_defaults()
 
     MPVC_FZF_SOMAFM_FILE="${MPVC_FZF_SOMAFM_FILE:-$MPVC_CONFIG_DIR/somafm-channels.json}"
     MPVC_FZF_RADIOAPI_FILE="${MPVC_FZF_RADIOAPI_FILE:-$MPVC_CONFIG_DIR/radioapi-stations.json}"
+    MPVC_FZF_NTSRADIO_FILE="${MPVC_FZF_NTSRADIO_FILE:-$MPVC_CONFIG_DIR/ntsradio-channels.json}"
     #mpvc -q
 }
 
@@ -464,6 +465,25 @@ mpvcfzf_radioapi_search()
     jq -r -c '.[] | select( (.url|length) < 80 ) | (.url+";"+(.votes|tostring)+" "+.name)' "$file"
 }
 
+mpvcfzf_ntsradio()
+{
+    chan=${1:-}
+    if [ -n "$chan" ]; then
+        mpvcfzf_ntsradio_search | awk -F';' -v chan="$chan" '{ if(match($0,chan))print $1}' | mpvc load
+    else
+        mpvcfzf_ntsradio_search | column -s ';' -t | mpvcfzf_preview --prompt="(ntsradio) "
+    fi
+}
+
+mpvcfzf_ntsradio_search()
+{
+    url="https://www.nts.live/api/v2/live"
+    url="https://www.nts.live/api/v2/mixtapes"
+    file="$MPVC_FZF_NTSRADIO_FILE"
+    [ ! -s "$file" ] && mpvcfzf_curl -o "$file" "$url"
+    jq -r '.results | .[] | (.audio_stream_endpoint+";"+.title+";"+.subtitle+"\n")'  < /tmp/mix | column -t -s ';'
+}
+
 mpvcfzf_now_geturls() { mpvc saven; }
 mpvcfzf_now_getvids() { echo "$@" | awk '/youtube|yewtu/ { sub("^.*/",""); sub(".*=",""); sub("^","\\&v="); printf $0; }'; }
 
@@ -521,6 +541,7 @@ usage: $PROGNAME opts # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
     lofi     : Search & play Lo-Fi channels
     somafm   : Search & play SomaFM channels
     radioapi : Search & play Radio-Browser API channels
+    ntsradio : Search & play NTS-Radio API channels
 *tips: If unsure about where to begin, start: $PROGNAME -p 'kupla mirage'
 EOF
     exit;
@@ -578,6 +599,7 @@ main()
         lofi)       shift; mpvcfzf_lofi "${1:-}"; return ;;
         somafm)     shift; mpvcfzf_somafm "${1:-}"; return ;;
         radioapi)   shift; mpvcfzf_radioapi "${1:-}"; return ;;
+        ntsradio)   shift; mpvcfzf_ntsradio "${1:-}"; return ;;
         #*)         shift; mpvcfzf_usage; return ;;
         esac
     done
