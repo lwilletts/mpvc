@@ -60,7 +60,7 @@ mpvcfzf_getvideo_id()
 
 mpvcfzf_cparse()
 {
-    awk -v video=1 -v playlist=0 '
+    awk -v video=1 -v playlist=0 -v channel=0 '
         /^.*<p dir="auto">/ {
             l=$0; gsub("^.*<p dir=\"auto\">","", l); gsub("</p>.*$","", l); vtitle=l
         }
@@ -69,6 +69,9 @@ mpvcfzf_cparse()
         }
         /^ *<p class="length">/ {
             gsub("^ *<p class=\"length\">",""); gsub("</p>",""); vlength=$0
+        }
+        /^ *<p class="channel-name" dir="auto">@.*/ {
+            l=$0; gsub("^.*@","@", l); gsub("</p>.*$","", l); vchannel=l
         }
 
         /^ *<a title="Audio mode/ {
@@ -83,6 +86,13 @@ mpvcfzf_cparse()
             gsub("/playlist", "https://yewtu.be/playlist");
             if (playlist)
                 printf "%s %7s %s\n", $0, vlength, vtitle
+        }
+
+        /^ *<a href="\/channel/ {
+            gsub("^ *<a href=\"",""); gsub("\">.*","");
+            gsub("/channel", "https://yewtu.be/channel");
+            if (channel)
+                printf "%s %7s %s\n", $0, vlength, vchannel
         }
 
         END {
