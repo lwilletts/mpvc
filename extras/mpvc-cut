@@ -32,7 +32,7 @@ mpvc_cutfile()
 
     fileExt="${path#*.}"
     infile="${path##*/}"
-    infile="${infile##$fileExt}"
+    infile="${infile##"$fileExt"}"
     outfile="${outfile:-$infile.$pointA.$pointB}"
     loglevel=${loglevel:-warning}
 

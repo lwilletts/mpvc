@@ -19,7 +19,7 @@ PROGDIR=${0%/*}
 PROGVERSION="v1.6"
 PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
-PROGINFO="A hack to remotely control mpvc from web # DISCLAIMER * Use at Your Own Risk *"
+#PROGINFO="A hack to remotely control mpvc from web # DISCLAIMER * Use at Your Own Risk *"
 
 set -euf
 
@@ -132,6 +132,7 @@ mpvc_web_yts()
 {
 cat <<EOF
             <input type="text" placeholder="mpvc yts-search" name="mpvc-yts" list="mpvc-yts-datalist" title="mpvc yts-search" ${MPVC_WEB_SHORTCUT_YTSEARCH} onkeydown="mpvcOnKeyDownEvent(event,this)">
+            <!-- Support input+datalist is buggy in mobile, hence the select below (https://bugzilla.mozilla.org/show_bug.cgi?id=1535985)-->
             <form action=/ method=get>
                 <select name=cli id="mpvc-yts-select" placeholder="mpvc yts-select" width=1 size=1 onchange=this.form.submit() >
                 <option value="" selected># mpvc-yts-select
@@ -247,6 +248,7 @@ mpvc_strip() { sed '/\x1b\[7m/ { s|\x1b\[7m||; s| |+|; }; s|\x1b\[0m||;'; }
 mpvc_cmd()   { echo "Content-Type: text/plain"; echo; $MPVC "\$@"; }
 mpvc_plain() { echo "Content-Type: text/plain"; echo; echo "\$@"; }
 mpvc_html()  { echo "Content-Type: text/html";  echo; echo "\$@"; }
+mpvc_json()  { echo "Content-Type: application/json";  echo; echo "\$@"; }
 mpvc_redir() { mpvc_html '<meta http-equiv=refresh content="0;url='\$1'" />'; }
 mpvc_split() { for i in \$@; do echo "\$i"; done; }
 
@@ -259,8 +261,11 @@ main()
         exit;
     fi
     case "\$QUERY_STRING" in
-        lyrics)                 mpvc_redir "\$($MPVC-fzf -L '')" ;;
+        now-short)              mpvc_redir "\$($MPVC-fzf now short)" ;;
+        lyrics)                 mpvc_redir "\$($MPVC-fzf Lyrics '')" ;;
         filename)               mpvc_redir "\$($MPVC filename current full)" ;;
+        metadata)               mpvc_plain "\$($MPVC metadata)" ;;
+        thumbnail_url)          mpvc_redir "\$($MPVC ytqueryfield thumbnail_url \$($MPVC filename current full))" ;;
 
         mpvc+status)            mpvc_cmd status | mpvc_strip ;;
         mpvc+playlist)          mpvc_cmd playlist | mpvc_strip ;;
@@ -336,10 +341,10 @@ mpvc_web_index()
             <a href="." name="top" ${MPVC_WEB_SHORTCUT_REFRESH}>$PROGNAME</a>
             <a href="#status">#st</a>
             <a href="#mpvc-web-playlist">#ls</a>
-            <a title="#now" href="https://gmt4.github.io/mpvc/now/">#n</a>
+            <a title="#now" href="/cgi-bin/mpvc?now-short">#n</a>
             <a title="#extras" href="/extras/">#x</a>
             $([ -n "$MPVC_WEB_ARCHIVE_ENABLE" ] && echo '<a title="#arc" href="ytdl-archive" >#a</a>'; )
-            $([ -n "$MPVC_WEB_CAST_URL" ] && echo "<a title=#cast href="$MPVC_WEB_CAST_URL">#c</a>"; )
+            $([ -n "$MPVC_WEB_CAST_URL" ] && echo "<a title=#cast href=$MPVC_WEB_CAST_URL>#c</a>"; )
         ]
         <hr>
         <ul>
@@ -443,17 +448,20 @@ mpvc_web_index()
 
         [
             <a href="#mpvc-web-status" name="mpvc-web-status">Status</a>
-            <a href="/cgi-bin/mpvc?related">#related</a>
-            <a href="/cgi-bin/mpvc?lyrics">#lyrics</a>
-            <a href="/cgi-bin/mpvc?filename">#file</a>
-        ] <hr>
+            <a href="/cgi-bin/mpvc?metadata">#me</a>
+            <a href="/cgi-bin/mpvc?thumbnail_url">#thumb</a>
+            <a href="/cgi-bin/mpvc?lyrics">#lyric</a>
+            <a href="/cgi-bin/mpvc?filename">#url</a>
+        ]
+        <hr>
         <iframe name="mpvc-status" width="100%" height="100%" frameborder="0" allowtransparency="true" src="/cgi-bin/mpvc?mpvc+status" ></iframe>
         [
-          <a href="#mpvc-web-playlist" name="mpvc-web-playlist">Playlist</a>
-          <a href="#mpvc-web-fullplaylist" name="mpvc-web-fullplaylist">#full</a>
-          <a href="#mpvc-web-rawplaylist" name="mpvc-web-rawplaylist">#raw</a>
-          <a href="#mpvc-web-chapter-list-nr" name="mpvc-web-chapter-list-nr">#chapters</a>
-        ] <hr>
+            <a href="#mpvc-web-playlist" name="mpvc-web-playlist">Playlist</a>
+            <a href="#mpvc-web-fullplaylist" name="mpvc-web-fullplaylist">#full</a>
+            <a href="#mpvc-web-rawplaylist" name="mpvc-web-rawplaylist">#raw</a>
+            <a href="#mpvc-web-chapter-list-nr" name="mpvc-web-chapter-list-nr">#chapters</a>
+        ]
+        <hr>
         <div style="display:flex">
         <iframe name="mpvc-playlist" width="100%" frameborder="0" allowtransparency="true" style="margin:auto;" src="/cgi-bin/mpvc?mpvc+playlist" ></iframe>
         <script type="text/javascript">
@@ -674,7 +682,7 @@ main()
 
     case "${MPVC_WEB_CMD:-}" in
     status) ps auxww | grep "$PROGNAME" ;;
-    start)  mpvc_web ;;
+    start)  mpvc_web "$@";;
     stop)   pkill -f "$PROGNAME" ;;
     *)      usage ;;
     esac

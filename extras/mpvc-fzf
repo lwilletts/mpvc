@@ -33,6 +33,7 @@ mpvcfzf_defaults()
 
     MPVC_FZF_SOMAFM_FILE="${MPVC_FZF_SOMAFM_FILE:-$MPVC_CONFIG_DIR/somafm-channels.json}"
     MPVC_FZF_RADIOAPI_FILE="${MPVC_FZF_RADIOAPI_FILE:-$MPVC_CONFIG_DIR/radioapi-stations.json}"
+    MPVC_FZF_NTSRADIO_FILE="${MPVC_FZF_NTSRADIO_FILE:-$MPVC_CONFIG_DIR/ntsradio-channels.json}"
     #mpvc -q
 }
 
@@ -58,6 +59,66 @@ mpvcfzf_getvideo_id()
     echo "${1##*/}"
 }
 
+mpvcfzf_cparse()
+{
+    awk -v video=1 -v playlist=0 -v channel=0 '
+        /^.*<p dir="auto">/ {
+            l=$0; gsub("^.*<p dir=\"auto\">","", l); gsub("</p>.*$","", l); vtitle=l
+        }
+        /<p class="video-data" dir="auto">/ {
+            gsub("^ *<p class=\"video-data\" dir=\"auto\">",""); gsub(" views",""); gsub("</p>",""); shared=$0
+        }
+        /^ *<p class="length">/ {
+            gsub("^ *<p class=\"length\">",""); gsub("</p>",""); vlength=$0
+        }
+        /^ *<p class="channel-name" dir="auto">@.*/ {
+            l=$0; gsub("^.*@","@", l); gsub("</p>.*$","", l); vchannel=l
+        }
+
+        /^ *<a title="Audio mode/ {
+            gsub("^ *<a title=\"Audio mode\" href=\"",""); gsub("\">","");
+            gsub("/watch\\?v=", "https://yewtu.be/"); gsub("&listen=1","");
+            if (video)
+                printf "%s %4s %7s %s\n", $0, shared, vlength, vtitle
+        }
+
+        /^ *<a href="\/playlist/ {
+            gsub("^ *<a href=\"",""); gsub("\">.*","");
+            gsub("/playlist", "https://yewtu.be/playlist");
+            if (playlist)
+                printf "%s %7s %s\n", $0, vlength, vtitle
+        }
+
+        /^ *<a href="\/channel/ {
+            gsub("^ *<a href=\"",""); gsub("\">.*","");
+            gsub("/channel", "https://yewtu.be/channel");
+            if (channel)
+                printf "%s %7s %s\n", $0, vlength, vchannel
+        }
+
+        END {
+            if (NR == 0)
+            {
+                print "Error: No results found, maybe yewtu.be is down, try switching to a different instance with:"
+                print "       url_host=invidious.projectsegfau.lt mpvc-fzf"
+            }
+        }
+    '
+}
+
+mpvcfzf_csearch()
+{
+    echo "$@"
+    mpvcfzf_curl "$@" | mpvcfzf_cparse
+}
+
+mpvcfzf_csearch_play()
+{
+    mpvcfzf_csearch "$1" |
+        mpvcfzf_preview --prompt="(csearch) " |
+            mpvcfzf_awk1
+}
+
 mpvcfzf_isearch_once()
 {
     mpvcfzf_isearch "$@" | awk 'NR==2 {sub(" +", " # "); print}'
@@ -70,32 +131,7 @@ mpvcfzf_isearch()
     url_query="q=$(for f in $@; do printf "%s+" "$f"; done)"
     url_search="https://${url_host}/search?$url_query&$url_sort"
 
-    echo "$url_search"
-    mpvcfzf_curl "$url_search&page=1" "$url_search&page=2" |
-    awk '
-        /^.*<p dir="auto">/ {
-            gsub("^.*<p dir=\"auto\">",""); gsub("</p>.*$",""); vtitle=$0
-        }
-        /<p class="video-data" dir="auto">/ {
-            gsub("^ *<p class=\"video-data\" dir=\"auto\">",""); gsub(" views",""); gsub("</p>",""); shared=$0
-        }
-        /^ *<p class="length">/ {
-            gsub("^ *<p class=\"length\">",""); gsub("</p>",""); vlength=$0
-        }
-        /^ *<a title="Audio mode/ {
-            gsub("^ *<a title=\"Audio mode\" href=\"",""); gsub("\">","");
-            gsub("/watch\\?v=", "https://yewtu.be/"); gsub("&listen=1","");
-            printf "%s %4s %7s %s\n", $0, shared, vlength, vtitle
-        }
-
-        END {
-            if (NR == 0)
-            {
-                print "Error: No results found, maybe yewtu.be is down, try switching to a different instance with:"
-                print "       url_host=invidious.projectsegfau.lt mpvc-fzf"
-            }
-        }
-    '
+    mpvcfzf_csearch "$url_search&page=1" "$url_search&page=2"
 }
 
 mpvcfzf_related_search()
@@ -123,7 +159,7 @@ mpvcfzf_related_play()
 
 mpvcfzf_related_once()
 {
-    mpvcfzf_related_search "$(mpvcfzf_isearch_once "$(mpvc get media-title)" | mpvcfzf_awk1)"
+    mpvcfzf_related_search "$(mpvcfzf_isearch_once "${1:-$(mpvc get media-title)}" | mpvcfzf_awk1)"
 }
 
 mpvcfzf_lyrics()
@@ -132,7 +168,7 @@ mpvcfzf_lyrics()
     id=$(mpvcfzf_getvideo_id "$id")
     output=$(mpvcfzf_curl "https://yewtu.be/redirect?referer=/watch?v=$id")
     echo "$output" |
-        awk -v id=$id '
+        awk -v id="$id" '
             c==0 && /<meta name="description"/  {c=1}
             c==1 && /^[Ll][Yy][Rr][Ii][Cc][Ss]/ {c=2}
             c==2 && /<meta name="keywords"/     {c=0;exit}
@@ -181,7 +217,7 @@ mpvcfzf_icache()
     ytdl_output="$(mpvcfzf_icache_output_dir)"
     ytdl_dir="$ytdl_output"
 
-    if [ ! -n "$ytdl_output" -o ! -n "$ytdl_output" ]; then
+    if [ -z "$ytdl_output" ] || [ -z "$ytdl_output" ]; then
         #quiet mpvc get ytdl-raw-options || cat
         mpvcfzf_warn "$PROGNAME: Error cache not enabled: undefined ytdl-raw-options"
         if cat; then return; fi
@@ -191,8 +227,8 @@ mpvcfzf_icache()
     do
         url=$(echo "$line" | awk '/https:/ { gsub("watch\\?v=",""); print $1 }')
         vid=$(basename "$url")
-        file=$(find $ytdl_dir/ 2>/dev/null | awk "/$vid/ { print; exit }")
-        if [ -n "$url" -a -e "$file" ]; then
+        file=$(find "$ytdl_dir/" 2>/dev/null | awk "/$vid/ { print; exit }")
+        if [ -n "$url" ] && [ -e "$file" ]; then
             echo "$file"
         else
             echo "$line"
@@ -229,6 +265,10 @@ mpvcfzf_fetch()
     done
     "$ytdlp" $ytdl_opts ${YTDL_OPTS:-} "$@"
 }
+
+#
+# fzf wrappers
+#
 
 mpvcfzf_preview()
 {
@@ -286,7 +326,7 @@ mpvcfzf_playlist()
 mpvcfzf_chapterlist()
 {
     len=$(mpvc gets chapter-list/count)
-    ( if [ -z "$len" ]; then echo; else mpvc chapter-list-nr; fi) |
+    (if [ -z "$len" ]; then echo; else mpvc chapter-list-nr; fi) |
         mpvcfzf_preview --prompt="(chapter) " \
         --bind='ctrl-o:execute-silent(mpvc set chapter {1})' \
         --bind='ctrl-r:reload(mpvc chapter-list-nr)'
@@ -314,10 +354,11 @@ mpvcfzf_urlget()
     mpvcfzf_curl "$url" |
         awk -v url="$url" '
             /<a href=".*">.*<\/a>/ {
-                match(url, "https?://[^/]+/", host);
+                match(url, "https?://[^/]+/");
+                host = substr($0, RSTART, RLENGTH)
                 href=$0; sub("^.*href=\"", "", href) sub("\".*$", "", href)
-                if (href ~ "^/") href = host[0]"/"href
-                print (href !~ host[0]) ? url"/"href : href
+                if (href ~ "^/") href = host"/"href
+                print (href !~ host) ? url"/"href : href
             }
         '
 }
@@ -424,6 +465,25 @@ mpvcfzf_radioapi_search()
     jq -r -c '.[] | select( (.url|length) < 80 ) | (.url+";"+(.votes|tostring)+" "+.name)' "$file"
 }
 
+mpvcfzf_ntsradio()
+{
+    chan=${1:-}
+    if [ -n "$chan" ]; then
+        mpvcfzf_ntsradio_search | awk -F';' -v chan="$chan" '{ if(match($0,chan))print $1}' | mpvc load
+    else
+        mpvcfzf_ntsradio_search | column -s ';' -t | mpvcfzf_preview --prompt="(ntsradio) "
+    fi
+}
+
+mpvcfzf_ntsradio_search()
+{
+    url="https://www.nts.live/api/v2/live"
+    url="https://www.nts.live/api/v2/mixtapes"
+    file="$MPVC_FZF_NTSRADIO_FILE"
+    [ ! -s "$file" ] && mpvcfzf_curl -o "$file" "$url"
+    jq -r '.results | .[] | (.audio_stream_endpoint+";"+.title+";"+.subtitle+"\n")'  "$file"
+}
+
 mpvcfzf_now_geturls() { mpvc saven; }
 mpvcfzf_now_getvids() { echo "$@" | awk '/youtube|yewtu/ { sub("^.*/",""); sub(".*=",""); sub("^","\\&v="); printf $0; }'; }
 
@@ -436,8 +496,11 @@ mpvcfzf_now()
     list=$(mpvc fullplaylist)
 
     echo "$now?t=$date$vids"
-    echo
-    gawk -v u="$urls" -v l="$list" 'END{ split(u,au,"\n"); split(l,al,"\n"); for(u in au) {print au[u], al[u]}; }' /dev/null
+    if [ "$1" != "short" ]
+    then
+        echo
+        gawk -v u="$urls" -v l="$list" 'END{ split(u,au,"\n"); split(l,al,"\n"); for(u in au) {print au[u], al[u]}; }' /dev/null
+    fi
 }
 
 mpvcfzf_launch_term()
@@ -478,6 +541,7 @@ usage: $PROGNAME opts # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
     lofi     : Search & play Lo-Fi channels
     somafm   : Search & play SomaFM channels
     radioapi : Search & play Radio-Browser API channels
+    ntsradio : Search & play NTS-Radio API channels
 *tips: If unsure about where to begin, start: $PROGNAME -p 'kupla mirage'
 EOF
     exit;
@@ -503,11 +567,11 @@ main()
         -CC|cmds)   shift; mpvcfzf_cmds "$@"; return;;
 
         -d|dir)     shift; MPVC_DIR="$arg1"; cd "$MPVC_DIR" || return;;
-        -e|eqz)     shift; mpvcfzf_equalizer; return ;;
+        -e|eqz)     shift; mpvcfzf_equalizer "$@"; return ;;
         -f|playlist)shift; mpvcfzf_playlist; return ;;
         -F|preview) shift; mpvcfzf_preview "$@"; return ;;
         -g|fetch)   shift; mpvcfzf_fetch "$arg1"; return ;;
-        -G|Fetch)   shift; mpvcfzf_fetch $(mpvcfzf_iplay "$1"); return ;;
+        -G|Fetch)   shift; mpvcfzf_fetch "$(mpvcfzf_iplay "$1")"; return ;;
         -i|lyrics)  shift; mpvcfzf_lyrics "$arg1"; return ;;
         -L|Lyrics)  shift; mpvcfzf_lyrics_ddg; return ;;
         -k|dplay)   shift; mpvcfzf_ddg_play "$arg1"; return ;;
@@ -523,16 +587,19 @@ main()
         -p|splay)   shift; mpvcfzf_iplay "$arg1" | mpvc load; return ;;
         -P|Splay)   shift; mpvcfzf_iplay "$arg1" | mpvc loadc; return ;;
         -s|search)  shift; mpvcfzf_isearch "$arg1"; return;;
+        -u|url)     shift; mpvcfzf_csearch "$arg1"; return ;;
+        -U|Url)     shift; mpvcfzf_csearch_play "$arg1"; return ;;
         -x|launch)  shift; mpvcfzf_launch_term "$@"; exit ;;
         -y|related) shift; mpvcfzf_related_search "$arg1"; return ;;
         -Y|Related) shift; mpvcfzf_related_play "$arg1"; return ;;
         -z|relatedo)shift; mpvcfzf_related_once "$arg1"; return ;;
         -v|version) shift; mpvcfzf_version; return ;;
 
-        now)        shift; mpvcfzf_now; return ;;
+        now)        shift; mpvcfzf_now "${1:-}"; return ;;
         lofi)       shift; mpvcfzf_lofi "${1:-}"; return ;;
         somafm)     shift; mpvcfzf_somafm "${1:-}"; return ;;
         radioapi)   shift; mpvcfzf_radioapi "${1:-}"; return ;;
+        ntsradio)   shift; mpvcfzf_ntsradio "${1:-}"; return ;;
         #*)         shift; mpvcfzf_usage; return ;;
         esac
     done

@@ -96,9 +96,18 @@ mpris_detect_player()
 
 usage()
 {
-    echo "usage: $PROGNAME [prev|next|stop] # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL"
+    cat <<EOF
+usage: $PROGNAME opts # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
+ prev     : Jump to previous track
+ next     : Jump to next track
+ toggle   : Toggle MPRIS playing status
+ stop     : Pause MPRIS playing status
+ status   : Get MPRIS status
+ volstatus: Get pactl volume status
+*tips: If unsure about where to begin, start with: $PROGNAME status
+EOF
     if [ $# -gt 0 ]; then echo "$@" 1>&2; fi
-    exit
+    exit;
 }
 
 main()
@@ -107,9 +116,16 @@ main()
     if [ $# -lt 1 ]; then usage; fi
 
     mpris_name=$(mpris_detect_player)
-    if [ -z "${mpris_name}" ] && ! [ "$1" = "volstatus" -o "$1" = "volget" -o "$1" = "volset" -o "$1" = "volup" -o "$1" = "voldown" -o "$1" = "volon" -o "$1" = "voloff" -o "$1" = "volmute" ]; then
-        usage "$PROGNAME: Error no player found that speaks MPRIS. Check that you started mpv with mpris.so in ~/.config/mpv/scripts/";
-    fi
+    case "$1" in
+        volstatus|volget|volset|volup|voldown|volon|voloff|volmute) ;; # ignore
+        *)
+        if [ -z "${mpris_name}" ]; then
+            usage "$PROGNAME: Error no player found that speaks MPRIS. Check mpv started with mpris.so in ~/.config/mpv/scripts/";
+        fi
+    esac
+
+    volincr=0.1
+    sink=@DEFAULT_SINK@
 
     cmd="$1"
     case "$cmd" in
@@ -128,16 +144,17 @@ main()
     open)      shift; mpris_method OpenUri "string:$1" ;;
     #loop)      shift; mpris_get "string:LoopStatus" ;;
 
-    volon)     $PACTL set-sink-mute @DEFAULT_SINK@ off ;;
-    voloff)    $PACTL set-sink-mute @DEFAULT_SINK@ on  ;;
-    volmute)   $PACTL set-sink-mute @DEFAULT_SINK@ toggle || mpris_set_volume "$cmd" ;;
-    voldown)   $PACTL set-sink-volume @DEFAULT_SINK@ -250 || mpris_set_volume "$cmd" ;;
-    volup)     $PACTL set-sink-volume @DEFAULT_SINK@ +250 || mpris_set_volume "$cmd" ;;
-    volset)    $PACTL set-sink-volume @DEFAULT_SINK@ "${2:-}" || mpris_set_volume "$cmd" "${2:-}";;
-    volget)    $PACTL list sinks | awk '/^\s*Volume:/{print $5}';;
-    volstatus) $PACTL list sinks | awk '/^\s*Mute:/{print "mute:"$2}';;
+    volon)     $PACTL set-sink-mute $sink off ;;
+    voloff)    $PACTL set-sink-mute $sink on  ;;
+    volmute)   $PACTL set-sink-mute $sink toggle || mpris_set_volume "$cmd" ;;
+    voldown)   $PACTL set-sink-volume $sink "-${2:-$volincr}" || mpris_set_volume "$cmd" ;;
+    volup)     $PACTL set-sink-volume $sink "+${2:-$volincr}" || mpris_set_volume "$cmd" ;;
+    volset)    $PACTL set-sink-volume $sink "${2:-}" || mpris_set_volume "$cmd" "${2:-}";;
+    volget)    $PACTL list sinks | awk '/^\t+Volume:/{print $5}';;
+    volstatus) $PACTL list sinks | awk '/^\t+Mute:/{print "mute:"$2}';;
 
-    *) usage "$PROGNAME: unknown command: $cmd" ;;
+    help)      usage ;;
+    *)         usage "$PROGNAME: unknown command: $cmd" ;;
     esac
 }
 
