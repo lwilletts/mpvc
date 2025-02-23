@@ -31,6 +31,10 @@ mpvcfzf_defaults()
     MPVC_YTDL_OUTPUT=${MPVC_YTDL_OUTPUT:-}
     MPVC_TERM=${MPVC_TERM:-xterm}
 
+    MPVC_FZF_PARSE_VIDEO=${MPVC_FZF_PARSE_VIDEO:-1}
+    MPVC_FZF_PARSE_PLAYLIST=0
+    MPVC_FZF_PARSE_CHANNEL=${MPVC_FZF_PARSE_CHANNEL:-0}
+
     MPVC_FZF_SOMAFM_FILE="${MPVC_FZF_SOMAFM_FILE:-$MPVC_CONFIG_DIR/somafm-channels.json}"
     MPVC_FZF_RADIOAPI_FILE="${MPVC_FZF_RADIOAPI_FILE:-$MPVC_CONFIG_DIR/radioapi-stations.json}"
     MPVC_FZF_NTSRADIO_FILE="${MPVC_FZF_NTSRADIO_FILE:-$MPVC_CONFIG_DIR/ntsradio-channels.json}"
@@ -61,7 +65,11 @@ mpvcfzf_getvideo_id()
 
 mpvcfzf_cparse()
 {
-    awk -v video=1 -v playlist=0 -v channel=0 '
+    awk \
+        -v video=$MPVC_FZF_PARSE_VIDEO \
+        -v channel=$MPVC_FZF_PARSE_CHANNEL \
+        -v playlist=$MPVC_FZF_PARSE_PLAYLIST \
+        '
         /^.*<p dir="auto">/ {
             l=$0; gsub("^.*<p dir=\"auto\">","", l); gsub("</p>.*$","", l); vtitle=l
         }
@@ -531,6 +539,8 @@ usage: $PROGNAME opts # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
  -l|local    : Search & play local media
  -s|search   : Search on Invidious
  -p|splay    : Search & play media found using Invidious
+ -u|url      : Search the given YT URL
+ -U|Url      : Search & play the given YT URL
  -x|launch   : Starts $PROGNAME in a new $MPVC_TERM (config \$MPVC_TERM) [combine -x with other opts]
  -y|related  : Search related media on Invidious
  -Y|Related  : Search & play related media using Invidious
