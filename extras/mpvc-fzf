@@ -492,16 +492,15 @@ mpvcfzf_ntsradio_search()
     jq -r '.results | .[] | (.audio_stream_endpoint+";"+.title+";"+.subtitle+"\n")'  "$file"
 }
 
-mpvcfzf_now_geturls() { mpvc saven; }
 mpvcfzf_now_getvids() { echo "$@" | awk '/youtube|yewtu/ { sub("^.*/",""); sub(".*=",""); sub("^","\\&v="); printf $0; }'; }
 
 mpvcfzf_now()
 {
     date=$(date -Idate)
     now="https://gmt4.github.io/mpvc/now/"
-    urls=$(mpvcfzf_now_geturls)
+    urls=$(mpvc --nocolor saven)
+    list=$(mpvc --nocolor fullplaylist)
     vids=$(mpvcfzf_now_getvids "$urls")
-    list=$(mpvc fullplaylist)
 
     echo "$now?t=$date$vids"
     if [ "$1" != "short" ]
