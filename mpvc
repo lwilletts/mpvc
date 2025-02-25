@@ -861,10 +861,10 @@ mpvc_print_status() {
             gsub("%statuslofi%", "${?pause==yes:≡}${?pause==no:►}${!pause:NA}");
             gsub("%mutelofi%", "${?mute==yes:🔇}${?mute==no:🔊}${!mute:NA}");
 
-            gsub("%singlelofi%", "${?loop-file==inf:⇌}${!loop-file==inf:_}${!loop-file:NA}")
+            gsub("%singlelofi%", "${!loop-file==no:⇌}${?loop-file==no:_}${!loop-file:NA}")
             gsub("%repeatlofi%", "${?loop-playlist==inf:↻}${!loop-playlist==inf:_}${!loop-playlist:NA}")
-            gsub("%videolofi%", "${!video==no:📀}${?video==no:🎧}${!video:NA}")
             gsub("%idlelofi%", "${?idle==yes:∞}${!idle==yes:_}${!idle:NA}")
+            gsub("%videolofi%", "${!video==no:📀}${?video==no:🎧}${!video:NA}")
 
             gsub("%status%", "${?pause==yes:pause}${?pause==no:play}${!pause:NA}");
             gsub("%title%", "${media-title}")
