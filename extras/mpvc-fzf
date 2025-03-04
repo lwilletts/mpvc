@@ -596,6 +596,8 @@ main()
         -p|splay)   shift; mpvcfzf_iplay "$arg1" | mpvc load; return ;;
         -P|Splay)   shift; mpvcfzf_iplay "$arg1" | mpvc loadc; return ;;
         -s|search)  shift; mpvcfzf_isearch "$arg1"; return;;
+        -t|thumbnail) shift; mpvc ytqueryfield thumbnail_url "$arg1" ; return ;;
+        -T|Thumbnail) shift; mpvc ytqueryfield thumbnail_url "$(mpvc filename current full)"; return ;;
         -u|url)     shift; mpvcfzf_csearch "$arg1"; return ;;
         -U|Url)     shift; mpvcfzf_csearch_play "$arg1"; return ;;
         -x|launch)  shift; mpvcfzf_launch_term "$@"; exit ;;
