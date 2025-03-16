@@ -31,6 +31,8 @@ mpvcfzf_defaults()
     MPVC_YTDL_OUTPUT=${MPVC_YTDL_OUTPUT:-}
     MPVC_TERM=${MPVC_TERM:-xterm}
 
+    MPVC_FZF_BIND_HELP="C-u:go C-x:ls C-v:yt C-\\:fs C-s:chapter C-t:add C-o:play C-r:reload C-spc:toggle"
+
     MPVC_FZF_PARSE_VIDEO=${MPVC_FZF_PARSE_VIDEO:-1}
     MPVC_FZF_PARSE_PLAYLIST=0
     MPVC_FZF_PARSE_CHANNEL=${MPVC_FZF_PARSE_CHANNEL:-0}
@@ -288,7 +290,6 @@ mpvcfzf_fetch()
 
 mpvcfzf_preview()
 {
-    MPVC_FZF_BIND_HELP="C-u:go C-x:ls C-v:yt C-\\:fs C-s:chapter C-t:add C-o:play C-r:reload C-spc:toggle"
     # --bind='ctrl-d:execute(mpvc {q})'
     # --bind='left:execute-silent(mpvc -q seek -20 &)' \
     # --bind='right:execute-silent(mpvc -q seek +20 &)' \
@@ -393,10 +394,8 @@ mpvcfzf_cmds()
 
 mpvcfzf_equalizer()
 {
-    MPVC_FZF_BIND_HELP="C-x:list C-v:yt-dlp C-\\:local C-s:chapter C-t:add C-o:play C-r:reload C-spc:toggle"
     mpvc-equalizer preset |
         mpvcfzf_preview --prompt="(equalizer) " \
-        --header="$PROGNAME help: $MPVC_FZF_BIND_HELP" \
         --bind='ctrl-x:execute-silent(mpvc-equalizer dec {1} &)' \
         --bind='ctrl-v:execute-silent(mpvc-equalizer inc {1} &)' \
         --bind='ctrl-space:execute-silent(mpvc-equalizer reset)' \
@@ -483,21 +482,29 @@ mpvcfzf_radioapi_search()
 
 mpvcfzf_ntsradio()
 {
+    mpvcfzf_feeds "${1:-}" "$MPVC_FZF_NTSRADIO_FILE" "https://www.nts.live/api/v2/mixtapes"
+}
+
+mpvcfzf_feeds()
+{
     chan=${1:-}
+    file=${2:-}
+    url=${3:-}
     if [ -n "$chan" ]; then
-        mpvcfzf_ntsradio_search | awk -F';' -v chan="$chan" '{ if(match($0,chan))print $1}' | mpvc load
+        mpvcfzf_feeds_search "$file" "$url" | awk -F';' -v chan="$chan" '{ if(match($0,chan))print $1}' | mpvc load
     else
-        mpvcfzf_ntsradio_search | column -s ';' -t | mpvcfzf_preview --prompt="(ntsradio) "
+        mpvcfzf_feeds_search "$file" "$url" | column -s ';' -t |
+            mpvcfzf_preview --prompt="(feeds) " \
+            --bind='ctrl-u:execute(mpvc-fzf -U {+1})'
     fi
 }
 
-mpvcfzf_ntsradio_search()
+mpvcfzf_feeds_search()
 {
-    url="https://www.nts.live/api/v2/live"
-    url="https://www.nts.live/api/v2/mixtapes"
-    file="$MPVC_FZF_NTSRADIO_FILE"
+    file="$1"
+    url="$2"
     [ ! -s "$file" ] && mpvcfzf_curl -o "$file" "$url"
-    jq -r '.results | .[] | (.audio_stream_endpoint+";"+.title+";"+.subtitle+"\n")'  "$file"
+    jq -r '.results | .[] | (.audio_stream_endpoint+";"+.title+";"+.subtitle+"\n")' "$file"
 }
 
 mpvcfzf_now_getvids() { echo "$@" | awk '/youtube|yewtu/ { sub("^.*/",""); sub(".*=",""); sub("^","\\&v="); printf $0; }'; }
@@ -532,8 +539,8 @@ mpvcfzf_usage()
 {
     cat <<EOF
 usage: $PROGNAME opts # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
- -a|stash    : Search & play previously saved stashes
- -b|browse   : Browse the provided ytdl-archive URL with fzf
+ -a|stash    : Start fzf to manage mpvc stashes
+ -b|browse   : Start fzf to manage the provided ytdl-archive URL
  -c|chapters : Start fzf to manage the current mpv chapterlist
  -d|dir      : Set the WD to the media directory given as argument
  -e|eqz      : Start fzf to manage the equalizer settings
@@ -548,7 +555,7 @@ usage: $PROGNAME opts # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
  -t|thumbnail: Retrieve thumbnail_url from metadata of the provided YT-URL
  -T|Thumbnail: Retrieve thumbnail_url from metadata of the current YT-URL
  -p|splay    : Search & play media found using Invidious
- -u|url      : Search the given YT URL
+ -u|url      : Search the given YT URL (supports vids,channels,playlist feeds)
  -U|Url      : Search & play the given YT URL
  -x|launch   : Starts $PROGNAME in a new $MPVC_TERM (config \$MPVC_TERM) [combine -x with other opts]
  -y|related  : Search related media on Invidious
@@ -561,6 +568,7 @@ usage: $PROGNAME opts # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
     somafm   : Search & play SomaFM channels
     radioapi : Search & play Radio-Browser API channels
     ntsradio : Search & play NTS-Radio API channels
+    feeds    : Search & play feeds channels (args: \$chan \$file \$url)
 *tips: If unsure about where to begin, start: $PROGNAME -p 'kupla mirage'
 EOF
     exit;
@@ -621,6 +629,7 @@ main()
         somafm)     shift; mpvcfzf_somafm "${1:-}"; return ;;
         radioapi)   shift; mpvcfzf_radioapi "${1:-}"; return ;;
         ntsradio)   shift; mpvcfzf_ntsradio "${1:-}"; return ;;
+        feeds)      shift; mpvcfzf_feeds "$@"; return ;;
         #*)         shift; mpvcfzf_usage; return ;;
         esac
     done
