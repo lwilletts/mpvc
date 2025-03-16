@@ -110,6 +110,11 @@ EOF
     exit;
 }
 
+pactl_quiet()
+{
+    $PACTL "$@" 2>/dev/null
+}
+
 main()
 {
     mpris_defaults
@@ -144,14 +149,14 @@ main()
     open)      shift; mpris_method OpenUri "string:$1" ;;
     #loop)      shift; mpris_get "string:LoopStatus" ;;
 
-    volon)     $PACTL set-sink-mute $sink off ;;
-    voloff)    $PACTL set-sink-mute $sink on  ;;
-    volmute)   $PACTL set-sink-mute $sink toggle || mpris_set_volume "$cmd" ;;
-    voldown)   $PACTL set-sink-volume $sink "-${2:-$volincr}" || mpris_set_volume "$cmd" ;;
-    volup)     $PACTL set-sink-volume $sink "+${2:-$volincr}" || mpris_set_volume "$cmd" ;;
-    volset)    $PACTL set-sink-volume $sink "${2:-}" || mpris_set_volume "$cmd" "${2:-}";;
-    volget)    $PACTL list sinks | awk '/^\t+Volume:/{print $5}';;
-    volstatus) $PACTL list sinks | awk '/^\t+Mute:/{print "mute:"$2}';;
+    volon)     pactl_quiet set-sink-mute $sink off ;;
+    voloff)    pactl_quiet set-sink-mute $sink on  ;;
+    volmute)   pactl_quiet set-sink-mute $sink toggle || mpris_set_volume "$cmd" ;;
+    voldown)   pactl_quiet set-sink-volume $sink "-${2:-$volincr}" || mpris_set_volume "$cmd" ;;
+    volup)     pactl_quiet set-sink-volume $sink "+${2:-$volincr}" || mpris_set_volume "$cmd" ;;
+    volset)    pactl_quiet set-sink-volume $sink "${2:-}" || mpris_set_volume "$cmd" "${2:-}";;
+    volget)    pactl_quiet list sinks | awk '/^\t+Volume:/{print $5}';;
+    volstatus) pactl_quiet list sinks | awk '/^\t+Mute:/{print "mute:"$2}';;
 
     help)      usage ;;
     *)         usage "$PROGNAME: unknown command: $cmd" ;;
