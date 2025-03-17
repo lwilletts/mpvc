@@ -437,63 +437,16 @@ mpvcfzf_ddg()
         }'
 }
 
-mpvcfzf_lofi()
-{
-    mpvcfzf_urlbrowser "${1:-https://lofigirl.com/wp-content/uploads/2023/06/}"
-}
-
-mpvcfzf_somafm()
-{
-    chan=${1:-}
-    if [ -n "$chan" ]; then
-        mpvcfzf_somafm_search | awk -F';' -v chan="$chan" '{ if(match($0,chan))print $1}' | mpvc load
-    else
-        mpvcfzf_somafm_search | column -s ';' -t | mpvcfzf_preview --prompt="(somafm) "
-    fi
-}
-
-mpvcfzf_somafm_search()
-{
-    url="https://somafm.com/channels.json"
-    file="$MPVC_FZF_SOMAFM_FILE"
-    [ ! -s "$file" ] && mpvcfzf_curl -o "$file" "$url"
-    jq -r --argjson quality 3 '
-        .channels | sort_by(.listeners | tonumber) | reverse | .[] |
-            (.playlists[$quality]|.url) + ";" + .listeners + " ls "+.genre+";"+ .title' "$file"
-}
-
-mpvcfzf_radioapi()
-{
-    chan=${1:-}
-    if [ -n "$chan" ]; then
-        mpvcfzf_radioapi_search | awk -F';' -v chan="$chan" '{ if(match($0,chan))print $1}' | mpvc load
-    else
-        mpvcfzf_radioapi_search | column -s ';' -t | mpvcfzf_preview --prompt="(radioapi) "
-    fi
-}
-
-mpvcfzf_radioapi_search()
-{
-    url="https://nl1.api.radio-browser.info/json/stations/topvote"
-    file="$MPVC_FZF_RADIOAPI_FILE"
-    [ ! -s "$file" ] && mpvcfzf_curl --retry 2 -d hidebroken=true -d limit=4096 -o "$file" "$url"
-    jq -r -c '.[] | select( (.url|length) < 80 ) | (.url+";"+(.votes|tostring)+" "+.name)' "$file"
-}
-
-mpvcfzf_ntsradio()
-{
-    mpvcfzf_feeds "${1:-}" "$MPVC_FZF_NTSRADIO_FILE" "https://www.nts.live/api/v2/mixtapes"
-}
-
 mpvcfzf_feeds()
 {
-    chan=${1:-}
-    file=${2:-}
-    url=${3:-}
+    chan="${1:-}"
+    file="${2:-}"
+    url="${3:-}"
+    jq="${4:-}"
     if [ -n "$chan" ]; then
-        mpvcfzf_feeds_search "$file" "$url" | awk -F';' -v chan="$chan" '{ if(match($0,chan))print $1}' | mpvc load
+        mpvcfzf_feeds_search "$file" "$url" "$jq" | awk -F';' -v chan="$chan" '{ if(match($0,chan))print $1}' | mpvc load
     else
-        mpvcfzf_feeds_search "$file" "$url" | column -s ';' -t |
+        mpvcfzf_feeds_search "$file" "$url" "$jq" | column -s ';' -t |
             mpvcfzf_preview --prompt="(feeds) " \
             --bind='ctrl-u:execute(mpvc-fzf -U {+1})'
     fi
@@ -503,8 +456,29 @@ mpvcfzf_feeds_search()
 {
     file="$1"
     url="$2"
+    jq="$3"
     [ ! -s "$file" ] && mpvcfzf_curl -o "$file" "$url"
-    jq -r '.results | .[] | (.audio_stream_endpoint+";"+.title+";"+.subtitle+"\n")' "$file"
+    jq -r "$jq" "$file"
+}
+
+mpvcfzf_lofi()
+{
+    mpvcfzf_urlbrowser "${1:-https://lofigirl.com/wp-content/uploads/2023/06/}"
+}
+
+mpvcfzf_somafm()
+{
+    mpvcfzf_feeds "${1:-}" "$MPVC_FZF_SOMAFM_FILE" "https://somafm.com/channels.json" '.channels | sort_by(.listeners | tonumber) | reverse | .[] | (.playlists[3]|.url) + ";" + .listeners + " ls "+.genre+";"+ .title' 
+}
+
+mpvcfzf_radioapi()
+{
+    mpvcfzf_feeds "${1:-}" "$MPVC_FZF_RADIOAPI_FILE" "https://nl1.api.radio-browser.info/json/stations/topvote" '.[] | select( (.url|length) < 80 ) | (.url+";"+(.votes|tostring)+" "+.name)'
+}
+
+mpvcfzf_ntsradio()
+{
+    mpvcfzf_feeds "${1:-}" "$MPVC_FZF_NTSRADIO_FILE" "https://www.nts.live/api/v2/mixtapes" '.results | .[] | (.audio_stream_endpoint+";"+.title+";"+.subtitle+"\n")' 
 }
 
 mpvcfzf_now_getvids() { echo "$@" | awk '/youtube|yewtu/ { sub("^.*/",""); sub(".*=",""); sub("^","\\&v="); printf $0; }'; }
