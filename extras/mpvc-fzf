@@ -34,12 +34,13 @@ mpvcfzf_defaults()
     MPVC_FZF_BIND_HELP="C-u:go C-x:ls C-v:yt C-\\:fs C-s:chapter C-t:add C-o:play C-r:reload C-spc:toggle"
 
     MPVC_FZF_PARSE_VIDEO=${MPVC_FZF_PARSE_VIDEO:-1}
-    MPVC_FZF_PARSE_PLAYLIST=0
     MPVC_FZF_PARSE_CHANNEL=${MPVC_FZF_PARSE_CHANNEL:-0}
+    MPVC_FZF_PARSE_PLAYLIST=${MPVC_FZF_PARSE_PLAYLIST:-0}
 
-    MPVC_FZF_SOMAFM_FILE="${MPVC_FZF_SOMAFM_FILE:-$MPVC_CONFIG_DIR/somafm-channels.json}"
-    MPVC_FZF_RADIOAPI_FILE="${MPVC_FZF_RADIOAPI_FILE:-$MPVC_CONFIG_DIR/radioapi-channels.json}"
-    MPVC_FZF_NTSRADIO_FILE="${MPVC_FZF_NTSRADIO_FILE:-$MPVC_CONFIG_DIR/ntsradio-channels.json}"
+    MPVC_FZF_SOMAFM_FILE="${MPVC_FZF_SOMAFM_FILE:-$MPVC_CONFIG_DIR/feeds/somafm-channels.json}"
+    MPVC_FZF_RADIOAPI_FILE="${MPVC_FZF_RADIOAPI_FILE:-$MPVC_CONFIG_DIR/feeds/radioapi-channels.json}"
+    MPVC_FZF_NTSRADIO_FILE="${MPVC_FZF_NTSRADIO_FILE:-$MPVC_CONFIG_DIR/feeds/ntsradio-channels.json}"
+    MPVC_FZF_CUSTOM_FILE="${MPVC_FZF_CUSTOM_FILE:-$MPVC_CONFIG_DIR/feeds/custom-channels.json}"
     #mpvc -q
 }
 
@@ -47,6 +48,7 @@ mpvcfzf_config()
 {
     mpvcfzf_defaults
     if [ ! -d "$MPVC_CONFIG_DIR" ]; then mkdir -p "$MPVC_CONFIG_DIR"; fi
+    if [ ! -d "$MPVC_CONFIG_DIR/feeds/" ]; then mkdir -p "$MPVC_CONFIG_DIR/feeds/"; fi
     # if present load user config
     if [ -r "$MPVC_CONFIG" ]; then . "$MPVC_CONFIG"; fi
     if ! quiet command -v fzf; then
@@ -461,24 +463,29 @@ mpvcfzf_feeds_search()
     jq -r "$jq" "$file"
 }
 
-mpvcfzf_lofi()
+mpvcfzf_feed_lofi()
 {
     mpvcfzf_urlbrowser "${1:-https://lofigirl.com/wp-content/uploads/2023/06/}"
 }
 
-mpvcfzf_somafm()
+mpvcfzf_feed_somafm()
 {
-    mpvcfzf_feeds "${1:-}" "$MPVC_FZF_SOMAFM_FILE" "https://somafm.com/channels.json" '.channels | sort_by(.listeners | tonumber) | reverse | .[] | (.playlists[3]|.url) + ";" + .listeners + " ls "+.genre+";"+ .title' 
+    mpvcfzf_feeds "${1:-}" "$MPVC_FZF_SOMAFM_FILE" "https://somafm.com/channels.json" '.channels | sort_by(.listeners | tonumber) | reverse | .[] | (.playlists[3]|.url) + ";" + .listeners + " ls "+.genre+";"+ .title'
 }
 
-mpvcfzf_radioapi()
+mpvcfzf_feed_radioapi()
 {
     mpvcfzf_feeds "${1:-}" "$MPVC_FZF_RADIOAPI_FILE" "https://nl1.api.radio-browser.info/json/stations/topvote?hidebroken=true&limit=4096" '.[] | select( (.url|length) < 80 ) | (.url+";"+(.votes|tostring)+" "+.name)'
 }
 
-mpvcfzf_ntsradio()
+mpvcfzf_feed_ntsradio()
 {
-    mpvcfzf_feeds "${1:-}" "$MPVC_FZF_NTSRADIO_FILE" "https://www.nts.live/api/v2/mixtapes" '.results | .[] | (.audio_stream_endpoint+";"+.title+";"+.subtitle+"\n")' 
+    mpvcfzf_feeds "${1:-}" "$MPVC_FZF_NTSRADIO_FILE" "https://www.nts.live/api/v2/mixtapes" '.results | .[] | (.audio_stream_endpoint+";"+.title+";"+.subtitle+"\n")'
+}
+
+mpvcfzf_feed_custom()
+{
+    mpvcfzf_feeds "${1:-}" "$MPVC_FZF_CUSTOM_FILE" "https://www.nts.live/api/v2/mixtapes" '.results | .[] | (.audio_stream_endpoint+";"+.title+";"+.subtitle+"\n")'
 }
 
 mpvcfzf_now_getvids() { echo "$@" | awk '/youtube|yewtu/ { sub("^.*/",""); sub(".*=",""); sub("^","\\&v="); printf $0; }'; }
@@ -542,7 +549,7 @@ usage: $PROGNAME opts # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
     somafm   : Search & play SomaFM channels
     radioapi : Search & play Radio-Browser API channels
     ntsradio : Search & play NTS-Radio API channels
-    feeds    : Search & play feeds channels (args: \$chan \$file \$url)
+    custom   : Search & play your custom feeds (channels, playlists, ...)
 *tips: If unsure about where to begin, start: $PROGNAME -p 'kupla mirage'
 EOF
     exit;
@@ -599,11 +606,11 @@ main()
         -v|version) shift; mpvcfzf_version; return ;;
 
         now)        shift; mpvcfzf_now "${1:-}"; return ;;
-        lofi)       shift; mpvcfzf_lofi "${1:-}"; return ;;
-        somafm)     shift; mpvcfzf_somafm "${1:-}"; return ;;
-        radioapi)   shift; mpvcfzf_radioapi "${1:-}"; return ;;
-        ntsradio)   shift; mpvcfzf_ntsradio "${1:-}"; return ;;
-        feeds)      shift; mpvcfzf_feeds "$@"; return ;;
+        lofi)       shift; mpvcfzf_feed_lofi "${1:-}"; return ;;
+        somafm)     shift; mpvcfzf_feed_somafm "${1:-}"; return ;;
+        radioapi)   shift; mpvcfzf_feed_radioapi "${1:-}"; return ;;
+        ntsradio)   shift; mpvcfzf_feed_ntsradio "${1:-}"; return ;;
+        custom)     shift; mpvcfzf_feed_custom "$@"; return ;;
         #*)         shift; mpvcfzf_usage; return ;;
         esac
     done
