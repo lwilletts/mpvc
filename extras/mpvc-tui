@@ -141,18 +141,19 @@ mpvctui_tips()
 
 mpvctui_watcher()
 {
+    chapters=$(mpvc get chapters)
     mpvctui_header0 "${MPVC_TUI_HEADER0}$(mpvctui_tips)"
-    if [ $(mpvc get chapters) -eq 0 ]
+    if [ "$chapters" != "null" ] && [ "$chapters" -ne 0 ]
     then
-        mpvctui_header1 "Status"
-        mpvc "${MPVC_CMD_STATUS}"
-        mpvctui_header1 "Playlist"
-        mpvc "${MPVC_CMD_PLAYLIST}"
-    else
         mpvctui_header1 "Chapter Status"
         mpvc "${MPVC_CMD_CSTATUS}"
         mpvctui_header1 "Chapterlist"
         mpvc "${MPVC_CMD_CHAPTERLIST}"
+    else
+        mpvctui_header1 "Status"
+        mpvc "${MPVC_CMD_STATUS}"
+        mpvctui_header1 "Playlist"
+        mpvc "${MPVC_CMD_PLAYLIST}"
     fi
     mpvctui_header1 "Prompt"
 }
