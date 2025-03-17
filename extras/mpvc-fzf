@@ -38,7 +38,7 @@ mpvcfzf_defaults()
     MPVC_FZF_PARSE_CHANNEL=${MPVC_FZF_PARSE_CHANNEL:-0}
 
     MPVC_FZF_SOMAFM_FILE="${MPVC_FZF_SOMAFM_FILE:-$MPVC_CONFIG_DIR/somafm-channels.json}"
-    MPVC_FZF_RADIOAPI_FILE="${MPVC_FZF_RADIOAPI_FILE:-$MPVC_CONFIG_DIR/radioapi-stations.json}"
+    MPVC_FZF_RADIOAPI_FILE="${MPVC_FZF_RADIOAPI_FILE:-$MPVC_CONFIG_DIR/radioapi-channels.json}"
     MPVC_FZF_NTSRADIO_FILE="${MPVC_FZF_NTSRADIO_FILE:-$MPVC_CONFIG_DIR/ntsradio-channels.json}"
     #mpvc -q
 }
@@ -473,7 +473,7 @@ mpvcfzf_somafm()
 
 mpvcfzf_radioapi()
 {
-    mpvcfzf_feeds "${1:-}" "$MPVC_FZF_RADIOAPI_FILE" "https://nl1.api.radio-browser.info/json/stations/topvote" '.[] | select( (.url|length) < 80 ) | (.url+";"+(.votes|tostring)+" "+.name)'
+    mpvcfzf_feeds "${1:-}" "$MPVC_FZF_RADIOAPI_FILE" "https://nl1.api.radio-browser.info/json/stations/topvote?hidebroken=true&limit=4096" '.[] | select( (.url|length) < 80 ) | (.url+";"+(.votes|tostring)+" "+.name)'
 }
 
 mpvcfzf_ntsradio()
