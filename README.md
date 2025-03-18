@@ -172,7 +172,7 @@ nix-env -i mpvc
 ### mpvc
 
 ```console
-usage: mpvc opts # @version v1.6 (c) gmt4 https://github.com/gmt4/mpvc
+usage: mpvc opts # @version v1.7 (c) gmt4 https://github.com/gmt4/mpvc
  -a | --add | add         : Add media to playlist (see --load for stdin).
  -r | --remove | rm       : Remove media by id from playlist (see searchrm for rm by title)
  -s | --stop | stop       : Always stop playback.
@@ -191,7 +191,7 @@ usage: mpvc opts # @version v1.6 (c) gmt4 https://github.com/gmt4/mpvc
 ### mpvc-tui
 
 ```console
-usage: mpvc-tui opts # @version v1.6 (c) gmt4 https://github.com/gmt4/mpvc
+usage: mpvc-tui opts # @version v1.7 (c) gmt4 https://github.com/gmt4/mpvc
  -d|dir     : Set the WD to the media directory given as argument
  -n|notify  : Desktop notification using notify on mpvc events (notify-send*)
  -s|suggest : Suggest a random media to play based on previous media played
@@ -207,8 +207,9 @@ usage: mpvc-tui opts # @version v1.6 (c) gmt4 https://github.com/gmt4/mpvc
 ### mpvc-fzf
 
 ```console
-usage: mpvc-fzf opts # @version v1.6 (c) gmt4 https://github.com/gmt4/mpvc
- -b|browse   : Browse the provided ytdl-archive URL with fzf
+usage: mpvc-fzf opts # @version v1.7 (c) gmt4 https://github.com/gmt4/mpvc
+ -a|stash    : Start fzf to manage mpvc stashes
+ -b|browse   : Start fzf to manage the provided ytdl-archive URL
  -c|chapters : Start fzf to manage the current mpv chapterlist
  -d|dir      : Set the WD to the media directory given as argument
  -e|eqz      : Start fzf to manage the equalizer settings
@@ -220,15 +221,23 @@ usage: mpvc-fzf opts # @version v1.6 (c) gmt4 https://github.com/gmt4/mpvc
  -K|dsearch  : Search DuckDuckGo videos
  -l|local    : Search & play local media
  -s|search   : Search on Invidious
+ -t|thumbnail: Retrieve thumbnail_url from metadata of the current YT-URL
+ -T|Thumbnail: Retrieve thumbnail_url from metadata of the provided YT-URL
  -p|splay    : Search & play media found using Invidious
+ -u|url      : Search the given YT URL (supports vids,channels,playlist feeds)
+ -U|Url      : Search & play the given YT URL
+ -x|launch   : Starts mpvc-fzf in a new xterm (config $MPVC_TERM) [combine -x with other opts]
  -y|related  : Search related media on Invidious
  -Y|Related  : Search & play related media using Invidious
- -x|launch   : Starts mpvc-fzf in a new xterm (config $MPVC_TERM) [combine -x with other opts]
+ -z|relatedo : Search current media-title on Invidious and return related media
  -v|version  : Return the mpvc-fzf version.
- now         : Return a shareable URL to the now listening playlist
- lofi        : Search & play Lo-Fi channels
- somafm      : Search & play SomaFM channels
- radioapi    : Search & play Radio-Browser API channels
+
+    now      : Return a shareable URL to the "now listening" playlist
+    lofi     : Search & play Lo-Fi channels
+    somafm   : Search & play SomaFM channels
+    radioapi : Search & play Radio-Browser API channels
+    ntsradio : Search & play NTS-Radio API channels
+    custom   : Search & play your custom feeds (channels, playlists, ...)
 *tips: If unsure about where to begin, start: mpvc-fzf -p 'kupla mirage'
 ```
 
