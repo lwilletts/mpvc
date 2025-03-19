@@ -31,7 +31,7 @@ mpvcfzf_defaults()
     MPVC_YTDL_OUTPUT=${MPVC_YTDL_OUTPUT:-}
     MPVC_TERM=${MPVC_TERM:-xterm}
 
-    MPVC_FZF_BIND_HELP="C-u:go C-x:ls C-v:yt C-\\:fs C-s:chapter C-t:add C-o:play C-r:reload C-spc:toggle"
+    MPVC_FZF_BIND_HELP="C-u:go C-x:ls C-v:yt C-\\:fs C-s:ch C-t:add C-o:play C-r:reload C-spc:toggle"
 
     MPVC_FZF_PARSE_VIDEO=${MPVC_FZF_PARSE_VIDEO:-1}
     MPVC_FZF_PARSE_CHANNEL=${MPVC_FZF_PARSE_CHANNEL:-0}
@@ -139,7 +139,7 @@ mpvcfzf_isearch_once()
 mpvcfzf_isearch()
 {
     url_host="${url_host:-yewtu.be}"
-    url_sort="sort=relevance" # relevance views date
+    url_sort="${url_sort:-sort=relevance}" # relevance views date
     url_query="q=$(for f in $@; do printf "%s+" "$f"; done)"
     url_search="https://${url_host}/search?$url_query&$url_sort"
 
