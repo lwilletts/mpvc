@@ -277,6 +277,7 @@ mpvc_getjson() {
 
 mpvc_socklist() {
     for f in $(find "$MPVC_CONFIG_DIR" -type s); do
+        if [ ! -S "$f" ]; then continue; fi
         echo "$f:	idle-active=$(MPVC_SOCKET=$f mpvc_get idle-active)"
     done
 }
@@ -537,7 +538,7 @@ mpvc_stash() {
         load|append)
             # apply a stash while keeping the current playlist (append to playlist)
             RE='^mpvc cmd \(playlist-clear\|playlist-remove 0\)$\|^mpvc set \(playlist-pos\|playback-time\) [.0-9]\+$'
-            grep -v "$RE" $([ -n "$1" ] && echo "$MPVC_STASH_DIR/$1") | mpvc_stash apply_current
+            grep -v "$RE" "$([ -n "$1" ] && echo "$MPVC_STASH_DIR/$1")" | mpvc_stash apply_current
             ;;
         replay)
             mpvc_stash current "replay" | mpvc_buffer_stdin | mpvc_stash apply
@@ -1034,7 +1035,7 @@ main() {
         if [ $# -eq 0 ]; then break; fi
         case "${1:-}" in
             # mpc compatibility layer
-            play|start|resume)
+            start|resume)
                 shift
                 case "${1:-}" in
                     '') ;;
@@ -1043,6 +1044,7 @@ main() {
                 esac
                 mpvc_always_play
             ;;
+
             vol|volume)     shift; mpvc_set_volume "${1:-}" ;;
             repeat)         shift; mpvc_toggle_loop "loop-playlist" "${1:-}" ;;
             single)         shift; mpvc_toggle_loop "loop-file" "${1:-}" ;;
@@ -1052,19 +1054,20 @@ main() {
             move|mv)        shift; mpvc_move_track "${1:-}" "${2:-}" ;;
             mute)           mpvc_set "mute" "yes" ;;
             unmute)         mpvc_set "mute" "no" ;;
+
             pretty)         die 1 "$PROGNAME: Error $* not implemented" ;;
             find)           die 1 "$PROGNAME: Error $* not implemented" ;;
+            # random) MPV doesn't have this control option!
+            # consume) to implement # add on|off toggle
 
             -a|--add|add)            shift; mpvc_appendtracks "$@"; ;;
             -A|--playnext|playnext)  shift; mpvc_play_next "$@" ;;
             -n|--playnow|playnow)    shift; mpvc_play_now "$@" ;;
                --playrand|playrand)  shift; mpvc_play_random "$@" ;;
-            #replace|--replace) shift; mpvc_replacetracks "$@" ;;
-
-            # consume) to implement # add on|off toggle
-            # random) MPV doesn't have this control option!
 
             # GNU-style options
+            -s|--stop|stop)                  mpvc_set "pause" "yes"; mpvc_set_time "absolute" 0 ;;
+            -P|--play|play)                  shift; mpvc_set_track "${1:-}" absolute; mpvc_always_play ;;
             --seekrand|seekrand)             shift; mpvc_seek_random;;
             -t|--seek|seek)                  shift; mpvc_set_time "relative" "${1:-}" ;;
             -T|--time|time)                  shift; mpvc_set_time "absolute" "${1:-}" ;;
@@ -1138,8 +1141,6 @@ main() {
 
             -k|--kill|kill)                  mpvc_ecmdr "quit"; QUIETFLAG=true ;;
             -K|--killall|killall)            quiet pkill -9 -f "$MPVC_MPV "; QUIETFLAG=true ;;
-            -s|--stop|stop)                  mpvc_set "pause" "yes"; mpvc_set_time "absolute" 0 ;;
-            -P|--play|play)                  mpvc_always_play ;;
             -p|--toggle|toggle)              mpvc_cycle "pause" ;;
             -m|--mute)                       mpvc_cycle "mute"                ;;
             -i|--playlist|playlist)          mpvc_get_playlist "";            ;;
