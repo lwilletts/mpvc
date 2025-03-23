@@ -23,11 +23,11 @@ usage: $PROGNAME opts # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
  -s | --stop | stop       : Always stop playback.
  -P | --play | play       : Always start playback.
  -p | --toggle            : Toggle playback.
-    | --next              : Jump to next entry in the playlist
-    | --prev              : Jump to previous entry in the playlist
+    | --next | next       : Jump to next entry in the playlist
+    | --prev | prev       : Jump to previous entry in the playlist
  -i | --playlist          : Print filenames of tracks to fit within terminal.
  -I | --fullplaylist      : Print all filenames of tracks in current playlist.
- -v | --vol               : Increase/decrease volume relative to current volume.
+ -v | --vol | vol         : Increase/decrease volume relative to current volume.
  -h | --help              : Prints the short help.
  -H | --help-long         : Prints the long help.
 EOF
@@ -494,11 +494,11 @@ mpvc_stash() {
             while read -r line; do
                 case "$line" in
                     "# $PROGNAME "*) quietcheck warn "$line" ;;
-                    "mpvc --mpv")    quietcheck mpvc_mpv ;;
-                    "mpvc --wait")   quietcheck mpvc_wait ;;
+                    #"mpvc --mpv")    quietcheck mpvc_mpv ;;
+                    #"mpvc --wait")   quietcheck mpvc_wait ;;
+                    #"mpvc cmd "*)    quietcheck mpvc_cmd ${line##mpvc cmd } ;;
                     "mpvc mpv")      quietcheck mpvc_mpv ;;
                     "mpvc wait")     quietcheck mpvc_wait ;;
-                    #"mpvc cmd "*)    quietcheck mpvc_cmd ${line##mpvc cmd } ;;
                     "mpvc cmd playlist-clear")    quietcheck mpvc_cmd playlist-clear ;;
                     "mpvc cmd playlist-remove 0") quietcheck mpvc_cmd playlist-remove 0 ;;
                     "mpvc set "*)    quietcheck mpvc_set ${line##mpvc set } || true ;;
@@ -1038,16 +1038,14 @@ main() {
             repeat)         shift; mpvc_toggle_loop "loop-playlist" "${1:-}" ;;
             single)         shift; mpvc_toggle_loop "loop-file" "${1:-}" ;;
             pause)          mpvc_set "pause" "yes" ;;
-            next|--next)    mpvc_set_track 1 relative ;;
-            prev|--prev)    mpvc_set_track -1 relative;;
+            --next|next)    mpvc_set_track 1 relative ;;
+            --prev|prev)    mpvc_set_track -1 relative;;
             move|mv)        shift; mpvc_move_track "${1:-}" "${2:-}" ;;
             mute)           mpvc_set "mute" "yes" ;;
             unmute)         mpvc_set "mute" "no" ;;
 
             pretty)         die 1 "$PROGNAME: Error $* not implemented" ;;
             find)           die 1 "$PROGNAME: Error $* not implemented" ;;
-            # random) MPV doesn't have this control option!
-            # consume) to implement # add on|off toggle
 
             -a|--add|add)            shift; mpvc_appendtracks "$@"; ;;
             -A|--playnext|playnext)  shift; mpvc_play_next "$@" ;;
