@@ -1060,8 +1060,8 @@ main() {
             --seekrand|seekrand)             shift; mpvc_seek_random;;
             -t|--seek|seek)                  shift; mpvc_set_time "relative" "${1:-}" ;;
             -T|--time|time)                  shift; mpvc_set_time "absolute" "${1:-}" ;;
-            -v|--vol)                        shift; mpvc_add "volume" "${1:-}"  ;;
-            -V|--volume|volume|vol)          shift; mpvc_set "volume" "${1:-}"  ;;
+            -v|--vol|vol)                    shift; mpvc_set_volume "${1:-}"  ;;
+            -V|--volume|volume)              shift; mpvc_set_volume "${1:-}"  ;;
             -x|--speed|speed)                shift; mpvc_add "speed" "${1:-}"  ;;
             -X|--speedval)                   shift; mpvc_set "speed" "${1:-}"  ;;
             -j|--track|track)                shift; mpvc_set_track "${1:-}" relative  ;;
