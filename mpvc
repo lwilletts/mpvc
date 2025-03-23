@@ -623,14 +623,16 @@ mpvc_set_time() {
 }
 
 mpvc_set_track() {
-    isInt "$1" || return 1
+    track="$1"
+    isInt "$track" || [ "$track" = "$" ] || return 1
     lpos=$(mpvc_get playlist-pos)
     lcount=$(mpvc_get playlist-count)
     if [ "$lcount" = "0" ]; then return; fi
     if [ "$lpos" = "null" ]; then lpos=0; fi
+    if [ "$track" = "$" ]; then track="$(( lcount - 1 ))"; fi
     case "$2" in
-        absolute) newpos=$(( $1 % lcount )) ;;
-        relative) newpos=$(( (lpos + $1) % lcount )) ;;
+        absolute) newpos=$(( track % lcount )) ;;
+        relative) newpos=$(( (lpos + track) % lcount )) ;;
     esac
     mpvc_set "playlist-pos" "$newpos"
 }
@@ -1037,16 +1039,6 @@ main() {
         if [ $# -eq 0 ]; then break; fi
         case "${1:-}" in
             # mpc compatibility layer
-            start|resume)
-                shift
-                case "${1:-}" in
-                    '') ;;
-                    $) mpvc_set_track "$(( $(mpvc_get playlist-count) - 1 ))" absolute;;
-                    *) mpvc_set_track "${1:-}" absolute;;
-                esac
-                mpvc_always_play
-            ;;
-
             repeat)         shift; mpvc_toggle_loop "loop-playlist" "${1:-}" ;;
             single)         shift; mpvc_toggle_loop "loop-file" "${1:-}" ;;
             pause)          mpvc_set "pause" "yes" ;;
@@ -1068,7 +1060,7 @@ main() {
 
             # GNU-style options
             -s|--stop|stop)                  mpvc_set "pause" "yes"; mpvc_set_time "absolute" 0 ;;
-            -P|--play|play)                  shift; mpvc_set_track "${1:-}" absolute; mpvc_always_play ;;
+            -P|--play|play|start|resume)     shift; mpvc_set_track "${1:-}" absolute; mpvc_always_play ;;
             --seekrand|seekrand)             shift; mpvc_seek_random;;
             -t|--seek|seek)                  shift; mpvc_set_time "relative" "${1:-}" ;;
             -T|--time|time)                  shift; mpvc_set_time "absolute" "${1:-}" ;;
