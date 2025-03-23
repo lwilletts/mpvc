@@ -276,7 +276,7 @@ mpvc_getjson() {
 }
 
 mpvc_socklist() {
-    for f in $(find "$MPVC_CONFIG_DIR" -type s); do
+    for f in $(set +f; printf '%s\n' "$MPVC_CONFIG_DIR"/*); do
         if [ ! -S "$f" ]; then continue; fi
         echo "$f:	idle-active=$(MPVC_SOCKET=$f mpvc_get idle-active)"
     done
