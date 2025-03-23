@@ -1045,7 +1045,6 @@ main() {
                 mpvc_always_play
             ;;
 
-            vol|volume)     shift; mpvc_set_volume "${1:-}" ;;
             repeat)         shift; mpvc_toggle_loop "loop-playlist" "${1:-}" ;;
             single)         shift; mpvc_toggle_loop "loop-file" "${1:-}" ;;
             pause)          mpvc_set "pause" "yes" ;;
@@ -1072,7 +1071,7 @@ main() {
             -t|--seek|seek)                  shift; mpvc_set_time "relative" "${1:-}" ;;
             -T|--time|time)                  shift; mpvc_set_time "absolute" "${1:-}" ;;
             -v|--vol)                        shift; mpvc_add "volume" "${1:-}"  ;;
-            -V|--volume)                     shift; mpvc_set "volume" "${1:-}"  ;;
+            -V|--volume|volume|vol)          shift; mpvc_set "volume" "${1:-}"  ;;
             -x|--speed|speed)                shift; mpvc_add "speed" "${1:-}"  ;;
             -X|--speedval)                   shift; mpvc_set "speed" "${1:-}"  ;;
             -j|--track|track)                shift; mpvc_set_track "${1:-}" relative  ;;
@@ -1142,7 +1141,7 @@ main() {
             -k|--kill|kill)                  mpvc_ecmdr "quit"; QUIETFLAG=true ;;
             -K|--killall|killall)            quiet pkill -9 -f "$MPVC_MPV "; QUIETFLAG=true ;;
             -p|--toggle|toggle)              mpvc_cycle "pause" ;;
-            -m|--mute)                       mpvc_cycle "mute"                ;;
+            -m|--mute)                       mpvc_cycle "mute"  ;;
             -i|--playlist|playlist)          mpvc_get_playlist "";            ;;
             -I|--fullplaylist|fullplaylist)  mpvc_get_playlist "full";        ;;
                --playlistjson|playlistjson)  mpvc_get_playlist_json ""        ;;
