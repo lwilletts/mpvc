@@ -1003,7 +1003,7 @@ mpvc_get_version() {
 
 mpvc_delay() { sleep "${1:-0.1}"; }
 mpvc_wait()  { for i in $(seq 0 100); do mpvc_delay "${1:-}"; [ -n "$(mpvc_get idle-active)" ] && break; done; }
-mpvc_mpv() { mpvc_startmpv --really-quiet --idle=once "$@"; }
+mpvc_mpv() { mpvc_startmpv --really-quiet --idle=once ; } # "$@"
 # mpvc_mpv: exec & wait until mpv starts up
 mpvc_startmpv() {
     if [ -z "$(mpvc_get idle-active)" ]; then
