@@ -697,8 +697,7 @@ mpvc_set_volume() {
 mpvc_nocolor()
 {
     NO_COLOR_BAK=${NO_COLOR}
-    export NO_COLOR=true
-    "$@"
+    NO_COLOR=true "$@"
     NO_COLOR=${NO_COLOR_BAK}
 }
 
