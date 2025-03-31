@@ -507,7 +507,7 @@ mpvc_stash() {
             done
             ;;
         current|curr)
-            echo "# $PROGNAME stash $MPVC_STASH_DIR/$1 # $PROGURL @version $PROGVERSION"
+            echo "# $PROGNAME stash ${MPVC_STASH_DIR##$MPVC_CONFIG_DIR/}/$1 # $PROGURL @version $PROGVERSION"
             echo "mpvc mpv"
             echo "mpvc wait"
             echo "mpvc set pause yes"
