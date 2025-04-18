@@ -24,23 +24,23 @@ mpvc() { "$PROGDIR/mpvc" "$@"; } # mpvc-web?
 # Set defaults
 mpvcfzf_defaults()
 {
-    XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}
-    MPVC_CONFIG_DIR="${MPVC_CONFIG_DIR:-$XDG_CONFIG_HOME/mpvc}"
-    MPVC_CONFIG="${MPVC_CONFIG:-$MPVC_CONFIG_DIR/mpvc.conf}"
-    MPVC_YTDL_ARCHIVE=${MPVC_YTDL_ARCHIVE:-}
-    MPVC_YTDL_OUTPUT=${MPVC_YTDL_OUTPUT:-}
-    MPVC_TERM=${MPVC_TERM:-xterm}
+    : "${XDG_CONFIG_HOME:="$HOME/.config"}"
+    : "${MPVC_CONFIG_DIR:=$XDG_CONFIG_HOME/mpvc}"
+    : "${MPVC_CONFIG:=$MPVC_CONFIG_DIR/mpvc.conf}"
+    : "${MPVC_YTDL_ARCHIVE:=}"
+    : "${MPVC_YTDL_OUTPUT:=}"
+    : "${MPVC_TERM:=xterm}"
 
     MPVC_FZF_BIND_HELP="C-u:go C-x:ls C-v:yt C-\\:fs C-s:ch C-t:add C-o:play C-r:reload C-spc:toggle"
 
-    MPVC_FZF_PARSE_VIDEO=${MPVC_FZF_PARSE_VIDEO:-1}
-    MPVC_FZF_PARSE_CHANNEL=${MPVC_FZF_PARSE_CHANNEL:-0}
-    MPVC_FZF_PARSE_PLAYLIST=${MPVC_FZF_PARSE_PLAYLIST:-0}
+    : "${MPVC_FZF_PARSE_VIDEO:=1}"
+    : "${MPVC_FZF_PARSE_CHANNEL:=0}"
+    : "${MPVC_FZF_PARSE_PLAYLIST:=0}"
 
-    MPVC_FZF_SOMAFM_FILE="${MPVC_FZF_SOMAFM_FILE:-$MPVC_CONFIG_DIR/feeds/somafm-channels.json}"
-    MPVC_FZF_RADIOAPI_FILE="${MPVC_FZF_RADIOAPI_FILE:-$MPVC_CONFIG_DIR/feeds/radioapi-channels.json}"
-    MPVC_FZF_NTSRADIO_FILE="${MPVC_FZF_NTSRADIO_FILE:-$MPVC_CONFIG_DIR/feeds/ntsradio-channels.json}"
-    MPVC_FZF_CUSTOM_FILE="${MPVC_FZF_CUSTOM_FILE:-$MPVC_CONFIG_DIR/feeds/custom-channels.json}"
+    : "${MPVC_FZF_SOMAFM_FILE:=$MPVC_CONFIG_DIR/feeds/somafm-channels.json}"
+    : "${MPVC_FZF_RADIOAPI_FILE:=$MPVC_CONFIG_DIR/feeds/radioapi-channels.json}"
+    : "${MPVC_FZF_NTSRADIO_FILE:=$MPVC_CONFIG_DIR/feeds/ntsradio-channels.json}"
+    : "${MPVC_FZF_CUSTOM_FILE:=$MPVC_CONFIG_DIR/feeds/custom-channels.json}"
     #mpvc -q
 }
 
