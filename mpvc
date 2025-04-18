@@ -141,28 +141,28 @@ die()  { e=$1; shift; warn "$@"; exit "$e"; }
 
 mpvc_defaults()
 {
-    XDG_CACHE_HOME=${XDG_CACHE_HOME:-"$HOME/.cache"}
-    MPVC_CACHE_DIR="${MPVC_CACHE_DIR:-$XDG_CACHE_HOME/mpvc}"
+    : "${XDG_CACHE_HOME:="$HOME/.cache"}"
+    : "${MPVC_CACHE_DIR:=$XDG_CACHE_HOME/mpvc}"
 
-    XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}
-    MPVC_CONFIG_DIR="${MPVC_CONFIG_DIR:-$XDG_CONFIG_HOME/mpvc}"
-    MPVC_STASH_DIR="${MPVC_STASH_DIR:-$MPVC_CONFIG_DIR/stash}"
+    : "${XDG_CONFIG_HOME:="$HOME/.config"}"
+    : "${MPVC_CONFIG_DIR:=$XDG_CONFIG_HOME/mpvc}"
+    : "${MPVC_STASH_DIR:=$MPVC_CONFIG_DIR/stash}"
 
-    MPVC_DATABASE="${MPVC_DATABASE:-$MPVC_CONFIG_DIR/db.m3u}"
-    MPVC_PLAYLIST="${MPVC_PLAYLIST:-$MPVC_CONFIG_DIR/playlist}"
-    MPVC_CONFIG="${MPVC_CONFIG:-$MPVC_CONFIG_DIR/mpvc.conf}"
-    MPVC_SOCKET="${MPVC_SOCKET:-$MPVC_CONFIG_DIR/mpvsocket0}"
-    MPVC_CURL_CACHE="${MPVC_CURL_CACHE:-$MPVC_CONFIG_DIR/curl-cache.txt}"
-    MPVOPTIONS="${MPVOPTIONS:---no-audio-display --no-input-terminal}"
-    MPVC_MPV="${MPVC_MPV:-mpv}"
-    MPVC_SOCAT="${MPVC_SOCAT:-socat}"
+    : "${MPVC_DATABASE:=$MPVC_CONFIG_DIR/db.m3u}"
+    : "${MPVC_PLAYLIST:=$MPVC_CONFIG_DIR/playlist}"
+    : "${MPVC_CONFIG:=$MPVC_CONFIG_DIR/mpvc.conf}"
+    : "${MPVC_SOCKET:=$MPVC_CONFIG_DIR/mpvsocket0}"
+    : "${MPVC_CURL_CACHE:=$MPVC_CONFIG_DIR/curl-cache.txt}"
+    : "${MPVOPTIONS:=--no-audio-display --no-input-terminal}"
+    : "${MPVC_MPV:=mpv}"
+    : "${MPVC_SOCAT:=socat}"
 
-    NO_COLOR="${NO_COLOR:-}"
-    IMAGEFLAG="${IMAGEFLAG:-}"
-    QUIETFLAG="${QUIETFLAG:-}"
-    MPVC_LOCAL_CACHE="${MPVC_LOCAL_CACHE:-false}"
-    MPVC_FMTSTR="${MPVC_FMTSTR:-}"
-    MPVC_FMTSTR_LOFI=${MPVC_FMTSTR_LOFI:-'[%status%] %statuslofi% %title% 🎶 %time%/%length% #%position%/%playlistlength% %=chapter%/%chapters% %mutelofi%%volume%% %singlelofi%%repeatlofi%%idlelofi%%videolofi%'}
+    : "${NO_COLOR:=}"
+    : "${IMAGEFLAG:=}"
+    : "${QUIETFLAG:=}"
+    : "${MPVC_LOCAL_CACHE:=false}"
+    : "${MPVC_FMTSTR:=}"
+    : "${MPVC_FMTSTR_LOFI:='[%status%] %statuslofi% %title% 🎶 %time%/%length% #%position%/%playlistlength% %=chapter%/%chapters% %mutelofi%%volume%% %singlelofi%%repeatlofi%%idlelofi%%videolofi%'}"
     MPVC_FMTSTR_DFLT="\
 %artist% - %title% \\r\
 [%status%] #%position%/%playlistlength% %time%/%length% (%percentage%%) \\r\
