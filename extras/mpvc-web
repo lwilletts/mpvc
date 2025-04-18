@@ -27,41 +27,41 @@ mpvc_web_defaults()
 {
     MPVC=$(command -v mpvc)
 
-    XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}
-    MPVC_CONFIG_DIR="${MPVC_CONFIG_DIR:-$XDG_CONFIG_HOME/mpvc}"
-    MPVC_CONFIG="${MPVC_CONFIG:-$MPVC_CONFIG_DIR/mpvc.conf}"
+    : "${XDG_CONFIG_HOME:="$HOME/.config"}"
+    : "${MPVC_CONFIG_DIR:=$XDG_CONFIG_HOME/mpvc}"
+    : "${MPVC_CONFIG:=$MPVC_CONFIG_DIR/mpvc.conf}"
 
-    MPVC_WEB_HOSTNAME=${MPVC_WEB_HOSTNAME:-$(hostname)}
-    MPVC_WEB_HOST=${MPVC_WEB_HOST:-localhost}
-    MPVC_WEB_PORT=${MPVC_WEB_PORT:-8000}
-    MPVC_WEB_ROOT=${MPVC_WEB_ROOT:-/tmp/mpvc-web/root}
-    MPVC_WEB_SSL_PORT=${MPVC_WEB_SSL_PORT:-8443}
-    MPVC_WEB_SSL_PEM=${MPVC_WEB_SSL_PEM:-$MPVC_WEB_ROOT/../ssl.pem}
-    MPVC_WEB_SSL_PID=${MPVC_WEB_SSL_PID:-$MPVC_WEB_ROOT/../ssl.pid}
-    MPVC_WEB_SSL_ENABLE=${MPVC_WEB_SSL_ENABLE:-}
-    MPVC_WEB_SSL_VERIFY=${MPVC_WEB_SSL_VERIFY:-0}
-    MPVC_WEB_ARCHIVE_ENABLE=${MPVC_WEB_ARCHIVE_ENABLE:-}
-    MPVC_WEB_CAST_URL=${MPVC_WEB_CAST_URL:-}
-    MPVC_WEB_HTML_THEME=${MPVC_WEB_HTML_THEME:-}
-    MPVC_WEB_HTML_REFRESH=${MPVC_WEB_HTML_REFRESH:-}
-    MPVC_WEB_CSS_STYLE=${MPVC_WEB_CSS_STYLE:-}
+    : "${MPVC_WEB_HOSTNAME:=$(hostname)}"
+    : "${MPVC_WEB_HOST:=localhost}"
+    : "${MPVC_WEB_PORT:=8000}"
+    : "${MPVC_WEB_ROOT:=/tmp/mpvc-web/root}"
+    : "${MPVC_WEB_SSL_PORT:=8443}"
+    : "${MPVC_WEB_SSL_PEM:=$MPVC_WEB_ROOT/../ssl.pem}"
+    : "${MPVC_WEB_SSL_PID:=$MPVC_WEB_ROOT/../ssl.pid}"
+    : "${MPVC_WEB_SSL_ENABLE:=}"
+    : "${MPVC_WEB_SSL_VERIFY:=0}"
+    : "${MPVC_WEB_ARCHIVE_ENABLE:=}"
+    : "${MPVC_WEB_CAST_URL:=}"
+    : "${MPVC_WEB_HTML_THEME:=}"
+    : "${MPVC_WEB_HTML_REFRESH:=}"
+    : "${MPVC_WEB_CSS_STYLE:=}"
 
     # accesskey keyboard shortcuts
-    MPVC_WEB_SHORTCUT_REFRESH=${MPVC_WEB_SHORTCUT_REFRESH:-accesskey=m}
-    MPVC_WEB_SHORTCUT_CLI=${MPVC_WEB_SHORTCUT_CLI:-accesskey=i}
-    MPVC_WEB_SHORTCUT_APPLY=${MPVC_WEB_SHORTCUT_APPLY:-accesskey=a}
-    MPVC_WEB_SHORTCUT_TRACK=${MPVC_WEB_SHORTCUT_TRACK:-accesskey=t}
-    MPVC_WEB_SHORTCUT_PREV=${MPVC_WEB_SHORTCUT_PREV:-accesskey=p}
-    MPVC_WEB_SHORTCUT_NEXT=${MPVC_WEB_SHORTCUT_NEXT:-accesskey=n}
-    MPVC_WEB_SHORTCUT_SEEK=${MPVC_WEB_SHORTCUT_SEEK:-accesskey=s}
-    MPVC_WEB_SHORTCUT_VOL=${MPVC_WEB_SHORTCUT_VOL:-accesskey=v}
-    MPVC_WEB_SHORTCUT_KILL=${MPVC_WEB_SHORTCUT_KILL:-accesskey=k}
-    MPVC_WEB_SHORTCUT_PAUSE=${MPVC_WEB_SHORTCUT_PAUSE:-accesskey=p}
-    MPVC_WEB_SHORTCUT_EQUALIZER=${MPVC_WEB_SHORTCUT_EQUALIZER:-accesskey=e}
-    MPVC_WEB_SHORTCUT_ARCHIVE=${MPVC_WEB_SHORTCUT_ARCHIVE:-accesskey=f}
-    MPVC_WEB_SHORTCUT_MUTE=${MPVC_WEB_SHORTCUT_MUTE:-accesskey=g}
-    MPVC_WEB_SHORTCUT_YTSEARCH=${MPVC_WEB_SHORTCUT_YTSEARCH:-accesskey=y}
-    MPVC_WEB_SHORTCUT_HELP=${MPVC_WEB_SHORTCUT_HELP:-accesskey=h}
+    : "${MPVC_WEB_SHORTCUT_REFRESH:=accesskey=m}"
+    : "${MPVC_WEB_SHORTCUT_CLI:=accesskey=i}"
+    : "${MPVC_WEB_SHORTCUT_APPLY:=accesskey=a}"
+    : "${MPVC_WEB_SHORTCUT_TRACK:=accesskey=t}"
+    : "${MPVC_WEB_SHORTCUT_PREV:=accesskey=p}"
+    : "${MPVC_WEB_SHORTCUT_NEXT:=accesskey=n}"
+    : "${MPVC_WEB_SHORTCUT_SEEK:=accesskey=s}"
+    : "${MPVC_WEB_SHORTCUT_VOL:=accesskey=v}"
+    : "${MPVC_WEB_SHORTCUT_KILL:=accesskey=k}"
+    : "${MPVC_WEB_SHORTCUT_PAUSE:=accesskey=p}"
+    : "${MPVC_WEB_SHORTCUT_EQUALIZER:=accesskey=e}"
+    : "${MPVC_WEB_SHORTCUT_ARCHIVE:=accesskey=f}"
+    : "${MPVC_WEB_SHORTCUT_MUTE:=accesskey=g}"
+    : "${MPVC_WEB_SHORTCUT_YTSEARCH:=accesskey=y}"
+    : "${MPVC_WEB_SHORTCUT_HELP:=accesskey=h}"
 
     MPVC_WEB_CGI="$MPVC_WEB_ROOT/cgi-bin/mpvc"
 
