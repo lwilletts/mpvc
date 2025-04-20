@@ -52,11 +52,11 @@ mpvctui_defaults()
     : "${MPVC_TUI_COLOR1:=$MPVC_TUI_CCYAN}"
     : "${MPVC_TUI_COLOR2:=$MPVC_TUI_CYELLOW}"
     : "${MPVC_TUI_UPDATEC:=2}"
-    : "${MPVC_TUI_CLEARC:-4}"
+    : "${MPVC_TUI_CLEARC:=4}"
     : "${MPVC_TUI_ICON:=}"
     : "${NO_COLOR:=}"
 
-    : "${MPVC_TUI_HEADER0:-$PROGNAME}"
+    : "${MPVC_TUI_HEADER0:=$PROGNAME}"
     : "${MPVC_TUI_TIPS:=true}"
     : "${MPVC_TUI_TERM:=xterm}"
     MPVC_TUI_SHELL=$(readlink -f /proc/$$/exe)
