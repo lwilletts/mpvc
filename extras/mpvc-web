@@ -493,6 +493,13 @@ mpvc_web_favicon()
 EOF
 }
 
+mpvc_web_mkcert()
+{
+    MPVC_WEB_SSL_SUBJ="/C=CN/ST=ST/O=$PROGNAME/CN=$PROGNAME-$MPVC_WEB_HOSTNAME"
+    openssl req -new -x509 -days 365 -nodes -out "$MPVC_WEB_SSL_PEM" -keyout "$MPVC_WEB_SSL_PEM" -subj "$MPVC_WEB_SSL_SUBJ"
+    openssl pkcs12 -export -passout "pass:" -in "$MPVC_WEB_SSL_PEM" -out "$MPVC_WEB_SSL_PEM.p12"
+}
+
 mpvc_web_https()
 {
     MPVC_WEB_LISTEN="bind=$MPVC_WEB_HOST,cert=$MPVC_WEB_SSL_PEM,cafile=$MPVC_WEB_SSL_PEM,verify=$MPVC_WEB_SSL_VERIFY"
@@ -536,9 +543,7 @@ mpvc_web_setup()
         if [ -n "${MPVC_WEB_SSL_ENABLE}" ]; then
             echo "# $PROGNAME Setup $MPVC_WEB_ROOT socat: $MPVC_WEB_HOST:$MPVC_WEB_SSL_PORT"
             if [ ! -e "$MPVC_WEB_SSL_PEM" ]; then
-                MPVC_WEB_SSL_SUBJ="/C=CN/ST=ST/O=$PROGNAME/CN=$PROGNAME-$MPVC_WEB_HOSTNAME"
-                openssl req -new -x509 -days 365 -nodes -out "$MPVC_WEB_SSL_PEM" -keyout "$MPVC_WEB_SSL_PEM" -subj "$MPVC_WEB_SSL_SUBJ"
-                openssl pkcs12 -export -passout "pass:" -in "$MPVC_WEB_SSL_PEM" -out "$MPVC_WEB_SSL_PEM.p12"
+                mpvc_web_mkcert "$MPVC_WEB_SSL_PEM"
             fi
             if [ -s "$MPVC_WEB_SSL_PID" ]; then
                 kill "$(cat "$MPVC_WEB_SSL_PID")" || true
