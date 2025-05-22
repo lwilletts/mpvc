@@ -475,7 +475,7 @@ mpvcfzf_feed_somafm()
 
 mpvcfzf_feed_radioapi()
 {
-    mpvcfzf_feeds "${1:-}" "$MPVC_FZF_RADIOAPI_FILE" "https://nl1.api.radio-browser.info/json/stations/topvote?hidebroken=true&limit=4096" '.[] | select( (.url|length) < 80 ) | (.url+";"+(.votes|tostring)+" "+.name)'
+    mpvcfzf_feeds "${1:-}" "$MPVC_FZF_RADIOAPI_FILE" "https://all.api.radio-browser.info/json/stations/topvote?hidebroken=true&limit=4096" '.[] | select( (.url|length) < 80 ) | (.url+";"+(.votes|tostring)+" "+.name)'
 }
 
 mpvcfzf_feed_ntsradio()
