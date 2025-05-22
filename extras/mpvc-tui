@@ -142,7 +142,7 @@ mpvctui_watcher()
 {
     chapters=$(mpvc get chapters)
     mpvctui_header0 "${MPVC_TUI_HEADER0}$(mpvctui_tips)"
-    if [ "$chapters" != "null" ] && [ "$chapters" -ne 0 ]
+    if [ -n "$chapters" ] && [ "$chapters" != "null" ] && [ "$chapters" -ne 0 ]
     then
         mpvctui_header1 "Chapter Status"
         mpvc "${MPVC_CMD_CSTATUS}"
