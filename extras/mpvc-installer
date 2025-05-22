@@ -1,7 +1,6 @@
 #!/usr/bin/env sh
 #
 # @file mpvc-installer
-# @version v1.0
 # @description mpvc installer
 # @author gmt4 <gmt4 at github.com> (c) Copyright 2022 GPLv2+
 # @url github.com/gmt4/mpvc
