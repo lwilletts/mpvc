@@ -139,9 +139,9 @@ mpvcfzf_isearch_once()
 mpvcfzf_isearch()
 {
     url_host="${url_host:-yewtu.be}"
-    url_sort="${url_sort:-sort=relevance}" # relevance views date
+    url_opts="${url_opts:-sort=relevance}" # sort={relevance,views,date} type={all,video,channel,playlist,...}
     url_query="q=$(for f in $@; do printf "%s+" "$f"; done)"
-    url_search="https://${url_host}/search?$url_query&$url_sort"
+    url_search="https://${url_host}/search?$url_query&$url_opts"
 
     mpvcfzf_csearch "$url_search&page=1" "$url_search&page=2"
 }
