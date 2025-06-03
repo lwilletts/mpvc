@@ -140,7 +140,7 @@ mpvctui_tips()
 
 mpvctui_watcher()
 {
-    chapters=$(mpvc get chapters)
+    chapters=$(equiet mpvc get chapters)
     mpvctui_header0 "${MPVC_TUI_HEADER0}$(mpvctui_tips)"
     if [ -n "$chapters" ] && [ "$chapters" != "null" ] && [ "$chapters" -ne 0 ]
     then
