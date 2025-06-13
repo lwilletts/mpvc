@@ -237,11 +237,11 @@ mpvc_ytquery_json() {
         filename="${i:-}"
         filename=${filename##'"'}; filename=${filename%%'"'}
         case "$filename" in
-        https://youtu.be/watch*|https://youtube.com/watch*|https://www.youtube.com/watch*)
-            filename="$(echo "$filename" | sed 's|\(www.\)\?youtube.com|youtu.be|; s|/watch/\??v=|/|')"
+        https://youtu.be/watch*|https://youtube.com/watch*|https://www.youtube.com/watch*|https://m.youtube.com/watch*)
+            filename="$(echo "$filename" | sed 's/youtube.com/youtu.be/; s/\(m\|www\).youtu.be/youtu.be/; s|/watch/\??v=|/|')"
             result=$(mpvc_curl_cache_json "$filename")
             ;;
-        https://youtu.be/*|https://youtube.com/*|https://www.youtube.com/*)
+        https://youtu.be/*|https://youtube.com/*|https://www.youtube.com/*|https://m.youtube.com/*)
             result=$(mpvc_curl_cache_json "$filename")
             ;;
         https://yewtu.be/watch*)
