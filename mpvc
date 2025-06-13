@@ -150,6 +150,7 @@ mpvc_defaults()
 
     : "${MPVC_DATABASE:=$MPVC_CONFIG_DIR/db.m3u}"
     : "${MPVC_PLAYLIST:=$MPVC_CONFIG_DIR/playlist}"
+    : "${MPVC_PLAYLIST_TRUNC:=1}"
     : "${MPVC_CONFIG:=$MPVC_CONFIG_DIR/mpvc.conf}"
     : "${MPVC_SOCKET:=$MPVC_CONFIG_DIR/mpvsocket0}"
     : "${MPVC_CURL_CACHE:=$MPVC_CONFIG_DIR/curl-cache.txt}"
@@ -352,18 +353,17 @@ mpvc_get_playlist() {
     if [ -z "$lcount" ]; then return; fi
     firstlast=$(mpvc_get_terminal_height "$lpos" "$lcount")
     mpvc_get_playlist_once |
-        awk -v mpvc="$0" -v lpos="$lpos" -v cols="$(mpvc_tty_cols)" -v firstlast="$firstlast" \
+        awk -v mpvc="$0" -v lpos="$lpos" -v cols="$(mpvc_tty_cols)" -v firstlast="$firstlast" -v istrunc="$MPVC_PLAYLIST_TRUNC" \
         '
         BEGIN {
-            # truncate lines x cols when interactive (configurable) TBD
-            isinteractive=1
+            # truncate lines x cols when interactive (configurable)
             split(firstlast, flarray, " ")
             first=flarray[1]; last=flarray[2]
         }
         function truncate(str)
         {
             trunclen=cols - (length("123 ")+length(" ...\n"))
-            if (isinteractive && length(str) > trunclen)
+            if (istrunc && length(str) > trunclen)
                 return sprintf("%.*s ...", trunclen, str)
             return str
         }
