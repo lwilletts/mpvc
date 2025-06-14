@@ -292,10 +292,6 @@ mpvcfzf_fetch()
 
 mpvcfzf_preview()
 {
-    # --bind='ctrl-d:execute(mpvc {q})'
-    # --bind='left:execute-silent(mpvc -q seek -20 &)' \
-    # --bind='right:execute-silent(mpvc -q seek +20 &)' \
-
     # fzf keys: ctrl + [dorstxv\]
     fzf \
         --ansi \
@@ -313,6 +309,7 @@ mpvcfzf_preview()
         --bind='ctrl-\:execute(mpvc-fzf -l)' \
         --bind='ctrl-t:execute-silent(mpvc add {+1} &)' \
         --bind='ctrl-space:execute-silent(mpvc toggle &)' \
+        ${MPVC_FZF_CUSTOM_KEYBINDINGS:-} \
         \
         --preview-window="up:$(mpvc statussz)" \
         --preview="mpvc" \
