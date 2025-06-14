@@ -93,6 +93,8 @@ EOF
  (--)?metadata            : Retrieve current playing media metadata
  (--)?filename            : Retrieve current playing media filename
  (--)?replay              : Replay current playing media
+ (--)?tracklist           : Output current track-list
+ (--)?tracklistjson       : Output current track-list (json)
 
  cprev | chapter-prev     : Jump to previous entry in the chapter-list
  cnext | chapter-next     : Jump to next entry in the chapter-list
@@ -1132,6 +1134,8 @@ main() {
             -i|--playlist|playlist)          mpvc_get_playlist "";            ;;
             -I|--fullplaylist|fullplaylist)  mpvc_get_playlist "full";        ;;
                --playlistjson|playlistjson)  mpvc_get_playlist_json ""        ;;
+               --tracklist|tracklist)        mpvc_get track-list              ;;
+               --tracklistjson|tracklistjson)mpvc_getr track-list             ;;
             -L|--loop|loop)                  mpvc_toggle_loop "loop-playlist" ;;
             -l|--loopfile|loopfile)          mpvc_toggle_loop "loop-file"     ;;
             -z|--shuffle|shuffle)            mpvc_shuffle_playlist shuffle;;
