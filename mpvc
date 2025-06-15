@@ -94,8 +94,8 @@ EOF
  (--)?filename            : Retrieve current playing media filename
  (--)?replay              : Replay current playing media
 
- tlist | tracklist        : Output current track-list
- tlistj| tracklistjson    : Output current track-list (json)
+ tlist | track-list       : Output current track-list
+ tlistj| track-list-json  : Output current track-list (json)
 
  cprev | chapter-prev     : Jump to previous entry in the chapter-list
  cnext | chapter-next     : Jump to next entry in the chapter-list
@@ -310,6 +310,26 @@ mpvc_observe() { echo "{ \"command\": [ \"observe_property_string\", 1, \"$1\", 
 mpvc_idle()    { mpvc_observe "$1" | awk "/$1/ { print; exit }"; }
 
 ## Playlist Functions ##########################################################
+
+mpvc_list_json()
+{
+         grep -o '"data":\[.*\]' |
+         sed -e 's/^"data"://;' \
+             -e 's|{"title"|\n    {"title"|g;' \
+             -e '/^\[\]$/ !s/]$/\n]/;'
+         #    -e 's/","/", "/g; s/":/": /g'
+}
+
+mpvc_get_tracklist() {
+    mpvc_getr "track-list" | mpvc_list_json
+    QUIETFLAG=true
+}
+
+mpvc_get_tracklist_json() {
+    mpvc_getr "track-list" |
+        grep -Eo '"[^"]*" *(: *([0-9]*|"[^"]*")[^{}\["]*|,)?|[^"\]\[\}\{]*|\{|\},?|\[|\],?|[0-9 ]*,?'
+    QUIETFLAG="true"
+}
 
 mpvc_get_playlist_json() {
     mpvc_getr "playlist" |
@@ -760,12 +780,7 @@ mpvc_clear_playlist() {
 
 mpvc_chapter_list_json()
 {
-     mpvc_getr chapter-list |
-         grep -o '"data":\[.*\]' |
-         sed -e 's/^"data"://;' \
-             -e 's|{"title"|\n    {"title"|g;' \
-             -e '/^\[\]$/ !s/]$/\n]/;'
-         #    -e 's/","/", "/g; s/":/": /g'
+     mpvc_getr "chapter-list" | mpvc_list_json
 }
 
 mpvc_chapter_list()
@@ -1121,8 +1136,8 @@ main() {
             cloop|--chapter-loop|chapter-loop)            mpvc_chapter_cloop ;;
             creplay|--chapter-replay|chapter-replay)      mpvc_chapter_replay ;;
 
-            tlist|--tracklist|tracklist)                  mpvc_get track-list; QUIETFLAG=true;;
-            tlistj|--tracklistjson|tracklistjson)         mpvc_getr track-list; QUIETFLAG=true;;
+            tlist|--track-list|track-list)                mpvc_get_tracklist;;
+            tlistj|--track-listjson|track-list-json)      mpvc_get_tracklist_json;;
 
             clist|--chapter-list|chapter-list)            mpvc_chapter_list "short";;
             clistf|--chapter-list-full|chapter-list-full) mpvc_chapter_list "full";;
