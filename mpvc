@@ -93,8 +93,9 @@ EOF
  (--)?metadata            : Retrieve current playing media metadata
  (--)?filename            : Retrieve current playing media filename
  (--)?replay              : Replay current playing media
- (--)?tracklist           : Output current track-list
- (--)?tracklistjson       : Output current track-list (json)
+
+ tlist | tracklist        : Output current track-list
+ tlistj| tracklistjson    : Output current track-list (json)
 
  cprev | chapter-prev     : Jump to previous entry in the chapter-list
  cnext | chapter-next     : Jump to next entry in the chapter-list
@@ -1120,6 +1121,9 @@ main() {
             cloop|--chapter-loop|chapter-loop)            mpvc_chapter_cloop ;;
             creplay|--chapter-replay|chapter-replay)      mpvc_chapter_replay ;;
 
+            tlist|--tracklist|tracklist)                  mpvc_get track-list; QUIETFLAG=true;;
+            tlistj|--tracklistjson|tracklistjson)         mpvc_getr track-list; QUIETFLAG=true;;
+
             clist|--chapter-list|chapter-list)            mpvc_chapter_list "short";;
             clistf|--chapter-list-full|chapter-list-full) mpvc_chapter_list "full";;
             clistn|--chapter-list-nr|chapter-list-nr)     mpvc_chapter_list "numbered";;
@@ -1134,8 +1138,6 @@ main() {
             -i|--playlist|playlist)          mpvc_get_playlist "";            ;;
             -I|--fullplaylist|fullplaylist)  mpvc_get_playlist "full";        ;;
                --playlistjson|playlistjson)  mpvc_get_playlist_json ""        ;;
-               --tracklist|tracklist)        mpvc_get track-list              ;;
-               --tracklistjson|tracklistjson)mpvc_getr track-list             ;;
             -L|--loop|loop)                  mpvc_toggle_loop "loop-playlist" ;;
             -l|--loopfile|loopfile)          mpvc_toggle_loop "loop-file"     ;;
             -z|--shuffle|shuffle)            mpvc_shuffle_playlist shuffle;;
