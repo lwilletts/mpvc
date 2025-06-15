@@ -40,14 +40,24 @@ mpvc_chapter_info()
     ' "$chaptersfile"
 }
 
-# usage: mpvc_chapter_gen < chapterlist.txt with timepos (MM:SS) title entries
+# usage: mpvc_chapter_gen < chapterlist.txt with entries format: (HH:MM:SS) title (time can be relative or absolute)
 mpvc_chapter_gen()
 {
     chaptersfile=${1:-$(mpvc_chapter_file)}
+    isabsolute=${2:-1}
 
     while read -r line
     do
-        timepos=$(echo "$line" | awk -v otp="${otimepos:-0}" '{ tp=$1; if (tp ~ ":") { split(tp, a, ":"); tp = a[1]*60 + a[2] } print otp + tp; }')
+        timepos=$(echo "$line" | awk -v otp="${otimepos:-0}" -v isabsolute="$isabsolute" '
+            /^[0-9]{1,2}:[0-9]{1,2}(:[0-9]{1,2})?/ {
+                tp=$1
+                n=split(tp, a, ":")
+                if (n == 2) tp = a[1]*60 + a[2]
+                if (n == 3) tp = a[1]*60*60 + a[2]*60 + a[3]
+
+                print (isabsolute ? 0 : otp) + tp
+            }
+        ')
         title=$(echo "$line" | awk '{ sub($1" *", ""); print }')
         mpvc_chapter_add_new "$chaptersfile" "$timepos" "$title"
         otimepos=$timepos
