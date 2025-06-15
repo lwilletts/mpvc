@@ -144,7 +144,7 @@ pacman -Sy mpv gawk curl socat fzf rlwrap jq libnotify
 BSD (and pkg(1) based derivatives as FreeBSD, see [FAQ](../../wiki/FAQ)):
 
 ```console
-pkg install -y mpv curl socat fzf rlwrap jq libnotify # mpv-mpris
+pkg install -y mpv curl socat fzf rlwrap jq libnotify # mpv-mpris python3
 ```
 
 ### MacOS
