@@ -314,7 +314,6 @@ mpvcfzf_preview()
         --bind='ctrl-v:execute(mpvc-fzf -p {q})' \
         --bind='ctrl-\:execute(mpvc-fzf -l)' \
         --bind='ctrl-t:execute-silent(mpvc add {+1} &)' \
-        --bind='ctrl-space:execute-silent(mpvc toggle &)' \
         "${MPVC_FZF_CUSTOM_KEYBINDINGS}" \
         \
         "$@"
