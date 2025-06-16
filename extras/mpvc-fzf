@@ -41,6 +41,10 @@ mpvcfzf_defaults()
     : "${MPVC_FZF_RADIOAPI_FILE:=$MPVC_CONFIG_DIR/feeds/radioapi-channels.json}"
     : "${MPVC_FZF_NTSRADIO_FILE:=$MPVC_CONFIG_DIR/feeds/ntsradio-channels.json}"
     : "${MPVC_FZF_CUSTOM_FILE:=$MPVC_CONFIG_DIR/feeds/custom-channels.json}"
+
+    : "${MPVC_FZF_CUSTOM_PREVIEW:=mpvc}"
+    : "${MPVC_FZF_CUSTOM_KEYBINDINGS:=}"
+
     #mpvc -q
 }
 
@@ -298,6 +302,8 @@ mpvcfzf_preview()
         --no-sort \
         --multi \
         \
+        --preview-window="up:$(mpvc statussz)" \
+        --preview="${MPVC_FZF_CUSTOM_PREVIEW}" \
         --layout=reverse \
         --header="$PROGNAME help: $MPVC_FZF_BIND_HELP" \
         --bind='ctrl-a:toggle-all' \
@@ -309,10 +315,8 @@ mpvcfzf_preview()
         --bind='ctrl-\:execute(mpvc-fzf -l)' \
         --bind='ctrl-t:execute-silent(mpvc add {+1} &)' \
         --bind='ctrl-space:execute-silent(mpvc toggle &)' \
-        ${MPVC_FZF_CUSTOM_KEYBINDINGS:-} \
+        "${MPVC_FZF_CUSTOM_KEYBINDINGS}" \
         \
-        --preview-window="up:$(mpvc statussz)" \
-        --preview="mpvc" \
         "$@"
 }
 
