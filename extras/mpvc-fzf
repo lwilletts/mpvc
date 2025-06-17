@@ -29,6 +29,8 @@ mpvcfzf_defaults()
     : "${MPVC_CONFIG:=$MPVC_CONFIG_DIR/mpvc.conf}"
     : "${MPVC_YTDL_ARCHIVE:=}"
     : "${MPVC_YTDL_OUTPUT:=}"
+    : "${MPVC_YTDL_OPTS:=}"
+
     : "${MPVC_TERM:=xterm}"
 
     MPVC_FZF_BIND_HELP="C-u:go C-x:ls C-v:yt C-\\:fs C-s:ch C-t:add C-o:play C-r:reload C-spc:toggle"
@@ -287,7 +289,7 @@ mpvcfzf_fetch()
             ytdl_opts="$ytdl_opts --$option"
         fi
     done
-    "$ytdlp" $ytdl_opts ${YTDL_OPTS:-} "$@"
+    "$ytdlp" $ytdl_opts $MPVC_YTDL_OPTS "$@"
 }
 
 #
