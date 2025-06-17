@@ -66,19 +66,21 @@ mpvc_chapter_gen()
     #cat "$chaptersfile"
 }
 
-mpvc_chapter_merge() # file.opus file-metadata.txt
+mpvc_chapter_merge() # usage: merge srcfile.opus metadata.txt dstfile.opus
 {
-    file="${1:-}"
-    metadatafile="${2:-}"=
-    tmpfile="/tmp/$(basename "$file")"
+    srcfile="${1:-}"
+    metafile="${2:-}"
+    dstfile="${3:-/tmp/$(basename "$srcfile")}"
 
-    # -map_metadata 0 -map_metadata:s:v 0:s:v -map_metadata:s:a 0:s:a
-    if [ ! -e "$metadatafile" ];
+    if [ ! -e "$srcfile" ]; then usage; fi
+
+    if [ ! -e "$metafile" ];
     then
-        ffmpeg -v quiet -i "$file" -f ffmetadata - > "$metadatafile"
-        cat "$(mpvc_chapter_file)" >> "$metadatafile"
+        # -map_metadata 0 -map_metadata:s:v 0:s:v -map_metadata:s:a 0:s:a
+        ffmpeg -v quiet -i "$srcfile" -f ffmetadata - > "$metafile"
+        cat "$(mpvc_chapter_file)" >> "$metafile"
     fi
-    ffmpeg -i "$file" -i "$metadatafile" -map_metadata 1 -codec copy "$tmpfile"
+    ffmpeg -i "$srcfile" -i "$metafile" -map_metadata 1 -codec copy "$dstfile"
 }
 
 # usage: mpvc_chapter_add [tpos] [title]
