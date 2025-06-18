@@ -14,7 +14,7 @@ PROGURL="https://github.com/gmt4/mpvc"
 
 set -euf
 
-# See https://ffmpeg.org/ffmpeg-formats.html#Metadata-1
+# See https://ffmpeg.org/ffmpeg-formats.html#ffmetadata
 mpvc_chapter_file()
 {
     chaptersdir="$HOME/.config/mpvc/chapters/"
