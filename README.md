@@ -62,6 +62,7 @@ Recommended extras:
 - `jq`
 - `notify-send`
 - `yt-dlp`
+- `cava`
 
 ## Installation
 
@@ -127,7 +128,7 @@ For more  check the  [LogBook](../../wiki#logbook) (remeber your best chance is 
 Debian (and APT derivatives such as Ubuntu):
 
 ```console
-apt install mpv gawk curl socat fzf rlwrap jq libnotify-bin
+apt install mpv gawk curl socat fzf rlwrap jq libnotify-bin # cava
 ```
 
 ### Arch [mpvc-git](https://aur.archlinux.org/packages/mpvc-git)
@@ -136,7 +137,7 @@ Arch (and derivatives):
 
 ```console
 pacaur -y mpvc-git
-pacman -Sy mpv gawk curl socat fzf rlwrap jq libnotify
+pacman -Sy mpv gawk curl socat fzf rlwrap jq libnotify # cava
 ````
 
 ### BSD
@@ -144,7 +145,7 @@ pacman -Sy mpv gawk curl socat fzf rlwrap jq libnotify
 BSD (and pkg(1) based derivatives as FreeBSD, see [FAQ](../../wiki/FAQ)):
 
 ```console
-pkg install -y mpv curl socat fzf rlwrap jq libnotify # mpv-mpris python3
+pkg install -y mpv curl socat fzf rlwrap jq libnotify # mpv-mpris cava python3
 ```
 
 ### MacOS
@@ -152,7 +153,7 @@ pkg install -y mpv curl socat fzf rlwrap jq libnotify # mpv-mpris python3
 MacOS (and brew(1) based derivatives see [FAQ](../../wiki/FAQ)):
 
 ```console
-brew install mpv curl socat fzf rlwrap jq libnotify yt-dlp
+brew install mpv curl socat fzf rlwrap jq libnotify yt-dlp # cava
 ```
 
 ### Gentoo [mpvc](https://gitlab.com/xy2_/osman)
