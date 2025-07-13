@@ -29,7 +29,7 @@ usage: $PROGNAME opts # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
  -I | --fullplaylist      : Print all filenames of tracks in current playlist.
  -v | --vol | vol         : Increase/decrease volume relative to current volume.
  -h | --help              : Prints the short help.
- -H | --help-long         : Prints the long help.
+ -H | --help-long         : Prints the long help (tip: mpvc -H 2>&1 | less).
 EOF
 
     if [ $# -gt 0 ]; then
@@ -77,6 +77,7 @@ EOF
  togglev                  : Toggle MPV video property.
  togglew                  : Toggle MPV window property.
  togglei                  : Toggle MPV idle property.
+ toggler | rotate         : Toggle MPV video-rotate property (values 0 90 180 270)
  cycle                    : Toggle/Cycle through MPV property values.
  idleloop                 : Listen to MPV events on $PROGNAME socket.
  observe                  : Observe property in MPV events on $PROGNAME socket.
@@ -776,6 +777,10 @@ mpvc_clear_playlist() {
     echo "Playlist cleared."
 }
 
+mpvc_rotate() {
+    mpvc_ecmdr "cycle-values" video-rotate 0 90 180 270
+}
+
 ## Chapter functions ##########################################################
 
 mpvc_chapter_list_json()
@@ -1101,6 +1106,7 @@ main() {
             --togglew|togglew)               shift; mpvc_cycle "force-window" ;;
             --togglei|togglei)               shift; mpvc_cycle "idle" ;;
             --togglef|togglef)               shift; mpvc_cycle "fullscreen" ;;
+            --toggler|toggler|rotate)        shift; mpvc_rotate "$@"; QUIETFLAG=true ;;
             --idle|idle)                     shift; mpvc_idle "${1:-}"; QUIETFLAG=true ;;
             --idleloop|idleloop)             shift; mpvc_idleloop "${1:-}"; QUIETFLAG=true ;;
             --observe|observe)               shift; mpvc_observe "${1:-}"; QUIETFLAG=true ;;
