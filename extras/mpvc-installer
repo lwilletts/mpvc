@@ -87,9 +87,9 @@ mpvc_licenses()
 mpvc_link()
 {
     mkdir -p "$BINDIR"
-    for script in $SCRIPT;
+    for f in $SCRIPT;
     do
-        ln -svfn "$(pwd)/$script" "$BINDIR";
+        ln -svfn "$(pwd)/$f" "$BINDIR" || ln -sfn "$(pwd)/$f" "$BINDIR";
     done
 }
 
