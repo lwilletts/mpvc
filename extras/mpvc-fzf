@@ -304,19 +304,10 @@ mpvcfzf_preview()
         --no-sort \
         --multi \
         \
-        --preview-window="up:$(mpvc statussz)" \
-        --preview="${MPVC_FZF_CUSTOM_PREVIEW}" \
         --layout=reverse \
+        --preview="${MPVC_FZF_CUSTOM_PREVIEW}" \
+        --preview-window="up:$(mpvc statussz)" \
         --header="$PROGNAME help: $MPVC_FZF_BIND_HELP" \
-        --bind='ctrl-a:toggle-all' \
-        --bind='ctrl-s:execute(mpvc-fzf -c)' \
-        --bind='ctrl-x:execute(mpvc-fzf -f {q})' \
-        --bind='ctrl-y:execute(mpvc-fzf -b {+1})' \
-        --bind='ctrl-u:execute(mpvc-fzf -b {+1})' \
-        --bind='ctrl-v:execute(mpvc-fzf -p {q})' \
-        --bind='ctrl-\:execute(mpvc-fzf -l)' \
-        --bind='ctrl-t:execute-silent(mpvc add {+1} &)' \
-        --bind='ctrl-space:execute-silent(mpvc toggle &)' \
         "${MPVC_FZF_CUSTOM_KEYBINDINGS}" \
         \
         "$@"
