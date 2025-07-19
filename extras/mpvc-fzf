@@ -298,7 +298,9 @@ mpvcfzf_fetch()
 
 mpvcfzf_preview()
 {
-    [ -z "${MPVC_FZF_CUSTOM_KEYBINDINGS}" ] && warn "Warning: mpvc-fzf keybinding look empty, check docs/mpvc.conf example"
+    if [ -z "${MPVC_FZF_CUSTOM_KEYBINDINGS}" ]; then
+        mpvcfzf_warn "Warning: mpvc-fzf keybinding look empty, check docs/mpvc.conf example"
+    fi
     # fzf keys: ctrl + [dorstxv\]
     fzf \
         --ansi \
