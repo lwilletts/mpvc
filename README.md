@@ -97,7 +97,9 @@ This does git clone, and symlinks the mpvc scripts to `BINDIR` (default `~/bin`)
  git clone https://github.com/lwilletts/mpvc/
  # use extras/mpvc-installer: just copy/link to BINDIR=$HOME/bin (by default)
  (cd mpvc; extras/mpvc-installer link-user)
+ (cd mpvc; extras/mpvc-installer config-user)
  (cd mpvc; extras/mpvc-installer check-reqs)
+ # adjust .config/mpvc/mpvc.conf to suit your needs, mpvc-installer config-user just installs the defaults
 
  # use mpvc to add/load/save media files or online YT URLs
  mpvc add /path/to/your/*.mp3 # or your URLs
@@ -167,6 +169,12 @@ emerge mpvc
 ```console
 nix-env -i mpvc
 ```
+
+## Configuration
+
+`mpvc` configuration is performed on [docs/mpvc.conf](../../blob/master/docs/mpvc.conf).
+
+Running `mpvc-installer config-user`, just installs the defaults, afterwards adjust `~/.config/mpvc/mpvc.conf` to suit your needs.
 
 ## Usage
 
