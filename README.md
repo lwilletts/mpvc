@@ -152,6 +152,12 @@ BSD (and pkg(1) based derivatives as FreeBSD, see [FAQ](../../wiki/FAQ)):
 pkg install -y mpv curl socat fzf rlwrap jq libnotify # mpv-mpris cava python3
 ```
 
+BSD (and pkg_add(1) based derivatives as OpenBSD, see [FAQ](../../wiki/FAQ)):
+
+```console
+pkg_add mpv curl socat fzf rlwrap jq libnotify # mpv-mpris cava python3
+```
+
 ### MacOS
 
 MacOS (and brew(1) based derivatives see [FAQ](../../wiki/FAQ)):
