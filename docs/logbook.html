@@ -635,7 +635,6 @@ Long story short, basically this boils down to managing <a href="https://ffmpeg.
     <li>
         <code>mpvc-chapter merge</code>: Last, once the chapter-file is ready, the "merge" command merges the chapter-file into the media file metadata.
     </li>
-    </ul>
     Remember that the chapter-file is just that a text-file, so it can be fetched, read and written using a text-editor, or using <code>mpvc-chapter add|gen</code>
 </ul>
 
@@ -701,6 +700,7 @@ Recently landed the commands <code>mpvc lowfi/hifi</code>, <code>lowfi</code> fe
 [play] ▷ Polaris 🎶 02:35/04:50 #3/33 🔊60% 🔂 🔄 🎧
 
 </pre>
+The one-line compressed format has some benefits, such as becoming easily integrable with terminal, multiplexers and window managers, among others
 This goes hand in hand with the hability to browse HTTP/s server listings and add music as in:
 <pre>
 
@@ -730,11 +730,11 @@ This way anyone can <code>add/edit/delete</code> mpvc-fzf keybindings. I think t
 <pre>
 $ cat mpvc.conf
 MPVC_FZF_CUSTOM_KEYBINDINGS=--bind="\
-shift-left:execute-silent(mpvc -q seek -1 &),\
-shift-right:execute-silent(mpvc -q seek +1 &),\
-shift-down:execute-silent(mpvc -q vol -1 &),\
-shift-up:execute-silent(mpvc -q vol +1 &),\
-ctrl-space:execute-silent(mpvc toggle &)\
+shift-left:execute-silent(mpvc -q seek -1 &amp;),\
+shift-right:execute-silent(mpvc -q seek +1 &amp;),\
+shift-down:execute-silent(mpvc -q vol -1 &amp;),\
+shift-up:execute-silent(mpvc -q vol +1 &amp;),\
+ctrl-space:execute-silent(mpvc toggle &amp;)\
 "
 </pre>
 </p>
