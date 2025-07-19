@@ -33,7 +33,7 @@ mpvcfzf_defaults()
 
     : "${MPVC_TERM:=xterm}"
 
-    MPVC_FZF_BIND_HELP="C-u:go C-x:ls C-v:yt C-\\:fs C-s:ch C-t:add C-o:play C-r:reload C-spc:toggle"
+    : "${MPVC_FZF_BIND_HELP:=}"
 
     : "${MPVC_FZF_PARSE_VIDEO:=1}"
     : "${MPVC_FZF_PARSE_CHANNEL:=0}"
@@ -298,6 +298,7 @@ mpvcfzf_fetch()
 
 mpvcfzf_preview()
 {
+    [ -z "${MPVC_FZF_CUSTOM_KEYBINDINGS}" ] && warn "Warning: mpvc-fzf keybinding look empty, check docs/mpvc.conf example"
     # fzf keys: ctrl + [dorstxv\]
     fzf \
         --ansi \
