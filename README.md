@@ -6,12 +6,14 @@
 ![GitHub top language](https://img.shields.io/github/languages/top/lwilletts/mpvc)
 ![GitHub lines of Code](https://sloc.xyz/github/lwilletts/mpvc/?category=code)
 
+[ [Overview](#%EF%B8%8F-overview-1) | [Reqs](rRequirements) | [Install](#installation) | [Config](#configuration) | [Usage](#usage) ]
+
 Music player in POSIX-sh interfacing mpv from the shell + extras/goodies [^install] 🚀.
 
 A fork of [lwillets/mpvc](https://github.com/lwilletts/mpvc) evolving on its own adding features such as: improved interfaces to CLI, TUI, FZF, WEB, EQZ, & play streaming services as YouTube/Invidious.
 For more on the features of this fork check: [Git](#git) QuickStart, [Wiki](../../wiki), [LogBook](../../wiki#logbook) & [Casts](../../wiki#screencasts).
 
-⏩ Skip directly to [Installation](#Installation) to try mpvc!
+⏩ Skip directly to [Installation](#installation) to try mpvc!
 
 <details open>
 <summary>mpvc-tui -T: running the mpvc TUI <i>(click to view screenshot)</i></summary>
@@ -33,7 +35,7 @@ For more on the features of this fork check: [Git](#git) QuickStart, [Wiki](../.
 
 ## ▶️ Overview [^install]
 
-[mpvc](../../) is a collection of POSIX shell scripts:
+`mpvc` is a collection of POSIX shell scripts:
 
 - [mpvc](../../blob/master/mpvc): provides the core CLI commands to control mpv
 - [extras/mpvc-tui](../../blob/master/extras/mpvc-tui): provides a console TUI, using mpvc underneath
@@ -97,9 +99,9 @@ This does git clone, and symlinks the mpvc scripts to `BINDIR` (default `~/bin`)
  git clone https://github.com/lwilletts/mpvc/
  # use extras/mpvc-installer: just copy/link to BINDIR=$HOME/bin (by default)
  (cd mpvc; extras/mpvc-installer link-user)
- (cd mpvc; extras/mpvc-installer config-user)
  (cd mpvc; extras/mpvc-installer check-reqs)
- # adjust .config/mpvc/mpvc.conf to suit your needs, mpvc-installer config-user just installs the defaults
+ (cd mpvc; extras/mpvc-installer config-user)
+ # check ~/.config/mpvc/mpvc.conf to suit your needs
 
  # use mpvc to add/load/save media files or online YT URLs
  mpvc add /path/to/your/*.mp3 # or your URLs
@@ -250,5 +252,5 @@ usage: mpvc-fzf opts # @version v1.7 (c) gmt4 https://github.com/gmt4/mpvc
 *tips: If unsure about where to begin, start: mpvc-fzf -p 'kupla mirage'
 ```
 
-[^install]: Skip directly to [Installation](#Installation) to try mpvc
+[^install]: Skip directly to [Installation](#installation) to try mpvc
 
