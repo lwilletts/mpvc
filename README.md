@@ -6,7 +6,7 @@
 ![GitHub top language](https://img.shields.io/github/languages/top/lwilletts/mpvc)
 ![GitHub lines of Code](https://sloc.xyz/github/lwilletts/mpvc/?category=code)
 
-[ [Overview](#%EF%B8%8F-overview-1) | [Reqs](rRequirements) | [Install](#installation) | [Config](#configuration) | [Usage](#usage) ]
+[ [Intro](#%EF%B8%8F-overview-1) | [Reqs](#requirements) | [Install](#installation) | [Config](#configuration) | [Usage](#usage) ]
 
 Music player in POSIX-sh interfacing mpv from the shell + extras/goodies [^install] 🚀.
 
