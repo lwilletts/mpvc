@@ -87,9 +87,10 @@ mpvc_licenses()
 mpvc_link()
 {
     mkdir -p "$BINDIR"
+    if ln -v 2>&1 | grep -q 'ln: unknown option'; then lnops=-sfn; else lnops=-sfnv; fi
     for f in $SCRIPT;
     do
-        ln -svfn "$(pwd)/$f" "$BINDIR" || ln -sfn "$(pwd)/$f" "$BINDIR";
+        ln "$lnops" "$(pwd)/$f" "$BINDIR";
     done
 }
 
