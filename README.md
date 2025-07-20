@@ -68,8 +68,8 @@ Recommended extras:
 
 ## Installation
 
-- [Manual](#manual)
 - [Git](#git)
+- [Curl](#curl)
 - [Debian](#debian)
 - [Arch](#arch-mpvc-git)
 - [BSD](#bsd)
@@ -77,17 +77,10 @@ Recommended extras:
 - [Gentoo](#gentoo-mpvc)
 - [Nix](#nix-mpvc)
 
-Installing is just a matter of fetching the scripts either via [Git](#git)/Curl/etc., scripts can be used directly from the repo, the `mpvc-installer` bit is just there for easiness, to fetch & link them into your `BINDIR=~/bin/` that [mpvc-installer](../../blob/master/extras/mpvc-installer) does by default.
+Installing is just a matter of fetching the scripts either via [Git](#git)/[Curl](#curl)/etc., scripts can be used directly from the repo, the `mpvc-installer` bit is just there for easiness, to fetch & link them into your `BINDIR=~/bin/` that [mpvc-installer](../../blob/master/extras/mpvc-installer) does by default.
 
-The easiest for a onetime install is the [Manual](#manual), however for @latest version a [Git](#git) install is recommended.
+The easiest for a onetime install is using [Curl](#curl), however for @latest version a [Git](#git) install is recommended.
 Remember to check your installation for missing dependencies/requirements using `mpvc-installer check-reqs`, and, if you encounter any issue file an [Issue](../../issues).
-
-### Manual
-
-```console
-curl -LO https://github.com/lwilletts/mpvc/raw/master/extras/mpvc-installer \
-  && BINDIR=$HOME/bin sh ./mpvc-installer fetch-user
-```
 
 ### Git
 
@@ -126,6 +119,13 @@ This does git clone, and symlinks the mpvc scripts to `BINDIR` (default `~/bin`)
 ```
 
 For more  check the  [LogBook](../../wiki#logbook) (remeber your best chance is to try, play, and have fun).
+
+### Curl
+
+```console
+curl -LO https://github.com/lwilletts/mpvc/raw/master/extras/mpvc-installer \
+  && BINDIR=$HOME/bin sh ./mpvc-installer fetch-user
+```
 
 ### Debian
 
