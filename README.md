@@ -6,12 +6,14 @@
 ![GitHub top language](https://img.shields.io/github/languages/top/lwilletts/mpvc)
 ![GitHub lines of Code](https://sloc.xyz/github/lwilletts/mpvc/?category=code)
 
+[ [Intro](#%EF%B8%8F-overview-1) | [Reqs](#requirements) | [Install](#installation) | [Config](#configuration) | [Usage](#usage) ]
+
 Music player in POSIX-sh interfacing mpv from the shell + extras/goodies [^install] 🚀.
 
 A fork of [lwillets/mpvc](https://github.com/lwilletts/mpvc) evolving on its own adding features such as: improved interfaces to CLI, TUI, FZF, WEB, EQZ, & play streaming services as YouTube/Invidious.
 For more on the features of this fork check: [Git](#git) QuickStart, [Wiki](../../wiki), [LogBook](../../wiki#logbook) & [Casts](../../wiki#screencasts).
 
-⏩ Skip directly to [Installation](#Installation) to try mpvc!
+⏩ Skip directly to [Installation](#installation) to try mpvc!
 
 <details open>
 <summary>mpvc-tui -T: running the mpvc TUI <i>(click to view screenshot)</i></summary>
@@ -33,7 +35,7 @@ For more on the features of this fork check: [Git](#git) QuickStart, [Wiki](../.
 
 ## ▶️ Overview [^install]
 
-[mpvc](../../) is a collection of POSIX shell scripts:
+`mpvc` is a collection of POSIX shell scripts:
 
 - [mpvc](../../blob/master/mpvc): provides the core CLI commands to control mpv
 - [extras/mpvc-tui](../../blob/master/extras/mpvc-tui): provides a console TUI, using mpvc underneath
@@ -62,11 +64,12 @@ Recommended extras:
 - `jq`
 - `notify-send`
 - `yt-dlp`
+- `cava`
 
 ## Installation
 
-- [Manual](#manual)
 - [Git](#git)
+- [Curl](#curl)
 - [Debian](#debian)
 - [Arch](#arch-mpvc-git)
 - [BSD](#bsd)
@@ -74,17 +77,10 @@ Recommended extras:
 - [Gentoo](#gentoo-mpvc)
 - [Nix](#nix-mpvc)
 
-Installing is just a matter of fetching the scripts either via [Git](#git)/Curl/etc., scripts can be used directly from the repo, the `mpvc-installer` bit is just there for easiness, to fetch & link them into your `BINDIR=~/bin/` that [mpvc-installer](../../blob/master/extras/mpvc-installer) does by default.
+Installing is just a matter of fetching the scripts either via [Git](#git)/[Curl](#curl)/etc., scripts can be used directly from the repo, the `mpvc-installer` bit is just there for easiness, to fetch & link them into your `BINDIR=~/bin/` that [mpvc-installer](../../blob/master/extras/mpvc-installer) does by default.
 
-The easiest for a onetime install is the [Manual](#manual), however for @latest version a [Git](#git) install is recommended.
+The easiest for a onetime install is using [Curl](#curl), however for @latest version a [Git](#git) install is recommended.
 Remember to check your installation for missing dependencies/requirements using `mpvc-installer check-reqs`, and, if you encounter any issue file an [Issue](../../issues).
-
-### Manual
-
-```console
-curl -LO https://github.com/lwilletts/mpvc/raw/master/extras/mpvc-installer \
-  && BINDIR=$HOME/bin sh ./mpvc-installer fetch-user
-```
 
 ### Git
 
@@ -97,6 +93,8 @@ This does git clone, and symlinks the mpvc scripts to `BINDIR` (default `~/bin`)
  # use extras/mpvc-installer: just copy/link to BINDIR=$HOME/bin (by default)
  (cd mpvc; extras/mpvc-installer link-user)
  (cd mpvc; extras/mpvc-installer check-reqs)
+ (cd mpvc; extras/mpvc-installer config-user)
+ # check ~/.config/mpvc/mpvc.conf to suit your needs
 
  # use mpvc to add/load/save media files or online YT URLs
  mpvc add /path/to/your/*.mp3 # or your URLs
@@ -122,12 +120,19 @@ This does git clone, and symlinks the mpvc scripts to `BINDIR` (default `~/bin`)
 
 For more  check the  [LogBook](../../wiki#logbook) (remeber your best chance is to try, play, and have fun).
 
+### Curl
+
+```console
+curl -LO https://github.com/lwilletts/mpvc/raw/master/extras/mpvc-installer \
+  && BINDIR=$HOME/bin sh ./mpvc-installer fetch-user
+```
+
 ### Debian
 
 Debian (and APT derivatives such as Ubuntu):
 
 ```console
-apt install mpv gawk curl socat fzf rlwrap jq libnotify-bin
+apt install mpv gawk curl socat fzf rlwrap jq libnotify-bin # cava
 ```
 
 ### Arch [mpvc-git](https://aur.archlinux.org/packages/mpvc-git)
@@ -136,7 +141,7 @@ Arch (and derivatives):
 
 ```console
 pacaur -y mpvc-git
-pacman -Sy mpv gawk curl socat fzf rlwrap jq libnotify
+pacman -Sy mpv gawk curl socat fzf rlwrap jq libnotify # cava
 ````
 
 ### BSD
@@ -144,7 +149,13 @@ pacman -Sy mpv gawk curl socat fzf rlwrap jq libnotify
 BSD (and pkg(1) based derivatives as FreeBSD, see [FAQ](../../wiki/FAQ)):
 
 ```console
-pkg install -y mpv curl socat fzf rlwrap jq libnotify # mpv-mpris
+pkg install -y mpv curl socat fzf rlwrap jq libnotify # mpv-mpris cava python3
+```
+
+BSD (and pkg_add(1) based derivatives as OpenBSD, see [FAQ](../../wiki/FAQ)):
+
+```console
+pkg_add mpv curl socat fzf rlwrap jq libnotify # mpv-mpris cava python3
 ```
 
 ### MacOS
@@ -152,7 +163,7 @@ pkg install -y mpv curl socat fzf rlwrap jq libnotify # mpv-mpris
 MacOS (and brew(1) based derivatives see [FAQ](../../wiki/FAQ)):
 
 ```console
-brew install mpv curl socat fzf rlwrap jq libnotify yt-dlp
+brew install mpv curl socat fzf rlwrap jq libnotify yt-dlp # cava
 ```
 
 ### Gentoo [mpvc](https://gitlab.com/xy2_/osman)
@@ -167,12 +178,18 @@ emerge mpvc
 nix-env -i mpvc
 ```
 
+## Configuration
+
+`mpvc` configuration is performed on [docs/mpvc.conf](../../blob/master/docs/mpvc.conf).
+
+Running `mpvc-installer config-user`, just installs the defaults, afterwards adjust `~/.config/mpvc/mpvc.conf` to suit your needs.
+
 ## Usage
 
 ### mpvc
 
 ```console
-usage: mpvc opts # @version v1.6 (c) gmt4 https://github.com/gmt4/mpvc
+usage: mpvc opts # @version v1.7 (c) gmt4 https://github.com/gmt4/mpvc
  -a | --add | add         : Add media to playlist (see --load for stdin).
  -r | --remove | rm       : Remove media by id from playlist (see searchrm for rm by title)
  -s | --stop | stop       : Always stop playback.
@@ -191,7 +208,7 @@ usage: mpvc opts # @version v1.6 (c) gmt4 https://github.com/gmt4/mpvc
 ### mpvc-tui
 
 ```console
-usage: mpvc-tui opts # @version v1.6 (c) gmt4 https://github.com/gmt4/mpvc
+usage: mpvc-tui opts # @version v1.7 (c) gmt4 https://github.com/gmt4/mpvc
  -d|dir     : Set the WD to the media directory given as argument
  -n|notify  : Desktop notification using notify on mpvc events (notify-send*)
  -s|suggest : Suggest a random media to play based on previous media played
@@ -207,8 +224,9 @@ usage: mpvc-tui opts # @version v1.6 (c) gmt4 https://github.com/gmt4/mpvc
 ### mpvc-fzf
 
 ```console
-usage: mpvc-fzf opts # @version v1.6 (c) gmt4 https://github.com/gmt4/mpvc
- -b|browse   : Browse the provided ytdl-archive URL with fzf
+usage: mpvc-fzf opts # @version v1.7 (c) gmt4 https://github.com/gmt4/mpvc
+ -a|stash    : Start fzf to manage mpvc stashes
+ -b|browse   : Start fzf to manage the provided ytdl-archive URL
  -c|chapters : Start fzf to manage the current mpv chapterlist
  -d|dir      : Set the WD to the media directory given as argument
  -e|eqz      : Start fzf to manage the equalizer settings
@@ -220,17 +238,25 @@ usage: mpvc-fzf opts # @version v1.6 (c) gmt4 https://github.com/gmt4/mpvc
  -K|dsearch  : Search DuckDuckGo videos
  -l|local    : Search & play local media
  -s|search   : Search on Invidious
+ -t|thumbnail: Retrieve thumbnail_url from metadata of the current YT-URL
+ -T|Thumbnail: Retrieve thumbnail_url from metadata of the provided YT-URL
  -p|splay    : Search & play media found using Invidious
+ -u|url      : Search the given YT URL (supports vids,channels,playlist feeds)
+ -U|Url      : Search & play the given YT URL
+ -x|launch   : Starts mpvc-fzf in a new xterm (config $MPVC_TERM) [combine -x with other opts]
  -y|related  : Search related media on Invidious
  -Y|Related  : Search & play related media using Invidious
- -x|launch   : Starts mpvc-fzf in a new xterm (config $MPVC_TERM) [combine -x with other opts]
+ -z|relatedo : Search current media-title on Invidious and return related media
  -v|version  : Return the mpvc-fzf version.
- now         : Return a shareable URL to the now listening playlist
- lofi        : Search & play Lo-Fi channels
- somafm      : Search & play SomaFM channels
- radioapi    : Search & play Radio-Browser API channels
+
+    now      : Return a shareable URL to the "now listening" playlist
+    lofi     : Search & play Lo-Fi channels
+    somafm   : Search & play SomaFM channels
+    radioapi : Search & play Radio-Browser API channels
+    ntsradio : Search & play NTS-Radio API channels
+    custom   : Search & play your custom feeds (channels, playlists, ...)
 *tips: If unsure about where to begin, start: mpvc-fzf -p 'kupla mirage'
 ```
 
-[^install]: Skip directly to [Installation](#Installation) to try mpvc
+[^install]: Skip directly to [Installation](#installation) to try mpvc
 

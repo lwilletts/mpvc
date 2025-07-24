@@ -8,13 +8,13 @@
 #
 
 PROGNAME=${0##*/}
-PROGVERSION="v1.6"
+PROGVERSION="v1.7"
 PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
 
 set -euf
 
-# See https://ffmpeg.org/ffmpeg-formats.html#Metadata-1
+# See https://ffmpeg.org/ffmpeg-formats.html#ffmetadata
 mpvc_chapter_file()
 {
     chaptersdir="$HOME/.config/mpvc/chapters/"
@@ -40,45 +40,57 @@ mpvc_chapter_info()
     ' "$chaptersfile"
 }
 
-# usage: mpvc_chapter_gen < chapterlist.txt with timepos (MM:SS) title entries
+# usage: mpvc_chapter_gen < chapterlist.txt with entries format: (HH:MM:SS) title (time can be relative or absolute)
 mpvc_chapter_gen()
 {
     chaptersfile=${1:-$(mpvc_chapter_file)}
+    isabsolute=${2:-1}
 
     while read -r line
     do
-        timepos=$(echo "$line" | awk -v otp="${otimepos:-0}" '{ tp=$1; if (tp ~ ":") { split(tp, a, ":"); tp = a[1]*60 + a[2] } print otp + tp; }')
+        tpos=$(echo "$line" | awk -v otp="${otpos:-0}" -v isabsolute="$isabsolute" '
+            /^[0-9]{1,2}:[0-9]{1,2}(:[0-9]{1,2})?/ {
+                tp=$1
+                n=split(tp, a, ":")
+                if (n == 2) tp = a[1]*60 + a[2]
+                if (n == 3) tp = a[1]*60*60 + a[2]*60 + a[3]
+
+                print (isabsolute ? 0 : otp) + tp
+            }
+        ')
         title=$(echo "$line" | awk '{ sub($1" *", ""); print }')
-        mpvc_chapter_add_new "$chaptersfile" "$timepos" "$title"
-        otimepos=$timepos
+        mpvc_chapter_add_new "$chaptersfile" "$tpos" "$title"
+        otpos=$tpos
     done
 
     #cat "$chaptersfile"
 }
 
-mpvc_chapter_merge()
+mpvc_chapter_merge() # usage: merge srcfile.opus metadata.txt dstfile.opus
 {
-    file="$1"
-    tmpfile="/tmp/$(basename "$file")"
-    metadatafile="/tmp/$(basename "$file")-metadata.txt"
+    srcfile="${1:-}"
+    metafile="${2:-}"
+    dstfile="${3:-/tmp/$(basename "$srcfile")}"
 
-    # -map_metadata 0 -map_metadata:s:v 0:s:v -map_metadata:s:a 0:s:a
-    if [ ! -e "$metadatafile" ];
+    if [ ! -e "$srcfile" ]; then usage; fi
+
+    if [ ! -e "$metafile" ];
     then
-        ffmpeg -v quiet -i "$file" -f ffmetadata - > "$metadatafile"
-        cat "$(mpvc_chapter_file)" >> "$metadatafile"
+        # -map_metadata 0 -map_metadata:s:v 0:s:v -map_metadata:s:a 0:s:a
+        ffmpeg -v quiet -i "$srcfile" -f ffmetadata - > "$metafile"
+        cat "$(mpvc_chapter_file)" >> "$metafile"
     fi
-    ffmpeg -i "$file" -i "$metadatafile" -map_metadata 1 -codec copy "$tmpfile"
+    ffmpeg -i "$srcfile" -i "$metafile" -map_metadata 1 -codec copy "$dstfile"
 }
 
-# usage: mpvc_chapter_add [timepos] [title]
+# usage: mpvc_chapter_add [tpos] [title]
 mpvc_chapter_add()
 {
     chaptersfile=$1; shift
 
-    timepos=$(mpvc get time-pos)
-    timepos=${timepos%%.*}
-    mpvc_chapter_add_new "$chaptersfile" "$timepos" "$@"
+    tpos=$(mpvc get time-pos)
+    tpos=${tpos%%.*}
+    mpvc_chapter_add_new "$chaptersfile" "$tpos" "$@"
 }
 
 # usage: mpvc_chapter_add_new [title], generates a ffmpeg metadata chapters file
@@ -86,7 +98,7 @@ mpvc_chapter_add_new()
 {
 
     chaptersfile=$1; shift
-    timepos=$1; shift
+    tpos=$1; shift
     path=$(mpvc get path)
     percentpos=$(mpvc get percent-pos)
     mediatitle=$(mpvc get media-title)
@@ -102,14 +114,14 @@ title=$mediatitle
 #[CHAPTER]
 #TIMEBASE=1/1
 #START=0
-#END=$timepos
+#END=$tpos
 #title=$@
 EOF
 
     fi
 
     start_time=$(awk -F'=' 'BEGIN{s=0} /^END=[0-9]+/ {s=$2} END{print s}' "$chaptersfile")
-    end_time=$timepos
+    end_time=$tpos
 
     if [ "$#" -gt 0 ]
     then
@@ -131,10 +143,10 @@ EOF
 mpvc_chapter_load()
 {
     track=$(mpvc get playlist-pos)
-    timepos=$(mpvc get time-pos)
+    tpos=$(mpvc get time-pos)
     mpvc set chapters-file "$(mpvc_chapter_file)"
     mpvc play "$track"
-    mpvc delay set time-pos "$timepos"
+    mpvc delay set time-pos "$tpos"
 }
 
 mpvc_chapter_reset()
@@ -145,10 +157,10 @@ mpvc_chapter_reset()
 mpvc_chapter_clear()
 {
     track=$(mpvc get playlist-pos)
-    timepos=$(mpvc get time-pos)
+    tpos=$(mpvc get time-pos)
     mpvc set chapters-file ''
     mpvc play "$track"
-    mpvc delay set time-pos "$timepos"
+    mpvc delay set time-pos "$tpos"
 }
 
 mpvc_chapter_list()

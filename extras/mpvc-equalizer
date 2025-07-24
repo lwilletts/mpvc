@@ -9,7 +9,7 @@
 
 PROGNAME=${0##*/}
 PROGDIR=${0%/*}
-PROGVERSION="v1.6"
+PROGVERSION="v1.7"
 PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
 
@@ -204,7 +204,7 @@ usage: $PROGNAME opts # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
  reset  : Resets equalizer settings (set af gains to 0)
  clear  : Clears equalizer settings (clear af)
  preset : Show/Set equalizer settings preset
- values : Show equalizer settings as float values 
+ values : Show equalizer settings as float values
  bars   : Show equalizer settings as graph bars
  json   : Show equalizer settings as JSON
 *tips: If unsure about where to begin, start with: $PROGNAME preset

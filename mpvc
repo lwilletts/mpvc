@@ -8,7 +8,7 @@
 
 PROGNAME=${0##*/}
 PROGDIR=${0%/*}
-PROGVERSION="v1.6"
+PROGVERSION="v1.7"
 PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
 SITEURL="https://gmt4.github.io/mpvc"
@@ -23,13 +23,13 @@ usage: $PROGNAME opts # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
  -s | --stop | stop       : Always stop playback.
  -P | --play | play       : Always start playback.
  -p | --toggle            : Toggle playback.
-    | --next              : Jump to next entry in the playlist
-    | --prev              : Jump to previous entry in the playlist
+    | --next | next       : Jump to next entry in the playlist
+    | --prev | prev       : Jump to previous entry in the playlist
  -i | --playlist          : Print filenames of tracks to fit within terminal.
  -I | --fullplaylist      : Print all filenames of tracks in current playlist.
- -v | --vol               : Increase/decrease volume relative to current volume.
+ -v | --vol | vol         : Increase/decrease volume relative to current volume.
  -h | --help              : Prints the short help.
- -H | --help-long         : Prints the long help.
+ -H | --help-long         : Prints the long help (tip: mpvc -H 2>&1 | less).
 EOF
 
     if [ $# -gt 0 ]; then
@@ -77,6 +77,7 @@ EOF
  togglev                  : Toggle MPV video property.
  togglew                  : Toggle MPV window property.
  togglei                  : Toggle MPV idle property.
+ toggler | rotate         : Toggle MPV video-rotate property (values 0 90 180 270)
  cycle                    : Toggle/Cycle through MPV property values.
  idleloop                 : Listen to MPV events on $PROGNAME socket.
  observe                  : Observe property in MPV events on $PROGNAME socket.
@@ -93,6 +94,9 @@ EOF
  (--)?metadata            : Retrieve current playing media metadata
  (--)?filename            : Retrieve current playing media filename
  (--)?replay              : Replay current playing media
+
+ tlist | track-list       : Output current track-list
+ tlistj| track-list-json  : Output current track-list (json)
 
  cprev | chapter-prev     : Jump to previous entry in the chapter-list
  cnext | chapter-next     : Jump to next entry in the chapter-list
@@ -141,28 +145,29 @@ die()  { e=$1; shift; warn "$@"; exit "$e"; }
 
 mpvc_defaults()
 {
-    XDG_CACHE_HOME=${XDG_CACHE_HOME:-"$HOME/.cache"}
-    MPVC_CACHE_DIR="${MPVC_CACHE_DIR:-$XDG_CACHE_HOME/mpvc}"
+    : "${XDG_CACHE_HOME:="$HOME/.cache"}"
+    : "${MPVC_CACHE_DIR:=$XDG_CACHE_HOME/mpvc}"
 
-    XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}
-    MPVC_CONFIG_DIR="${MPVC_CONFIG_DIR:-$XDG_CONFIG_HOME/mpvc}"
-    MPVC_STASH_DIR="${MPVC_STASH_DIR:-$MPVC_CONFIG_DIR/stash}"
+    : "${XDG_CONFIG_HOME:="$HOME/.config"}"
+    : "${MPVC_CONFIG_DIR:=$XDG_CONFIG_HOME/mpvc}"
+    : "${MPVC_STASH_DIR:=$MPVC_CONFIG_DIR/stash}"
 
-    MPVC_DATABASE="${MPVC_DATABASE:-$MPVC_CONFIG_DIR/db.m3u}"
-    MPVC_PLAYLIST="${MPVC_PLAYLIST:-$MPVC_CONFIG_DIR/playlist}"
-    MPVC_CONFIG="${MPVC_CONFIG:-$MPVC_CONFIG_DIR/mpvc.conf}"
-    MPVC_SOCKET="${MPVC_SOCKET:-$MPVC_CONFIG_DIR/mpvsocket0}"
-    MPVC_CURL_CACHE="${MPVC_CURL_CACHE:-$MPVC_CONFIG_DIR/curl-cache.txt}"
-    MPVOPTIONS="${MPVOPTIONS:---no-audio-display --no-input-terminal}"
-    MPVC_MPV="${MPVC_MPV:-mpv}"
-    MPVC_SOCAT="${MPVC_SOCAT:-socat}"
+    : "${MPVC_DATABASE:=$MPVC_CONFIG_DIR/db.m3u}"
+    : "${MPVC_PLAYLIST:=$MPVC_CONFIG_DIR/playlist}"
+    : "${MPVC_PLAYLIST_TRUNC:=1}"
+    : "${MPVC_CONFIG:=$MPVC_CONFIG_DIR/mpvc.conf}"
+    : "${MPVC_SOCKET:=$MPVC_CONFIG_DIR/mpvsocket0}"
+    : "${MPVC_CURL_CACHE:=$MPVC_CONFIG_DIR/curl-cache.txt}"
+    : "${MPVOPTIONS:=--no-audio-display --no-input-terminal}"
+    : "${MPVC_MPV:=mpv}"
+    : "${MPVC_SOCAT:=socat}"
 
-    NO_COLOR="${NO_COLOR:-}"
-    IMAGEFLAG="${IMAGEFLAG:-}"
-    QUIETFLAG="${QUIETFLAG:-}"
-    MPVC_LOCAL_CACHE="${MPVC_LOCAL_CACHE:-false}"
-    MPVC_FMTSTR="${MPVC_FMTSTR:-}"
-    MPVC_FMTSTR_LOFI=${MPVC_FMTSTR_LOFI:-'[%status%] %statuslofi% %title% 🎶 %time%/%length% #%position%/%playlistlength% %=chapter%/%chapters% %mutelofi%%volume%% %singlelofi%%repeatlofi%%idlelofi%%videolofi%'}
+    : "${NO_COLOR:=}"
+    : "${IMAGEFLAG:=}"
+    : "${QUIETFLAG:=}"
+    : "${MPVC_LOCAL_CACHE:=false}"
+    : "${MPVC_FMTSTR:=}"
+    : "${MPVC_FMTSTR_LOFI:='[%status%] %statuslofi% %title% 🎶 %time%/%length% #%position%/%playlistlength% %=chapter%/%chapters% %mutelofi%%volume%% %singlelofi%%repeatlofi%%idlelofi%%videolofi%'}"
     MPVC_FMTSTR_DFLT="\
 %artist% - %title% \\r\
 [%status%] #%position%/%playlistlength% %time%/%length% (%percentage%%) \\r\
@@ -191,7 +196,7 @@ mpvc_config()
     if [ -r "$MPVC_CONFIG" ]; then
         . "$MPVC_CONFIG"
     else
-        echo "# ${MPVC_CONFIG##*/} $PROGNAME $PROGVERSION" > "${MPVC_CONFIG}"
+        echo "# ${MPVC_CONFIG##*/} $PROGNAME $PROGVERSION (see docs/mpvc.conf for sample config)" > "${MPVC_CONFIG}"
     fi
 }
 
@@ -237,11 +242,11 @@ mpvc_ytquery_json() {
         filename="${i:-}"
         filename=${filename##'"'}; filename=${filename%%'"'}
         case "$filename" in
-        https://youtu.be/watch*|https://youtube.com/watch*|https://www.youtube.com/watch*)
-            filename="$(echo "$filename" | sed 's|\(www.\)\?youtube.com|youtu.be|; s|/watch/\??v=|/|')"
+        https://youtu.be/watch*|https://youtube.com/watch*|https://www.youtube.com/watch*|https://m.youtube.com/watch*)
+            filename="$(echo "$filename" | sed 's/youtube.com/youtu.be/; s/\(m\|www\).youtu.be/youtu.be/; s|/watch/\??v=|/|')"
             result=$(mpvc_curl_cache_json "$filename")
             ;;
-        https://youtu.be/*|https://youtube.com/*|https://www.youtube.com/*)
+        https://youtu.be/*|https://youtube.com/*|https://www.youtube.com/*|https://m.youtube.com/*)
             result=$(mpvc_curl_cache_json "$filename")
             ;;
         https://yewtu.be/watch*)
@@ -276,7 +281,8 @@ mpvc_getjson() {
 }
 
 mpvc_socklist() {
-    for f in $(find "$MPVC_CONFIG_DIR" -type s); do
+    for f in $(set +f; printf '%s\n' "$MPVC_CONFIG_DIR"/*); do
+        if [ ! -S "$f" ]; then continue; fi
         echo "$f:	idle-active=$(MPVC_SOCKET=$f mpvc_get idle-active)"
     done
 }
@@ -305,6 +311,26 @@ mpvc_observe() { echo "{ \"command\": [ \"observe_property_string\", 1, \"$1\", 
 mpvc_idle()    { mpvc_observe "$1" | awk "/$1/ { print; exit }"; }
 
 ## Playlist Functions ##########################################################
+
+mpvc_list_json()
+{
+         grep -o '"data":\[.*\]' |
+         sed -e 's/^"data"://;' \
+             -e 's|{"title"|\n    {"title"|g;' \
+             -e '/^\[\]$/ !s/]$/\n]/;'
+         #    -e 's/","/", "/g; s/":/": /g'
+}
+
+mpvc_get_tracklist() {
+    mpvc_getr "track-list" | mpvc_list_json
+    QUIETFLAG=true
+}
+
+mpvc_get_tracklist_json() {
+    mpvc_getr "track-list" |
+        grep -Eo '"[^"]*" *(: *([0-9]*|"[^"]*")[^{}\["]*|,)?|[^"\]\[\}\{]*|\{|\},?|\[|\],?|[0-9 ]*,?'
+    QUIETFLAG="true"
+}
 
 mpvc_get_playlist_json() {
     mpvc_getr "playlist" |
@@ -351,18 +377,17 @@ mpvc_get_playlist() {
     if [ -z "$lcount" ]; then return; fi
     firstlast=$(mpvc_get_terminal_height "$lpos" "$lcount")
     mpvc_get_playlist_once |
-        awk -v mpvc="$0" -v lpos="$lpos" -v cols="$(mpvc_tty_cols)" -v firstlast="$firstlast" \
+        awk -v mpvc="$0" -v lpos="$lpos" -v cols="$(mpvc_tty_cols)" -v firstlast="$firstlast" -v istrunc="$MPVC_PLAYLIST_TRUNC" \
         '
         BEGIN {
-            # truncate lines x cols when interactive (configurable) TBD
-            isinteractive=1
+            # truncate lines x cols when interactive (configurable)
             split(firstlast, flarray, " ")
             first=flarray[1]; last=flarray[2]
         }
         function truncate(str)
         {
             trunclen=cols - (length("123 ")+length(" ...\n"))
-            if (isinteractive && length(str) > trunclen)
+            if (istrunc && length(str) > trunclen)
                 return sprintf("%.*s ...", trunclen, str)
             return str
         }
@@ -492,19 +517,21 @@ mpvc_stash() {
         apply_current)
             while read -r line; do
                 case "$line" in
-                    "# $PROGNAME "*) quietcheck warn "$line";;
-                    "mpvc --mpv")    quietcheck mpvc_mpv;;
-                    "mpvc --wait")   quietcheck mpvc_wait;;
-                    "mpvc mpv")      quietcheck mpvc_mpv;;
-                    "mpvc wait")     quietcheck mpvc_wait;;
-                    "mpvc cmd "*)    quietcheck mpvc_cmd ${line##mpvc cmd };;
-                    "mpvc set "*)    quietcheck mpvc_set ${line##mpvc set } || true;;
-                    "mpvc add "*)    quietcheck mpvc_appendtrack "${line##mpvc add }";;
+                    "# $PROGNAME "*) quietcheck warn "$line" ;;
+                    #"mpvc --mpv")    quietcheck mpvc_mpv ;;
+                    #"mpvc --wait")   quietcheck mpvc_wait ;;
+                    #"mpvc cmd "*)    quietcheck mpvc_cmd ${line##mpvc cmd } ;;
+                    "mpvc mpv")      quietcheck mpvc_mpv ;;
+                    "mpvc wait")     quietcheck mpvc_wait ;;
+                    "mpvc cmd playlist-clear")    quietcheck mpvc_cmd playlist-clear ;;
+                    "mpvc cmd playlist-remove 0") quietcheck mpvc_cmd playlist-remove 0 ;;
+                    "mpvc set "*)    quietcheck mpvc_set ${line##mpvc set } || true ;;
+                    "mpvc add "*)    quietcheck mpvc_appendtrack "${line##mpvc add }" ;;
                 esac
             done
             ;;
         current|curr)
-            echo "# $PROGNAME stash $MPVC_STASH_DIR/$1 # $PROGURL @version $PROGVERSION"
+            echo "# $PROGNAME stash ${MPVC_STASH_DIR##$MPVC_CONFIG_DIR/}/$1 # $PROGURL @version $PROGVERSION"
             echo "mpvc mpv"
             echo "mpvc wait"
             echo "mpvc set pause yes"
@@ -537,7 +564,7 @@ mpvc_stash() {
         load|append)
             # apply a stash while keeping the current playlist (append to playlist)
             RE='^mpvc cmd \(playlist-clear\|playlist-remove 0\)$\|^mpvc set \(playlist-pos\|playback-time\) [.0-9]\+$'
-            grep -v "$RE" $([ -n "$1" ] && echo "$MPVC_STASH_DIR/$1") | mpvc_stash apply_current
+            grep -v "$RE" "$([ -n "$1" ] && echo "$MPVC_STASH_DIR/$1")" | mpvc_stash apply_current
             ;;
         replay)
             mpvc_stash current "replay" | mpvc_buffer_stdin | mpvc_stash apply
@@ -620,14 +647,16 @@ mpvc_set_time() {
 }
 
 mpvc_set_track() {
-    isInt "$1" || return 1
+    track="$1"
+    isInt "$track" || [ "$track" = "$" ] || return 1
     lpos=$(mpvc_get playlist-pos)
     lcount=$(mpvc_get playlist-count)
     if [ "$lcount" = "0" ]; then return; fi
     if [ "$lpos" = "null" ]; then lpos=0; fi
+    if [ "$track" = "$" ]; then track="$(( lcount - 1 ))"; fi
     case "$2" in
-        absolute) newpos=$(( $1 % lcount )) ;;
-        relative) newpos=$(( (lpos + $1) % lcount )) ;;
+        absolute) newpos=$(( track % lcount )) ;;
+        relative) newpos=$(( (lpos + track) % lcount )) ;;
     esac
     mpvc_set "playlist-pos" "$newpos"
 }
@@ -692,8 +721,7 @@ mpvc_set_volume() {
 mpvc_nocolor()
 {
     NO_COLOR_BAK=${NO_COLOR}
-    export NO_COLOR=true
-    "$@"
+    NO_COLOR=true "$@"
     NO_COLOR=${NO_COLOR_BAK}
 }
 
@@ -749,16 +777,15 @@ mpvc_clear_playlist() {
     echo "Playlist cleared."
 }
 
+mpvc_rotate() {
+    mpvc_ecmdr "cycle-values" video-rotate 0 90 180 270
+}
+
 ## Chapter functions ##########################################################
 
 mpvc_chapter_list_json()
 {
-     mpvc_getr chapter-list |
-         grep -o '"data":\[.*\]' |
-         sed -e 's/^"data"://;' \
-             -e 's|{"title"|\n    {"title"|g;' \
-             -e '/^\[\]$/ !s/]$/\n]/;'
-         #    -e 's/","/", "/g; s/":/": /g'
+     mpvc_getr "chapter-list" | mpvc_list_json
 }
 
 mpvc_chapter_list()
@@ -861,10 +888,10 @@ mpvc_print_status() {
             gsub("%statuslofi%", "${?pause==yes:≡}${?pause==no:►}${!pause:NA}");
             gsub("%mutelofi%", "${?mute==yes:🔇}${?mute==no:🔊}${!mute:NA}");
 
-            gsub("%singlelofi%", "${?loop-file==inf:⇌}${!loop-file==inf: }${!loop-file:NA}")
-            gsub("%repeatlofi%", "${?loop-playlist==inf:↻}${!loop-playlist==inf: }${!loop-playlist:NA}")
+            gsub("%singlelofi%", "${!loop-file==no:⇌}${?loop-file==no:_}${!loop-file:NA}")
+            gsub("%repeatlofi%", "${?loop-playlist==inf:↻}${!loop-playlist==inf:_}${!loop-playlist:NA}")
+            gsub("%idlelofi%", "${?idle==yes:∞}${!idle==yes:_}${!idle:NA}")
             gsub("%videolofi%", "${!video==no:📀}${?video==no:🎧}${!video:NA}")
-            gsub("%idlelofi%", "${?idle==yes:∞}${!idle==yes:∅}${!idle:NA}")
 
             gsub("%status%", "${?pause==yes:pause}${?pause==no:play}${!pause:NA}");
             gsub("%title%", "${media-title}")
@@ -975,7 +1002,7 @@ mpvc_validate_socket() {
     if ! quiet command -v "$MPVC_MPV"; then
         die 4 "$PROGNAME: Error: No mpv found. Install to continue."
     fi
-    if ! quiet command -v "$MPVC_SOCAT" && ! quiet command -v nc; then
+    if ! quiet command -v "$MPVC_SOCAT"; then
         die 4 "$PROGNAME: Error: No socat found. Install to continue."
     fi
     # test if socket exists
@@ -986,10 +1013,6 @@ mpvc_validate_socket() {
     if [ "$(mpvc_get pause)" = "" ]; then
         die 3 "$PROGNAME: Error: No files added to ${MPVC_SOCKET##"$HOME/"}."
     fi
-    # test if socat works on socket
-#    if ! oquiet mpvc_sockcmd '"get_property_string", "idle-active",'; then
-#        die 4 "$PROGNAME: Error: $MPVC_SOCAT failed. Install socat to continue."
-#    fi
 }
 
 mpvc_get_version() {
@@ -1002,7 +1025,7 @@ mpvc_get_version() {
 
 mpvc_delay() { sleep "${1:-0.1}"; }
 mpvc_wait()  { for i in $(seq 0 100); do mpvc_delay "${1:-}"; [ -n "$(mpvc_get idle-active)" ] && break; done; }
-mpvc_mpv() { mpvc_startmpv --really-quiet --idle=once "$@"; }
+mpvc_mpv() { mpvc_startmpv --really-quiet --idle=once ; } # "$@"
 # mpvc_mpv: exec & wait until mpv starts up
 mpvc_startmpv() {
     if [ -z "$(mpvc_get idle-active)" ]; then
@@ -1034,24 +1057,15 @@ main() {
         if [ $# -eq 0 ]; then break; fi
         case "${1:-}" in
             # mpc compatibility layer
-            play|start|resume)
-                shift
-                case "${1:-}" in
-                    '') ;;
-                    $) mpvc_set_track "$(( $(mpvc_get playlist-count) - 1 ))" absolute;;
-                    *) mpvc_set_track "${1:-}" absolute;;
-                esac
-                mpvc_always_play
-            ;;
-            vol|volume)     shift; mpvc_set_volume "${1:-}" ;;
             repeat)         shift; mpvc_toggle_loop "loop-playlist" "${1:-}" ;;
             single)         shift; mpvc_toggle_loop "loop-file" "${1:-}" ;;
             pause)          mpvc_set "pause" "yes" ;;
-            next|--next)    mpvc_set_track 1 relative ;;
-            prev|--prev)    mpvc_set_track -1 relative;;
+            --next|next)    mpvc_set_track 1 relative ;;
+            --prev|prev)    mpvc_set_track -1 relative;;
             move|mv)        shift; mpvc_move_track "${1:-}" "${2:-}" ;;
             mute)           mpvc_set "mute" "yes" ;;
             unmute)         mpvc_set "mute" "no" ;;
+
             pretty)         die 1 "$PROGNAME: Error $* not implemented" ;;
             find)           die 1 "$PROGNAME: Error $* not implemented" ;;
 
@@ -1059,17 +1073,15 @@ main() {
             -A|--playnext|playnext)  shift; mpvc_play_next "$@" ;;
             -n|--playnow|playnow)    shift; mpvc_play_now "$@" ;;
                --playrand|playrand)  shift; mpvc_play_random "$@" ;;
-            #replace|--replace) shift; mpvc_replacetracks "$@" ;;
-
-            # consume) to implement # add on|off toggle
-            # random) MPV doesn't have this control option!
 
             # GNU-style options
+            -s|--stop|stop)                  mpvc_set "pause" "yes"; mpvc_set_time "absolute" 0 ;;
+            -P|--play|play|start|resume)     shift; mpvc_set_track "${1:-}" absolute; mpvc_always_play ;;
             --seekrand|seekrand)             shift; mpvc_seek_random;;
             -t|--seek|seek)                  shift; mpvc_set_time "relative" "${1:-}" ;;
             -T|--time|time)                  shift; mpvc_set_time "absolute" "${1:-}" ;;
-            -v|--vol)                        shift; mpvc_add "volume" "${1:-}"  ;;
-            -V|--volume)                     shift; mpvc_set "volume" "${1:-}"  ;;
+            -v|--vol|vol)                    shift; mpvc_set_volume "${1:-}"  ;;
+            -V|--volume|volume)              shift; mpvc_set_volume "${1:-}"  ;;
             -x|--speed|speed)                shift; mpvc_add "speed" "${1:-}"  ;;
             -X|--speedval)                   shift; mpvc_set "speed" "${1:-}"  ;;
             -j|--track|track)                shift; mpvc_set_track "${1:-}" relative  ;;
@@ -1078,7 +1090,7 @@ main() {
             -o|--save|save)                  shift; mpvc_save_playlist "${1:-}" ;;
             --load|load)                     shift; mpvc_load_playlist      ;;
 
-            mpv|--mpv)                       shift; mpvc_mpv "$@";;
+            mpv|--mpv)                       shift; mpvc_mpv ;; # "$@"
             --current|current)               ;;
             --loadc|loadc)                   shift; mpvc_load_playlist "clear"    ;;
             --saven|saven)                   shift; mpvc_get_playlist_once "numbered"; QUIETFLAG=true;;
@@ -1094,6 +1106,7 @@ main() {
             --togglew|togglew)               shift; mpvc_cycle "force-window" ;;
             --togglei|togglei)               shift; mpvc_cycle "idle" ;;
             --togglef|togglef)               shift; mpvc_cycle "fullscreen" ;;
+            --toggler|toggler|rotate)        shift; mpvc_rotate "$@"; QUIETFLAG=true ;;
             --idle|idle)                     shift; mpvc_idle "${1:-}"; QUIETFLAG=true ;;
             --idleloop|idleloop)             shift; mpvc_idleloop "${1:-}"; QUIETFLAG=true ;;
             --observe|observe)               shift; mpvc_observe "${1:-}"; QUIETFLAG=true ;;
@@ -1129,6 +1142,9 @@ main() {
             cloop|--chapter-loop|chapter-loop)            mpvc_chapter_cloop ;;
             creplay|--chapter-replay|chapter-replay)      mpvc_chapter_replay ;;
 
+            tlist|--track-list|track-list)                mpvc_get_tracklist;;
+            tlistj|--track-listjson|track-list-json)      mpvc_get_tracklist_json;;
+
             clist|--chapter-list|chapter-list)            mpvc_chapter_list "short";;
             clistf|--chapter-list-full|chapter-list-full) mpvc_chapter_list "full";;
             clistn|--chapter-list-nr|chapter-list-nr)     mpvc_chapter_list "numbered";;
@@ -1138,10 +1154,8 @@ main() {
 
             -k|--kill|kill)                  mpvc_ecmdr "quit"; QUIETFLAG=true ;;
             -K|--killall|killall)            quiet pkill -9 -f "$MPVC_MPV "; QUIETFLAG=true ;;
-            -s|--stop|stop)                  mpvc_set "pause" "yes"; mpvc_set_time "absolute" 0 ;;
-            -P|--play|play)                  mpvc_always_play ;;
             -p|--toggle|toggle)              mpvc_cycle "pause" ;;
-            -m|--mute)                       mpvc_cycle "mute"                ;;
+            -m|--mute)                       mpvc_cycle "mute"  ;;
             -i|--playlist|playlist)          mpvc_get_playlist "";            ;;
             -I|--fullplaylist|fullplaylist)  mpvc_get_playlist "full";        ;;
                --playlistjson|playlistjson)  mpvc_get_playlist_json ""        ;;
@@ -1163,6 +1177,7 @@ main() {
             --hifi|hifi)                     MPVC_FMTSTR="$MPVC_FMTSTR_DFLT" ;;
             --lowfi|lowfi)                   MPVC_FMTSTR="$MPVC_FMTSTR_LOFI" ;;
             --status|status)                 ;;
+            --cstatus|cstatus)               MPVC_FMTSTR=$(echo "$MPVC_FMTSTR"|sed 's/%title%/%chapter%/') ;;
 
             # global argument parsing
             -f|--format)                     shift; MPVC_FMTSTR="${1:-}"       ;;

@@ -99,6 +99,9 @@ Logbook Entries
     <li> <a href="#logbook-20240505">#20240505 Introducing mpvc-osd: interfacing mpvc with a 4x20 USB LCD, 5 May 2024</a></li>
     <li> <a href="#logbook-20240704">#20240704 Some notes on my current mpvc setup, 4 July 2024</a></li>
     <li> <a href="#logbook-20241026">#20241026 On mpvc lowfi and mpvc-fzf URL browser, 26 October 2024</a></li>
+
+    2025
+    <li> <a href="#logbook-20250616">#20250616 On customizing mpvc-fzf key-bindings, 16 June 2025</a></li>
 </ul>
 
 <hr />
@@ -399,42 +402,7 @@ Check <a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-web">extras/
 </p>
 
 <p>
-As a minor thing I've started aliasing <code>mpvc</code> commands that I use frequently to their "m" counterparts in bash, not perfect, but handy enough, and saves some typing:
-<pre>
-$ grep mpvc ~/.bashrc
-    alias m="mpvc"
-    alias mh="alias | grep mpvc"
-    alias mi="mpvc -i"
-    alias mI="mpvc -I"
-    alias ma="mpvc-autostart"
-    alias mc="mpvc-chapter"
-    alias mci="mpvc chapter-list"
-    alias mcn="mpvc chapter-list-nr"
-    alias mcI="mpvc chapter-list-full"
-    alias me="mpvc-equalizer"
-    alias mtt="mpvc-tui"
-    alias mtth="mpvc-tui -H"
-    alias mm="mpvc-mpris"
-    alias mw="mpvc-web"
-    alias mff="mpvc-fzf"       # fzf on mpvc
-    alias mffa="mpvc-fzf -a"   # fzf on mpvc stash-list
-    alias mffb="mpvc-fzf -b"   # fzf on mpvc ytdl-archive URL
-    alias mffB="mpvc-fzf -B"   # get on mpvc ytdl-archive URL
-    alias mffc="mpvc-fzf -c"   # fzf on mpvc chapter-list
-    alias mffd="mpvc-fzf -d"   # fzf on -d /path/to/music/
-    alias mffe="mpvc-fzf -e"   # fzf on mpvc-equalizer
-    alias mfff="mpvc-fzf -f"   # fzf on mpvc play-list
-    alias mffF="mpvc-fzf -F"   # fzf on stdin input
-    alias mffg="mpvc-fzf -g"   # fzf get/fetch ytid URL to ytdl-archive
-    alias mffG="mpvc-fzf -G"   # bis
-    alias mffl="mpvc-fzf -l"   # fzf over local files
-    alias mffo="mpvc-fzf -o"   # fzf search and return first ytid URL
-    alias mffp="mpvc-fzf -p"   # fzf search and add ytid URLs from Invidious
-    alias mffz="mpvc-fzf -z"   # fzf search for songs related to the current
-    alias xargn="xargs -n1"    # xargn mpvc cmd
-    rseq()  { seq "$@" | tac; } # rseq | xargn mpvc cmd
-    mffo1() { mpvc add $(mpvc-fzf -o "$@" | mpvc-fzf -1); }
-</pre>
+As a minor thing I've started aliasing <code>mpvc</code> commands that I use frequently to their "m" counterparts in bash, suchs as <code>alias m="mpvc"</code>, not perfect, but handy enough, and saves some typing: see the bash_aliases fulllist at <a href="bash_aliases.mpvc">.bash_alises.mpvc</a>.
 </p>
 
 <p>
@@ -649,17 +617,25 @@ Well, been "moving fast &amp; breaking things" lately (there'll be more breakage
 
 <h3 id="logbook-20240405">Introducing mpvc-chapter: helper for managing chapters, 5 Apr 2024</h3>
 <p>
-Mpv does a great job on handling chapters, however, sometimes you end up wanting to modify chapters to existing media, or media that lacks chapters. This is the purpose of mpvc-chapter: managing chapter-files. Long story short, basically this boils down to keeping chapter-file under <code>$HOME/.config/mpvc/chapters/</code>. <code>mpvc-chapter -h</code> shows the available cmds:
+Mpv does a great job on handling chapters stored as metadata in media files, however, sometimes you end up wanting to modify chapters to existing media, or media that lacks chapters. This is the purpose of <code>mpvc-chapter</code>: managing chapter-files.
+</p>
+
+<p>
+Long story short, basically this boils down to managing <a href="https://ffmpeg.org/ffmpeg-formats.html#ffmetadata">ffmetadata</a> chapter-file under <code>$HOME/.config/mpvc/chapters/</code>. <code>mpvc-chapter -h</code> shows the available cmds:
 <ul>
     <li>
-    The most used is <code>mpvc-chapter load</code>, checks if a chapter-file exists for the current media, if the chapter-file exists then basically loads it with: <code>mpvc set chapters-file $(mpvc-chapter file)</code>.
+        <code>mpvc-chapter load</code>, checks if a chapter-file exists for the current media, if the chapter-file exists then basically loads it with: <code>mpvc set chapters-file $(mpvc-chapter file)</code>.
     </li>
     <li>
-    The chapter-file can be fetched, or written using a text-editor, or using <code>mpvc-chapter add|gen</code>, the "add" adds a new chapter each time it is invoked, while "gen" gets an input file with one line per chapter with each line format being "timepos chapter-title" where timepos are incremental timestamps in MM:SS, and generates a chapter-file.
+        <code>mpvc-chapter add</code>: Adds a new chapter each time it is invoked
     </li>
     <li>
-    Last, and not so much well tested, "merge" command merges the chapter-file into a media file.
+        <code>mpvc-chapter gen</code> gets an input file with one line per chapter with each line format being "timepos chapter-title" where timepos are incremental timestamps in MM:SS, and generates a chapter-file
     </li>
+    <li>
+        <code>mpvc-chapter merge</code>: Last, once the chapter-file is ready, the "merge" command merges the chapter-file into the media file metadata.
+    </li>
+    Remember that the chapter-file is just that a text-file, so it can be fetched, read and written using a text-editor, or using <code>mpvc-chapter add|gen</code>
 </ul>
 
 <p>
@@ -724,6 +700,7 @@ Recently landed the commands <code>mpvc lowfi/hifi</code>, <code>lowfi</code> fe
 [play] ▷ Polaris 🎶 02:35/04:50 #3/33 🔊60% 🔂 🔄 🎧
 
 </pre>
+The one-line compressed format has some benefits, such as becoming easily integrable with terminal, multiplexers and window managers, configurable, and clutter-free among others.
 This goes hand in hand with the hability to browse HTTP/s server listings and add music as in:
 <pre>
 
@@ -744,6 +721,24 @@ The above <code>ctrl+[tyu]</code> shortcuts for mpvc-fzf work as well for local,
 
 </p>
 
+<h3 id="logbook-20250616">On customizing mpvc-fzf key-bindings, 16 June 2025</h3>
+
+<p>
+Until now the mpvc-fzf keybidings have been <code>hard-coded</code>, now these live where they belong in the <code>mpvc.conf</code> config file.
+This way anyone can <code>add/edit/delete</code> mpvc-fzf keybindings. I think this is relevant, since sometimes keybinding conflict, and, also support add new keybindings. Below is an excerpt of the current keybindings in <code>mpvc.conf</code>:
+
+<pre>
+$ cat mpvc.conf
+MPVC_FZF_CUSTOM_KEYBINDINGS=--bind="\
+shift-left:execute-silent(mpvc -q seek -1 &amp;),\
+shift-right:execute-silent(mpvc -q seek +1 &amp;),\
+shift-down:execute-silent(mpvc -q vol -1 &amp;),\
+shift-up:execute-silent(mpvc -q vol +1 &amp;),\
+ctrl-space:execute-silent(mpvc toggle &amp;)\
+"
+</pre>
+</p>
+
 <h2 id="gmt4-mpvc-logbook-the-end">The End</h2>
 
 Return to the <a href="#gmt4-mpvc-fork">Start</a>
@@ -753,7 +748,7 @@ Return to the <a href="#gmt4-mpvc-fork">Start</a>
 <hr/>
 <p>
 <span>
-    <em>📅 Sat, 26 Oct 2024 by <a href="https://gmt4.github.io">gmt4</a></em>
+    <em>📅 Mon, 16 Jun 2025 by <a href="https://gmt4.github.io">gmt4</a></em>
 </span>
 <span style="float: right;">
     <em>⚡ PoweredBy #HTML</em>

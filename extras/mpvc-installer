@@ -1,7 +1,6 @@
 #!/usr/bin/env sh
 #
 # @file mpvc-installer
-# @version v1.0
 # @description mpvc installer
 # @author gmt4 <gmt4 at github.com> (c) Copyright 2022 GPLv2+
 # @url github.com/gmt4/mpvc
@@ -9,7 +8,7 @@
 #
 
 PROGNAME=${0##*/}
-PROGVERSION="v1.6"
+PROGVERSION="v1.7"
 PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
 
@@ -88,9 +87,10 @@ mpvc_licenses()
 mpvc_link()
 {
     mkdir -p "$BINDIR"
-    for script in $SCRIPT;
+    if ln -v 2>&1 | grep -q 'ln: unknown option'; then lnops=-sfn; else lnops=-sfnv; fi
+    for f in $SCRIPT;
     do
-        ln -svfn "$(pwd)/$script" "$BINDIR";
+        ln "$lnops" "$(pwd)/$f" "$BINDIR";
     done
 }
 

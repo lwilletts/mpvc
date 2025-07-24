@@ -8,7 +8,7 @@
 #
 
 PROGNAME=${0##*/}
-PROGVERSION="v1.6"
+PROGVERSION="v1.7"
 PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
 SITEURL="https://gmt4.github.io/mpvc"
@@ -41,23 +41,30 @@ mpvctui_defaults()
     MPVC_TUI_CUP='\033[1;1H'
 
     # config defaults
-    NO_COLOR="${NO_COLOR:-}"
+    : "${XDG_CONFIG_HOME:="$HOME/.config"}"
+    : "${MPVC_CONFIG_DIR:=$XDG_CONFIG_HOME/mpvc}"
+    : "${MPVC_CONFIG:=$MPVC_CONFIG_DIR/mpvc.conf}"
 
-    MPVC_TUI_COLOR0="${MPVC_TUI_COLOR0:-$MPVC_TUI_CGREENL}"
-    MPVC_TUI_COLOR1="${MPVC_TUI_COLOR1:-$MPVC_TUI_CCYAN}"
-    MPVC_TUI_COLOR2="${MPVC_TUI_COLOR2:-$MPVC_TUI_CYELLOW}"
-    MPVC_TUI_UPDATEC=${MPVC_TUI_UPDATEC:-2}
-    MPVC_TUI_CLEARC=${MPVC_TUI_CLEARC:-4}
-    MPVC_TUI_ICON=${MPVC_TUI_ICON:-}
+    : "${MPVC_TUI_HISTORY:=$XDG_CONFIG_HOME/mpvc/mpvc-tui.history}"
+    : "${MPVC_TUI_SCROBBLER:=$XDG_CONFIG_HOME/mpvc/mpvc-tui.scb}"
 
-    MPVC_TUI_HEADER0=${MPVC_TUI_HEADER0:-$PROGNAME}
-    MPVC_TUI_TIPS=${MPVC_TUI_TIPS:-true}
-    MPVC_TUI_TERM=${MPVC_TUI_TERM:-xterm}
+    : "${MPVC_TUI_COLOR0:=$MPVC_TUI_CGREENL}"
+    : "${MPVC_TUI_COLOR1:=$MPVC_TUI_CCYAN}"
+    : "${MPVC_TUI_COLOR2:=$MPVC_TUI_CYELLOW}"
+    : "${MPVC_TUI_UPDATEC:=2}"
+    : "${MPVC_TUI_CLEARC:=4}"
+    : "${MPVC_TUI_ICON:=}"
+    : "${NO_COLOR:=}"
+
+    : "${MPVC_TUI_HEADER0:=$PROGNAME}"
+    : "${MPVC_TUI_TIPS:=true}"
+    : "${MPVC_TUI_TERM:=xterm}"
     MPVC_TUI_SHELL=$(readlink -f /proc/$$/exe)
 
-    MPVC_CMD_STATUS="${MPVC_CMD_STATUS:-status}"
-    MPVC_CMD_PLAYLIST="${MPVC_CMD_PLAYLIST:-playlist}"
-    MPVC_CMD_CHAPTERLIST=${MPVC_CMD_CHAPTERLIST:-chapter-list}
+    : "${MPVC_CMD_STATUS:=status}"
+    : "${MPVC_CMD_PLAYLIST:=playlist}"
+    : "${MPVC_CMD_CSTATUS:=cstatus}"
+    : "${MPVC_CMD_CHAPTERLIST:=chapter-list}"
 
     export MPVC_TUI_CLINE="${MPVC_TUI_CLINE:-$(( $(mpvc statussz) + 6 ))}"
 }
@@ -66,13 +73,6 @@ mpvctui_defaults()
 mpvctui_config()
 {
     mpvctui_defaults
-
-    XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}
-    MPVC_CONFIG_DIR="${MPVC_CONFIG_DIR:-$XDG_CONFIG_HOME/mpvc}"
-    MPVC_CONFIG="${MPVC_CONFIG:-$MPVC_CONFIG_DIR/mpvc.conf}"
-
-    MPVC_TUI_HISTORY="${MPVC_TUI_HISTORY:-$XDG_CONFIG_HOME/mpvc/mpvc-tui.history}"
-    MPVC_TUI_SCROBBLER="${MPVC_TUI_SCROBBLER:-$XDG_CONFIG_HOME/mpvc/mpvc-tui.scb}"
 
     # if not present, create config dir
     mkdir -p "$MPVC_CONFIG_DIR"
@@ -140,11 +140,20 @@ mpvctui_tips()
 
 mpvctui_watcher()
 {
+    chapters=$(equiet mpvc get chapters)
     mpvctui_header0 "${MPVC_TUI_HEADER0}$(mpvctui_tips)"
-    mpvctui_header1 "Status"
-    mpvc "${MPVC_CMD_STATUS}"
-    mpvctui_header1 "Playlist"
-    mpvc "${MPVC_CMD_PLAYLIST}"
+    if [ -n "$chapters" ] && [ "$chapters" != "null" ] && [ "$chapters" -ne 0 ]
+    then
+        mpvctui_header1 "Chapter Status"
+        mpvc "${MPVC_CMD_CSTATUS}"
+        mpvctui_header1 "Chapterlist"
+        mpvc "${MPVC_CMD_CHAPTERLIST}"
+    else
+        mpvctui_header1 "Status"
+        mpvc "${MPVC_CMD_STATUS}"
+        mpvctui_header1 "Playlist"
+        mpvc "${MPVC_CMD_PLAYLIST}"
+    fi
     mpvctui_header1 "Prompt"
 }
 
