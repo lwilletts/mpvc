@@ -551,6 +551,10 @@ mpvc_web_setup()
             mpvc_web_https
         fi
 
+        if [ -n "${MPVC_WEB_EXTRAS_URL:-}" ]; then
+            echo "# $PROGNAME Setup extras/url features (MPVC_WEB_EXTRAS_URL=$MPVC_WEB_EXTRAS_URL is set)"
+        fi
+
         if [ -n "${MPVC_WEB_DEV:-}" ]; then
             echo "# $PROGNAME Setup development/cli features (MPVC_WEB_DEV=$MPVC_WEB_DEV is set)"
         else
