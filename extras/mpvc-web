@@ -41,7 +41,7 @@ mpvc_web_defaults()
     : "${MPVC_WEB_SSL_ENABLE:=}"
     : "${MPVC_WEB_SSL_VERIFY:=0}"
     : "${MPVC_WEB_ARCHIVE_ENABLE:=}"
-    : "${MPVC_WEB_CAST_URL:=}"
+    : "${MPVC_WEB_EXTRAS_URL:=}"
     : "${MPVC_WEB_HTML_THEME:=}"
     : "${MPVC_WEB_HTML_REFRESH:=}"
     : "${MPVC_WEB_CSS_STYLE:=}"
@@ -339,12 +339,12 @@ mpvc_web_index()
         [
             <span>🎧</span>
             <a href="." name="top" ${MPVC_WEB_SHORTCUT_REFRESH}>$PROGNAME</a>
-            <a href="#status">#st</a>
-            <a href="#mpvc-web-playlist">#ls</a>
+            <a href="#status">#s</a>
+            <a href="#mpvc-web-playlist">#l</a>
             <a title="#now" href="/cgi-bin/mpvc?now-short">#n</a>
             <a title="#extras" href="/extras/">#x</a>
             $([ -n "$MPVC_WEB_ARCHIVE_ENABLE" ] && echo '<a title="#arc" href="ytdl-archive" >#a</a>'; )
-            $([ -n "$MPVC_WEB_CAST_URL" ] && echo "<a title=#cast href=$MPVC_WEB_CAST_URL>#c</a>"; )
+            $([ -n "$MPVC_WEB_EXTRAS_URL" ] && echo "<a title=#cast href=$MPVC_WEB_EXTRAS_URL>#c</a>"; )
         ]
         <hr>
         <ul>
@@ -668,7 +668,7 @@ main()
         case "$flag" in
         h) usage ;;
         c) MPVC_WEB_CMD="$OPTARG"; ;;
-        C) MPVC_WEB_CAST_URL="$OPTARG"; ;;
+        C) MPVC_WEB_EXTRAS_URL="$OPTARG"; ;;
         d) MPVC_WEB_DEV="$OPTARG"; ;;
         b) MPVC_WEB_HOST="$OPTARG" ;;
         p) MPVC_WEB_PORT="$OPTARG" ;;
