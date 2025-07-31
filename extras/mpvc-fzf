@@ -384,7 +384,7 @@ mpvcfzf_urlbrowser()
     url=${1:-https://localhost:8443/ytdl-archive/}
     mpvcfzf_urlget "$url" |
         mpvcfzf_preview --prompt="(urlbrowse) " \
-            --bind='ctrl-b:execute(mpvc-fzf -b {+1})'
+            --bind='ctrl-b:execute(mpvc-fzf -b {+1})' \
             --bind='ctrl-u:execute(mpvc-fzf -u {+1})'
 }
 
