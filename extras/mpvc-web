@@ -342,9 +342,8 @@ mpvc_web_index()
             <a href="#status">#s</a>
             <a href="#mpvc-web-playlist">#l</a>
             <a title="#now" href="/cgi-bin/mpvc?now-short">#n</a>
-            <a title="#extras" href="/extras/">#x</a>
             $([ -n "$MPVC_WEB_ARCHIVE_ENABLE" ] && echo '<a title="#arc" href="ytdl-archive" >#a</a>'; )
-            $([ -n "$MPVC_WEB_EXTRAS_URL" ] && echo "<a title=#cast href=$MPVC_WEB_EXTRAS_URL>#c</a>"; )
+            $(for x in $MPVC_WEB_EXTRAS_URL; do n=$((${n:-0} + 1)); echo "<a title=#extras-$n href=$x>#$n</a>"; done)
         ]
         <hr>
         <ul>
@@ -644,7 +643,7 @@ mpvc_web()
     )
 }
 
-optflags="ha:b:c:C:d:p:P:r:R:s:S:t:T:"
+optflags="ha:b:c:d:p:P:r:R:s:S:t:T:x:"
 usage()
 {
     cat <<EOF
@@ -672,7 +671,7 @@ main()
         case "$flag" in
         h) usage ;;
         c) MPVC_WEB_CMD="$OPTARG"; ;;
-        C) MPVC_WEB_EXTRAS_URL="$OPTARG"; ;;
+        x) MPVC_WEB_EXTRAS_URL="${MPVC_WEB_EXTRAS_URL} $OPTARG"; ;;
         d) MPVC_WEB_DEV="$OPTARG"; ;;
         b) MPVC_WEB_HOST="$OPTARG" ;;
         p) MPVC_WEB_PORT="$OPTARG" ;;
