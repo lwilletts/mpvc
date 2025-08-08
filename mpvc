@@ -609,7 +609,7 @@ mpvc_appendtracks() {
     done
 }
 
-mpvc_get_random()  { od -vAn -N2 -tu2 < /dev/urandom; }
+mpvc_get_random()  { od -vAn -N2 -tu2 < /dev/urandom | sed 's/ //g'; }
 mpvc_play_random() { mpvc_set_track "$(mpvc_get_random)" "absolute"; }
 mpvc_seek_random() { d=$(mpvc_get duration); mpvc_set_time "absolute" "$(( $(mpvc_get_random) % ${d%%.*} ))"; }
 
