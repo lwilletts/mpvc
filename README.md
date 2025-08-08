@@ -96,13 +96,13 @@ This does git clone, and symlinks the mpvc scripts to `BINDIR` (default `~/bin`)
  (cd mpvc; extras/mpvc-installer config-user)
  # check ~/.config/mpvc/mpvc.conf to suit your needs
 
- # running mpvc for first time can show some warnings:
- # (output) Warning: .config/mpvc/mpvc.conf not found, see docs/mpvc.conf
+ # Running mpvc for first time can show some warnings:
+ #   Warning: .config/mpvc/mpvc.conf not found, see docs/mpvc.conf
  # mpvc-installer config-user sets the default user config
  mpvc-installer config-user
 
- # Another common warning is
- # (mpvc output) mpvc: Error: No files added to mpvsocket0
+ # Another common warning is when running mpvc:
+ #   mpvc: Error: No files added to mpvsocket0
  # lets fix that by adding some music files to play
  mpvc
 
