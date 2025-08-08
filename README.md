@@ -102,7 +102,7 @@ This does git clone, and symlinks the mpvc scripts to `BINDIR` (default `~/bin`)
  mpvc-installer config-user 
 
  # Another common warning is
- # (mpvc output)`mpvc: Error: No files added to mpvsocket0`
+ # (mpvc output) mpvc: Error: No files added to mpvsocket0
  # lets fix that by adding some music files to play
  mpvc
 
