@@ -173,8 +173,10 @@ main()
 {
     if [ $# -lt 1 ]; then usage; fi
 
-    # hack to force SHELL back to posix-sh in macOS
-    case "$SHELL" in *'zsh') SHELL="/bin/sh";; esac
+    # hack to force SHELL back to POSIX-sh when using non POSIX-sh shells (macOS)
+    case "$SHELL" in *'zsh'|*'fish')
+        echo "$PROGNAME: Warning Forcing SHELL=/bin/sh, current SHELL=$SHELL is not POSIX-sh"; SHELL="/bin/sh";;
+    esac
 
     case "$1" in
     version)         shift; mpvc_version;;

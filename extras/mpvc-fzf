@@ -78,7 +78,6 @@ mpvcfzf_cparse()
     awk \
         -v video=$MPVC_FZF_PARSE_VIDEO \
         -v channel=$MPVC_FZF_PARSE_CHANNEL \
-        -v playlist=$MPVC_FZF_PARSE_PLAYLIST \
         '
         /^.*<p dir="auto">/ {
             l=$0; gsub("^.*<p dir=\"auto\">","", l); gsub("</p>.*$","", l); vtitle=l
@@ -103,8 +102,7 @@ mpvcfzf_cparse()
         /^ *<a href="\/playlist/ {
             gsub("^ *<a href=\"",""); gsub("\">.*","");
             gsub("/playlist", "https://yewtu.be/playlist");
-            if (playlist)
-                printf "%s %7s %s\n", $0, vlength, vtitle
+            printf "%s %7s %s\n", $0, vlength, vtitle
         }
 
         /^ *<a href="\/channel/ {
@@ -446,8 +444,7 @@ mpvcfzf_feeds()
         mpvcfzf_feeds_search "$file" "$url" "$jq" | awk -F';' -v chan="$chan" '{ if(match($0,chan))print $1}' | mpvc load
     else
         mpvcfzf_feeds_search "$file" "$url" "$jq" | column -s ';' -t |
-            mpvcfzf_preview --prompt="(feeds) " \
-            --bind='ctrl-u:execute(mpvc-fzf -U {+1})'
+            mpvcfzf_preview --prompt="(feeds) "
     fi
 }
 
@@ -594,8 +591,8 @@ main()
         -s|search)  shift; mpvcfzf_isearch "$arg1"; return;;
         -t|thumbnail) shift; mpvcfzf_thumbnail "$arg1"; return ;;
         -T|Thumbnail) shift; mpvcfzf_thumbnail "$arg1" ; return ;;
-        -u|url)     shift; mpvcfzf_csearch "$arg1"; return ;;
-        -U|Url)     shift; mpvcfzf_csearch_play "$arg1"; return ;;
+        -u|url)     shift; mpvcfzf_csearch_play "$arg1"; return ;;
+        -U|Url)     shift; mpvcfzf_csearch "$arg1"; return ;;
         -x|launch)  shift; mpvcfzf_launch_term "$@"; exit ;;
         -y|related) shift; mpvcfzf_related_search "$arg1"; return ;;
         -Y|Related) shift; mpvcfzf_related_play "$arg1"; return ;;

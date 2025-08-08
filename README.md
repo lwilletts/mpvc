@@ -122,9 +122,10 @@ For more  check the  [LogBook](../../wiki#logbook) (remeber your best chance is 
 
 ### Curl
 
+Fetch the mpvc-installer (written in POSIX-sh), and ensure it runs under a POSIX-sh SHELL 
 ```console
-curl -LO https://github.com/lwilletts/mpvc/raw/master/extras/mpvc-installer \
-  && BINDIR=$HOME/bin sh ./mpvc-installer fetch-user
+curl -fsSLO https://github.com/lwilletts/mpvc/raw/master/extras/mpvc-installer \
+  && SHELL=/bin/sh BINDIR=$HOME/bin sh ./mpvc-installer fetch-user
 ```
 
 ### Debian
