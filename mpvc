@@ -196,7 +196,7 @@ mpvc_config()
     if [ -r "$MPVC_CONFIG" ]; then
         . "$MPVC_CONFIG"
     else
-        echo "# ${MPVC_CONFIG##*/} $PROGNAME $PROGVERSION (see docs/mpvc.conf for sample config)" > "${MPVC_CONFIG}"
+        echo "# $PROGNAME Warning: ${MPVC_CONFIG##$HOME/} not found, see docs/mpvc.conf for defaults"
     fi
 }
 
