@@ -98,7 +98,7 @@ This does git clone, and symlinks the mpvc scripts to `BINDIR` (default `~/bin`)
 
  # running mpvc for first time can show some warnings:
  # (output) Warning: .config/mpvc/mpvc.conf not found, see docs/mpvc.conf
- # mpvc-installer config-user performs the default user config
+ # mpvc-installer config-user sets the default user config
  mpvc-installer config-user
 
  # Another common warning is
