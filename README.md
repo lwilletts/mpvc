@@ -104,7 +104,7 @@ This does git clone, and symlinks the mpvc scripts to `BINDIR` (default `~/bin`)
  # Another common warning is
  # (mpvc output) mpvc: Error: No files added to mpvsocket0
  # lets fix that by adding some music files to play
- mpvc
+ mpvchttps://archive.org/download/lofigirl-youtube/mp3/
 
  # use mpvc to add/load/save media files or online YT URLs
  mpvc add /path/to/your/*.mp3 # or your URLs
@@ -120,6 +120,8 @@ This does git clone, and symlinks the mpvc scripts to `BINDIR` (default `~/bin`)
  mpvc-fzf -a
  # use mpvc-fzf to search and play youtube media
  mpvc-fzf -p 'kupla mirage'
+ # use mpvc-fzf to browse & play lofi girl music (archive.org)
+ mpvc-fzf -b https://archive.org/download/lofigirl-youtube/mp3/
  # use mpvc-fzf to browse & play lofi girl music
  mpvc-fzf -b https://lofigirl.com/wp-content/uploads/2023/06
  # use mpvc-fzf to manage the playlist
