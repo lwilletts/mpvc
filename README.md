@@ -271,5 +271,23 @@ usage: mpvc-fzf opts # @version v1.7 (c) gmt4 https://github.com/gmt4/mpvc
 *tips: If unsure about where to begin, start: mpvc-fzf -p 'kupla mirage'
 ```
 
+### mpvc-installer
+
+```console
+usage: mpvc-installer args # @version v1.7 (c) gmt4 https://github.com/gmt4/mpvc
+  check-update   : Check for updates
+  check-reqs     : Check for required packages
+  config         : Fetch mpv config
+  config-user    : Fetch mpv config to BINDIR=/home/user/bin
+  config-sys     : Fetch mpv config to BINDIR=/usr/local/bin
+  fetch-user     : Fetch to BINDIR=/home/user/bin
+  link-user      : Symlink to BINDIR=/home/user/bin
+  install-user   : Install to BINDIR=/home/user/bin
+  install-sys    : Install to BINDIR=/usr/local/bin
+  uninstall-sys  : Uninstall from BINDIR=/usr/local/bin
+  uninstall-user : Uninstall from BINDIR=/home/user/bin
+*tips: If unsure where to start, start with: mpvc-installer fetch-user
+```
+
 [^install]: Skip directly to [Installation](#installation) to try mpvc
 
