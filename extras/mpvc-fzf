@@ -38,6 +38,7 @@ mpvcfzf_defaults()
     : "${MPVC_FZF_PARSE_VIDEO:=1}"
     : "${MPVC_FZF_PARSE_CHANNEL:=0}"
     : "${MPVC_FZF_PARSE_PLAYLIST:=0}"
+    : "${MPVC_FZF_CURLOPTS:=-fsSL -A 'Mozilla/5.0' --retry 1}"
 
     : "${MPVC_FZF_SOMAFM_FILE:=$MPVC_CONFIG_DIR/feeds/somafm-channels.json}"
     : "${MPVC_FZF_RADIOAPI_FILE:=$MPVC_CONFIG_DIR/feeds/radioapi-channels.json}"
@@ -67,7 +68,7 @@ mpvcfzf_config()
 
 mpvcfzf_curl()
 {
-    curl -fsSL -A 'Mozilla/5.0' --retry 1 "$@"
+    curl ${MPVC_FZF_CURLOPTS} "$@"
 }
 
 mpvcfzf_getvideo_id()
@@ -461,7 +462,10 @@ mpvcfzf_feeds_search()
 
 mpvcfzf_feed_lofi()
 {
-    mpvcfzf_urlbrowser "${1:-https://lofigirl.com/wp-content/uploads/2023/06/}"
+    if mpvcfzf_curl --retry 0 -I "${1:-https://lofigirl.com/wp-content/uploads/2023/06/}"; then
+        mpvcfzf_urlbrowser "${1:-https://lofigirl.com/wp-content/uploads/2023/06/}"
+    fi
+    mpvcfzf_urlbrowser "${1:-https://archive.org/download/lofigirl-youtube/mp3/}"
 }
 
 mpvcfzf_feed_somafm()
