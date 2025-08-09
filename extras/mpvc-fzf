@@ -462,10 +462,13 @@ mpvcfzf_feeds_search()
 
 mpvcfzf_feed_lofi()
 {
-    if mpvcfzf_curl --retry 0 -I "${1:-https://lofigirl.com/wp-content/uploads/2023/06/}"; then
-        mpvcfzf_urlbrowser "${1:-https://lofigirl.com/wp-content/uploads/2023/06/}"
-    fi
-    mpvcfzf_urlbrowser "${1:-https://archive.org/download/lofigirl-youtube/mp3/}"
+    for url in "${1:-https://lofigirl.com/wp-content/uploads/2023/06/}" "${1:-https://archive.org/download/lofigirl-youtube/mp3/}";
+    do
+        if mpvcfzf_curl --retry 0 -X HEAD -m5 "$url"; then
+            mpvcfzf_urlbrowser "$url"
+            break
+        fi
+    done
 }
 
 mpvcfzf_feed_somafm()
