@@ -367,24 +367,26 @@ mpvcfzf_ddg_play()
 
 mpvcfzf_urlget()
 {
-    url=${1:-https://localhost:8443/ytdl-archive/}
-    mpvcfzf_curl "$url" |
-        awk -v url="$url" '
-            /<a href=".*">.*<\/a>/ {
-                match(url, "https?://[^/]+/");
-                host = substr($0, RSTART, RLENGTH)
-                href=$0; sub("^.*href=\"", "", href) sub("\".*$", "", href)
-                if (href ~ "^/") href = host"/"href
-                print (href !~ host) ? url"/"href : href
-            }
-        '
+    url="https://localhost:8443/ytdl-archive/"
+    for url in "$@"
+    do
+        mpvcfzf_curl "$url" |
+            awk -v url="$url" '
+                /<a href=".*">.*<\/a>/ {
+                    match(url, "https?://[^/]+/");
+                    host = substr($0, RSTART, RLENGTH)
+                    href=$0; sub("^.*href=\"", "", href) sub("\".*$", "", href)
+                    if (href ~ "^/") href = host"/"href
+                    print (href !~ host) ? url"/"href : href
+                }
+            '
+    done
 }
 
 mpvcfzf_urlbrowser()
 {
-    url=${1:-https://localhost:8443/ytdl-archive/}
-    mpvcfzf_urlget "$url" |
-        mpvcfzf_preview --prompt="(urlbrowse) "
+    url="${@:-https://localhost:8443/ytdl-archive/}"
+    mpvcfzf_urlget $url | mpvcfzf_preview --prompt="(urlbrowse) "
 }
 
 mpvcfzf_cmds()
@@ -571,8 +573,8 @@ main()
         -1|awk1)    shift; mpvcfzf_awk1; return ;;
 
         -a|stash)   shift; mpvcfzf_stashlist; return ;;
-        -b|browse)  shift; mpvcfzf_urlbrowser "$arg1"; return ;;
-        -B|urlget)  shift; mpvcfzf_urlget "$arg1"; return ;;
+        -b|browse)  shift; mpvcfzf_urlbrowser "$@"; return ;;
+        -B|urlget)  shift; mpvcfzf_urlget "$@"; return ;;
         -c|chapters)shift; mpvcfzf_chapterlist; return ;;
         -C|cache)   shift; mpvcfzf_icache; return;;
         -CC|cmds)   shift; mpvcfzf_cmds "$@"; return;;
