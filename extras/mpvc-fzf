@@ -311,7 +311,7 @@ mpvcfzf_preview()
         --layout=reverse \
         --preview="${MPVC_FZF_CUSTOM_PREVIEW}" \
         --preview-window="up:$(mpvc statussz)" \
-        --header="$PROGNAME help: $MPVC_FZF_BIND_HELP" \
+        --header="$MPVC_FZF_BIND_HELP" \
         "${MPVC_FZF_CUSTOM_KEYBINDINGS}" \
         \
         "$@"
