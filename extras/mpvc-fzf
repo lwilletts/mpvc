@@ -400,7 +400,6 @@ mpvcfzf_equalizer()
         mpvcfzf_preview --prompt="(equalizer) " \
         --bind='ctrl-x:execute-silent(mpvc-equalizer dec {1} &)' \
         --bind='ctrl-v:execute-silent(mpvc-equalizer inc {1} &)' \
-        --bind='ctrl-space:execute-silent(mpvc-equalizer reset)' \
         --bind='ctrl-o:execute-silent(mpvc-equalizer preset {-1} | mpvc-equalizer load)' \
         --bind='ctrl-s:reload(mpvc-equalizer bars)' \
         --bind='ctrl-r:reload(mpvc-equalizer preset)' \
