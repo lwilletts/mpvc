@@ -208,13 +208,13 @@ usage: mpvc opts # @version v1.7 (c) gmt4 https://github.com/gmt4/mpvc
  -s | --stop | stop       : Always stop playback.
  -P | --play | play       : Always start playback.
  -p | --toggle            : Toggle playback.
-    | --next              : Jump to next entry in the playlist
-    | --prev              : Jump to previous entry in the playlist
+    | --next | next       : Jump to next entry in the playlist
+    | --prev | prev       : Jump to previous entry in the playlist
  -i | --playlist          : Print filenames of tracks to fit within terminal.
  -I | --fullplaylist      : Print all filenames of tracks in current playlist.
- -v | --vol               : Increase/decrease volume relative to current volume.
+ -v | --vol | vol         : Increase/decrease volume relative to current volume.
  -h | --help              : Prints the short help.
- -H | --help-long         : Prints the long help.
+ -H | --help-long         : Prints the long help (tip: mpvc -H 2>&1 | less).
 *tips: If unsure about where to begin, have a look at https://gmt4.github.io/mpvc
 ```
 
