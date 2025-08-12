@@ -762,22 +762,8 @@ mpvc_search_move() {
     QUIETFLAG="true"
 }
 
-mpvc_shuffle_playlist() {
-    QUIETFLAG=true
-    case "$1" in
-        shuffle|unshuffle) mpvc_ecmdr "playlist-$1" || return 1;;
-        *) return;;
-    esac
-    echo "Playlist $1."
-    if [ "$(mpvc_get loop-playlist)" = "no" ]; then mpvc_toggle_loop "loop-playlist" yes; fi
-}
-
-mpvc_crop_playlist() {
-    mpvc_ecmdr "playlist-clear" || return 1
-}
-
 mpvc_clear_playlist() {
-    mpvc_crop_playlist
+    mpvc_ecmdr "playlist-clear"
     mpvc_remove_track 0
     echo "Playlist cleared."
 }
@@ -1157,8 +1143,8 @@ main() {
             clistj|--chapter-list-json|chapter-list-json) mpvc_chapter_list_json; QUIETFLAG=true;;
             csearch|--chapter-search|chapter-search)      shift; mpvc_chapter_search "${1:-}"; QUIETFLAG=true;;
             csplay|csearchplay|--chapter-searchplay|chapter-searchplay)      shift; mpvc_chapter_search_play "${1:-}"; QUIETFLAG=true;;
-               --playlist-shuffle|playlist-shuffle)       mpvc_shuffle_playlist shuffle;;
-               --playlist-unshuffle|playlist-unshuffle)   mpvc_shuffle_playlist unshuffle;;
+               --playlist-shuffle|playlist-shuffle)       mpvc_ecmdr "playlist-shuffle"; QUIETFLAG=true ;;
+               --playlist-unshuffle|playlist-unshuffle)   mpvc_ecmdr "playlist-unshuffle"; QUIETFLAG=true ;;
 
             -k|--kill|kill)                  mpvc_ecmdr "quit"; QUIETFLAG=true ;;
             -K|--killall|killall)            quiet pkill -9 -f "$MPVC_MPV "; QUIETFLAG=true ;;
@@ -1170,7 +1156,7 @@ main() {
             -L|--loop|loop)                  mpvc_toggle_loop "loop-playlist" ;;
             -l|--loopfile|loopfile)          mpvc_toggle_loop "loop-file"     ;;
             -z|--shuffle|shuffle)            mpvc_cycle "shuffle"; QUIETFLAG=true;;
-            -c|--crop|crop)                  mpvc_crop_playlist; QUIETFLAG=true;;
+            -c|--crop|crop)                  mpvc_ecmdr "playlist-clear"; QUIETFLAG=true;;
             -C|--clear|clear)                mpvc_clear_playlist; QUIETFLAG=true;;
             --delay|delay)                   mpvc_delay;;
             --wait|wait)                     mpvc_wait;;
