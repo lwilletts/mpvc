@@ -49,9 +49,9 @@ EOF
  -t | --seek              : Increase/decrease playback time relatively, accepts % values.
     | --seekrand          : Set a random playback time.
  -T | --time              : Set absolute playback time.
- -z | --shuffle           : Shuffle the current playlist.
  -x | --speed             : Increase/decrease speed relative to the current speed.
  -X | --speedval          : Set absolute speed.
+ -z | --shuffle           : Toggle the shuffle property
  -I | --image             : Enable adding of images to the queue.
     | --color             : Enable color (NO_COLOR=)
     | --nocolor           : Disable color (NO_COLOR=true)
@@ -83,6 +83,8 @@ EOF
  cycle                    : Toggle/Cycle through MPV property values.
  idleloop                 : Listen to MPV events on $PROGNAME socket.
  observe                  : Observe property in MPV events on $PROGNAME socket.
+ playlist-shuffle         : Shuffle the current playlist
+ playlist-unshuffle       : Unshuffle the current playlist
  search                   : Search the playlist by filename/url.
  (--)searchplay|splay     : Search the playlist by filename and play the first match.
  (--)searchPlay|sPlay     : Search the playlist by title and play the first match.
@@ -1154,6 +1156,8 @@ main() {
             clistj|--chapter-list-json|chapter-list-json) mpvc_chapter_list_json; QUIETFLAG=true;;
             csearch|--chapter-search|chapter-search)      shift; mpvc_chapter_search "${1:-}"; QUIETFLAG=true;;
             csplay|csearchplay|--chapter-searchplay|chapter-searchplay)      shift; mpvc_chapter_search_play "${1:-}"; QUIETFLAG=true;;
+               --playlist-shuffle|playlist-shuffle)       mpvc_shuffle_playlist shuffle;;
+               --playlist-unshuffle|playlist-unshuffle)   mpvc_shuffle_playlist unshuffle;;
 
             -k|--kill|kill)                  mpvc_ecmdr "quit"; QUIETFLAG=true ;;
             -K|--killall|killall)            quiet pkill -9 -f "$MPVC_MPV "; QUIETFLAG=true ;;
@@ -1164,8 +1168,7 @@ main() {
                --playlistjson|playlistjson)  mpvc_get_playlist_json ""        ;;
             -L|--loop|loop)                  mpvc_toggle_loop "loop-playlist" ;;
             -l|--loopfile|loopfile)          mpvc_toggle_loop "loop-file"     ;;
-            -z|--shuffle|shuffle)            mpvc_shuffle_playlist shuffle;;
-            -Z|--unshuffle|unshuffle)        mpvc_shuffle_playlist unshuffle;;
+            -z|--shuffle|shuffle)            mpvc_cycle "shuffle" ;;
             -c|--crop|crop)                  QUIETFLAG=true; mpvc_crop_playlist ;;
             -C|--clear|clear)                QUIETFLAG=true; mpvc_clear_playlist ;;
             --delay|delay)                   mpvc_delay;;
