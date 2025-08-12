@@ -43,13 +43,13 @@ EOF
  -o | --save              : Save current playlist to given path.
  -l | --load              : Load playlist from given path (stdin if none is specified).
  -c | --crop              : Clear the playlist except for the media currently playing.
- -z | --shuffle           : Shuffle the current playlist.
  -l | --loop              : Loop currently playing playlist.
  -L | --loopfile          : Loop currently playing file.
  -m | --mute              : Toggle sound.
  -t | --seek              : Increase/decrease playback time relatively, accepts % values.
     | --seekrand          : Set a random playback time.
  -T | --time              : Set absolute playback time.
+ -z | --shuffle           : Shuffle the current playlist.
  -x | --speed             : Increase/decrease speed relative to the current speed.
  -X | --speedval          : Set absolute speed.
  -I | --image             : Enable adding of images to the queue.
@@ -74,10 +74,12 @@ EOF
  sockcmd                  : Send MPV JSON IPC command to $PROGNAME socket.
  socklist                 : List $PROGNAME sockets.
  togglec                  : Toggle MPV cache property.
- togglev                  : Toggle MPV video property.
- togglew                  : Toggle MPV window property.
+ togglef                  : Toggle MPV idle full-screen.
  togglei                  : Toggle MPV idle property.
  toggler | rotate         : Toggle MPV video-rotate property (values 0 90 180 270)
+ toggles                  : Toggle MPV shuffle property.
+ togglev                  : Toggle MPV video property.
+ togglew                  : Toggle MPV window property.
  cycle                    : Toggle/Cycle through MPV property values.
  idleloop                 : Listen to MPV events on $PROGNAME socket.
  observe                  : Observe property in MPV events on $PROGNAME socket.
@@ -115,7 +117,7 @@ Formatting:
  %genre%, %year%, %icy-title%, %percentage%, %playlistlength%, %position%,
  %repeat%, %single, %status%, %time%, %precisetime%, %speed%, %length%,
  %remaining%, %volume%, %mute%, %frame%, %width%, %height%,
- %ab-loop-a%, %ab-loop-b%, %video%, %screen%, %aspect%,
+ %ab-loop-a%, %ab-loop-b%, %video%, %screen%, %shuffle%, %aspect%,
  %force-window%, %fullscreen%, %idle%, %chapter%, %chapters%
 
 MPC compatibility layer:
@@ -882,7 +884,7 @@ mpvc_print_status() {
     F=$(echo "$MPVC_FMTSTR" |
         awk '
         {
-            split("year genre album icy-title comment volume volume-max working-directory mute filename path height width playback-time ab-loop-[ab] speed force-window video screen aspect idle fullscreen chapter chapters =chapter", RE)
+            split("year genre album icy-title comment volume volume-max working-directory mute shuffle filename path height width playback-time ab-loop-[ab] speed force-window video screen aspect idle fullscreen chapter chapters =chapter", RE)
             for (i in RE) { re=RE[i]; gsub("%"re"%", "${"re":0}"); }
 
             gsub("%statuslofi%", "${?pause==yes:≡}${?pause==no:►}${!pause:NA}");
@@ -1102,11 +1104,12 @@ main() {
             --setr|setr|sr)                  shift; mpvc_setr "$@"; return;;
             --getr|getr|gr)                  shift; mpvc_getr "${1:-}"; QUIETFLAG=true;;
             --togglec|togglec)               shift; mpvc_cycle "cache" ;;
+            --togglef|togglef)               shift; mpvc_cycle "fullscreen" ;;
+            --togglei|togglei)               shift; mpvc_cycle "idle" ;;
+            --toggler|toggler|rotate)        shift; mpvc_rotate "$@"; QUIETFLAG=true ;;
+            --toggles|toggles)               shift; mpvc_cycle "shuffle" ;;
             --togglev|togglev)               shift; mpvc_cycle "video" ;;
             --togglew|togglew)               shift; mpvc_cycle "force-window" ;;
-            --togglei|togglei)               shift; mpvc_cycle "idle" ;;
-            --togglef|togglef)               shift; mpvc_cycle "fullscreen" ;;
-            --toggler|toggler|rotate)        shift; mpvc_rotate "$@"; QUIETFLAG=true ;;
             --idle|idle)                     shift; mpvc_idle "${1:-}"; QUIETFLAG=true ;;
             --idleloop|idleloop)             shift; mpvc_idleloop "${1:-}"; QUIETFLAG=true ;;
             --observe|observe)               shift; mpvc_observe "${1:-}"; QUIETFLAG=true ;;
