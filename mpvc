@@ -539,6 +539,7 @@ mpvc_stash() {
             echo "mpvc mpv"
             echo "mpvc wait"
             echo "mpvc set pause yes"
+            echo "mpvc set shuffle $(mpvc_get shuffle)"
             echo "mpvc cmd playlist-clear"
             echo "mpvc cmd playlist-remove 0"
             mpvc_get_playlist_once | awk '{ gsub("^[ 	]*|[ 	]*$", ""); print "mpvc add "$0 }'
@@ -1109,7 +1110,7 @@ main() {
             --togglef|togglef)               shift; mpvc_cycle "fullscreen" ;;
             --togglei|togglei)               shift; mpvc_cycle "idle" ;;
             --toggler|toggler|rotate)        shift; mpvc_rotate "$@"; QUIETFLAG=true ;;
-            --toggles|toggles)               shift; mpvc_cycle "shuffle" ;;
+            --toggles|toggles)               shift; mpvc_cycle "shuffle";  QUIETFLAG=true ;;
             --togglev|togglev)               shift; mpvc_cycle "video" ;;
             --togglew|togglew)               shift; mpvc_cycle "force-window" ;;
             --idle|idle)                     shift; mpvc_idle "${1:-}"; QUIETFLAG=true ;;
@@ -1168,9 +1169,9 @@ main() {
                --playlistjson|playlistjson)  mpvc_get_playlist_json ""        ;;
             -L|--loop|loop)                  mpvc_toggle_loop "loop-playlist" ;;
             -l|--loopfile|loopfile)          mpvc_toggle_loop "loop-file"     ;;
-            -z|--shuffle|shuffle)            mpvc_cycle "shuffle" ;;
-            -c|--crop|crop)                  QUIETFLAG=true; mpvc_crop_playlist ;;
-            -C|--clear|clear)                QUIETFLAG=true; mpvc_clear_playlist ;;
+            -z|--shuffle|shuffle)            mpvc_cycle "shuffle"; QUIETFLAG=true;;
+            -c|--crop|crop)                  mpvc_crop_playlist; QUIETFLAG=true;;
+            -C|--clear|clear)                mpvc_clear_playlist; QUIETFLAG=true;;
             --delay|delay)                   mpvc_delay;;
             --wait|wait)                     mpvc_wait;;
             --tac|tac)                       mpvc_tac; exit 0;;
