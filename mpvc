@@ -74,7 +74,7 @@ EOF
  sockcmd                  : Send MPV JSON IPC command to $PROGNAME socket.
  socklist                 : List $PROGNAME sockets.
  togglec                  : Toggle MPV cache property.
- togglef                  : Toggle MPV idle full-screen.
+ togglef                  : Toggle MPV full-screen property.
  togglei                  : Toggle MPV idle property.
  toggler | rotate         : Toggle MPV video-rotate property (values 0 90 180 270)
  toggles                  : Toggle MPV shuffle property.
