@@ -217,11 +217,6 @@ mpvc_isotime() { TZ=UTC date -u +"%Y-%m-%dT%H:%M:%SZ"; }
 
 ## Fetch Functions ########################################################
 
-mpvc_curl()
-{
-    curl -sL -A 'Mozilla/5.0' "$@"
-}
-
 mpvc_curl_cache()
 {
     k=$1
@@ -235,10 +230,8 @@ mpvc_curl_cache()
     echo "$v"
 }
 
-mpvc_curl_cache_json()
-{
-    mpvc_curl_cache "https://youtube.com/oembed?url=$1"
-}
+mpvc_curl_cache_json() { mpvc_curl_cache "https://youtube.com/oembed?url=$1"; }
+mpvc_curl() { curl -sL -A 'Mozilla/5.0' "$@"; }
 
 mpvc_ytquery_json() {
     for i in "$@"
