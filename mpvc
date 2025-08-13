@@ -200,7 +200,7 @@ mpvc_config()
     if [ -r "$MPVC_CONFIG" ]; then
         . "$MPVC_CONFIG"
     else
-        echo "# $PROGNAME Warning: ${MPVC_CONFIG##$HOME/} not found, see docs/mpvc.conf for defaults"
+        echo "# $PROGNAME Warning: ${MPVC_CONFIG##"$HOME/"} not found, see docs/mpvc.conf for defaults"
     fi
 }
 
@@ -269,13 +269,9 @@ mpvc_ytquery_json() {
     done
 }
 
-mpvc_ytquery_field()
-{
-    field=$1; shift; mpvc_ytquery_json "$@" | mpvc_getjson "$field";
-}
-
 # fn args: given a file/url return its title (may use curl to query YT)
 mpvc_ytquery() { mpvc_ytquery_field 'title' "$@"; }
+mpvc_ytquery_field() { field=$1; shift; mpvc_ytquery_json "$@" | mpvc_getjson "$field"; }
 
 ## JSON-IPC Functions ########################################################
 
@@ -535,7 +531,7 @@ mpvc_stash() {
             done
             ;;
         current|curr)
-            echo "# $PROGNAME stash ${MPVC_STASH_DIR##$MPVC_CONFIG_DIR/}/$1 # $PROGURL @version $PROGVERSION"
+            echo "# $PROGNAME stash ${MPVC_STASH_DIR##"$MPVC_CONFIG_DIR/"}/$1 # $PROGURL @version $PROGVERSION"
             echo "mpvc mpv"
             echo "mpvc wait"
             echo "mpvc set pause yes"
