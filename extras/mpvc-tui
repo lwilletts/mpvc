@@ -61,10 +61,11 @@ mpvctui_defaults()
     : "${MPVC_TUI_TERM:=xterm}"
     MPVC_TUI_SHELL=$(readlink -f /proc/$$/exe)
 
-    : "${MPVC_CMD_STATUS:=status}"
-    : "${MPVC_CMD_PLAYLIST:=playlist}"
-    : "${MPVC_CMD_CSTATUS:=cstatus}"
-    : "${MPVC_CMD_CHAPTERLIST:=chapter-list}"
+    : "${MPVC_TUI_CMD_STATUS:=status}"
+    : "${MPVC_TUI_CMD_PLAYLIST:=playlist}"
+    : "${MPVC_TUI_CMD_CSTATUS:=cstatus}"
+    : "${MPVC_TUI_CMD_CHAPTERLIST:=chapter-list}"
+    : "${MPVC_TUI_CMD_PROMPT:=}"
 
     export MPVC_TUI_CLINE="${MPVC_TUI_CLINE:-$(( $(mpvc statussz) + 6 ))}"
 }
@@ -145,16 +146,17 @@ mpvctui_watcher()
     if [ -n "$chapters" ] && [ "$chapters" != "null" ] && [ "$chapters" -ne 0 ]
     then
         mpvctui_header1 "Chapter Status"
-        mpvc "${MPVC_CMD_CSTATUS}"
+        mpvc "${MPVC_TUI_CMD_CSTATUS}"
         mpvctui_header1 "Chapterlist"
-        mpvc "${MPVC_CMD_CHAPTERLIST}"
+        mpvc "${MPVC_TUI_CMD_CHAPTERLIST}"
     else
         mpvctui_header1 "Status"
-        mpvc "${MPVC_CMD_STATUS}"
+        mpvc "${MPVC_TUI_CMD_STATUS}"
         mpvctui_header1 "Playlist"
-        mpvc "${MPVC_CMD_PLAYLIST}"
+        mpvc "${MPVC_TUI_CMD_PLAYLIST}"
     fi
     mpvctui_header1 "Prompt"
+    ${MPVC_TUI_CMD_PROMPT}
 }
 
 mpvctui_input()
