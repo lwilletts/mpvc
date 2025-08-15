@@ -45,8 +45,9 @@ mpvcfzf_defaults()
     : "${MPVC_FZF_NTSRADIO_FILE:=$MPVC_CONFIG_DIR/feeds/ntsradio-channels.json}"
     : "${MPVC_FZF_CUSTOM_FILE:=$MPVC_CONFIG_DIR/feeds/custom-channels.json}"
 
-    : "${MPVC_FZF_CUSTOM_PREVIEW:=mpvc}"
-    : "${MPVC_FZF_CUSTOM_KEYBINDINGS:=}"
+    : "${MPVC_FZF_CUSTOM_HEADER:=--header='mpvc-fzf'}"
+    : ${MPVC_FZF_CUSTOM_OPTIONS:=--ansi --no-sort --multi --layout=reverse --preview=mpvc --preview-window=up:1}
+    : "${MPVC_FZF_CUSTOM_KEYBINDINGS:=--no-sort}"
 
     #mpvc -q
 }
