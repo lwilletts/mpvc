@@ -206,7 +206,7 @@ mpvcfzf_thumbnail()
     yturl="${1:-}"
     [ -z "$yturl" ] && yturl="$(mpvc filename current full)"
     [ -z "$yturl" -o "$yturl" = "null" ] && return
-    mpvc ytqueryfield thumbnail_url "$yturl"
+    mpvc -q ytqueryfield thumbnail_url "$yturl"
 }
 
 mpvcfzf_nextvideo()
