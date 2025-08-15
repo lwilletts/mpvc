@@ -304,15 +304,9 @@ mpvcfzf_preview()
     fi
     # fzf keys: ctrl + [dorstxv\]
     fzf \
-        --ansi \
-        --no-sort \
-        --multi \
-        \
-        --layout=reverse \
-        --preview="${MPVC_FZF_CUSTOM_PREVIEW}" \
-        --preview-window="up:$(mpvc statussz)" \
-        --header="$MPVC_FZF_BIND_HELP" \
+        "${MPVC_FZF_CUSTOM_HEADER}" \
         "${MPVC_FZF_CUSTOM_KEYBINDINGS}" \
+        ${MPVC_FZF_CUSTOM_OPTIONS} \
         \
         "$@"
 }
