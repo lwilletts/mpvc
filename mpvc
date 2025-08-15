@@ -752,6 +752,7 @@ mpvc_search_move() {
 }
 
 mpvc_clear_playlist() {
+    QUIETFLAG="true"
     mpvc_ecmdr "playlist-clear"
     mpvc_remove_track 0
     echo "Playlist cleared."
