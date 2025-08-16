@@ -18,7 +18,7 @@ For more on the features of this fork check: [Git](#git) QuickStart, [Wiki](../.
 <details open>
 <summary>mpvc-tui -T: running the mpvc TUI <i>(click to view screenshot)</i></summary>
 
-![mpvc-tui -T screenshot](../../blob/master/docs/assets/mpvc-tui.png)
+![mpvc-tui -T screenshot](../../blob/master/docs/assets/mpvc-tui-new.png)
 </details>
 
 <details>
