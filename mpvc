@@ -23,6 +23,8 @@ usage: $PROGNAME opts # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
  -s | --stop | stop       : Always stop playback.
  -P | --play | play       : Always start playback.
  -p | --toggle            : Toggle playback.
+      --repeat | repeat   : Loop the playlist.
+      --single | single   : Loop a single file.
     | --next | next       : Jump to next entry in the playlist
     | --prev | prev       : Jump to previous entry in the playlist
  -i | --playlist          : Print filenames of tracks to fit within terminal.
@@ -1038,8 +1040,8 @@ main() {
         if [ $# -eq 0 ]; then break; fi
         case "${1:-}" in
             # mpc compatibility layer
-            repeat)         shift; mpvc_toggle_loop "loop-playlist" "${1:-}" ;;
-            single)         shift; mpvc_toggle_loop "loop-file" "${1:-}" ;;
+            --repeat|repeat)shift; mpvc_toggle_loop "loop-playlist" "${1:-}" ;;
+            --single|single)shift; mpvc_toggle_loop "loop-file" "${1:-}" ;;
             pause)          mpvc_set "pause" "yes" ;;
             --next|next)    mpvc_set_track 1 relative ;;
             --prev|prev)    mpvc_set_track -1 relative;;
@@ -1047,8 +1049,8 @@ main() {
             mute)           mpvc_set "mute" "yes" ;;
             unmute)         mpvc_set "mute" "no" ;;
 
-            pretty)         die 1 "$PROGNAME: Error $* not implemented" ;;
-            find)           die 1 "$PROGNAME: Error $* not implemented" ;;
+            pretty)         die 1 "$PROGNAME: Error $1 not implemented" ;;
+            find)           die 1 "$PROGNAME: Error $1 not implemented" ;;
 
             -a|--add|add)            shift; mpvc_appendtracks "$@"; ;;
             -A|--playnext|playnext)  shift; mpvc_play_next "$@" ;;
