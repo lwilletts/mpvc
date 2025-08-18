@@ -122,8 +122,8 @@ This does git clone, and symlinks the mpvc scripts to `BINDIR` (default `~/bin`)
  mpvc-fzf -p 'kupla mirage'
  # use mpvc-fzf to browse & play lofi girl music (archive.org)
  mpvc-fzf -b https://archive.org/download/lofigirl-youtube/mp3/
- # use mpvc-fzf to browse & play lofi girl music
- mpvc-fzf -b https://lofigirl.com/wp-content/uploads/2023/06
+ # use mpvc-fzf to randomly enqueue a few lofi tracks (see mpvc-fzf lofi)
+ mpvc-fzf -B https://archive.org/download/lofigirl-youtube/mp3/ | shuf -n 128 | mpvc load
  # use mpvc-fzf to manage the playlist
  mpvc-fzf -f
  # use mpvc-tui to start the tui + desktop notifications
