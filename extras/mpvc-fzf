@@ -199,7 +199,8 @@ mpvcfzf_lyrics()
 
 mpvcfzf_lyrics_ddg()
 {
-    echo "https://ddg.gg?ia=lyrics&iax=lyrics&q=lyrics $(mpvc -f '%title%')"
+    q=$(echo "lyrics $(mpvc -f '%title%')" | sed 's/ /+/g')
+    echo "https://ddg.gg?ia=lyrics&iax=lyrics&q=$q"
 }
 
 mpvcfzf_thumbnail()
