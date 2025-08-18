@@ -179,7 +179,7 @@ mpvc_defaults()
 [%status%] #%position%/%playlistlength% %time%/%length% (%percentage%%) \\r\
 vol:%volume%% mute:%mute% repeat:%repeat% single:%single% \\r\
 vid:%video% scr:%screen% win:%force-window% fs:%fullscreen% \\r\
-chapter:%chapter% %=chapter%/%chapters% idle:%idle%"
+chapter:%chapter% %=chapter%/%chapters% shuffle:%shuffle% idle:%idle%"
 
     # print default status of mpv instance
     if [ -z "$MPVC_FMTSTR" ]; then
