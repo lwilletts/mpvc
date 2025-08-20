@@ -41,6 +41,7 @@ mpvc_web_defaults()
     : "${MPVC_WEB_SSL_ENABLE:=}"
     : "${MPVC_WEB_SSL_VERIFY:=0}"
     : "${MPVC_WEB_ARCHIVE_ENABLE:=}"
+    : "${MPVC_WEB_THUMBNAIL_ENABLE:=}"
     : "${MPVC_WEB_EXTRAS_URL:=}"
     : "${MPVC_WEB_HTML_THEME:=}"
     : "${MPVC_WEB_HTML_REFRESH:=}"
@@ -444,7 +445,6 @@ mpvc_web_index()
             </li>
         </details>
     </ul>
-
         [
             <a href="#mpvc-web-status" name="mpvc-web-status">Status</a>
             <a href="/cgi-bin/mpvc?metadata">#me</a>
@@ -474,6 +474,15 @@ mpvc_web_index()
         }
         </script>
         </div>
+        <hr>
+    <ul>
+        <details $(if [ -n "$MPVC_WEB_THUMBNAIL_ENABLE" ]; then echo open; fi)>
+        <summary>mpvc thumb</summary>
+        <a href="/cgi-bin/mpvc?thumbnail_url">
+            <iframe src="/cgi-bin/mpvc?thumbnail_url" alt="thumbnail" title="thumbnail" width="400" height="341" style="filter: invert(1);"></iframe>
+        </a>
+        </details>
+    </ul>
         <hr>
         🎧
         <a href="$PROGURL">$PROGNAME</a>
