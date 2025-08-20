@@ -479,7 +479,7 @@ mpvc_web_index()
         <details $(if [ -n "$MPVC_WEB_THUMBNAIL_ENABLE" ]; then echo open; fi)>
         <summary>mpvc thumb</summary>
         <a href="/cgi-bin/mpvc?thumbnail_url">
-            <iframe src="/cgi-bin/mpvc?thumbnail_url" alt="thumbnail" title="thumbnail" width="400" height="341" style="filter: invert(1);"></iframe>
+            <iframe src="/cgi-bin/mpvc?thumbnail_url" alt="thumbnail" title="thumbnail" style="filter: invert(1);"></iframe>
         </a>
         </details>
     </ul>
