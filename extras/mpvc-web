@@ -250,7 +250,7 @@ mpvc_cmd()   { echo "Content-Type: text/plain"; echo; $MPVC "\$@"; }
 mpvc_plain() { echo "Content-Type: text/plain"; echo; echo "\$@"; }
 mpvc_html()  { echo "Content-Type: text/html";  echo; echo "\$@"; }
 mpvc_json()  { echo "Content-Type: application/json";  echo; echo "\$@"; }
-mpvc_redir() { mpvc_html '<meta http-equiv=refresh content="0;url='\$1'" />'; }
+mpvc_redir() { if [ -n "\$1" -a "\$1" != "null" ]; then mpvc_html '<meta http-equiv=refresh content="1;url='\$1'" />'; fi; }
 mpvc_split() { for i in \$@; do echo "\$i"; done; }
 
 main()
