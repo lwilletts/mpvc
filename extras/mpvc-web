@@ -42,6 +42,7 @@ mpvc_web_defaults()
     : "${MPVC_WEB_SSL_VERIFY:=0}"
     : "${MPVC_WEB_ARCHIVE_ENABLE:=}"
     : "${MPVC_WEB_THUMBNAIL_ENABLE:=}"
+    : "${MPVC_WEB_THUMBNAIL_STYLE:=filter: invert(1);height:15em;width:100%}"
     : "${MPVC_WEB_EXTRAS_URL:=}"
     : "${MPVC_WEB_HTML_THEME:=}"
     : "${MPVC_WEB_HTML_REFRESH:=}"
@@ -479,7 +480,7 @@ mpvc_web_index()
         <details $(if [ -n "$MPVC_WEB_THUMBNAIL_ENABLE" ]; then echo open; fi)>
         <summary>mpvc thumb</summary>
         <a href="/cgi-bin/mpvc?thumbnail_url">
-            <iframe src="/cgi-bin/mpvc?thumbnail_url" alt="thumbnail" title="thumbnail" style="filter: invert(1);"></iframe>
+            <iframe src="/cgi-bin/mpvc?thumbnail_url" alt="thumbnail" title="thumbnail" style="$MPVC_WEB_THUMBNAIL_STYLE"></iframe>
         </a>
         </details>
     </ul>
