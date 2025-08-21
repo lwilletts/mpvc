@@ -203,13 +203,30 @@ mpvcfzf_lyrics_ddg()
     echo "https://ddg.gg?ia=lyrics&iax=lyrics&q=$q"
 }
 
+mpvcfzf_getvideo_id_from_fd()
+{
+    ytfd=$1
+    ytout=$(mpvcfzf_icache_output_dir)
+    case "$yturl" in
+        $ytout/*)
+            ytfd="${ytfd##*/}"     # basename
+            ytfd="${ytfd%.*}"      # extension
+            ytfd="$(echo "$ytfd" | grep -o '...........$')" # ytid
+            ;;
+    esac
+    echo "https://yewtu.be/$ytfd"
+}
+
 mpvcfzf_thumbnail()
 {
     yturl="${1:-}"
     [ -z "$yturl" ] && yturl="$(mpvc filename current full)"
-    [ -z "$yturl" -o "$yturl" = "null" ] && return
+    [ -z "$yturl" ] || [ "$yturl" = "null" ] && return
+
+    yturl=$(mpvcfzf_getvideo_id_from_fd "$yturl")
     mpvc -q ytqueryfield thumbnail_url "$yturl"
 }
+
 
 mpvcfzf_nextvideo()
 {
