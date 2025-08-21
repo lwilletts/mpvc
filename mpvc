@@ -173,7 +173,7 @@ mpvc_defaults()
     : "${QUIETFLAG:=}"
     : "${MPVC_LOCAL_CACHE:=false}"
     : "${MPVC_FMTSTR:=}"
-    : "${MPVC_FMTSTR_LOFI:='[%status%] %statuslofi% %title% 🎶 %time%/%length% #%position%/%playlistlength% %=chapter%/%chapters% %mutelofi%%volume%% %singlelofi%%repeatlofi%%idlelofi%%videolofi%'}"
+    : "${MPVC_FMTSTR_LOFI:='[%status%] %statuslofi% %title% 🎶 %time%/%length% #%position%/%playlistlength% %=chapter%/%chapters% %mutelofi%%volume%% %singlelofi%%repeatlofi%%shufflelofi%%idlelofi%%videolofi%'}"
     MPVC_FMTSTR_DFLT="\
 %artist% - %title% \\r\
 [%status%] #%position%/%playlistlength% %time%/%length% (%percentage%%) \\r\
@@ -877,6 +877,7 @@ mpvc_print_status() {
 
             gsub("%singlelofi%", "${!loop-file==no:⇌}${?loop-file==no:_}${!loop-file:NA}")
             gsub("%repeatlofi%", "${?loop-playlist==inf:↻}${!loop-playlist==inf:_}${!loop-playlist:NA}")
+            gsub("%shufflelofi%", "${!shuffle==no:🔀}${?shuffle==no:_}${!shuffle:NA}")
             gsub("%idlelofi%", "${?idle==yes:∞}${!idle==yes:_}${!idle:NA}")
             gsub("%videolofi%", "${!video==no:📀}${?video==no:🎧}${!video:NA}")
 
