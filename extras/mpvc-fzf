@@ -208,7 +208,7 @@ mpvcfzf_getvideo_id_from_fd()
     ytfd=$1
     ytout=$(mpvcfzf_icache_output_dir)
     case "$yturl" in
-        $ytout/*)
+        $ytout/*-???????????.???|$ytout/*-???????????.????)
             ytfd="${ytfd##*/}"     # basename
             ytfd="${ytfd%.*}"      # extension
             ytfd="$(echo "$ytfd" | grep -o '...........$')" # ytid
@@ -221,7 +221,7 @@ mpvcfzf_getvideo_id_from_fd()
 mpvcfzf_thumbnail()
 {
     yturl="${1:-}"
-    [ -z "$yturl" ] && yturl="$(mpvc filename current full)"
+    yturl="${yturl:-$(mpvc filename current full)}"
     [ -z "$yturl" ] || [ "$yturl" = "null" ] && return
 
     yturl=$(mpvcfzf_getvideo_id_from_fd "$yturl")
