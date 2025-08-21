@@ -212,9 +212,10 @@ mpvcfzf_getvideo_id_from_fd()
             ytfd="${ytfd##*/}"     # basename
             ytfd="${ytfd%.*}"      # extension
             ytfd="$(echo "$ytfd" | grep -o '...........$')" # ytid
+            ytfd="https://yewtu.be/$ytfd"
             ;;
     esac
-    echo "https://yewtu.be/$ytfd"
+    echo "$ytfd"
 }
 
 mpvcfzf_thumbnail()
