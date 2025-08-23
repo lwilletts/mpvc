@@ -371,6 +371,25 @@ mpvcfzf_stashlist()
         --bind='ctrl-r:reload(mpvc stash list | mpvc-fzf -0)'
 }
 
+mpvcfzf_quality()
+{
+        mpvcfzf_preview --prompt="(ytdl) " \
+        --bind='ctrl-o:execute-silent(mpvc set ytdl-format {+} &)' \
+        --bind='ctrl-r:reload(mpvc-fzf -q)' <<EOF
+bestvideo+bestaudio/best
+bestvideo[vcodec!=vp9]+bestaudio/best"
+bestvideo[height<=?4320p]+bestaudio/best
+bestvideo[height<=?2160]+bestaudio/best
+bestvideo[height<=?1440]+bestaudio/best
+bestvideo[height<=?1080]+bestaudio/best
+bestvideo[height<=?720]+bestaudio/best
+bestvideo[height<=?480]+bestaudio/best
+bestvideo[height<=?360]+bestaudio/best
+bestvideo[height<=?240]+bestaudio/best
+bestvideo[height<=?144]+bestaudio/best
+EOF
+}
+
 mpvcfzf_ddg_play()
 {
     mpvcfzf_ddg "$@" |
@@ -550,6 +569,7 @@ usage: $PROGNAME opts # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
  -k|dplay    : Search & play DuckDuckGo videos
  -K|dsearch  : Search DuckDuckGo videos
  -l|local    : Search & play local media
+ -q|quality  : Select and change yt-dlp video quality (ytdl-format)
  -s|search   : Search on Invidious
  -t|thumbnail: Retrieve thumbnail_url from metadata of the current YT-URL
  -T|Thumbnail: Retrieve thumbnail_url from metadata of the provided YT-URL
@@ -603,6 +623,7 @@ main()
         -k|dplay)   shift; mpvcfzf_ddg_play "$arg1"; return ;;
         -K|dsearch) shift; mpvcfzf_ddg "$arg1"; return ;;
         -h|help)    shift; mpvcfzf_usage; return ;;
+        -q|quality) shift; mpvcfzf_quality; return ;;
         -l|local)   shift; mpvcfzf_local; return ;;
         -n|next)    shift; mpvcfzf_nextvideo "$arg1"; return ;;
 
