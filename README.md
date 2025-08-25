@@ -250,6 +250,7 @@ usage: mpvc-fzf opts # @version v1.7 (c) gmt4 https://github.com/gmt4/mpvc
  -k|dplay    : Search & play DuckDuckGo videos
  -K|dsearch  : Search DuckDuckGo videos
  -l|local    : Search & play local media
+ -q|quality  : Select and change yt-dlp video quality (ytdl-format)
  -s|search   : Search on Invidious
  -t|thumbnail: Retrieve thumbnail_url from metadata of the current YT-URL
  -T|Thumbnail: Retrieve thumbnail_url from metadata of the provided YT-URL
