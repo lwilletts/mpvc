@@ -82,6 +82,7 @@ mpvcfzf_cparse()
     awk \
         -v video=$MPVC_FZF_PARSE_VIDEO \
         -v channel=$MPVC_FZF_PARSE_CHANNEL \
+        -v playlist=$MPVC_FZF_PARSE_PLAYLIST \
         '
         /^.*<p dir="auto">/ {
             l=$0; gsub("^.*<p dir=\"auto\">","", l); gsub("</p>.*$","", l); vtitle=l
@@ -106,7 +107,8 @@ mpvcfzf_cparse()
         /^ *<a href="\/playlist/ {
             gsub("^ *<a href=\"",""); gsub("\">.*","");
             gsub("/playlist", "https://yewtu.be/playlist");
-            printf "%s %7s %s\n", $0, vlength, vtitle
+            if (playlist)
+                printf "%s %7s %s\n", $0, vlength, vtitle
         }
 
         /^ *<a href="\/channel/ {
