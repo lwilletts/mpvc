@@ -38,6 +38,7 @@ mpvcfzf_defaults()
     : "${MPVC_FZF_PARSE_VIDEO:=1}"
     : "${MPVC_FZF_PARSE_CHANNEL:=0}"
     : "${MPVC_FZF_PARSE_PLAYLIST:=0}"
+    : "${MPVC_FZF_INVIDIOUS_URL:=yewtu.be}"
     : "${MPVC_FZF_CURLOPTS:=-fsSL -A 'Mozilla/5.0' --retry 1}"
 
     : "${MPVC_FZF_SOMAFM_FILE:=$MPVC_CONFIG_DIR/feeds/somafm-channels.json}"
@@ -122,7 +123,7 @@ mpvcfzf_cparse()
             if (NR == 0)
             {
                 print "Error: No results found, maybe yewtu.be is down, try switching to a different instance with:"
-                print "       url_host=invidious.projectsegfau.lt mpvc-fzf"
+                print "       MPVC_FZF_INVIDIOUS_URL=invidious.projectsegfau.lt mpvc-fzf"
             }
         }
     '
@@ -148,10 +149,9 @@ mpvcfzf_isearch_once()
 
 mpvcfzf_isearch()
 {
-    url_host="${url_host:-yewtu.be}"
     url_opts="${url_opts:-sort=relevance}" # sort={relevance,views,date} type={all,video,channel,playlist,...}
     url_query="q=$(for f in $@; do printf "%s+" "$f"; done)"
-    url_search="https://${url_host}/search?$url_query&$url_opts"
+    url_search="https://${MPVC_FZF_INVIDIOUS_URL}/search?$url_query&$url_opts"
 
     mpvcfzf_csearch "$url_search&page=1" "$url_search&page=2"
 }
