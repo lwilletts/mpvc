@@ -193,9 +193,11 @@ nix-env -i mpvc
 
 ## Configuration
 
-`mpvc` configuration is performed on [docs/mpvc.conf](../../blob/master/docs/mpvc.conf).
+Running `mpvc-installer config-user`, just installs the defaults config, check `~/.config/mpvc/mpvc.conf` to suit your needs.
 
-Running `mpvc-installer config-user`, just installs the defaults, afterwards adjust `~/.config/mpvc/mpvc.conf` to suit your needs.
+- `mpvc` configuration is performed on [docs/mpvc.conf](../../blob/master/docs/mpvc.conf).
+
+- Some handy `mpvc` shell aliases to type less [docs/bash_aliases.mpvc](../../blob/master/docs/bash_aliases.mpvc).
 
 ## Usage
 
