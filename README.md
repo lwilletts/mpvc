@@ -16,9 +16,15 @@ For more on the features of this fork check: [Git](#git) QuickStart, [Wiki](../.
 ⏩ Skip directly to [Installation](#installation) to try mpvc!
 
 <details open>
-<summary>mpvc-tui -T: running the mpvc TUI <i>(click to view screenshot)</i></summary>
+<summary>mpvc-tui -T: running the mpvc TUI (with albumart) <i>(click to view screenshot)</i></summary>
 
 ![mpvc-tui -T screenshot](../../blob/master/docs/assets/mpvc-tui-new.png)
+</details>
+
+<details>
+<summary>mpvc-tui -T: running the mpvc TUI <i>(click to view screenshot)</i></summary>
+
+![mpvc-tui -T screenshot](../../blob/master/docs/assets/mpvc-tui.png)
 </details>
 
 <details>
