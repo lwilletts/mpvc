@@ -385,8 +385,9 @@ mpvc_web_index()
         <li>
             mpvc
             <a href="?cmd=mpvc shuffle">shuffle</a>
-            <a href="?cmd=mpvc unshuffle">unshuffle</a>
-            <a href="?cmd=mpvc playrand">rand</a>
+            <a href="?cmd=mpvc playlist-shuffle">p-shuf</a>
+            <a href="?cmd=mpvc playlist-unshuffle">p-unshuf</a>
+            <a href="?cmd=mpvc playrand">rnd</a>
         </li>
         <li>
             mpvc
