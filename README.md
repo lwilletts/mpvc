@@ -136,11 +136,11 @@ This does git clone, and symlinks the mpvc scripts to `BINDIR` (default `~/bin`)
  mpvc-tui -T
 ```
 
-For more  check the  [LogBook](../../wiki#logbook) (remeber your best chance is to try, play, and have fun).
+For more  check the  [LogBook](../../wiki#logbook) (remember your best chance is to try, play, and have fun).
 
 ### Curl
 
-Fetch the mpvc-installer (written in POSIX-sh), and ensure it runs under a POSIX-sh SHELL 
+Fetch the mpvc-installer (written in POSIX-sh), and ensure it runs under a POSIX-sh SHELL
 ```console
 curl -fsSLO https://github.com/lwilletts/mpvc/raw/master/extras/mpvc-installer \
   && SHELL=/bin/sh BINDIR=$HOME/bin sh ./mpvc-installer fetch-user
@@ -205,7 +205,9 @@ Running `mpvc-installer config-user`, just installs the defaults config, check `
 
 - `mpvc` configuration is performed on [docs/mpvc.conf](../../blob/master/docs/mpvc.conf).
 
-- Some handy `mpvc` shell aliases to type less [docs/bash_aliases.mpvc](../../blob/master/docs/bash_aliases.mpvc).
+- `mpvc` shell aliases to type less [docs/bash_aliases.mpvc](../../blob/master/docs/bash_aliases.mpvc).
+
+- `$TERM` configuration: A decent terminal with color/sixels support is recommended (`256color/vt340`), but outside of the scope of `mpvc` config.
 
 ## Usage
 
