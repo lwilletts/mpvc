@@ -666,6 +666,7 @@ mpvc_move_track() {
     lpos=$(mpvc_get playlist-pos)
     lcount=$(mpvc_get playlist-count)
     if [ -z "${2:-}" ]; then srcpos=$lpos; dstpos=$1; else srcpos=$1; dstpos=$2; fi
+    if [ "$srcpos" = "$" ]; then srcpos="$(( $lcount - 1 ))"; fi
     if [ "$dstpos" = "$" ]; then dstpos="$lcount"; fi
     #isInt "$srcpos" && isInt "$dstpos" || return 1
     mpvc_ecmdr "playlist-move" "$srcpos" "$dstpos" || return 1
