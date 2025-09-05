@@ -6,7 +6,7 @@
 ![GitHub top language](https://img.shields.io/github/languages/top/lwilletts/mpvc)
 ![GitHub lines of Code](https://sloc.xyz/github/lwilletts/mpvc/?category=code)
 
-[ [Intro](#%EF%B8%8F-overview-1) | [Reqs](#requirements) | [Install](#installation) | [Config](#configuration) | [Usage](#usage) ]
+[ [Intro](#%EF%B8%8F-overview-1) | [Reqs](#requirements) | [Install](#installation) | [Config](#configuration) | [Docs](#documentation) | [Usage](#usage) ]
 
 Music player in POSIX-sh using mpv from the shell/fzf + extras/goodies [^install] 📡🛸🚀.
 
@@ -208,6 +208,27 @@ Running `mpvc-installer config-user`, just installs the defaults config, check `
 - `mpvc` shell aliases to type less [docs/bash_aliases.mpvc](../../blob/master/docs/bash_aliases.mpvc).
 
 - `$TERM` configuration: A decent terminal with color/sixels support is recommended (`256color/vt340`), but outside of the scope of `mpvc` config.
+
+## Documentation
+
+### Logbook
+
+The logbook (blog) is a companion of mpvc that covers mpvc usage & evolution:
+
+* [https://gmt4.github.io/mpvc/logbook.html](https://gmt4.github.io/mpvc/logbook.html)
+
+### Screencasts
+
+Have a look at the screencasts to watch mpvc in action.
+
+* [https://gmt4.github.io/mpvc/casts/](https://gmt4.github.io/mpvc/casts/)
+
+### FAQ
+
+Check the FAQ for any questions left after reading the above docs.
+
+* [https://github.com/gmt4/mpvc/wiki/FAQ](https://github.com/gmt4/mpvc/wiki/FAQ)
+
 
 ## Usage
 
