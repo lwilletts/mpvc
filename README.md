@@ -239,7 +239,7 @@ Have a look at the screencasts to watch mpvc in action.
 
 Check the FAQ for any questions left after reading the above docs.
 
-* [https://github.com/gmt4/mpvc/wiki/FAQ](../../blob/master/docs/FAQ.md)
+* [docs/FAQ.md](../../blob/master/docs/FAQ.md)
 
 
 ## Usage
