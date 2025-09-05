@@ -11,7 +11,7 @@
 Music player in POSIX-sh using mpv from the shell/fzf + extras/goodies [^install] 📡🛸🚀.
 
 A fork of [lwillets/mpvc](https://github.com/lwilletts/mpvc) evolving on its own adding features such as: improved interfaces to CLI, TUI, FZF, WEB, EQZ, & play streaming services as YouTube/Invidious.
-For more on the features of this fork check: [Git](#git) QuickStart, [Wiki](../../wiki), [LogBook](../../wiki#logbook) & [Casts](../../wiki#screencasts).
+For more on the features of this fork check: [Git](#git) QuickStart, [LogBook](#logbook) & [Casts](#screencasts).
 
 ⏩ Skip directly to [Installation](#installation) to try mpvc!
 
@@ -52,8 +52,8 @@ For more on the features of this fork check: [Git](#git) QuickStart, [Wiki](../.
 - [extras/mpvc-autostart](../../blob/master/extras/mpvc-autostart): automatic mpv start/stop based on presence.
 - [extras/mpvc-installer](../../blob/master/extras/mpvc-installer): provides an installer to install/update mpvc.
 
-For more details on how to use the above tools have a look at the [Git](#git) QuickStart Guide, [LogBook](../../wiki#logbook).
-In addition, the [casts/](../../wiki#screencasts) directory to shows some screencasts of mpvc in action.
+For more details on how to use the above tools have a look at the [Git](#git) QuickStart Guide, [LogBook](#logbook).
+In addition, the [casts/](#screencasts) directory to shows some screencasts of mpvc in action.
 
 ## Requirements
 
@@ -136,7 +136,7 @@ This does git clone, and symlinks the mpvc scripts to `BINDIR` (default `~/bin`)
  mpvc-tui -T
 ```
 
-For more  check the  [LogBook](../../wiki#logbook) (remember your best chance is to try, play, and have fun).
+For more  check the  [LogBook](#logbook) (remember your best chance is to try, play, and have fun).
 
 ### Curl
 
@@ -165,13 +165,13 @@ pacman -Sy mpv gawk curl socat fzf rlwrap jq libnotify # cava
 
 ### BSD
 
-BSD (and pkg(1) based derivatives as FreeBSD, see [FAQ](../../wiki/FAQ)):
+BSD (and pkg(1) based derivatives as FreeBSD, see [FAQ](../../blob/master/docs/FAQ.md)):
 
 ```console
 pkg install -y mpv curl socat fzf rlwrap jq libnotify # mpv-mpris cava python3
 ```
 
-BSD (and pkg_add(1) based derivatives as OpenBSD, see [FAQ](../../wiki/FAQ)):
+BSD (and pkg_add(1) based derivatives as OpenBSD, see [FAQ](../../blob/master/docs/FAQ.md)):
 
 ```console
 pkg_add mpv curl socat fzf rlwrap jq libnotify # mpv-mpris cava python3
@@ -179,7 +179,7 @@ pkg_add mpv curl socat fzf rlwrap jq libnotify # mpv-mpris cava python3
 
 ### MacOS
 
-MacOS (and brew(1) based derivatives see [FAQ](../../wiki/FAQ)):
+MacOS (and brew(1) based derivatives see [FAQ](../../blob/master/docs/FAQ.md)):
 
 ```console
 brew install mpv curl socat fzf rlwrap jq libnotify yt-dlp # cava
@@ -239,7 +239,7 @@ Have a look at the screencasts to watch mpvc in action.
 
 Check the FAQ for any questions left after reading the above docs.
 
-* [https://github.com/gmt4/mpvc/wiki/FAQ](https://github.com/gmt4/mpvc/wiki/FAQ)
+* [https://github.com/gmt4/mpvc/wiki/FAQ](../../blob/master/docs/FAQ.md)
 
 
 ## Usage
