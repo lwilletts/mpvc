@@ -1,3 +1,5 @@
+# FAQ
+
 Contribute answers in a `Q: A:` format to your favorite Frequently Asked Questions.
 
 ## BSD support?
