@@ -211,6 +211,18 @@ Running `mpvc-installer config-user`, just installs the defaults config, check `
 
 ## Documentation
 
+### Manuals
+
+The `mpc(1)` man page covers most of the functionality that mpc & mpvc have in common.
+
+* [mpc(1): https://linux.die.net/man/1/mpc](https://linux.die.net/man/1/mpc)
+
+For the `mpv(1)` command read the mpv reference manual at: 
+
+* [https://mpv.io/manual/stable/](https://mpv.io/manual/stable/)
+
+For functionality specific of this [fork](https://github.com/gmt4/mpvc) your best aim are the [logbook](#logbook) & [screencasts](#screencasts).
+
 ### Logbook
 
 The logbook (blog) is a companion of mpvc that covers mpvc usage & evolution:
