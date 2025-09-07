@@ -35,4 +35,16 @@ Your best aim for using mpvc under Windows is to follow mpv documentation: [http
 ## Screenshots
 
 mpvc-fzf running on macOS:
-![mpvc-fzf on macOS](https://raw.githubusercontent.com/gmt4/mpvc/master/docs/assets/mpvc-fzf-mac.jpg)
+![mpvc-fzf on macOS](../../../blob/master/docs/assets/mpvc-fzf-mac.jpg)
+
+mpvc-tui -T: running the mpvc TUI (with albumart):
+![mpvc-tui -T screenshot](../../../blob/master/docs/assets/mpvc-tui-new.png)
+
+mpvc-tui -T: running the mpvc TUI
+![mpvc-tui -T screenshot](../../../blob/master/docs/assets/mpvc-tui.png)
+
+mpvc-fzf -f: running with fzf to manage the playlist
+![mpvc-fzf screenshot](../../../blob/master/docs/assets/mpvc-tui-arch.png)
+
+mpvc-tui -n: running with mpvc-fzf and desktop notifications on the upper-right corner
+![mpvc tui+fzf+notifications screenshot](../../../blob/master/docs/assets/mpvc-tui-fzf.png)
