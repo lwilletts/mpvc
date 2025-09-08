@@ -32,6 +32,22 @@ Your best aim for using mpvc under Windows is to follow mpv documentation: [http
 
 * Check the [logbook](https://gmt4.github.io/mpvc/logbook.html#logbook-20240214) for howto setup.
 
+
+## Companion tools
+
+* [fzf](https://github.com/junegunn/fzf)
+* [cava](https://github.com/karlstav/cava)
+* [yark](https://github.com/Owez/yark)
+* [copyparty](https://github.com/9001/copyparty)
+
+### Related tools
+
+* [ytfzf](https://github.com/pystardust/ytfzf)
+* [rmpvc](https://github.com/mierak/rmpc)
+* [ytmdl](https://github.com/deepjyoti30/ytmdl)
+* [ytmp](https://github.com/unclereeemus/ytmp)
+* [mpv-sockets](https://github.com/seanbreckenridge/mpv-sockets)
+
 ## Screenshots
 
 mpvc-fzf running on macOS:
