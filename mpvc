@@ -97,7 +97,7 @@ EOF
  delay                    : Sleep delay, as in: $PROGNAME play 0 delay seek 20% vol 60
 
  (--)?expand-text         : Expand text as documented in mpv(1) Property Expansion
- (--)?metadata            : Retrieve current playing media metadata
+ (--)?metadata | meta     : Retrieve current playing media metadata
  (--)?filename            : Retrieve current playing media filename
  (--)?replay              : Replay current playing media
 
@@ -1116,7 +1116,7 @@ main() {
                --searchPlay|searchPlay|sPlay)shift; mpvc_search_play "numbered" "${1:-}" ;;
             --stash|stash)                   shift; mpvc_stash "${1:-}" "${2:-}";;
             --expand-text|expand-text)       shift; mpvc_cmd expand-text "$@"; return;;
-            --metadata|metadata)             shift; mpvc_getr metadata "$@"; return;;
+            --metadata|metadata|meta)        shift; mpvc_getr metadata "$@"; return;;
             --filename|filename)             shift; mpvc_get_playlist_filename "$@"; return;;
             --replay|replay)                 mpvc_set_time "absolute" 0 ;;
 
