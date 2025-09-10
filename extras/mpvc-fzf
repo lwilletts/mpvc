@@ -188,11 +188,14 @@ mpvcfzf_lyrics()
 {
     id=${1:-$(mpvc get filename)}
     id=$(mpvcfzf_getvideo_id "$id")
-    output=$(mpvcfzf_curl "https://yewtu.be/redirect?referer=/watch?v=$id")
+    output=$(mpvc metadata | jq -j .data.ytdl_description)
+    if [ -z "$output" ]; then
+        output=$(mpvcfzf_curl "https://yewtu.be/redirect?referer=/watch?v=$id")
+    fi
     echo "$output" |
         awk -v id="$id" '
             c==0 && /<meta name="description"/  {c=1}
-            c==1 && /^[Ll][Yy][Rr][Ii][Cc][Ss]/ {c=2}
+            c<=1 && /[Ll][Yy][Rr][Ii][Cc][Ss]/  {c=2}
             c==2 && /<meta name="keywords"/     {c=0;exit}
             c==2                                {print}
             END                                 {if (c==1) print "Lyrics: No lyrics found for",id}
