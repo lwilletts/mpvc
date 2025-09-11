@@ -20,20 +20,21 @@ BINDIR="${BINDIR:-$PREFIX/bin}"
 DOCDIR="${DOCDIR:-$PREFIX/docs}"
 LICDIR="${LICDIR:-$PREFIX/licenses}"
 
-MPV_CONFDIR="${CONFIGDIR:-$HOME/.config/mpv}"
-MPVC_CONFIG_DIR="${CONFIGDIR:-$HOME/.config/mpvc}"
+MPV_CONFDIR="${MPV_CONFIGDIR:-$HOME/.config/mpv}"
+MPVC_CONFIG_DIR="${MPVC_CONFIGDIR:-$HOME/.config/mpvc}"
 
 DOCS="README.md docs/mpv.conf docs/logbook.html"
 LICENSES="LICENSE.md"
 SCRIPT="mpvc extras/mpvc-tui extras/mpvc-fzf extras/mpvc-cut extras/mpvc-chapter extras/mpvc-mpris extras/mpvc-equalizer extras/mpvc-web extras/mpvc-autostart extras/mpvc-installer"
 
-CONFIG="docs/mpv.conf" # MPV_CONFFIG
+MPV_CONFIG="docs/mpv.conf"
+MPVC_CONFIG="docs/mpvc.conf docs/yt-dlp.conf"
 
 mpvc_config()
 {
     mkdir -p "$MPV_CONFDIR/scripts/"
-    echo "Fetching mpv.conf from $PROGURL"
-    for config in ${CONFIG};
+    echo "Fetching docs/mpv.conf from $PROGURL"
+    for config in ${MPV_CONFIG};
     do
         file="$MPV_CONFDIR/${config##*/}"
         url="$PROGURL/raw/master/$config"
@@ -46,8 +47,8 @@ mpvc_config()
     done
 
     mkdir -p "$MPVC_CONFIG_DIR"
-    echo "Fetching docs/mpvc.conf from $PROGURL"
-    for config in "docs/mpvc.conf";
+    echo "Fetching $MPVC_CONFIG from $PROGURL"
+    for config in $MPVC_CONFIG;
     do
         file="$MPVC_CONFIG_DIR/${config##*/}"
         url="$PROGURL/raw/master/$config"
