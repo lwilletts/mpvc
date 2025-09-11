@@ -554,6 +554,8 @@ mpvc_stash() {
             echo "mpvc set video-zoom $(mpvc_get video-zoom)"
             echo "mpvc set video $(mpvc_get video)"
             echo "mpvc set screen $(mpvc_get screen)"
+            echo "mpvc set sub-auto $(mpvc_get sub-auto)"
+            echo "mpvc set sub-files $(mpvc_get sub-files)"
             echo "mpvc wait"
             echo "mpvc set playback-time $(mpvc_get playback-time)"
             echo "mpvc set pause $(mpvc_get pause)"
