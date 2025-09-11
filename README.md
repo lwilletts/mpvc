@@ -205,7 +205,9 @@ Running `mpvc-installer config-user`, just installs the default configuration [d
 
 - `mpvc` configuration is performed on [docs/mpvc.conf](../../blob/master/docs/mpvc.conf).
 
-- `mpvc` shell aliases to type less [docs/bash_aliases.mpvc](../../blob/master/docs/bash_aliases.mpvc).
+- `yt-dlp` configuration is performed on [docs/yt-dlp.conf](../../blob/master/docs/yt-dlp.conf).
+
+- `shell` aliases to type less [docs/bash_aliases.mpvc](../../blob/master/docs/bash_aliases.mpvc).
 
 - `$TERM` configuration: A decent terminal with color/sixels support is recommended (`256color/vt340`), but outside of the scope of `mpvc` config.
 
