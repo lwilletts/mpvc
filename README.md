@@ -6,16 +6,22 @@
 ![GitHub top language](https://img.shields.io/github/languages/top/lwilletts/mpvc)
 ![GitHub lines of Code](https://sloc.xyz/github/lwilletts/mpvc/?category=code)
 
-[ [Intro](#%EF%B8%8F-overview-1) | [Reqs](#requirements) | [Install](#installation) | [Config](#configuration) | [Usage](#usage) ]
+[ [Intro](#%EF%B8%8F-overview-1) | [Reqs](#requirements) | [Install](#installation) | [Config](#configuration) | [Docs](#documentation) | [Usage](#usage) ]
 
-Music player in POSIX-sh interfacing mpv from the shell + extras/goodies [^install] 🚀.
+Music player in POSIX-sh using mpv from the shell/fzf + extras/goodies [^install] 📡🛸🚀.
 
-A fork of [lwillets/mpvc](https://github.com/lwilletts/mpvc) evolving on its own adding features such as: improved interfaces to CLI, TUI, FZF, WEB, EQZ, & play streaming services as YouTube/Invidious.
-For more on the features of this fork check: [Git](#git) QuickStart, [Wiki](../../wiki), [LogBook](../../wiki#logbook) & [Casts](../../wiki#screencasts).
+A fork of [lwillets/mpvc](https://github.com/lwilletts/mpvc) evolving on its own adding features such as: improved interfaces to CLI, TUI, FZF, WEB, EQZ, & play streaming services as YouTube/Invidious, with a focus on being fully programmable/scriptable from the shell.
+For more on the features of this fork check: [Git](#git) QuickStart, [LogBook](#logbook) & [Casts](#screencasts).
 
 ⏩ Skip directly to [Installation](#installation) to try mpvc!
 
 <details open>
+<summary>mpvc-tui -T: running the mpvc TUI (with albumart) <i>(click to view screenshot)</i></summary>
+
+![mpvc-tui -T screenshot](../../blob/master/docs/assets/mpvc-tui-new.png)
+</details>
+
+<details>
 <summary>mpvc-tui -T: running the mpvc TUI <i>(click to view screenshot)</i></summary>
 
 ![mpvc-tui -T screenshot](../../blob/master/docs/assets/mpvc-tui.png)
@@ -46,8 +52,8 @@ For more on the features of this fork check: [Git](#git) QuickStart, [Wiki](../.
 - [extras/mpvc-autostart](../../blob/master/extras/mpvc-autostart): automatic mpv start/stop based on presence.
 - [extras/mpvc-installer](../../blob/master/extras/mpvc-installer): provides an installer to install/update mpvc.
 
-For more details on how to use the above tools have a look at the [Git](#git) QuickStart Guide, [LogBook](../../wiki#logbook).
-In addition, the [casts/](../../wiki#screencasts) directory to shows some screencasts of mpvc in action.
+For more details on how to use the above tools have a look at the [Git](#git) QuickStart Guide, [LogBook](#logbook).
+In addition, the [casts/](#screencasts) directory to shows some screencasts of mpvc in action.
 
 ## Requirements
 
@@ -96,6 +102,16 @@ This does git clone, and symlinks the mpvc scripts to `BINDIR` (default `~/bin`)
  (cd mpvc; extras/mpvc-installer config-user)
  # check ~/.config/mpvc/mpvc.conf to suit your needs
 
+ # Running mpvc for first time can show some warnings:
+ #   Warning: .config/mpvc/mpvc.conf not found, see docs/mpvc.conf
+ # mpvc-installer config-user sets the default user config
+ mpvc-installer config-user
+
+ # Another common warning is when running mpvc:
+ #   mpvc: Error: No files added to mpvsocket0
+ # lets fix that by adding some music files to play
+ mpvc
+
  # use mpvc to add/load/save media files or online YT URLs
  mpvc add /path/to/your/*.mp3 # or your URLs
  find . -type f -name | mpvc load
@@ -110,19 +126,21 @@ This does git clone, and symlinks the mpvc scripts to `BINDIR` (default `~/bin`)
  mpvc-fzf -a
  # use mpvc-fzf to search and play youtube media
  mpvc-fzf -p 'kupla mirage'
- # use mpvc-fzf to browse & play lofi girl music
- mpvc-fzf -b https://lofigirl.com/wp-content/uploads/2023/06
+ # use mpvc-fzf to browse & play lofi girl music (archive.org)
+ mpvc-fzf -b https://archive.org/download/lofigirl-youtube/mp3/
+ # use mpvc-fzf to randomly enqueue a few lofi tracks (see mpvc-fzf lofi)
+ mpvc-fzf -B https://archive.org/download/lofigirl-youtube/mp3/ | shuf -n 128 | mpvc load
  # use mpvc-fzf to manage the playlist
  mpvc-fzf -f
  # use mpvc-tui to start the tui + desktop notifications
  mpvc-tui -T
 ```
 
-For more  check the  [LogBook](../../wiki#logbook) (remeber your best chance is to try, play, and have fun).
+For more  check the  [LogBook](#logbook) (remember your best chance is to try, play, and have fun).
 
 ### Curl
 
-Fetch the mpvc-installer (written in POSIX-sh), and ensure it runs under a POSIX-sh SHELL 
+Fetch the mpvc-installer (written in POSIX-sh), and ensure it runs under a POSIX-sh SHELL
 ```console
 curl -fsSLO https://github.com/lwilletts/mpvc/raw/master/extras/mpvc-installer \
   && SHELL=/bin/sh BINDIR=$HOME/bin sh ./mpvc-installer fetch-user
@@ -147,13 +165,13 @@ pacman -Sy mpv gawk curl socat fzf rlwrap jq libnotify # cava
 
 ### BSD
 
-BSD (and pkg(1) based derivatives as FreeBSD, see [FAQ](../../wiki/FAQ)):
+BSD (and pkg(1) based derivatives as FreeBSD, see [FAQ](../../blob/master/docs/FAQ.md)):
 
 ```console
 pkg install -y mpv curl socat fzf rlwrap jq libnotify # mpv-mpris cava python3
 ```
 
-BSD (and pkg_add(1) based derivatives as OpenBSD, see [FAQ](../../wiki/FAQ)):
+BSD (and pkg_add(1) based derivatives as OpenBSD, see [FAQ](../../blob/master/docs/FAQ.md)):
 
 ```console
 pkg_add mpv curl socat fzf rlwrap jq libnotify # mpv-mpris cava python3
@@ -161,7 +179,7 @@ pkg_add mpv curl socat fzf rlwrap jq libnotify # mpv-mpris cava python3
 
 ### MacOS
 
-MacOS (and brew(1) based derivatives see [FAQ](../../wiki/FAQ)):
+MacOS (and brew(1) based derivatives see [FAQ](../../blob/master/docs/FAQ.md)):
 
 ```console
 brew install mpv curl socat fzf rlwrap jq libnotify yt-dlp # cava
@@ -181,9 +199,50 @@ nix-env -i mpvc
 
 ## Configuration
 
-`mpvc` configuration is performed on [docs/mpvc.conf](../../blob/master/docs/mpvc.conf).
+Running `mpvc-installer config-user`, just installs the default configuration files listed below under `~/.config/mpvc/`, afterwards check and adjust them to suit your needs.
 
-Running `mpvc-installer config-user`, just installs the defaults, afterwards adjust `~/.config/mpvc/mpvc.conf` to suit your needs.
+- `mpv` configuration is performed on [docs/mpv.conf](../../blob/master/docs/mpv.conf).
+
+- `mpvc` configuration is performed on [docs/mpvc.conf](../../blob/master/docs/mpvc.conf).
+
+- `yt-dlp` configuration is performed on [docs/yt-dlp.conf](../../blob/master/docs/yt-dlp.conf).
+
+- `shell` aliases to type less [docs/bash_aliases.mpvc](../../blob/master/docs/bash_aliases.mpvc).
+
+- `$TERM` configuration: A decent terminal with color/sixels support is recommended (`256color/vt340`), but outside of the scope of `mpvc` config.
+
+## Documentation
+
+### Manuals
+
+The `mpc(1)` man page covers most of the functionality that mpc & mpvc have in common.
+
+* [mpc(1): https://linux.die.net/man/1/mpc](https://linux.die.net/man/1/mpc)
+
+For the `mpv(1)` command read the mpv reference manual at: 
+
+* [https://mpv.io/manual/stable/](https://mpv.io/manual/stable/)
+
+For functionality specific of this [fork](https://github.com/gmt4/mpvc) your best aim are the [logbook](#logbook) & [screencasts](#screencasts).
+
+### Logbook
+
+The logbook (blog) is a companion of mpvc that covers mpvc usage & evolution:
+
+* [https://gmt4.github.io/mpvc/logbook.html](https://gmt4.github.io/mpvc/logbook.html)
+
+### Screencasts
+
+Have a look at the screencasts to watch mpvc in action.
+
+* [https://gmt4.github.io/mpvc/casts/](https://gmt4.github.io/mpvc/casts/)
+
+### FAQ
+
+Check the FAQ for any questions left after reading the above docs.
+
+* [docs/FAQ.md](../../blob/master/docs/FAQ.md)
+
 
 ## Usage
 
@@ -196,13 +255,13 @@ usage: mpvc opts # @version v1.7 (c) gmt4 https://github.com/gmt4/mpvc
  -s | --stop | stop       : Always stop playback.
  -P | --play | play       : Always start playback.
  -p | --toggle            : Toggle playback.
-    | --next              : Jump to next entry in the playlist
-    | --prev              : Jump to previous entry in the playlist
+    | --next | next       : Jump to next entry in the playlist
+    | --prev | prev       : Jump to previous entry in the playlist
  -i | --playlist          : Print filenames of tracks to fit within terminal.
  -I | --fullplaylist      : Print all filenames of tracks in current playlist.
- -v | --vol               : Increase/decrease volume relative to current volume.
+ -v | --vol | vol         : Increase/decrease volume relative to current volume.
  -h | --help              : Prints the short help.
- -H | --help-long         : Prints the long help.
+ -H | --help-long         : Prints the long help (tip: mpvc -H 2>&1 | less).
 *tips: If unsure about where to begin, have a look at https://gmt4.github.io/mpvc
 ```
 
@@ -238,6 +297,7 @@ usage: mpvc-fzf opts # @version v1.7 (c) gmt4 https://github.com/gmt4/mpvc
  -k|dplay    : Search & play DuckDuckGo videos
  -K|dsearch  : Search DuckDuckGo videos
  -l|local    : Search & play local media
+ -q|quality  : Select and change yt-dlp video quality (ytdl-format)
  -s|search   : Search on Invidious
  -t|thumbnail: Retrieve thumbnail_url from metadata of the current YT-URL
  -T|Thumbnail: Retrieve thumbnail_url from metadata of the provided YT-URL
@@ -257,6 +317,24 @@ usage: mpvc-fzf opts # @version v1.7 (c) gmt4 https://github.com/gmt4/mpvc
     ntsradio : Search & play NTS-Radio API channels
     custom   : Search & play your custom feeds (channels, playlists, ...)
 *tips: If unsure about where to begin, start: mpvc-fzf -p 'kupla mirage'
+```
+
+### mpvc-installer
+
+```console
+usage: mpvc-installer args # @version v1.7 (c) gmt4 https://github.com/gmt4/mpvc
+  check-update   : Check for updates
+  check-reqs     : Check for required packages
+  config         : Fetch mpv config
+  config-user    : Fetch mpv config to BINDIR=/home/user/bin
+  config-sys     : Fetch mpv config to BINDIR=/usr/local/bin
+  fetch-user     : Fetch to BINDIR=/home/user/bin
+  link-user      : Symlink to BINDIR=/home/user/bin
+  install-user   : Install to BINDIR=/home/user/bin
+  install-sys    : Install to BINDIR=/usr/local/bin
+  uninstall-sys  : Uninstall from BINDIR=/usr/local/bin
+  uninstall-user : Uninstall from BINDIR=/home/user/bin
+*tips: If unsure where to start, start with: mpvc-installer fetch-user
 ```
 
 [^install]: Skip directly to [Installation](#installation) to try mpvc

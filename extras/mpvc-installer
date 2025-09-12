@@ -20,20 +20,37 @@ BINDIR="${BINDIR:-$PREFIX/bin}"
 DOCDIR="${DOCDIR:-$PREFIX/docs}"
 LICDIR="${LICDIR:-$PREFIX/licenses}"
 
-MPV_CONFDIR="${CONFIGDIR:-$HOME/.config/mpv}"
+MPV_CONFDIR="${MPV_CONFIGDIR:-$HOME/.config/mpv}"
+MPVC_CONFIG_DIR="${MPVC_CONFIGDIR:-$HOME/.config/mpvc}"
 
 DOCS="README.md docs/mpv.conf docs/logbook.html"
 LICENSES="LICENSE.md"
 SCRIPT="mpvc extras/mpvc-tui extras/mpvc-fzf extras/mpvc-cut extras/mpvc-chapter extras/mpvc-mpris extras/mpvc-equalizer extras/mpvc-web extras/mpvc-autostart extras/mpvc-installer"
-CONFIG="docs/mpv.conf"
+
+MPV_CONFIG="docs/mpv.conf"
+MPVC_CONFIG="docs/mpvc.conf docs/yt-dlp.conf"
 
 mpvc_config()
 {
     mkdir -p "$MPV_CONFDIR/scripts/"
-    echo "Fetching mpv.conf from $PROGURL"
-    for config in ${CONFIG};
+    echo "Fetching docs/mpv.conf from $PROGURL"
+    for config in ${MPV_CONFIG};
     do
         file="$MPV_CONFDIR/${config##*/}"
+        url="$PROGURL/raw/master/$config"
+        echo "Fetch $file"
+        if [ -e "$file" ]; then
+            echo "$PROGNAME: $file exists. Not overwriting."
+        else
+            curl -fsSL -o "$file" "$url"
+        fi
+    done
+
+    mkdir -p "$MPVC_CONFIG_DIR"
+    echo "Fetching $MPVC_CONFIG from $PROGURL"
+    for config in $MPVC_CONFIG;
+    do
+        file="$MPVC_CONFIG_DIR/${config##*/}"
         url="$PROGURL/raw/master/$config"
         echo "Fetch $file"
         if [ -e "$file" ]; then
@@ -47,8 +64,12 @@ mpvc_config()
     do
         file="$BINDIR/$bin"
         echo "Fetch $file"
-        curl -fsSL -o "$file" "https://github.com/$bin/$bin/releases/latest/download/$bin"
-        chmod a+rx "$file"
+        if [ -e "$file" ]; then
+            echo "$PROGNAME: $file exists. Not overwriting."
+        else
+            curl -fsSL -o "$file" "https://github.com/$bin/$bin/releases/latest/download/$bin"
+            chmod a+rx "$file"
+        fi
     done
 }
 
@@ -61,6 +82,7 @@ mpvc_fetch()
         file="$BINDIR/${script##*/}"
         url="$PROGURL/raw/master/$script"
         echo "Fetch $file"
+        #if [ -e "$file" ]; then echo "$PROGNAME: $file exists, overwriting."; fi
         curl -fsSL -o "$file" "$url"
         chmod u+x "$file"
     done
@@ -116,18 +138,15 @@ mpvc_uninstall()
 mpvc_check_requirements()
 {
     # attempt at listing packages required by mpvc & extras/ to work
-    command -v "sh"  || echo "$PROGNAME: Error: No sh found. Install to continue"
-    command -v "mpv" || echo "$PROGNAME: Error: No mpv found. Install to continue"
-    command -v "fzf" || echo "$PROGNAME: Error: No fzf found, Install to continue"
-    command -v "awk" || echo "$PROGNAME: Error: No awk found, Install to continue" # gawk ???
-    command -v "sed" || echo "$PROGNAME: Error: No sed found, Install to continue" # gsed ???
-    command -v "socat" || echo "$PROGNAME: Error: No socat found, Install to continue"
+    echo "# Checking required deps:"
+    for cmd in sh mpv fzf awk sed socat; do
+        command -v "$cmd" | sed 's/^/  /' || echo "$PROGNAME: Error: No $cmd found. Install to continue"
+    done
     # recommened, and good to have, but not required
-    command -v "curl" || echo "$PROGNAME: Warning: No curl found, Install to search streaming services"
-    command -v "rlwrap" || echo "$PROGNAME: Warning: No rlwrap, Install to get history, filename & completion support!"
-    command -v "notify-send" || echo "$PROGNAME: Warning: No notify-send, Install to get mpv desktop notifications"
-    command -v "jq" || echo "$PROGNAME: Warning: No jq found, Install to parse JSON"
-    command -v "yt-dlp" || echo "$PROGNAME: Warning: No yt-dlp, Install to get youtube-dl support (*hint: check $PROGNAME config)"
+    echo "# Checking recommended deps:"
+    for cmd in curl rlwrap notify-send jq yt-dlp; do
+        command -v "$cmd" | sed 's/^/  /' || echo "$PROGNAME: Warning: No $cmd found, is recommended, but not required"
+    done
 }
 
 mpvc_check_update()

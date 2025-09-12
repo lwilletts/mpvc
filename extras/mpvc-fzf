@@ -38,14 +38,17 @@ mpvcfzf_defaults()
     : "${MPVC_FZF_PARSE_VIDEO:=1}"
     : "${MPVC_FZF_PARSE_CHANNEL:=0}"
     : "${MPVC_FZF_PARSE_PLAYLIST:=0}"
+    : "${MPVC_FZF_INVIDIOUS_URL:=yewtu.be}"
+    : "${MPVC_FZF_CURLOPTS:=-fsSL -A 'Mozilla/5.0' --retry 1}"
 
     : "${MPVC_FZF_SOMAFM_FILE:=$MPVC_CONFIG_DIR/feeds/somafm-channels.json}"
     : "${MPVC_FZF_RADIOAPI_FILE:=$MPVC_CONFIG_DIR/feeds/radioapi-channels.json}"
     : "${MPVC_FZF_NTSRADIO_FILE:=$MPVC_CONFIG_DIR/feeds/ntsradio-channels.json}"
     : "${MPVC_FZF_CUSTOM_FILE:=$MPVC_CONFIG_DIR/feeds/custom-channels.json}"
 
-    : "${MPVC_FZF_CUSTOM_PREVIEW:=mpvc}"
-    : "${MPVC_FZF_CUSTOM_KEYBINDINGS:=}"
+    : "${MPVC_FZF_CUSTOM_HEADER:=--header=mpvc-fzf}"
+    : "${MPVC_FZF_CUSTOM_OPTIONS:=--ansi --no-sort --multi --layout=reverse --preview=mpvc --preview-window=up:1}"
+    : "${MPVC_FZF_CUSTOM_KEYBINDINGS:=--no-sort}"
 
     #mpvc -q
 }
@@ -56,7 +59,9 @@ mpvcfzf_config()
     if [ ! -d "$MPVC_CONFIG_DIR" ]; then mkdir -p "$MPVC_CONFIG_DIR"; fi
     if [ ! -d "$MPVC_CONFIG_DIR/feeds/" ]; then mkdir -p "$MPVC_CONFIG_DIR/feeds/"; fi
     # if present load user config
-    if [ -r "$MPVC_CONFIG" ]; then . "$MPVC_CONFIG"; fi
+    if [ -r "$MPVC_CONFIG" ]; then
+        . "$MPVC_CONFIG";
+    fi
     if ! quiet command -v fzf; then
         mpvcfzf_warn "$PROGNAME: Warning: No fzf, Install to get fuzzy media search & play support!"
         sleep 1
@@ -65,7 +70,7 @@ mpvcfzf_config()
 
 mpvcfzf_curl()
 {
-    curl -fsSL -A 'Mozilla/5.0' --retry 1 "$@"
+    curl ${MPVC_FZF_CURLOPTS} "$@"
 }
 
 mpvcfzf_getvideo_id()
@@ -78,6 +83,7 @@ mpvcfzf_cparse()
     awk \
         -v video=$MPVC_FZF_PARSE_VIDEO \
         -v channel=$MPVC_FZF_PARSE_CHANNEL \
+        -v playlist=$MPVC_FZF_PARSE_PLAYLIST \
         '
         /^.*<p dir="auto">/ {
             l=$0; gsub("^.*<p dir=\"auto\">","", l); gsub("</p>.*$","", l); vtitle=l
@@ -102,7 +108,8 @@ mpvcfzf_cparse()
         /^ *<a href="\/playlist/ {
             gsub("^ *<a href=\"",""); gsub("\">.*","");
             gsub("/playlist", "https://yewtu.be/playlist");
-            printf "%s %7s %s\n", $0, vlength, vtitle
+            if (playlist)
+                printf "%s %7s %s\n", $0, vlength, vtitle
         }
 
         /^ *<a href="\/channel/ {
@@ -116,7 +123,7 @@ mpvcfzf_cparse()
             if (NR == 0)
             {
                 print "Error: No results found, maybe yewtu.be is down, try switching to a different instance with:"
-                print "       url_host=invidious.projectsegfau.lt mpvc-fzf"
+                print "       MPVC_FZF_INVIDIOUS_URL=invidious.projectsegfau.lt mpvc-fzf"
             }
         }
     '
@@ -142,10 +149,9 @@ mpvcfzf_isearch_once()
 
 mpvcfzf_isearch()
 {
-    url_host="${url_host:-yewtu.be}"
     url_opts="${url_opts:-sort=relevance}" # sort={relevance,views,date} type={all,video,channel,playlist,...}
     url_query="q=$(for f in $@; do printf "%s+" "$f"; done)"
-    url_search="https://${url_host}/search?$url_query&$url_opts"
+    url_search="https://${MPVC_FZF_INVIDIOUS_URL}/search?$url_query&$url_opts"
 
     mpvcfzf_csearch "$url_search&page=1" "$url_search&page=2"
 }
@@ -182,11 +188,14 @@ mpvcfzf_lyrics()
 {
     id=${1:-$(mpvc get filename)}
     id=$(mpvcfzf_getvideo_id "$id")
-    output=$(mpvcfzf_curl "https://yewtu.be/redirect?referer=/watch?v=$id")
+    output=$(mpvc metadata | jq -j .data.ytdl_description)
+    if [ -z "$output" ]; then
+        output=$(mpvcfzf_curl "https://yewtu.be/redirect?referer=/watch?v=$id")
+    fi
     echo "$output" |
         awk -v id="$id" '
             c==0 && /<meta name="description"/  {c=1}
-            c==1 && /^[Ll][Yy][Rr][Ii][Cc][Ss]/ {c=2}
+            c<=1 && /[Ll][Yy][Rr][Ii][Cc][Ss]/  {c=2}
             c==2 && /<meta name="keywords"/     {c=0;exit}
             c==2                                {print}
             END                                 {if (c==1) print "Lyrics: No lyrics found for",id}
@@ -195,16 +204,35 @@ mpvcfzf_lyrics()
 
 mpvcfzf_lyrics_ddg()
 {
-    echo "https://ddg.gg?ia=lyrics&iax=lyrics&q=lyrics $(mpvc -f '%title%')"
+    q=$(echo "lyrics $(mpvc -f '%title%')" | sed 's/ /+/g')
+    echo "https://ddg.gg?ia=lyrics&iax=lyrics&q=$q"
+}
+
+mpvcfzf_getvideo_id_from_fd()
+{
+    ytfd=$1
+    ytout=$(mpvcfzf_icache_output_dir)
+    case "$yturl" in
+        $ytout/*-???????????.???|$ytout/*-???????????.????)
+            ytfd="${ytfd##*/}"     # basename
+            ytfd="${ytfd%.*}"      # extension
+            ytfd="$(echo "$ytfd" | grep -o '...........$')" # ytid
+            ytfd="https://yewtu.be/$ytfd"
+            ;;
+    esac
+    echo "$ytfd"
 }
 
 mpvcfzf_thumbnail()
 {
     yturl="${1:-}"
-    [ -z "$yturl" ] && yturl="$(mpvc filename current full)"
-    [ -z "$yturl" -o "$yturl" = "null" ] && return
-    mpvc ytqueryfield thumbnail_url "$yturl"
+    yturl="${yturl:-$(mpvc filename current full)}"
+    [ -z "$yturl" ] || [ "$yturl" = "null" ] && return
+
+    yturl=$(mpvcfzf_getvideo_id_from_fd "$yturl")
+    mpvc -q ytqueryfield thumbnail_url "$yturl"
 }
+
 
 mpvcfzf_nextvideo()
 {
@@ -301,15 +329,9 @@ mpvcfzf_preview()
     fi
     # fzf keys: ctrl + [dorstxv\]
     fzf \
-        --ansi \
-        --no-sort \
-        --multi \
-        \
-        --layout=reverse \
-        --preview="${MPVC_FZF_CUSTOM_PREVIEW}" \
-        --preview-window="up:$(mpvc statussz)" \
-        --header="$PROGNAME help: $MPVC_FZF_BIND_HELP" \
+        "${MPVC_FZF_CUSTOM_HEADER}" \
         "${MPVC_FZF_CUSTOM_KEYBINDINGS}" \
+        ${MPVC_FZF_CUSTOM_OPTIONS} \
         \
         "$@"
 }
@@ -354,6 +376,25 @@ mpvcfzf_stashlist()
         --bind='ctrl-r:reload(mpvc stash list | mpvc-fzf -0)'
 }
 
+mpvcfzf_quality()
+{
+        mpvcfzf_preview --prompt="(ytdl) " \
+        --bind='ctrl-o:execute-silent(mpvc set ytdl-format {+} &)' \
+        --bind='ctrl-r:reload(mpvc-fzf -q)' <<EOF
+bestvideo+bestaudio/best
+bestvideo[vcodec!=vp9]+bestaudio/best"
+bestvideo[height<=?4320p]+bestaudio/best
+bestvideo[height<=?2160]+bestaudio/best
+bestvideo[height<=?1440]+bestaudio/best
+bestvideo[height<=?1080]+bestaudio/best
+bestvideo[height<=?720]+bestaudio/best
+bestvideo[height<=?480]+bestaudio/best
+bestvideo[height<=?360]+bestaudio/best
+bestvideo[height<=?240]+bestaudio/best
+bestvideo[height<=?144]+bestaudio/best
+EOF
+}
+
 mpvcfzf_ddg_play()
 {
     mpvcfzf_ddg "$@" |
@@ -364,24 +405,26 @@ mpvcfzf_ddg_play()
 
 mpvcfzf_urlget()
 {
-    url=${1:-https://localhost:8443/ytdl-archive/}
-    mpvcfzf_curl "$url" |
-        awk -v url="$url" '
-            /<a href=".*">.*<\/a>/ {
-                match(url, "https?://[^/]+/");
-                host = substr($0, RSTART, RLENGTH)
-                href=$0; sub("^.*href=\"", "", href) sub("\".*$", "", href)
-                if (href ~ "^/") href = host"/"href
-                print (href !~ host) ? url"/"href : href
-            }
-        '
+    url="https://localhost:8443/ytdl-archive/"
+    for url in "$@"
+    do
+        mpvcfzf_curl "$url" |
+            awk -v url="$url" '
+                /<a href=".*">.*<\/a>/ {
+                    match(url, "https?://[^/]+/");
+                    host = substr($0, RSTART, RLENGTH)
+                    href=$0; sub("^.*href=\"", "", href) sub("\".*$", "", href)
+                    if (href ~ "^/") href = host"/"href
+                    print (href !~ host) ? url"/"href : href
+                }
+            '
+    done
 }
 
 mpvcfzf_urlbrowser()
 {
-    url=${1:-https://localhost:8443/ytdl-archive/}
-    mpvcfzf_urlget "$url" |
-        mpvcfzf_preview --prompt="(urlbrowse) "
+    url="${@:-https://localhost:8443/ytdl-archive/}"
+    mpvcfzf_urlget $url | mpvcfzf_preview --prompt="(urlbrowse) "
 }
 
 mpvcfzf_cmds()
@@ -393,12 +436,11 @@ mpvcfzf_equalizer()
 {
     mpvc-equalizer preset |
         mpvcfzf_preview --prompt="(equalizer) " \
-        --bind='ctrl-x:execute-silent(mpvc-equalizer dec {1} &)' \
-        --bind='ctrl-v:execute-silent(mpvc-equalizer inc {1} &)' \
-        --bind='ctrl-space:execute-silent(mpvc-equalizer reset)' \
         --bind='ctrl-o:execute-silent(mpvc-equalizer preset {-1} | mpvc-equalizer load)' \
         --bind='ctrl-s:reload(mpvc-equalizer bars)' \
         --bind='ctrl-r:reload(mpvc-equalizer preset)' \
+        --bind='shift-left:execute-silent(mpvc-equalizer dec {1} &)' \
+        --bind='shift-right:execute-silent(mpvc-equalizer inc {1} &)' \
         "$@"
 }
 
@@ -459,7 +501,13 @@ mpvcfzf_feeds_search()
 
 mpvcfzf_feed_lofi()
 {
-    mpvcfzf_urlbrowser "${1:-https://lofigirl.com/wp-content/uploads/2023/06/}"
+    for url in "${1:-https://lofigirl.com/wp-content/uploads/2023/06/}" "${1:-https://archive.org/download/lofigirl-youtube/mp3/}";
+    do
+        if mpvcfzf_curl --retry 0 -X HEAD -m5 "$url"; then
+            mpvcfzf_urlbrowser "$url"
+            break
+        fi
+    done
 }
 
 mpvcfzf_feed_somafm()
@@ -526,6 +574,7 @@ usage: $PROGNAME opts # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
  -k|dplay    : Search & play DuckDuckGo videos
  -K|dsearch  : Search DuckDuckGo videos
  -l|local    : Search & play local media
+ -q|quality  : Select and change yt-dlp video quality (ytdl-format)
  -s|search   : Search on Invidious
  -t|thumbnail: Retrieve thumbnail_url from metadata of the current YT-URL
  -T|Thumbnail: Retrieve thumbnail_url from metadata of the provided YT-URL
@@ -562,8 +611,8 @@ main()
         -1|awk1)    shift; mpvcfzf_awk1; return ;;
 
         -a|stash)   shift; mpvcfzf_stashlist; return ;;
-        -b|browse)  shift; mpvcfzf_urlbrowser "$arg1"; return ;;
-        -B|urlget)  shift; mpvcfzf_urlget "$arg1"; return ;;
+        -b|browse)  shift; mpvcfzf_urlbrowser "$@"; return ;;
+        -B|urlget)  shift; mpvcfzf_urlget "$@"; return ;;
         -c|chapters)shift; mpvcfzf_chapterlist; return ;;
         -C|cache)   shift; mpvcfzf_icache; return;;
         -CC|cmds)   shift; mpvcfzf_cmds "$@"; return;;
@@ -579,6 +628,7 @@ main()
         -k|dplay)   shift; mpvcfzf_ddg_play "$arg1"; return ;;
         -K|dsearch) shift; mpvcfzf_ddg "$arg1"; return ;;
         -h|help)    shift; mpvcfzf_usage; return ;;
+        -q|quality) shift; mpvcfzf_quality; return ;;
         -l|local)   shift; mpvcfzf_local; return ;;
         -n|next)    shift; mpvcfzf_nextvideo "$arg1"; return ;;
 

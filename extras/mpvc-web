@@ -41,6 +41,8 @@ mpvc_web_defaults()
     : "${MPVC_WEB_SSL_ENABLE:=}"
     : "${MPVC_WEB_SSL_VERIFY:=0}"
     : "${MPVC_WEB_ARCHIVE_ENABLE:=}"
+    : "${MPVC_WEB_THUMBNAIL_ENABLE:=}"
+    : "${MPVC_WEB_THUMBNAIL_STYLE:=filter: invert(1);height:15em;width:100%}"
     : "${MPVC_WEB_EXTRAS_URL:=}"
     : "${MPVC_WEB_HTML_THEME:=}"
     : "${MPVC_WEB_HTML_REFRESH:=}"
@@ -249,7 +251,7 @@ mpvc_cmd()   { echo "Content-Type: text/plain"; echo; $MPVC "\$@"; }
 mpvc_plain() { echo "Content-Type: text/plain"; echo; echo "\$@"; }
 mpvc_html()  { echo "Content-Type: text/html";  echo; echo "\$@"; }
 mpvc_json()  { echo "Content-Type: application/json";  echo; echo "\$@"; }
-mpvc_redir() { mpvc_html '<meta http-equiv=refresh content="0;url='\$1'" />'; }
+mpvc_redir() { if [ -n "\$1" -a "\$1" != "null" ]; then mpvc_html '<meta http-equiv=refresh content="0.5;url='\$1'" />'; fi; }
 mpvc_split() { for i in \$@; do echo "\$i"; done; }
 
 main()
@@ -383,8 +385,9 @@ mpvc_web_index()
         <li>
             mpvc
             <a href="?cmd=mpvc shuffle">shuffle</a>
-            <a href="?cmd=mpvc unshuffle">unshuffle</a>
-            <a href="?cmd=mpvc playrand">rand</a>
+            <a href="?cmd=mpvc playlist-shuffle">p-shuf</a>
+            <a href="?cmd=mpvc playlist-unshuffle">p-unshuf</a>
+            <a href="?cmd=mpvc playrand">rnd</a>
         </li>
         <li>
             mpvc
@@ -444,7 +447,6 @@ mpvc_web_index()
             </li>
         </details>
     </ul>
-
         [
             <a href="#mpvc-web-status" name="mpvc-web-status">Status</a>
             <a href="/cgi-bin/mpvc?metadata">#me</a>
@@ -475,11 +477,20 @@ mpvc_web_index()
         </script>
         </div>
         <hr>
+    <ul>
+        <details $(if [ -n "$MPVC_WEB_THUMBNAIL_ENABLE" ]; then echo open; fi)>
+        <summary>mpvc thumb</summary>
+        <a href=".">
+            <iframe src="/cgi-bin/mpvc?thumbnail_url" alt="thumbnail" title="thumbnail" style="$MPVC_WEB_THUMBNAIL_STYLE"></iframe>
+        </a>
+        </details>
+    </ul>
+        <hr>
+        🎧
         <a href="$PROGURL">$PROGNAME</a>
         <a href="$PROGURL">$PROGVERSION</a>
-        <a href="${PROGURL%/*}">$PROGAUTHOR</a> (c) 2024
+        <a href="${PROGURL%/*}">$PROGAUTHOR</a> (c) 2025
         <a href="javascript:alert('$(mpvc_web_help)')" title="help" ${MPVC_WEB_SHORTCUT_HELP}>/h</a>
-        <a href="#top" title="top">up</a>
     </body>
 </html>
 EOF
