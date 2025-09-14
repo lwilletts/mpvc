@@ -199,11 +199,11 @@ nix-env -i mpvc
 
 ## Configuration
 
-Running `mpvc-installer config-user`, just installs the default configuration files listed below under `~/.config/mpvc/`, afterwards check and adjust them to suit your needs.
-
-- `mpv` configuration is performed on [docs/mpv.conf](../../blob/master/docs/mpv.conf).
+Running `mpvc-installer config-user`, just installs the default configuration files listed below under `~/.config/mpvc/`, afterwards, check and adjust them to suit your needs.
 
 - `mpvc` configuration is performed on [docs/mpvc.conf](../../blob/master/docs/mpvc.conf).
+
+- `mpv` configuration is performed on [docs/mpv.conf](../../blob/master/docs/mpv.conf).
 
 - `yt-dlp` configuration is performed on [docs/yt-dlp.conf](../../blob/master/docs/yt-dlp.conf).
 
