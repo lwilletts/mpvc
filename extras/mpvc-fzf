@@ -30,6 +30,7 @@ mpvcfzf_defaults()
     : "${MPVC_YTDL_ARCHIVE:=}"
     : "${MPVC_YTDL_OUTPUT:=}"
     : "${MPVC_YTDL_OPTS:=}"
+    : "${MPVC_YTDL_CONFIG:=$MPVC_CONFIG_DIR/yt-dlp.conf}"
 
     : "${MPVC_TERM:=xterm}"
 
@@ -49,8 +50,6 @@ mpvcfzf_defaults()
     : "${MPVC_FZF_CUSTOM_HEADER:=--header=mpvc-fzf}"
     : "${MPVC_FZF_CUSTOM_OPTIONS:=--ansi --no-sort --multi --layout=reverse --preview=mpvc --preview-window=up:1}"
     : "${MPVC_FZF_CUSTOM_KEYBINDINGS:=--no-sort}"
-
-    #mpvc -q
 }
 
 mpvcfzf_config()
@@ -293,29 +292,12 @@ mpvcfzf_fetch()
     if [ $# -lt 1 ]; then mpvcfzf_usage; fi
 
     ytdl_opts=""
-    ytdlp=$(command -v youtube-dl || command -v yt-dlp)
+    ytdlp=$(command -v yt-dlp || command -v youtube-dl)
     if [ ! -x "$ytdlp" ]; then
         mpvcfzf_warn "$PROGNAME: Warning: No yt-dlp, Install to get ytdl support!"
     fi
 
-    mpvc -q --mpv
-
-    ytdl_json=$(mpvc getr ytdl-raw-options)
-    if [ -z "$ytdl_json" ]; then
-        mpvcfzf_warn "$PROGNAME: Error ytdl-raw-options not set. Check docs/mpv.conf"
-        return
-    fi
-    for option in $(echo "$ytdl_json" | jq -r ".data | keys | .[]")
-    do
-        value=$(echo "$ytdl_json" | jq -r ".data.\"$option\"")
-        if [ -n "$value" ]
-        then
-            ytdl_opts="$ytdl_opts --$option=$value"
-        else
-            ytdl_opts="$ytdl_opts --$option"
-        fi
-    done
-    "$ytdlp" $ytdl_opts $MPVC_YTDL_OPTS "$@"
+    "$ytdlp" --config-location=$MPVC_YTDL_CONFIG $MPVC_YTDL_OPTS "$@"
 }
 
 #
