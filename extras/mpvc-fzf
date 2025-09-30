@@ -336,7 +336,7 @@ mpvcfzf_iplay()
 
 mpvcfzf_local()
 {
-    find . -type f,d | sort |
+    find ${1:-.} -type f,d | sort |
         mpvcfzf_preview --prompt="(local) " |
             mpvc load
 }
@@ -608,19 +608,18 @@ main()
         -C|cache)   shift; mpvcfzf_icache; return;;
         -CC|cmds)   shift; mpvcfzf_cmds "$@"; return;;
 
-        -d|dir)     shift; MPVC_DIR="$arg1"; cd "$MPVC_DIR" || return;;
+        -d|dir)     shift; cd "$arg1" || return;;
         -e|eqz)     shift; mpvcfzf_equalizer "$@"; return ;;
         -f|playlist)shift; mpvcfzf_playlist; return ;;
         -F|preview) shift; mpvcfzf_preview "$@"; return ;;
         -g|fetch)   shift; mpvcfzf_fetch "$arg1"; return ;;
         -G|Fetch)   shift; mpvcfzf_fetch "$(mpvcfzf_iplay "$1")"; return ;;
+        -h|help)    shift; mpvcfzf_usage; return ;;
         -i|lyrics)  shift; mpvcfzf_lyrics "$arg1"; return ;;
         -L|Lyrics)  shift; mpvcfzf_lyrics_ddg; return ;;
         -k|dplay)   shift; mpvcfzf_ddg_play "$arg1"; return ;;
         -K|dsearch) shift; mpvcfzf_ddg "$arg1"; return ;;
-        -h|help)    shift; mpvcfzf_usage; return ;;
-        -q|quality) shift; mpvcfzf_quality; return ;;
-        -l|local)   shift; mpvcfzf_local; return ;;
+        -l|local)   shift; mpvcfzf_local "$arg1"; return ;;
         -n|next)    shift; mpvcfzf_nextvideo "$arg1"; return ;;
 
         -o|osearch) shift; mpvcfzf_isearch_once "$arg1" ;; # lucky
@@ -629,6 +628,8 @@ main()
 
         -p|splay)   shift; mpvcfzf_iplay "$arg1" | mpvc load; return ;;
         -P|Splay)   shift; mpvcfzf_iplay "$arg1" | mpvc loadc; return ;;
+        -q|quality) shift; mpvcfzf_quality; return ;;
+        -r|explorer)shift; mpvcfzf_local "$MPVC_YTDL_OUTPUT" || return;;
         -s|search)  shift; mpvcfzf_isearch "$arg1"; return;;
         -t|thumbnail) shift; mpvcfzf_thumbnail "$arg1"; return ;;
         -T|Thumbnail) shift; mpvcfzf_thumbnail "$arg1" ; return ;;
