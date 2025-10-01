@@ -342,6 +342,11 @@ mpvcfzf_local()
             mpvc load
 }
 
+mpvcfzf_explorer()
+{
+    (cd "$MPVC_YTDL_OUTPUT" || return; mpvcfzf_local)
+}
+
 mpvcfzf_playlist()
 {
     len=$(mpvc gets playlist-count)
@@ -630,7 +635,7 @@ main()
         -p|splay)   shift; mpvcfzf_iplay "$arg1" | mpvc load; return ;;
         -P|Splay)   shift; mpvcfzf_iplay "$arg1" | mpvc loadc; return ;;
         -q|quality) shift; mpvcfzf_quality; return ;;
-        -r|explorer)shift; mpvcfzf_local "$MPVC_YTDL_OUTPUT" || return;;
+        -r|explorer)shift; mpvcfzf_explorer; return ;;
         -s|search)  shift; mpvcfzf_isearch "$arg1"; return;;
         -t|thumbnail) shift; mpvcfzf_thumbnail "$arg1"; return ;;
         -T|Thumbnail) shift; mpvcfzf_thumbnail "$arg1" ; return ;;
