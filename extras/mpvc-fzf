@@ -336,7 +336,8 @@ mpvcfzf_iplay()
 
 mpvcfzf_local()
 {
-    find ${1:-.} -type f,d | sort |
+    dir=${1:-./} # list relative files excluding .dot files/dirs
+    find $dir -path "$dir.*" -prune -o -type f,d -print | sed "s|^$dir||" | sort |
         mpvcfzf_preview --prompt="(local) " |
             mpvc load
 }
@@ -608,7 +609,7 @@ main()
         -C|cache)   shift; mpvcfzf_icache; return;;
         -CC|cmds)   shift; mpvcfzf_cmds "$@"; return;;
 
-        -d|dir)     shift; cd "$arg1" || return;;
+        -d|dir)     shift; cd "$arg1" || return; shift;;
         -e|eqz)     shift; mpvcfzf_equalizer "$@"; return ;;
         -f|playlist)shift; mpvcfzf_playlist; return ;;
         -F|preview) shift; mpvcfzf_preview "$@"; return ;;
