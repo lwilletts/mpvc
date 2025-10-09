@@ -1030,7 +1030,9 @@ main() {
     mpvc_config
     arg1=${1:-}
     case "$arg1" in
-    ytquery|ytqueryjson|ytqueryfield|--tac|tac) ;;
+    ytquery|ytq) ;;
+    ytqueryjson|ytqj) ;;
+    ytqueryfield|--tac|tac) ;;
     --ttysize|ttysize|--ttycols|ttycols|--ttylines|ttylines|--statussz|statussz) ;;
     -k|--kill|kill|-K|--killall|killall) ;;
     -c|--crop|crop|-C|--clear|clear|cmd|sockcmd|socklist|--socklist) ;;
@@ -1120,8 +1122,8 @@ main() {
             --filename|filename)             shift; mpvc_get_playlist_filename "$@"; return;;
             --replay|replay)                 mpvc_set_time "absolute" 0 ;;
 
-            ytquery)                         shift; mpvc_ytquery "$@"; return;;
-            ytqueryjson)                     shift; mpvc_ytquery_json "$@"; return;;
+            ytquery|ytq)                     shift; mpvc_ytquery "$@"; return;;
+            ytqueryjson|ytqj)                shift; mpvc_ytquery_json "$@"; return;;
             ytqueryfield)                    shift; mpvc_ytquery_field "$@"; return;;
 
             cprev|--chapter-prev|chapter-prev)            mpvc_chapter_set -1 "relative" ;;
