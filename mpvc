@@ -517,8 +517,6 @@ mpvc_stash() {
             while read -r line; do
                 case "$line" in
                     "# $PROGNAME "*) quietcheck warn "$line" ;;
-                    #"mpvc --mpv")    quietcheck mpvc_mpv ;;
-                    #"mpvc --wait")   quietcheck mpvc_wait ;;
                     #"mpvc cmd "*)    quietcheck mpvc_cmd ${line##mpvc cmd } ;;
                     "mpvc mpv")      quietcheck mpvc_mpv ;;
                     "mpvc wait")     quietcheck mpvc_wait ;;
@@ -565,7 +563,7 @@ mpvc_stash() {
             ;;
         load|append)
             # apply a stash while keeping the current playlist (append to playlist)
-            RE='^mpvc \(set\|cmd\) \(playlist-\|playback-\|volume\).*\+$'
+            RE='^mpvc \(set\|cmd\) \(playlist-\|playback-\|volume\).\+$'
             grep -v "$RE" "$([ -n "$1" ] && echo "$MPVC_STASH_DIR/$1")" | mpvc_stash apply_current
             ;;
         replay)
