@@ -41,6 +41,7 @@ mpvcfzf_defaults()
     : "${MPVC_FZF_PARSE_PLAYLIST:=0}"
     : "${MPVC_FZF_INVIDIOUS_URL:=yewtu.be}"
     : "${MPVC_FZF_CURLOPTS:=-fsSL -A Mozilla/5.0 --retry 1}"
+    : "${MPVC_FZF_IMGVIEWER:=lsix}"
 
     : "${MPVC_FZF_SOMAFM_FILE:=$MPVC_CONFIG_DIR/feeds/somafm-channels.json}"
     : "${MPVC_FZF_RADIOAPI_FILE:=$MPVC_CONFIG_DIR/feeds/radioapi-channels.json}"
@@ -241,6 +242,10 @@ mpvcfzf_thumbnail()
     esac
 }
 
+mpvcfzf_thumbnail_preview()
+{
+    $MPVC_FZF_IMGVIEWER "$(mpvcfzf_thumbnail "$@")"
+}
 
 mpvcfzf_nextvideo()
 {
@@ -638,7 +643,7 @@ main()
         -r|explorer)shift; mpvcfzf_explorer; return ;;
         -s|search)  shift; mpvcfzf_isearch "$arg1"; return;;
         -t|thumbnail) shift; mpvcfzf_thumbnail "$arg1"; return ;;
-        -T|Thumbnail) shift; mpvcfzf_thumbnail "$arg1" ; return ;;
+        -T|Thumbnail) shift; mpvcfzf_thumbnail_preview "$arg1" ; return ;;
         -u|url)     shift; mpvcfzf_csearch_play "$arg1"; return ;;
         -U|Url)     shift; mpvcfzf_csearch "$arg1"; return ;;
         -x|launch)  shift; mpvcfzf_launch_term "$@"; exit ;;
