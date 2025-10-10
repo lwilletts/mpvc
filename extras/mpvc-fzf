@@ -579,7 +579,7 @@ usage: $PROGNAME opts # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
  -q|quality  : Select and change yt-dlp video quality (ytdl-format)
  -s|search   : Search on Invidious
  -t|thumbnail: Retrieve thumbnail_url from metadata of the current YT-URL
- -T|Thumbnail: Retrieve thumbnail_url from metadata of the provided YT-URL
+ -T|Thumbnail: Display thumbnail_url from metadata of the provided YT-URL
  -p|splay    : Search & play media found using Invidious
  -u|url      : Search the given YT URL (supports vids,channels,playlist feeds)
  -U|Url      : Search & play the given YT URL
