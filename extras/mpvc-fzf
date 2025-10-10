@@ -609,56 +609,56 @@ main()
         arg1="${2:-}"
 
         case "$arg" in
-        -0|awk0)    shift; mpvcfzf_awk0; return ;;
-        -1|awk1)    shift; mpvcfzf_awk1; return ;;
+        -0|awk0)        shift; mpvcfzf_awk0; return ;;
+        -1|awk1)        shift; mpvcfzf_awk1; return ;;
 
-        -a|stash)   shift; mpvcfzf_stashlist; return ;;
-        -b|browse)  shift; mpvcfzf_urlbrowser "$@"; return ;;
-        -B|urlget)  shift; mpvcfzf_urlget "$@"; return ;;
-        -c|chapters)shift; mpvcfzf_chapterlist; return ;;
-        -C|cache)   shift; mpvcfzf_icache; return;;
-        -CC|cmds)   shift; mpvcfzf_cmds "$@"; return;;
+        -a|stash)       shift; mpvcfzf_stashlist; return ;;
+        -b|browse)      shift; mpvcfzf_urlbrowser "$@"; return ;;
+        -B|urlget)      shift; mpvcfzf_urlget "$@"; return ;;
+        -c|chapters)    shift; mpvcfzf_chapterlist; return ;;
+        -C|cache)       shift; mpvcfzf_icache; return;;
+        -CC|cmds)       shift; mpvcfzf_cmds "$@"; return;;
 
-        -d|dir)     shift; cd "$arg1" || return; shift;;
-        -e|eqz)     shift; mpvcfzf_equalizer "$@"; return ;;
-        -f|playlist)shift; mpvcfzf_playlist; return ;;
-        -F|preview) shift; mpvcfzf_preview "$@"; return ;;
-        -g|fetch)   shift; mpvcfzf_fetch "$arg1"; return ;;
-        -G|Fetch)   shift; mpvcfzf_fetch "$(mpvcfzf_iplay "$1")"; return ;;
-        -h|help)    shift; mpvcfzf_usage; return ;;
-        -i|lyrics)  shift; mpvcfzf_lyrics "$arg1"; return ;;
-        -L|Lyrics)  shift; mpvcfzf_lyrics_ddg; return ;;
-        -k|dplay)   shift; mpvcfzf_ddg_play "$arg1"; return ;;
-        -K|dsearch) shift; mpvcfzf_ddg "$arg1"; return ;;
-        -l|local)   shift; mpvcfzf_local "$arg1"; return ;;
-        -n|next)    shift; mpvcfzf_nextvideo "$arg1"; return ;;
+        -d|dir)         shift; cd "$arg1" || return; shift;;
+        -e|eqz)         shift; mpvcfzf_equalizer "$@"; return ;;
+        -f|playlist)    shift; mpvcfzf_playlist; return ;;
+        -F|preview)     shift; mpvcfzf_preview "$@"; return ;;
+        -g|fetch)       shift; mpvcfzf_fetch "$arg1"; return ;;
+        -G|Fetch)       shift; mpvcfzf_fetch "$(mpvcfzf_iplay "$1")"; return ;;
+        -h|help)        shift; mpvcfzf_usage; return ;;
+        -i|lyrics)      shift; mpvcfzf_lyrics "$arg1"; return ;;
+        -L|Lyrics)      shift; mpvcfzf_lyrics_ddg; return ;;
+        -k|dplay)       shift; mpvcfzf_ddg_play "$arg1"; return ;;
+        -K|dsearch)     shift; mpvcfzf_ddg "$arg1"; return ;;
+        -l|local)       shift; mpvcfzf_local "$arg1"; return ;;
+        -n|next)        shift; mpvcfzf_nextvideo "$arg1"; return ;;
 
-        -o|osearch) shift; mpvcfzf_isearch_once "$arg1" ;; # lucky
-        -O|Osearch) shift; mpvcfzf_isearch_once "$arg1" | mpvcfzf_awk1 | mpvc load ;; # lucky
-        -OO)        shift; mpvcfzf_icache_output_dir ;;
+        -o|osearch)     shift; mpvcfzf_isearch_once "$arg1" ;; # lucky
+        -O|Osearch)     shift; mpvcfzf_isearch_once "$arg1" | mpvcfzf_awk1 | mpvc load ;; # lucky
+        -OO)            shift; mpvcfzf_icache_output_dir ;;
 
-        -p|splay)   shift; mpvcfzf_iplay "$arg1" | mpvc load; return ;;
-        -P|Splay)   shift; mpvcfzf_iplay "$arg1" | mpvc loadc; return ;;
-        -q|quality) shift; mpvcfzf_quality; return ;;
-        -r|explorer)shift; mpvcfzf_explorer; return ;;
-        -s|search)  shift; mpvcfzf_isearch "$arg1"; return;;
-        -t|thumbnail) shift; mpvcfzf_thumbnail "$arg1"; return ;;
-        -T|Thumbnail) shift; mpvcfzf_thumbnail_preview "$arg1" ; return ;;
-        -u|url)     shift; mpvcfzf_csearch_play "$arg1"; return ;;
-        -U|Url)     shift; mpvcfzf_csearch "$arg1"; return ;;
-        -x|launch)  shift; mpvcfzf_launch_term "$@"; exit ;;
-        -y|related) shift; mpvcfzf_related_search "$arg1"; return ;;
-        -Y|Related) shift; mpvcfzf_related_play "$arg1"; return ;;
-        -z|relatedo)shift; mpvcfzf_related_once "$arg1"; return ;;
-        -v|version) shift; mpvcfzf_version; return ;;
+        -p|splay)       shift; mpvcfzf_iplay "$arg1" | mpvc load; return ;;
+        -P|Splay)       shift; mpvcfzf_iplay "$arg1" | mpvc loadc; return ;;
+        -q|quality)     shift; mpvcfzf_quality; return ;;
+        -r|explorer)    shift; mpvcfzf_explorer; return ;;
+        -s|search)      shift; mpvcfzf_isearch "$arg1"; return;;
+        -t|thumbnail)   shift; mpvcfzf_thumbnail "$arg1"; return ;;
+        -T|Thumbnail)   shift; mpvcfzf_thumbnail_preview "$arg1" ; return ;;
+        -u|url)         shift; mpvcfzf_csearch_play "$arg1"; return ;;
+        -U|Url)         shift; mpvcfzf_csearch "$arg1"; return ;;
+        -x|launch)      shift; mpvcfzf_launch_term "$@"; exit ;;
+        -y|related)     shift; mpvcfzf_related_search "$arg1"; return ;;
+        -Y|Related)     shift; mpvcfzf_related_play "$arg1"; return ;;
+        -z|relatedo)    shift; mpvcfzf_related_once "$arg1"; return ;;
+        -v|version)     shift; mpvcfzf_version; return ;;
 
-        now)        shift; mpvcfzf_now "${1:-}"; return ;;
-        lofi)       shift; mpvcfzf_feed_lofi "${1:-}"; return ;;
-        somafm)     shift; mpvcfzf_feed_somafm "${1:-}"; return ;;
-        radioapi)   shift; mpvcfzf_feed_radioapi "${1:-}"; return ;;
-        ntsradio)   shift; mpvcfzf_feed_ntsradio "${1:-}"; return ;;
-        custom)     shift; mpvcfzf_feed_custom "$@"; return ;;
-        #*)         shift; mpvcfzf_usage; return ;;
+        now)            shift; mpvcfzf_now "${1:-}"; return ;;
+        lofi)           shift; mpvcfzf_feed_lofi "${1:-}"; return ;;
+        somafm)         shift; mpvcfzf_feed_somafm "${1:-}"; return ;;
+        radioapi)       shift; mpvcfzf_feed_radioapi "${1:-}"; return ;;
+        ntsradio)       shift; mpvcfzf_feed_ntsradio "${1:-}"; return ;;
+        custom)         shift; mpvcfzf_feed_custom "$@"; return ;;
+        #*)             shift; mpvcfzf_usage; return ;;
         esac
     done
 }
