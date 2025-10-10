@@ -265,7 +265,7 @@ main()
     case "\$QUERY_STRING" in
         now-short)              mpvc_redir "\$($MPVC-fzf now short)" ;;
         lyrics)                 mpvc_redir "\$($MPVC-fzf Lyrics '')" ;;
-        thumbnail_url)          mpvc_redir "\$($MPVC-fzf Thumbnail)" ;;
+        thumbnail_url)          mpvc_redir "\$($MPVC-fzf thumbnail)" ;;
         filename)               mpvc_redir "\$($MPVC filename current full)" ;;
         metadata)               mpvc_plain "\$($MPVC metadata)" ;;
 
