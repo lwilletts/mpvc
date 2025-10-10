@@ -31,6 +31,7 @@ mpvcfzf_defaults()
     : "${MPVC_YTDL_OUTPUT:=}"
     : "${MPVC_YTDL_OPTS:=}"
     : "${MPVC_YTDL_CONFIG:=$MPVC_CONFIG_DIR/yt-dlp.conf}"
+    : "${MPVC_YTDL_BIN:=$(command -v yt-dlp || command -v youtube-dl)}"
 
     : "${MPVC_TERM:=xterm}"
 
@@ -305,13 +306,10 @@ mpvcfzf_fetch()
 {
     if [ $# -lt 1 ]; then mpvcfzf_usage; fi
 
-    ytdl_opts=""
-    ytdlp=$(command -v yt-dlp || command -v youtube-dl)
-    if [ ! -x "$ytdlp" ]; then
+    if [ ! -x "$MPVC_YTDL_BIN" ]; then
         mpvcfzf_warn "$PROGNAME: Warning: No yt-dlp, Install to get ytdl support!"
     fi
-
-    "$ytdlp" --config-location=$MPVC_YTDL_CONFIG $MPVC_YTDL_OPTS "$@"
+    "$MPVC_YTDL_BIN" --config-location=$MPVC_YTDL_CONFIG $MPVC_YTDL_OPTS "$@"
 }
 
 #
