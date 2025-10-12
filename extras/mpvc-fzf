@@ -621,8 +621,8 @@ main()
         -e|eqz)         shift; mpvcfzf_equalizer "$@"; return ;;
         -f|playlist)    shift; mpvcfzf_playlist; return ;;
         -F|preview)     shift; mpvcfzf_preview "$@"; return ;;
-        -g|fetch)       shift; mpvcfzf_fetch "$arg1"; return ;;
-        -G|Fetch)       shift; mpvcfzf_fetch "$(mpvcfzf_iplay "$1")"; return ;;
+        -g|fetch)       shift; mpvcfzf_fetch "$@"; return ;;
+        -G|Fetch)       shift; mpvcfzf_fetch "$(mpvcfzf_iplay "$@")"; return ;;
         -h|help)        shift; mpvcfzf_usage; return ;;
         -i|lyrics)      shift; mpvcfzf_lyrics "$arg1"; return ;;
         -L|Lyrics)      shift; mpvcfzf_lyrics_ddg; return ;;
