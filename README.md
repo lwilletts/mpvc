@@ -72,6 +72,8 @@ Recommended extras:
 - `yt-dlp`
 - `cava`
 
+⚠️ Note tools **must** be up to date, in special `yt-dlp` is critical to play streaming services.
+
 ## Installation
 
 - [Git](#git)
