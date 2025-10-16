@@ -139,7 +139,7 @@ mpvc_check_requirements()
 {
     # attempt at listing packages required by mpvc & extras/ to work
     echo "# Checking required deps:"
-    for cmd in sh mpv fzf awk sed socat; do
+    for cmd in sh mpv fzf socat awk sed; do
         command -v "$cmd" | sed 's/^/  /' || echo "$PROGNAME: Error: No $cmd found. Install to continue"
     done
     # recommened, and good to have, but not required
