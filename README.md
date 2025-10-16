@@ -38,7 +38,6 @@ For more on the features of this fork check: [Git](#git) QuickStart, [LogBook](#
 
 ![mpvc tui+fzf+notifications screenshot](../../blob/master/docs/assets/mpvc-tui-fzf.png)
 </details>
-, use `mpvc-installer config-user` to check for up-to-date tools
 ## ▶️ Overview [^install]
 
 `mpvc` is a collection of POSIX shell scripts:
@@ -72,7 +71,7 @@ Recommended extras:
 - `yt-dlp`
 - `cava`
 
-⚠️ Note tools **must** be up to date, in special `yt-dlp` to play streaming services, use `mpvc-installer config-user` to check for up-to-date tools.
+⚠️ Note tools **must** be up to date, in special `yt-dlp` to play streaming services, run `mpvc-installer check-reqs|config-user` to check.
 
 ## Installation
 
