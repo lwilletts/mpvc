@@ -145,7 +145,11 @@ mpvc_check_requirements()
     # recommened, and good to have, but not required
     echo "# Checking recommended deps:"
     for cmd in curl rlwrap notify-send jq yt-dlp; do
-        command -v "$cmd" | sed 's/^/  /' || echo "$PROGNAME: Warning: No $cmd found, is recommended, but not required"
+        if command -v "$cmd" | sed 's/^/  /'; then
+            $cmd --version | awk 'NR==1 { print "    "$1,$2 }'
+        else
+            echo "$PROGNAME: Warning: No $cmd found, is recommended, but not required"
+        fi
     done
 }
 
