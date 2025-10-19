@@ -40,8 +40,8 @@ mpvcfzf_defaults()
     : "${MPVC_FZF_PARSE_VIDEO:=1}"
     : "${MPVC_FZF_PARSE_CHANNEL:=0}"
     : "${MPVC_FZF_PARSE_PLAYLIST:=0}"
-    : "${MPVC_FZF_INVIDIOUS_URL:=yewtu.be}"
-    : "${MPVC_FZF_CURLOPTS:=-fsSL -A Mozilla/5.0 --retry 1}"
+    : "${MPVC_FZF_INVID_URL:=yewtu.be}"
+    : "${MPVC_FZF_CURLOPTS:=-fsSL -A Mozilla/5.0-mpvc-tui --retry 1}"
     : "${MPVC_FZF_IMGVIEWER:=lsix}"
 
     : "${MPVC_FZF_SOMAFM_FILE:=$MPVC_CONFIG_DIR/feeds/somafm-channels.json}"
@@ -124,7 +124,7 @@ mpvcfzf_cparse()
             if (NR == 0)
             {
                 print "Error: No results found, maybe yewtu.be is down, try switching to a different instance with:"
-                print "       MPVC_FZF_INVIDIOUS_URL=invidious.projectsegfau.lt mpvc-fzf"
+                print "       MPVC_FZF_INVID_URL=invidious.projectsegfau.lt mpvc-fzf"
             }
         }
     '
@@ -152,7 +152,7 @@ mpvcfzf_isearch()
 {
     url_opts="${url_opts:-sort=relevance}" # sort={relevance,views,date} type={all,video,channel,playlist,...}
     url_query="q=$(for f in $@; do printf "%s+" "$f"; done)"
-    url_search="https://${MPVC_FZF_INVIDIOUS_URL}/search?$url_query&$url_opts"
+    url_search="https://${MPVC_FZF_INVID_URL}/search?$url_query&$url_opts"
 
     mpvcfzf_csearch "$url_search&page=1" "$url_search&page=2"
 }
@@ -161,7 +161,7 @@ mpvcfzf_related_search()
 {
     id=${1:-$(mpvc get filename)}
     id=$(mpvcfzf_getvideo_id "$id")
-    output=$(mpvcfzf_curl "https://yewtu.be/redirect?referer=/watch?v=$id")
+    output=$(mpvcfzf_curl "https://${MPVC_FZF_INVID_URL}/redirect?referer=/watch?v=$id")
     echo "$output" |
         awk '
             /<div class="video-card-row">/ { c++; next }
@@ -191,7 +191,7 @@ mpvcfzf_lyrics()
     id=$(mpvcfzf_getvideo_id "$id")
     output=$(mpvc metadata | jq -j .data.ytdl_description)
     if [ -z "$output" ] || [ "$output" = "null" ]; then
-        output=$(mpvcfzf_curl "https://yewtu.be/redirect?referer=/watch?v=$id")
+        output=$(mpvcfzf_curl "https://${MPVC_FZF_INVID_URL}/redirect?referer=/watch?v=$id")
     fi
     echo "$output" |
         awk -v id="$id" '
@@ -251,9 +251,9 @@ mpvcfzf_thumbnail_preview()
 mpvcfzf_nextvideo()
 {
     id=$(mpvcfzf_getvideo_id "$1")
-    output=$(mpvcfzf_curl "https://yewtu.be/watch?v=$id")
+    output=$(mpvcfzf_curl "https://${MPVC_FZF_INVID_URL}/watch?v=$id")
     next_video=$(echo "$output" | awk '/next_video/ {gsub("[\",]",""); print $2}')
-    next_url="https://yewtu.be/$next_video"
+    next_url="https://${MPVC_FZF_INVID_URL}/$next_video"
     echo "$next_url"
 }
 
