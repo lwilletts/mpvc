@@ -38,6 +38,7 @@ For more on the features of this fork check: [Git](#git) QuickStart, [LogBook](#
 
 ![mpvc tui+fzf+notifications screenshot](../../blob/master/docs/assets/mpvc-tui-fzf.png)
 </details>
+
 ## ▶️ Overview [^install]
 
 `mpvc` is a collection of POSIX shell scripts:
