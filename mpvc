@@ -173,7 +173,7 @@ mpvc_defaults()
     : "${QUIETFLAG:=}"
     : "${MPVC_LOCAL_CACHE:=false}"
     : "${MPVC_FMTSTR:=}"
-    : "${MPVC_FMTSTR_LOFI:='[%status%] %statuslofi% %title% 🎶 %time%/%length% #%position%/%playlistlength% %=chapter%/%chapters% %mutelofi%%volume%% %singlelofi%%repeatlofi%%shufflelofi%%idlelofi%%videolofi%'}"
+    : "${MPVC_FMTSTR_LOFI:='[%status%] %statuslofi% %title% 🎶%time%/%length% #%position%/%playlistlength% %=chapter%/%chapters% %mutelofi%%volume%% %singlelofi%%repeatlofi%%shufflelofi%%idlelofi%%videolofi%'}"
     MPVC_FMTSTR_DFLT="\
 %artist% - %title% \\r\
 [%status%] #%position%/%playlistlength% %time%/%length% (%percentage%%) \\r\
