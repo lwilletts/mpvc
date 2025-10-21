@@ -96,10 +96,17 @@ EOF
  wait                     : Wait until MPV setups $PROGNAME socket (timeout after 10s)
  delay                    : Sleep delay, as in: $PROGNAME play 0 delay seek 20% vol 60
 
- (--)?expand-text         : Expand text as documented in mpv(1) Property Expansion
- (--)?metadata | meta     : Retrieve current playing media metadata
- (--)?filename            : Retrieve current playing media filename
- (--)?replay              : Replay current playing media
+ ytq | ytquery            : Given a yt URL report the yt title
+ ytqj | ytqueryj          : Given a yt URL report the yt metadata
+
+ (--)status               : Show current $PROGNAME status
+ (--)cstatus              : Show current $PROGNAME channel status
+ (--)lofi                 : Show current $PROGNAME status (one-liner)
+ (--)hifi                 : Show current $PROGNAME status (multi-line)
+ (--)expand-text          : Expand text as documented in mpv(1) Property Expansion
+ (--)metadata | meta      : Retrieve current playing media metadata
+ (--)filename             : Retrieve current playing media filename
+ (--)replay               : Replay current playing media
 
  tlist | track-list       : Output current track-list
  tlistj| track-list-json  : Output current track-list (json)
