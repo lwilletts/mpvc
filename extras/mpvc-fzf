@@ -41,7 +41,7 @@ mpvcfzf_defaults()
     : "${MPVC_FZF_PARSE_CHANNEL:=0}"
     : "${MPVC_FZF_PARSE_PLAYLIST:=0}"
     : "${MPVC_FZF_INVID_URL:=yewtu.be}"
-    : "${MPVC_FZF_CURLOPTS:=-fsSL -A Mozilla/5.0-mpvc-tui --retry 1}"
+    : "${MPVC_FZF_CURLOPTS:=-fsSL -A Mozilla/5.0 --retry 1}"
     : "${MPVC_FZF_IMGVIEWER:=lsix}"
 
     : "${MPVC_FZF_SOMAFM_FILE:=$MPVC_CONFIG_DIR/feeds/somafm-channels.json}"
