@@ -1040,6 +1040,7 @@ main() {
     ytquery|ytq) ;;
     ytqueryjson|ytqj) ;;
     ytqueryfield|--tac|tac) ;;
+    --config|config) ;;
     --ttysize|ttysize|--ttycols|ttycols|--ttylines|ttylines|--statussz|statussz) ;;
     -k|--kill|kill|-K|--killall|killall) ;;
     -c|--crop|crop|-C|--clear|clear|cmd|sockcmd|socklist|--socklist) ;;
