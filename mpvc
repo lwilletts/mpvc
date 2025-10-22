@@ -1178,6 +1178,7 @@ main() {
             --lowfi|lowfi)                   MPVC_FMTSTR="$MPVC_FMTSTR_LOFI" ;;
             --status|status)                 ;;
             --cstatus|cstatus)               MPVC_FMTSTR=$(echo "$MPVC_FMTSTR"|sed 's/%title%/%chapter%/') ;;
+            --config|config)                 ${EDITOR:-vi} ${MPVC_CONFIG}; QUIETFLAG=true;;
 
             # global argument parsing
             -f|--format)                     shift; MPVC_FMTSTR="${1:-}"       ;;
