@@ -54,7 +54,7 @@ EOF
  -x | --speed             : Increase/decrease speed relative to the current speed.
  -X | --speedval          : Set absolute speed.
  -z | --shuffle           : Toggle the shuffle property
- -I | --image             : Enable adding of images to the queue.
+ -I | --images            : Enable adding of images to the queue.
     | --color             : Enable color (NO_COLOR=)
     | --nocolor           : Disable color (NO_COLOR=true)
  -k | --kill              : Kill the mpv process controlling the given socket.
@@ -176,8 +176,8 @@ mpvc_defaults()
     : "${MPVC_SOCAT:=socat}"
 
     : "${NO_COLOR:=}"
-    : "${IMAGEFLAG:=}"
     : "${QUIETFLAG:=}"
+    : "${MPVC_IMAGESFLAG:=}"
     : "${MPVC_LOCAL_CACHE:=false}"
     : "${MPVC_FMTSTR:=}"
     : "${MPVC_FMTSTR_LOFI:='[%status%] %statuslofi% %title% 🎶%time%/%length% #%position%/%playlistlength% %=chapter%/%chapters% %mutelofi%%volume%% %singlelofi%%repeatlofi%%shufflelofi%%idlelofi%%videolofi%'}"
@@ -597,7 +597,7 @@ mpvc_appendtrack() {
     # skip over various other filetypes and images unless wanted
     case "$filename" in
         *.txt|*.log|*.cue) return ;;
-        *.png|*.jpg|*.jpeg|*.gif|*.psd|*.pdf) if [ "$IMAGEFLAG" != "true" ]; then return; fi ;;
+        *.png|*.jpg|*.jpeg|*.gif|*.psd|*.pdf) if [ -z "$MPVC_IMAGESFLAG" ]; then return; fi ;;
     esac
     if [ -n "$filename" ]; then
         # cache media here if media is found in local storage
@@ -1185,7 +1185,7 @@ main() {
             -f|--format)                     shift; MPVC_FMTSTR="${1:-}"       ;;
             -S|--socket)                     shift; mpvc_handle_socket "${1:-}";;
             -Q|--vid=no)                     MPVOPTIONS="$MPVOPTIONS --vid=no"; ;;
-            --image)                         IMAGEFLAG=true;                ;;
+            --images)                        MPVC_IMAGESFLAG=true;          ;;
             -q|--quiet)                      QUIETFLAG=true;                ;;
             --color|color)                   unset NO_COLOR                 ;;
             --nocolor|nocolor)               export NO_COLOR=true           ;;
