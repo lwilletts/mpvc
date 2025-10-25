@@ -530,6 +530,30 @@ mpvcfzf_feed_custom()
     mpvcfzf_feeds "${1:-}" "$MPVC_FZF_CUSTOM_FILE" "https://www.nts.live/api/v2/mixtapes" '.results | .[] | (.audio_stream_endpoint+";"+.title+";"+.subtitle+"\n")'
 }
 
+mpvcfzf_feed_custom_gen()
+{
+    cat <<EOF
+{
+    "metadata": { "title":"Custom-feed", "subtitle":"feed example" },
+
+    "results":
+    [
+        {
+            "title":"copyparty feed",
+            "subtitle":"copyparty sub",
+            "audio_stream_endpoint":"http://localhost:3923/"
+        }
+    ]
+}
+EOF
+}
+
+mpvcfzf_invid_instances()
+{
+    mpvcfzf_curl 'https://api.invidious.io/instances.json?sort_by=type,health,api' |
+        jq -c '.[].[1] | [ .uri, .flag, .region, .monitor.enabled, .monitor.uptime ]'
+}
+
 mpvcfzf_now_getvids() { echo "$@" | awk '/youtube|yewtu/ { sub("^.*/",""); sub(".*=",""); sub("^","\\&v="); printf $0; }'; }
 
 mpvcfzf_now()
@@ -562,37 +586,39 @@ mpvcfzf_usage()
 {
     cat <<EOF
 usage: $PROGNAME opts # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
- -a|stash    : Start fzf to manage mpvc stashes
- -b|browse   : Start fzf to manage the provided ytdl-archive URL
- -c|chapters : Start fzf to manage the current mpv chapterlist
- -d|dir      : Set the WD to the media directory given as argument
- -e|eqz      : Start fzf to manage the equalizer settings
- -f|playlist : Start fzf to manage the current mpv playist
- -g|fetch    : Fetch the given YT URL, and store locally
- -G|Fetch    : Search on Invidious, fetch, and store locally
- -i|lyrics   : Search given media lyrics on Invidious
- -k|dplay    : Search & play DuckDuckGo videos
- -K|dsearch  : Search DuckDuckGo videos
- -l|local    : Search & play local media
- -q|quality  : Select and change yt-dlp video quality (ytdl-format)
- -s|search   : Search on Invidious
- -t|thumbnail: Retrieve thumbnail_url from metadata of the current YT-URL
- -T|Thumbnail: Display thumbnail_url from metadata of the provided YT-URL
- -p|splay    : Search & play media found using Invidious
- -u|url      : Search the given YT URL (supports vids,channels,playlist feeds)
- -U|Url      : Search & play the given YT URL
- -x|launch   : Starts $PROGNAME in a new $MPVC_TERM (config \$MPVC_TERM) [combine -x with other opts]
- -y|related  : Search related media on Invidious
- -Y|Related  : Search & play related media using Invidious
- -z|relatedo : Search current media-title on Invidious and return related media
- -v|version  : Return the $PROGNAME version.
+ -a|stash      : Start fzf to manage mpvc stashes
+ -b|browse     : Start fzf to manage the provided ytdl-archive URL
+ -c|chapters   : Start fzf to manage the current mpv chapterlist
+ -d|dir        : Set the WD to the media directory given as argument
+ -e|eqz        : Start fzf to manage the equalizer settings
+ -f|playlist   : Start fzf to manage the current mpv playist
+ -g|fetch      : Fetch the given YT URL, and store locally
+ -G|Fetch      : Search on Invidious, fetch, and store locally
+ -i|lyrics     : Search given media lyrics on Invidious
+ -k|dplay      : Search & play DuckDuckGo videos
+ -K|dsearch    : Search DuckDuckGo videos
+ -l|local      : Search & play local media
+ -q|quality    : Select and change yt-dlp video quality (ytdl-format)
+ -s|search     : Search on Invidious
+ -t|thumbnail  : Retrieve thumbnail_url from metadata of the current YT-URL
+ -T|Thumbnail  : Display thumbnail_url from metadata of the provided YT-URL
+ -p|splay      : Search & play media found using Invidious
+ -u|url        : Search the given YT URL (supports vids,channels,playlist feeds)
+ -U|Url        : Search & play the given YT URL
+ -x|launch     : Starts $PROGNAME in a new $MPVC_TERM (config \$MPVC_TERM) [combine -x with other opts]
+ -y|related    : Search related media on Invidious
+ -Y|Related    : Search & play related media using Invidious
+ -z|relatedo   : Search current media-title on Invidious and return related media
+ -v|version    : Return the $PROGNAME version.
 
-    now      : Return a shareable URL to the "now listening" playlist
-    lofi     : Search & play Lo-Fi channels
-    somafm   : Search & play SomaFM channels
-    radioapi : Search & play Radio-Browser API channels
-    ntsradio : Search & play NTS-Radio API channels
-    custom   : Search & play your custom feeds (channels, playlists, ...)
+    now        : Return a shareable URL to the "now listening" playlist
+    lofi       : Search & play Lo-Fi channels
+    somafm     : Search & play SomaFM channels
+    radioapi   : Search & play Radio-Browser API channels
+    ntsradio   : Search & play NTS-Radio API channels
+    custom     : Search & play your custom feeds (channels, playlists, ...)
+    custom-gen : Generate a template for your custom feeds (channels, playlists, ...)
+    invid-list : List available Invidious instances (set MPVC_FZF_INVID_URL)
 *tips: If unsure about where to begin, start: $PROGNAME -p 'kupla mirage'
 EOF
     exit;
@@ -656,6 +682,8 @@ main()
         radioapi)       shift; mpvcfzf_feed_radioapi "${1:-}"; return ;;
         ntsradio)       shift; mpvcfzf_feed_ntsradio "${1:-}"; return ;;
         custom)         shift; mpvcfzf_feed_custom "$@"; return ;;
+        custom-gen)     shift; mpvcfzf_feed_custom_gen "$@"; return ;;
+        invid-list)     shift; mpvcfzf_invid_instances "$@"; return ;;
         #*)             shift; mpvcfzf_usage; return ;;
         esac
     done
