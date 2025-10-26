@@ -165,15 +165,17 @@ pacaur -y mpvc-git
 pacman -Sy mpv gawk curl socat fzf rlwrap jq libnotify # cava
 ````
 
-### BSD
+### FreeBSD
 
-BSD (and pkg(1) based derivatives as FreeBSD, see [FAQ](../../blob/master/docs/FAQ.md)):
+FreeBSD (and pkg(1) based derivatives as FreeBSD, see [FAQ](../../blob/master/docs/FAQ.md)):
 
 ```console
 pkg install -y mpv curl socat fzf rlwrap jq libnotify # mpv-mpris cava python3
 ```
 
-BSD (and pkg_add(1) based derivatives as OpenBSD, see [FAQ](../../blob/master/docs/FAQ.md)):
+### OpenBSD
+
+OpenBSD (and pkg_add(1) based derivatives as OpenBSD, see [FAQ](../../blob/master/docs/FAQ.md)):
 
 ```console
 pkg_add mpv curl socat fzf rlwrap jq libnotify # mpv-mpris cava python3
