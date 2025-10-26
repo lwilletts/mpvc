@@ -4,7 +4,7 @@ Contribute answers in a `Q: A:` format to your favorite Frequently Asked Questio
 
 ## BSD support?
 
-The current focus is on GNU/Linux OSes, however as BSD is a UNIX system support is easy thanks to [pkg(1)](https://man.freebsd.org/cgi/man.cgi?pkg):
+The current focus is on GNU/Linux OSes, however, as BSDs as Open/Free/Net BSD are UNIX with POSIX-sh, support is easy thanks to [pkg(1)](https://man.freebsd.org/cgi/man.cgi?pkg):
 
 
     pkg install -y mpv curl socat fzf rlwrap jq libnotify # gawk gsed
