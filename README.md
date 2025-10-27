@@ -80,8 +80,7 @@ Recommended extras:
 - [Curl](#curl)
 - [Debian](#debian)
 - [Arch](#arch-mpvc-git)
-- [FreeBSD](#freebsd)
-- [OpenBSD](#openbsd)
+- [BSD](#bsd)
 - [MacOS](#macos)
 - [Gentoo](#gentoo-mpvc)
 - [Nix](#nix-mpvc)
@@ -166,20 +165,18 @@ pacaur -y mpvc-git
 pacman -Sy mpv gawk curl socat fzf rlwrap jq libnotify # cava
 ````
 
-### FreeBSD
+### BSD
 
-FreeBSD (and pkg(1) based derivatives as FreeBSD, see [FAQ](../../blob/master/docs/FAQ.md)):
-
-```console
-pkg install -y mpv curl socat fzf rlwrap jq libnotify # mpv-mpris cava python3
-```
-
-### OpenBSD
-
-OpenBSD (and pkg_add(1) based derivatives as OpenBSD, see [FAQ](../../blob/master/docs/FAQ.md)):
+BSD systems as OpenBSD and NetBSD using pkg_add(1) see [FAQ](../../blob/master/docs/FAQ.md):
 
 ```console
 pkg_add mpv curl socat fzf rlwrap jq libnotify # mpv-mpris cava python3
+```
+
+BSD systems as FreeBSD using pkg(1) see [FAQ](../../blob/master/docs/FAQ.md):
+
+```console
+pkg install -y mpv curl socat fzf rlwrap jq libnotify # mpv-mpris cava python3
 ```
 
 ### MacOS
