@@ -54,7 +54,7 @@ EOF
  -x | --speed             : Increase/decrease speed relative to the current speed.
  -X | --speedval          : Set absolute speed.
  -z | --shuffle           : Toggle the shuffle property
- -I | --image             : Enable adding of images to the queue.
+ -I | --images            : Enable adding of images to the queue.
     | --color             : Enable color (NO_COLOR=)
     | --nocolor           : Disable color (NO_COLOR=true)
  -k | --kill              : Kill the mpv process controlling the given socket.
@@ -96,10 +96,17 @@ EOF
  wait                     : Wait until MPV setups $PROGNAME socket (timeout after 10s)
  delay                    : Sleep delay, as in: $PROGNAME play 0 delay seek 20% vol 60
 
- (--)?expand-text         : Expand text as documented in mpv(1) Property Expansion
- (--)?metadata | meta     : Retrieve current playing media metadata
- (--)?filename            : Retrieve current playing media filename
- (--)?replay              : Replay current playing media
+ ytq | ytquery            : Given a yt URL report the yt title
+ ytqj | ytqueryj          : Given a yt URL report the yt metadata
+
+ (--)status               : Show current $PROGNAME status
+ (--)cstatus              : Show current $PROGNAME channel status
+ (--)lofi                 : Show current $PROGNAME status (one-liner)
+ (--)hifi                 : Show current $PROGNAME status (multi-line)
+ (--)expand-text          : Expand text as documented in mpv(1) Property Expansion
+ (--)metadata | meta      : Retrieve current playing media metadata
+ (--)filename             : Retrieve current playing media filename
+ (--)replay               : Replay current playing media
 
  tlist | track-list       : Output current track-list
  tlistj| track-list-json  : Output current track-list (json)
@@ -169,11 +176,11 @@ mpvc_defaults()
     : "${MPVC_SOCAT:=socat}"
 
     : "${NO_COLOR:=}"
-    : "${IMAGEFLAG:=}"
     : "${QUIETFLAG:=}"
+    : "${MPVC_IMAGESFLAG:=}"
     : "${MPVC_LOCAL_CACHE:=false}"
     : "${MPVC_FMTSTR:=}"
-    : "${MPVC_FMTSTR_LOFI:='[%status%] %statuslofi% %title% 🎶 %time%/%length% #%position%/%playlistlength% %=chapter%/%chapters% %mutelofi%%volume%% %singlelofi%%repeatlofi%%shufflelofi%%idlelofi%%videolofi%'}"
+    : "${MPVC_FMTSTR_LOFI:='[%status%] %statuslofi% %title% 🎶%time%/%length% #%position%/%playlistlength% %=chapter%/%chapters% %mutelofi%%volume%% %singlelofi%%repeatlofi%%shufflelofi%%idlelofi%%videolofi%'}"
     MPVC_FMTSTR_DFLT="\
 %artist% - %title% \\r\
 [%status%] #%position%/%playlistlength% %time%/%length% (%percentage%%) \\r\
@@ -517,8 +524,6 @@ mpvc_stash() {
             while read -r line; do
                 case "$line" in
                     "# $PROGNAME "*) quietcheck warn "$line" ;;
-                    #"mpvc --mpv")    quietcheck mpvc_mpv ;;
-                    #"mpvc --wait")   quietcheck mpvc_wait ;;
                     #"mpvc cmd "*)    quietcheck mpvc_cmd ${line##mpvc cmd } ;;
                     "mpvc mpv")      quietcheck mpvc_mpv ;;
                     "mpvc wait")     quietcheck mpvc_wait ;;
@@ -565,7 +570,7 @@ mpvc_stash() {
             ;;
         load|append)
             # apply a stash while keeping the current playlist (append to playlist)
-            RE='^mpvc cmd \(playlist-clear\|playlist-remove 0\)$\|^mpvc set \(playlist-pos\|playback-time\) [.0-9]\+$'
+            RE='^mpvc \(set\|cmd\) \(playlist-\|playback-\|volume\).\+$'
             grep -v "$RE" "$([ -n "$1" ] && echo "$MPVC_STASH_DIR/$1")" | mpvc_stash apply_current
             ;;
         replay)
@@ -592,7 +597,7 @@ mpvc_appendtrack() {
     # skip over various other filetypes and images unless wanted
     case "$filename" in
         *.txt|*.log|*.cue) return ;;
-        *.png|*.jpg|*.jpeg|*.gif|*.psd|*.pdf) if [ "$IMAGEFLAG" != "true" ]; then return; fi ;;
+        *.png|*.jpg|*.jpeg|*.gif|*.psd|*.pdf) if [ -z "$MPVC_IMAGESFLAG" ]; then return; fi ;;
     esac
     if [ -n "$filename" ]; then
         # cache media here if media is found in local storage
@@ -1032,7 +1037,10 @@ main() {
     mpvc_config
     arg1=${1:-}
     case "$arg1" in
-    ytquery|ytqueryjson|ytqueryfield|--tac|tac) ;;
+    ytquery|ytq) ;;
+    ytqueryjson|ytqj) ;;
+    ytqueryfield|--tac|tac) ;;
+    --config|config) ;;
     --ttysize|ttysize|--ttycols|ttycols|--ttylines|ttylines|--statussz|statussz) ;;
     -k|--kill|kill|-K|--killall|killall) ;;
     -c|--crop|crop|-C|--clear|clear|cmd|sockcmd|socklist|--socklist) ;;
@@ -1122,8 +1130,8 @@ main() {
             --filename|filename)             shift; mpvc_get_playlist_filename "$@"; return;;
             --replay|replay)                 mpvc_set_time "absolute" 0 ;;
 
-            ytquery)                         shift; mpvc_ytquery "$@"; return;;
-            ytqueryjson)                     shift; mpvc_ytquery_json "$@"; return;;
+            ytquery|ytq)                     shift; mpvc_ytquery "$@"; return;;
+            ytqueryjson|ytqj)                shift; mpvc_ytquery_json "$@"; return;;
             ytqueryfield)                    shift; mpvc_ytquery_field "$@"; return;;
 
             cprev|--chapter-prev|chapter-prev)            mpvc_chapter_set -1 "relative" ;;
@@ -1171,12 +1179,13 @@ main() {
             --lowfi|lowfi)                   MPVC_FMTSTR="$MPVC_FMTSTR_LOFI" ;;
             --status|status)                 ;;
             --cstatus|cstatus)               MPVC_FMTSTR=$(echo "$MPVC_FMTSTR"|sed 's/%title%/%chapter%/') ;;
+            --config|config)                 ${EDITOR:-vi} ${MPVC_CONFIG}; QUIETFLAG=true;;
 
             # global argument parsing
             -f|--format)                     shift; MPVC_FMTSTR="${1:-}"       ;;
             -S|--socket)                     shift; mpvc_handle_socket "${1:-}";;
             -Q|--vid=no)                     MPVOPTIONS="$MPVOPTIONS --vid=no"; ;;
-            --image)                         IMAGEFLAG=true;                ;;
+            --images)                        MPVC_IMAGESFLAG=true;          ;;
             -q|--quiet)                      QUIETFLAG=true;                ;;
             --color|color)                   unset NO_COLOR                 ;;
             --nocolor|nocolor)               export NO_COLOR=true           ;;

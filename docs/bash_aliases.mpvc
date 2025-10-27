@@ -12,7 +12,7 @@ alias mh="alias | grep mpvc"
 alias mi="mpvc -i"
 alias mI="mpvc -I"
 alias ma="mpvc-autostart"
-alias mc="mpvc-chapter"
+alias mcc="mpvc-chapter"
 alias mci="mpvc chapter-list"
 alias mcn="mpvc chapter-list-nr"
 alias mcF="mpvc chapter-list-full"
@@ -35,6 +35,7 @@ alias mffG="mpvc-fzf -G"   # bis
 alias mffl="mpvc-fzf -l"   # fzf over local files
 alias mffo="mpvc-fzf -o"   # fzf search and return first ytid URL
 alias mffp="mpvc-fzf -p"   # fzf search and add ytid URLs from Invidious
+alias mffr="mpvc-fzf -r"   # fzf search on ytdl-archive/
 alias mffz="mpvc-fzf -z"   # fzf search for songs related to the current
 alias xargn="xargs -n1"    # xargn mpvc cmd
 rseq()  { seq "$@" | tac; } # rseq | xargn mpvc cmd

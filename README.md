@@ -72,6 +72,8 @@ Recommended extras:
 - `yt-dlp`
 - `cava`
 
+⚠️ Note tools **must** be up to date, in special `yt-dlp` to play streaming services, run `mpvc-installer check-reqs|config-user` to check.
+
 ## Installation
 
 - [Git](#git)
@@ -165,16 +167,16 @@ pacman -Sy mpv gawk curl socat fzf rlwrap jq libnotify # cava
 
 ### BSD
 
-BSD (and pkg(1) based derivatives as FreeBSD, see [FAQ](../../blob/master/docs/FAQ.md)):
-
-```console
-pkg install -y mpv curl socat fzf rlwrap jq libnotify # mpv-mpris cava python3
-```
-
-BSD (and pkg_add(1) based derivatives as OpenBSD, see [FAQ](../../blob/master/docs/FAQ.md)):
+BSD systems as OpenBSD and NetBSD using pkg_add(1) see [FAQ](../../blob/master/docs/FAQ.md):
 
 ```console
 pkg_add mpv curl socat fzf rlwrap jq libnotify # mpv-mpris cava python3
+```
+
+BSD systems as FreeBSD using pkg(1) see [FAQ](../../blob/master/docs/FAQ.md):
+
+```console
+pkg install -y mpv curl socat fzf rlwrap jq libnotify # mpv-mpris cava python3
 ```
 
 ### MacOS
@@ -199,11 +201,11 @@ nix-env -i mpvc
 
 ## Configuration
 
-Running `mpvc-installer config-user`, just installs the default configuration files listed below under `~/.config/mpvc/`, afterwards check and adjust them to suit your needs.
-
-- `mpv` configuration is performed on [docs/mpv.conf](../../blob/master/docs/mpv.conf).
+Running `mpvc-installer config-user`, just installs the default configuration files listed below under `~/.config/mpvc/`, afterwards, check and adjust them to suit your needs.
 
 - `mpvc` configuration is performed on [docs/mpvc.conf](../../blob/master/docs/mpvc.conf).
+
+- `mpv` configuration is performed on [docs/mpv.conf](../../blob/master/docs/mpv.conf).
 
 - `yt-dlp` configuration is performed on [docs/yt-dlp.conf](../../blob/master/docs/yt-dlp.conf).
 
