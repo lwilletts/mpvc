@@ -137,17 +137,27 @@ EOF
 
     # Directory Header Panel with "Queue Folder" option
     HTML_BODY="${HTML_BODY}<div class='dir-header'>
-        <div> <strong>Location /${REQ_DIR#/}</strong> </div>
+        <div> <strong>Dir /${REQ_DIR#/}</strong> </div>
+        <div>
+            <label> <strong>🎚️ </strong> </label>
+            <select name=mode>
+            <option value=local> # local mode
+            <option value=stash> # stash mode
+            <option value=eqzn>  #  eqzn mode
+            <option value=video> # video mode
+            <option value=feeds> # feed mode
+            </select>
+        </div>
         <div>
             <a href='$PROGNAME?browser&dir=${ENC_CURRENT_DIR}&action=add' class='btn-queue-dir' title='Queue Folder'>➕</a>
-            <a class='btn-queue-dir' href='' title='Reload'>🔄</a>
+            <a class='btn-queue-dir' href='' title='Reload' title='Reload (ProTip: accesskey=m)' accesskey=m>🔄</a>
             <a class='btn-queue-dir' href='/' title='Player'>🎧</a>
         </div>
     </div>"
 
     # Live Client-side Input Filtering Search Bar
     HTML_BODY="${HTML_BODY}<div class='search-container'>
-        <input type='text' id='libSearch' oninput='filterFiles()' placeholder='🔍 Type to filter files...' autocomplete='off'>
+        <input type='text' id='libSearch' oninput='filterFiles()' placeholder='🔍 Type to filter files...' autocomplete='off' title='Search (ProTip: accesskey=s)' accesskey=s>
     </div>"
 
     # Handle subdirectories
