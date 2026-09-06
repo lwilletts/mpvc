@@ -94,17 +94,21 @@ function filterFiles() {
 <div class='dir-header'>
     <div> <strong>&gt; /${REQ_DIR#/}</strong> </div>
     <div>
-        <select id='libMode' name=mode placeholder=Test>
-        <option value=local>    Media
-        <option value=stash>    Stash
-        <option value=eqzn>     Eqz
-        <option value=video>    Video
-        <option value=feeds>    Feed
-        <option value=remote>   Remote
+        <form method=get>
+        <input type='hidden' name='browser'>
+        <select id='libMode' name=mode onchange=this.form.submit()>
+        <option value=local>     Media
+        <option value=stash>     Stash
 
-        <option value=playlist> Playlist
-        <option value=chapters> Chapters
+        <option value=playlist>  Playlist
+        <option value=chapters>  Chapters
+        <option value=equalizer> Equalizer
+
+        <option value=video>     Video
+        <option value=feeds>     Feed
+        <option value=remote>    Remote
         </select>
+        </form>
     </div>
     <div>
         <a class='btn-action' href='' title='Reload' title='Reload (ProTip: accesskey=m)' accesskey=m>🔄</a>
@@ -197,12 +201,9 @@ handle_action()
         fi
         ;;
 
-    stash-apply)
-        TARGET_ITEM=$(gup 'item=[^&]*')
-        $MPVC -q stash apply "$TARGET_ITEM"
-        ;;
+    stash-apply)    $MPVC -q stash apply "$(gup 'item=[^&]*')" ;;
+    equalizer-load) $MPVC-equalizer load "$(gup 'item=[^&]*')" ;;
     esac
-
 }
 
 # Generate HTML listings
@@ -323,6 +324,29 @@ handle_playlist()
     write_request "$HTML_BODY"
 }
 
+handle_equalizer()
+{
+    HTML_BODY=$(html_body_open)
+
+    eqz_list=""
+    for item in $($MPVC-equalizer preset | awk '/ #preset:/ {print $NF}'); do
+        eqz_list="${eqz_list}
+            <div class='row file-row'>
+                <span class='file-name'> 📝 ${item} </span>
+                <form action='$PROGNAME?browser&action=equalizer-load&item=${item}' method='POST' style='display:inline;'>
+                    <button type='submit' class='btn-compact'>+</button>
+                    <!--<button type='submit' class='btn-compact'>-</button>-->
+                </form>
+            </div>"
+    done
+
+    HTML_BODY="${HTML_BODY}${eqz_list}"
+    HTML_BODY="${HTML_BODY}$(html_body_close)"
+
+    # Handle the request
+    write_request "$HTML_BODY"
+}
+
 mpvc_browser()
 {
     mode=$(gup 'mode=[^&]*')
@@ -332,9 +356,10 @@ mpvc_browser()
     handle_action
 
     case "$mode" in
-    media) handle_listing ;;
-    stash) handle_stash ;;
-    playlist) handle_playlist ;;
+    media)      handle_listing ;;
+    stash)      handle_stash ;;
+    playlist)   handle_playlist ;;
+    equalizer)  handle_equalizer ;;
     esac
 }
 
