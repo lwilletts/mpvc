@@ -750,10 +750,10 @@ mpvc_web_index()
         <span style="float:right">
             <a class=btn href="." title="Reload" aria-label="Reload">🔄</a>
 
-            <button class=btn onclick="mpvcHttpGet('?cmd=mpvc next')" title="Next track">⏭️</button>
-            <button class=btn onclick="mpvcHttpGet('?cmd=mpvc cnext')" title="Next chapter">⏬</button>
-            <button class=btn onclick="mpvcHttpGet('?cmd=mpvc toggle')" title="Toggle playback">⏯️</button>
-            <button class=btn onclick="mpvcHttpGet('?cmd=mpvc cycle-volume')" title="Cycle Volume">🔊</button>
+            <button type=button class=btn onclick="mpvcHttpGet('?cmd=mpvc next')" title="Next track">⏭️</button>
+            <button type=button class=btn onclick="mpvcHttpGet('?cmd=mpvc cnext')" title="Next chapter">⏬</button>
+            <button type=button class=btn onclick="mpvcHttpGet('?cmd=mpvc toggle')" title="Toggle playback">⏯️</button>
+            <button type=button class=btn onclick="mpvcHttpGet('?cmd=mpvc cycle-volume')" title="Cycle Volume">🔊</button>
             <span class="theme-toggle-container">
                 <label for="scheme-auto" class="theme-lbl lbl-auto" title="System Theme">🌓</label>
                 <label for="scheme-light" class="theme-lbl lbl-light" title="Light Theme">☀️</label>
@@ -1073,12 +1073,11 @@ mpvc_web()
         BEGIN {
             system("env")
             quiet=1
-            allowCmdStr = "mpv clear kill --mute toggle play stop prev next playrand shuffle unshuffle repeat single replay togglev aspect togglew togglef togglei creplay cloop cprev cnext cplayrand"
+            allowCmdStr = "mpv clear kill --mute toggle play stop prev next playrand shuffle unshuffle repeat single replay togglev aspect togglew togglef togglei creplay cloop cprev cnext cplayrand cycle-volume"
             n = split(allowCmdStr, a, /[[:space:]]+/)
             for (i = 1; i <= n; i++) { allowCmdList[a[i]] = 1; }
         }
 
-        /GET \/\?cmd=mpvc%20cycle-volume/ { mpvc("cyclev volume 0 10 20 30 35 40 45"); }
         /GET \/\?cmd=mpvc%20vol%20-5/     { mpvc("vol -5") }
         /GET \/\?cmd=mpvc%20vol%20\+5/    { mpvc("vol +5") }
 
