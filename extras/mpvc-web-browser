@@ -55,8 +55,9 @@ handle_action()
     if [ "$ACTION" = "add" ]; then
         if [ "$REQUEST_METHOD" = "POST" ]; then
             # Parse the POST body from stdin to extract the targeted audio file
-            read -r POST_DATA
-            TARGET_ITEM=$(printf '%s' "$POST_DATA" | grep -o 'file_path=[^&]*' | cut -d= -f2 | sed 's/%20/ /g; s/%2F/\//g; s/%3A/:/g')
+            #read -r POST_DATA
+            #TARGET_ITEM=$(printf '%s' "$POST_DATA" | grep -o 'file_path=[^&]*' | cut -d= -f2 | sed 's/%20/ /g; s/%2F/\//g; s/%3A/:/g')
+            TARGET_ITEM=$(printf '%s' "$QUERY_STRING" | grep -o 'item=[^&]*' | cut -d= -f2 | sed 's/%20/ /g; s/%2F/\//g; s/%3A/:/g')
         else
             # If it's a GET request, it's the "Queue Folder" trigger action
             TARGET_ITEM="$RESOLVED_PATH"
@@ -68,7 +69,7 @@ handle_action()
         fi
 
         # Fast-path exit for asynchronous background JavaScript requests
-        if [ "$HTTP_X_REQUESTED_WITH" = "XMLHttpRequest" ]; then
+        if [ "${HTTP_X_REQUESTED_WITH:-}" = "XMLHttpRequest" ]; then
             printf "Status: 200 OK\r\nContent-Type: text/plain\r\nConnection: close\r\nContent-Length: 2\r\n\r\nOK"
             exit 0
         fi
@@ -146,18 +147,25 @@ EOF
     </div>"
 
     # Handle subdirectories
-    DIR_LIST=""
-    DIR_LIST="${DIR_LIST}<div class='row'><a href='$PROGNAME?browser&dir=${ENC_CURRENT_DIR}' class='folder-link'>📁 .</a></div>"
-    DIR_LIST="${DIR_LIST}<div class='row'><a href='$PROGNAME?browser&dir=${ENC_PARENT}' class='folder-link'>📁 ..</a></div>"
     set +f
-    for item in "$RESOLVED_PATH"/*; do
+    DIR_LIST=""
+    for item in "." ".." "$RESOLVED_PATH"/*; do
         [ -d "$item" ] || continue
         name=$(basename "$item")
-        case "$name" in .*) continue ;; esac
+        case "$name" in .);; ..);; .*) continue ;; esac
 
         ENC_DIR=$(printf '%s/%s' "$REQ_DIR" "$name" | tr -s '/' | sed 's/ /%20/g')
         DIR_LIST="${DIR_LIST}
-            <div class='row'><a href='$PROGNAME?browser&dir=${ENC_DIR}' class='folder-link'>📁 ${name}/</a></div>"
+            <div class='row dir-row'>
+                <span class='dir-name'>
+                    <a href='$PROGNAME?browser&dir=${ENC_DIR}' class='folder-link'>📁 ${name}/</a>
+                </span>
+                <form action='$PROGNAME?browser&dir=${ENC_CURRENT_DIR}&action=add&item=${item}' method='POST' style='display:inline;'>
+                    <input type='hidden' name='file_path' value='${item}'>
+                    <button type='submit' class='btn-compact'>+</button>
+                    <!--<button type='submit' class='btn-compact'>-</button>-->
+                </form>
+            </div>"
     done
     HTML_BODY="${HTML_BODY}${DIR_LIST}"
 
@@ -173,7 +181,7 @@ EOF
                 FILE_LIST="${FILE_LIST}
                 <div class='row file-row'>
                     <span class='file-name'><a href='${media_file}'>🎵${name}</a></span>
-                    <form action='$PROGNAME?browser&dir=${ENC_CURRENT_DIR}&action=add' method='POST' style='display:inline;'>
+                    <form action='$PROGNAME?browser&dir=${ENC_CURRENT_DIR}&action=add&item=${item}' method='POST' style='display:inline;'>
                         <input type='hidden' name='file_path' value='${item}'>
                         <button type='submit' class='btn-compact'>+</button>
                         <!--<button type='submit' class='btn-compact'>-</button>-->
@@ -198,9 +206,19 @@ EOF
     <script>
     function filterFiles() {
         let query = document.getElementById('libSearch').value.toLowerCase();
-        let rows = document.querySelectorAll('.file-row');
-        rows.forEach(row => {
+        let files = document.querySelectorAll('.file-row');
+        files.forEach(row => {
             let fileName = row.querySelector('.file-name').innerText.toLowerCase();
+            if (fileName.includes(query)) {
+                row.style.display = 'flex';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        let dirs = document.querySelectorAll('.dir-row');
+        dirs.forEach(row => {
+            let fileName = row.querySelector('.dir-name').innerText.toLowerCase();
             if (fileName.includes(query)) {
                 row.style.display = 'flex';
             } else {
@@ -261,7 +279,7 @@ main()
 
     QUERY_STRING="${QUERY_STRING:-$@}"
     case "$QUERY_STRING" in
-        ''|help)                   usage ;;
+        ''|help)                usage ;;
 
         browser*)               mpvc_browser ;;
 
