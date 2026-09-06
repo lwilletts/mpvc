@@ -98,7 +98,7 @@ function filterFiles() {
         <input type='hidden' name='browser'>
         <select id='libMode' name=mode onchange=this.form.submit()>
         <option value=>          Mode
-        <option value=local>     Media
+        <option value=media>     Media
         <option value=stash>     Stash
 
         <option value=playlist>  Playlist
