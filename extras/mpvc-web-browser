@@ -18,6 +18,11 @@ PROGURL="https://github.com/gmt4/mpvc"
 
 set -euf
 
+gup()
+{
+    printf '%s' "$QUERY_STRING" | grep -o "$1" | cut -d= -f2 | sed 's/%20/ /g; s/%2F/\//g; s/%3A/:/g'
+}
+
 # Configuration & security settings
 handle_config()
 {
@@ -29,8 +34,8 @@ handle_config()
     [ -d "$MEDIA_ROOT" ] || mkdir -p "$MEDIA_ROOT"
 
     # Extract parameters natively from the URL query string
-    REQ_DIR=$(printf '%s' "$QUERY_STRING" | grep -o 'dir=[^&]*' | cut -d= -f2 | sed 's/%20/ /g')
-    ACTION=$(printf '%s' "$QUERY_STRING" | grep -o 'action=[^&]*' | cut -d= -f2)
+    REQ_DIR=$(gup 'dir=[^&]*')
+    ACTION=$(gup 'action=[^&]*')
 
     # Clean double slashes and target path construction
     TARGET_PATH="${MEDIA_ROOT}/${REQ_DIR}"
@@ -54,13 +59,7 @@ handle_action()
 {
     if [ "$ACTION" = "add" ]; then
         if [ "$REQUEST_METHOD" = "POST" ]; then
-            # Parse the POST body from stdin to extract the targeted audio file
-            #read -r POST_DATA
-            #TARGET_ITEM=$(printf '%s' "$POST_DATA" | grep -o 'file_path=[^&]*' | cut -d= -f2 | sed 's/%20/ /g; s/%2F/\//g; s/%3A/:/g')
-            TARGET_ITEM=$(printf '%s' "$QUERY_STRING" | grep -o 'item=[^&]*' | cut -d= -f2 | sed 's/%20/ /g; s/%2F/\//g; s/%3A/:/g')
-        else
-            # If it's a GET request, it's the "Queue Folder" trigger action
-            TARGET_ITEM="$RESOLVED_PATH"
+            TARGET_ITEM=$(gup 'item=[^&]*')
         fi
 
         # Execute securely using the system's mpvc binary
@@ -93,10 +92,11 @@ handle_listing()
         .browser { max-width: 99%; margin: 0 auto; }
         .dir-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 8px; margin-bottom: 10px; }
         .dir-header div { display: flex; flex-wrap: wrap; }
-        .btn-queue-dir { display: flex; background: #2980b9; color: #fff; padding: 8px 8px; margin: 2px 2px; border-radius: 4px; font-weight: bold; font-size: 0.9rem; white-space: nowrap; text-decoration: none; min-height: 20px; min-width: 20px; align-items: center; flex-shrink: 0; }
-        .btn-queue-dir:active { background: #2471a3; }
+        .btn-action { display: flex; background: #36b4d1; color: #fff; padding: 8px 8px; margin: 2px 2px; border-radius: 4px; font-weight: bold; font-size: 0.6rem; white-space: nowrap; text-decoration: none; min-height: 10px; min-width: 10px; align-items: center; flex-shrink: 0; }
+        .btn-action:active { background: #2471a3; }
         .search-container { margin: 10px 0 15px 0; width: 100%; }
-        #libSearch { width: 100%; box-sizing: border-box; padding: 12px; background: #222; border: 1px solid #444; border-radius: 6px; color: #fff; font-size: 1rem; min-height: 48px; }
+        #libMode { width: 100%; box-sizing: border-box; background: #222; border: 1px solid #444; border-radius: 6px; color: #fff; font-size: 1rem; min-height: 30px; }
+        #libSearch { width: 100%; box-sizing: border-box; background: #222; border: 1px solid #444; border-radius: 6px; color: #fff; font-size: 1rem; min-height: 40px; }
         #libSearch:focus { border-color: #2980b9; outline: none; }
         a { color: #3498db; text-decoration: none; }
         .row { display: flex; justify-content: space-between; align-items: center; padding: 4px 4px; border-bottom: 1px solid #555; }
@@ -135,23 +135,22 @@ EOF
        # HTML_BODY="${HTML_BODY}"
     fi
 
-    # Directory Header Panel with "Queue Folder" option
+    # Directory Header Panel
     HTML_BODY="${HTML_BODY}<div class='dir-header'>
-        <div> <strong>Dir /${REQ_DIR#/}</strong> </div>
+        <div> <strong>&gt; /${REQ_DIR#/}</strong> </div>
         <div>
-            <label> <strong>🎚️ </strong> </label>
-            <select name=mode>
-            <option value=local> # local mode
-            <option value=stash> # stash mode
-            <option value=eqzn>  #  eqzn mode
-            <option value=video> # video mode
-            <option value=feeds> # feed mode
+            <select id='libMode' name=mode placeholder=Test>
+            <option value=local>  Media
+            <option value=stash>  Stash
+            <option value=eqzn>   Eqz
+            <option value=video>  Video
+            <option value=feeds>  Feed
+            <option value=remote> Remote
             </select>
         </div>
         <div>
-            <a href='$PROGNAME?browser&dir=${ENC_CURRENT_DIR}&action=add' class='btn-queue-dir' title='Queue Folder'>➕</a>
-            <a class='btn-queue-dir' href='' title='Reload' title='Reload (ProTip: accesskey=m)' accesskey=m>🔄</a>
-            <a class='btn-queue-dir' href='/' title='Player'>🎧</a>
+            <a class='btn-action' href='' title='Reload' title='Reload (ProTip: accesskey=m)' accesskey=m>🔄</a>
+            <a class='btn-action' href='/' title='Player'>🎧</a>
         </div>
     </div>"
 
