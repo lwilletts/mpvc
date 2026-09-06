@@ -18,69 +18,9 @@ PROGURL="https://github.com/gmt4/mpvc"
 
 set -euf
 
-gup()
+html_body_open()
 {
-    printf '%s' "$QUERY_STRING" | grep -o "$1" | cut -d= -f2 | sed 's/%20/ /g; s/%2F/\//g; s/%3A/:/g'
-}
-
-# Configuration & security settings
-handle_config()
-{
-    # Change this to the absolute path of your media folder
-    MEDIA_ROOT="$HOME/.config/mpvc/ytdl-archive"
-    MEDIA_URL="../${MEDIA_ROOT##*/}"
-
-    # Fallback safely if the media directory doesn't exist
-    [ -d "$MEDIA_ROOT" ] || mkdir -p "$MEDIA_ROOT"
-
-    # Extract parameters natively from the URL query string
-    REQ_DIR=$(gup 'dir=[^&]*')
-    ACTION=$(gup 'action=[^&]*')
-
-    # Clean double slashes and target path construction
-    TARGET_PATH="${MEDIA_ROOT}/${REQ_DIR}"
-    TARGET_PATH=$(printf '%s' "$TARGET_PATH" | tr -s '/')
-
-    # Strict Security Boundary: Ensure the path cannot escape MEDIA_ROOT
-    RESOLVED_PATH=$(realpath -m "$TARGET_PATH" 2>/dev/null || realpath "$TARGET_PATH")
-    case "$RESOLVED_PATH" in
-        "${MEDIA_ROOT}"*)
-            REQ_DIR=$(printf '%s' "$RESOLVED_PATH" | sed "s|^${MEDIA_ROOT}||")
-            ;;
-        *)
-            RESOLVED_PATH="$MEDIA_ROOT"
-            REQ_DIR=""
-            ;;
-    esac
-}
-
-# Process incoming mpvc actions
-handle_action()
-{
-    if [ "$ACTION" = "add" ]; then
-        if [ "$REQUEST_METHOD" = "POST" ]; then
-            TARGET_ITEM=$(gup 'item=[^&]*')
-        fi
-
-        # Execute securely using the system's mpvc binary
-        if [ -d "$TARGET_ITEM" ] || [ -f "$TARGET_ITEM" ]; then
-            $MPVC add "$TARGET_ITEM" >/dev/null 2>&1
-        fi
-
-        # Fast-path exit for asynchronous background JavaScript requests
-        if [ "${HTTP_X_REQUESTED_WITH:-}" = "XMLHttpRequest" ]; then
-            printf "Status: 200 OK\r\nContent-Type: text/plain\r\nConnection: close\r\nContent-Length: 2\r\n\r\nOK"
-            exit 0
-        fi
-    fi
-}
-
-# Generate HTML listings
-handle_listing()
-{
-    ENC_CURRENT_DIR=$(printf '%s' "$REQ_DIR" | sed 's/ /%20/g')
-
-    HTML_BODY=$(cat <<-EOF
+    cat <<-EOF
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -122,9 +62,155 @@ handle_listing()
     </style>
 </head>
 <body>
+
+<script>
+function filterFiles() {
+    let query = document.getElementById('libSearch').value.toLowerCase();
+    let files = document.querySelectorAll('.file-row');
+    files.forEach(row => {
+        let fileName = row.querySelector('.file-name').innerText.toLowerCase();
+        if (fileName.includes(query)) {
+            row.style.display = 'flex';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+
+    let dirs = document.querySelectorAll('.dir-row');
+    dirs.forEach(row => {
+        let fileName = row.querySelector('.dir-name').innerText.toLowerCase();
+        if (fileName.includes(query)) {
+            row.style.display = 'flex';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+</script>
+
 <div class="browser">
+
+<!-- Directory Header Panel -->
+<div class='dir-header'>
+    <div> <strong>&gt; /${REQ_DIR#/}</strong> </div>
+    <div>
+        <select id='libMode' name=mode placeholder=Test>
+        <option value=local>    Media
+        <option value=stash>    Stash
+        <option value=eqzn>     Eqz
+        <option value=video>    Video
+        <option value=feeds>    Feed
+        <option value=remote>   Remote
+
+        <option value=playlist> Playlist
+        <option value=chapters> Chapters
+        </select>
+    </div>
+    <div>
+        <a class='btn-action' href='' title='Reload' title='Reload (ProTip: accesskey=m)' accesskey=m>🔄</a>
+        <a class='btn-action' href='/' title='Player'>🎧</a>
+    </div>
+</div>
+
+<!-- Live Client-side Input Filtering Search Bar -->
+<div class='search-container'>
+        <input type='text' id='libSearch' oninput='filterFiles()' placeholder='🔍 Type to filter files...' autocomplete='off' title='Search (ProTip: accesskey=s)' accesskey=s>
+</div>
 EOF
-    )
+}
+
+html_body_close()
+{
+    echo "</div>
+    </body>
+    </html>"
+}
+
+gup()
+{
+    printf '%s' "$QUERY_STRING" | grep -o "$1" | cut -d= -f2 | sed 's/%20/ /g; s/%2F/\//g; s/%3A/:/g'
+}
+
+write_request()
+{
+    data="$1"
+    byte_count=$(printf '%s' "$data" | wc -c)
+
+    printf "HTTP/1.0 200 OK\r\n"
+    printf "Status: 200 OK\r\n"
+    printf "Content-Type: text/html; charset=utf-8\r\n"
+    printf "Content-Length: %d\r\n" "$byte_count"
+    printf "Connection: close\r\n\r\n"
+
+    printf '%s' "$data"
+}
+
+# Configuration & security settings
+handle_config()
+{
+    # Change this to the absolute path of your media folder
+    MEDIA_ROOT="$HOME/.config/mpvc/ytdl-archive"
+    MEDIA_URL="../${MEDIA_ROOT##*/}"
+
+    # Fallback safely if the media directory doesn't exist
+    [ -d "$MEDIA_ROOT" ] || mkdir -p "$MEDIA_ROOT"
+
+    # Extract parameters natively from the URL query string
+    REQ_DIR=$(gup 'dir=[^&]*')
+    ACTION=$(gup 'action=[^&]*')
+
+    # Clean double slashes and target path construction
+    TARGET_PATH="${MEDIA_ROOT}/${REQ_DIR}"
+    TARGET_PATH=$(printf '%s' "$TARGET_PATH" | tr -s '/')
+
+    # Strict Security Boundary: Ensure the path cannot escape MEDIA_ROOT
+    RESOLVED_PATH=$(realpath -m "$TARGET_PATH" 2>/dev/null || realpath "$TARGET_PATH")
+    case "$RESOLVED_PATH" in
+        "${MEDIA_ROOT}"*)
+            REQ_DIR=$(printf '%s' "$RESOLVED_PATH" | sed "s|^${MEDIA_ROOT}||")
+            ;;
+        *)
+            RESOLVED_PATH="$MEDIA_ROOT"
+            REQ_DIR=""
+            ;;
+    esac
+}
+
+# Process incoming mpvc actions
+handle_action()
+{
+    if [ "$REQUEST_METHOD" != "POST" ]; then
+        return
+    fi
+
+    case "$ACTION" in
+    add)
+        TARGET_ITEM=$(gup 'item=[^&]*')
+        # Execute securely using the system's mpvc binary
+        if [ -d "$TARGET_ITEM" ] || [ -f "$TARGET_ITEM" ]; then
+            $MPVC -q add "$TARGET_ITEM"
+        fi
+        # Fast-path exit for asynchronous background JavaScript requests
+        if [ "${HTTP_X_REQUESTED_WITH:-}" = "XMLHttpRequest" ]; then
+            printf "Status: 200 OK\r\nContent-Type: text/plain\r\nConnection: close\r\nContent-Length: 2\r\n\r\nOK"
+            exit 0
+        fi
+        ;;
+
+    stash-apply)
+        TARGET_ITEM=$(gup 'item=[^&]*')
+        $MPVC -q stash apply "$TARGET_ITEM"
+        ;;
+    esac
+
+}
+
+# Generate HTML listings
+handle_listing()
+{
+    HTML_BODY=$(html_body_open)
+
+    ENC_CURRENT_DIR=$(printf '%s' "$REQ_DIR" | sed 's/ /%20/g')
 
     ENC_PARENT="${ENC_PARENT:-}"
     # Render Parent Directory button if nested
@@ -134,30 +220,6 @@ EOF
         ENC_PARENT=$(printf '%s' "$PARENT_DIR" | sed 's/ /%20/g')
        # HTML_BODY="${HTML_BODY}"
     fi
-
-    # Directory Header Panel
-    HTML_BODY="${HTML_BODY}<div class='dir-header'>
-        <div> <strong>&gt; /${REQ_DIR#/}</strong> </div>
-        <div>
-            <select id='libMode' name=mode placeholder=Test>
-            <option value=local>  Media
-            <option value=stash>  Stash
-            <option value=eqzn>   Eqz
-            <option value=video>  Video
-            <option value=feeds>  Feed
-            <option value=remote> Remote
-            </select>
-        </div>
-        <div>
-            <a class='btn-action' href='' title='Reload' title='Reload (ProTip: accesskey=m)' accesskey=m>🔄</a>
-            <a class='btn-action' href='/' title='Player'>🎧</a>
-        </div>
-    </div>"
-
-    # Live Client-side Input Filtering Search Bar
-    HTML_BODY="${HTML_BODY}<div class='search-container'>
-        <input type='text' id='libSearch' oninput='filterFiles()' placeholder='🔍 Type to filter files...' autocomplete='off' title='Search (ProTip: accesskey=s)' accesskey=s>
-    </div>"
 
     # Handle subdirectories
     set +f
@@ -174,7 +236,6 @@ EOF
                     <a href='$PROGNAME?browser&dir=${ENC_DIR}' class='folder-link'>📁 ${name}/</a>
                 </span>
                 <form action='$PROGNAME?browser&dir=${ENC_CURRENT_DIR}&action=add&item=${item}' method='POST' style='display:inline;'>
-                    <input type='hidden' name='file_path' value='${item}'>
                     <button type='submit' class='btn-compact'>+</button>
                     <!--<button type='submit' class='btn-compact'>-</button>-->
                 </form>
@@ -182,7 +243,7 @@ EOF
     done
     HTML_BODY="${HTML_BODY}${DIR_LIST}"
 
-    # Handle audio files
+    # Handle files: audio / non-audio
     FILE_LIST=""
     for item in "$RESOLVED_PATH"/*; do
         [ -f "$item" ] || continue
@@ -207,55 +268,74 @@ EOF
                 </div>"
         esac
     done
-    HTML_BODY="${HTML_BODY}${FILE_LIST}"
     set -f
 
-    # Append JavaScript filtering script and close standard DOM tags
-    HTML_BODY="${HTML_BODY}</div>
-    <script>
-    function filterFiles() {
-        let query = document.getElementById('libSearch').value.toLowerCase();
-        let files = document.querySelectorAll('.file-row');
-        files.forEach(row => {
-            let fileName = row.querySelector('.file-name').innerText.toLowerCase();
-            if (fileName.includes(query)) {
-                row.style.display = 'flex';
-            } else {
-                row.style.display = 'none';
-            }
-        });
-
-        let dirs = document.querySelectorAll('.dir-row');
-        dirs.forEach(row => {
-            let fileName = row.querySelector('.dir-name').innerText.toLowerCase();
-            if (fileName.includes(query)) {
-                row.style.display = 'flex';
-            } else {
-                row.style.display = 'none';
-            }
-        });
-    }
-    </script>
-    </body>
-    </html>"
+    HTML_BODY="${HTML_BODY}${FILE_LIST}"
+    HTML_BODY="${HTML_BODY}$(html_body_close)"
 
     # Handle the request
-    BYTE_COUNT=$(printf '%s' "$HTML_BODY" | wc -c)
+    write_request "$HTML_BODY"
+}
 
-    #printf "HTTP/1.0 200 OK\r\n"
-    printf "Status: 200 OK\r\n"
-    printf "Content-Type: text/html; charset=utf-8\r\n"
-    printf "Content-Length: %d\r\n" "$BYTE_COUNT"
-    printf "Connection: close\r\n\r\n"
+handle_stash()
+{
+    HTML_BODY=$(html_body_open)
 
-    printf '%s' "$HTML_BODY"
+    stash_list=""
+    for item in $($MPVC stash ls | awk '{print $NF}'); do
+        stash_list="${stash_list}
+            <div class='row file-row'>
+                <span class='file-name'> 📝 ${item} </span>
+                <form action='$PROGNAME?browser&action=stash-apply&item=${item}' method='POST' style='display:inline;'>
+                    <button type='submit' class='btn-compact'>+</button>
+                    <!--<button type='submit' class='btn-compact'>-</button>-->
+                </form>
+            </div>"
+    done
+
+    HTML_BODY="${HTML_BODY}${stash_list}"
+    HTML_BODY="${HTML_BODY}$(html_body_close)"
+
+    # Handle the request
+    write_request "$HTML_BODY"
+}
+
+handle_playlist()
+{
+    HTML_BODY=$(html_body_open)
+
+    play_list=""
+    for item in $($MPVC fullplaylist | sed 's| |_|g'); do
+        play_list="${play_list}
+            <div class='row file-row'>
+                <span class='file-name'> 📝 ${item} </span>
+                <form action='$PROGNAME?browser&action=playlist-play&item=${item}' method='POST' style='display:inline;'>
+                    <button type='submit' class='btn-compact'>+</button>
+                    <!--<button type='submit' class='btn-compact'>-</button>-->
+                </form>
+            </div>"
+    done
+
+    HTML_BODY="${HTML_BODY}${play_list}"
+    HTML_BODY="${HTML_BODY}$(html_body_close)"
+
+    # Handle the request
+    write_request "$HTML_BODY"
 }
 
 mpvc_browser()
 {
+    mode=$(gup 'mode=[^&]*')
+    mode=${mode:-media}
+
     handle_config
     handle_action
-    handle_listing
+
+    case "$mode" in
+    media) handle_listing ;;
+    stash) handle_stash ;;
+    playlist) handle_playlist ;;
+    esac
 }
 
 mpvc_warn()  { echo "$@" >&2; }
@@ -275,9 +355,9 @@ mpvc_split() { for i in $@; do echo "$i"; done; }
 usage()
 {
     cat <<EOF
-usage: $PROGNAME -[acidlLvDh] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
+usage: $PROGNAME  args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
  -h|help    : Show this help
-*tips: If unsure about where to begin, start with: $PROGNAME preset
+*tips: If unsure about where to begin, start with: $PROGNAME browser
 EOF
     exit "${1:-0}"
 }
