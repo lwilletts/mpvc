@@ -191,7 +191,7 @@ EOF
             *)
                 FILE_LIST="${FILE_LIST}
                 <div class='row file-row'>
-                    <span class='file-name'><a href='${media_file}'>  ${name}</a></span>
+                    <span class='file-name'><a href='${media_file}'>📄${name}</a></span>
                     <form action='$PROGNAME?browser&dir=${ENC_CURRENT_DIR}&action=add' method='POST' style='display:inline;'>
                         <input type='hidden' name='file_path' value='${item}'>
                     </form>
