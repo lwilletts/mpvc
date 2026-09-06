@@ -1084,8 +1084,6 @@ mpvc_web()
         /GET \/\?cmd=mpvc%20start%200/    { mpvc("start 0") }
         /GET \/\?cmd=mpvc%20start%20\$/   { mpvc("start $") }
 
-        /GET \/\?cmd=mpvc%20cstart/       { mpvc("cplay 0") }
-
         /GET \/\?cmd=mpvc%20.* / {
             cmd="";
             if (match($0, /GET \/\?cmd=mpvc%20[-a-z]+/)) {
