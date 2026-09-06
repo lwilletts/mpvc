@@ -447,9 +447,9 @@ legend {
 }
 
 @media (max-width: 480px) {
-  body { padding: 8px; }
-  details { margin: 8px 0; }
-  summary { padding: 4px 8px; font-size: 13px; }
+  body { padding: 2px; }
+  details { margin: 4px 0; }
+  summary { padding: 4px 4px; font-size: 13px; }
   ul { gap: 6px; }
 
   a.btn {
@@ -749,7 +749,10 @@ mpvc_web_index()
             <a href="." name="top" ${MPVC_WEB_SHORTCUT_REFRESH}>🎧 Player</a>
         <span style="float:right">
             <a class=btn href="." title="Reload" aria-label="Reload">🔄</a>
-            <button class=btn onclick="mpvcHttpGet('?cmd=mpvc toggle')" title="Toggle playback" aria-label="Toggle playback">⏯️</button>
+
+            <button class=btn onclick="mpvcHttpGet('?cmd=mpvc next')" title="Next track">⏭️</button>
+            <button class=btn onclick="mpvcHttpGet('?cmd=mpvc cnext')" title="Next chapter">⏬</button>
+            <button class=btn onclick="mpvcHttpGet('?cmd=mpvc toggle')" title="Toggle playback">⏯️</button>
             <button class=btn onclick="mpvcHttpGet('?cmd=mpvc cycle-volume')" title="Cycle Volume">🔊</button>
             <span class="theme-toggle-container">
                 <label for="scheme-auto" class="theme-lbl lbl-auto" title="System Theme">🌓</label>
@@ -1075,7 +1078,7 @@ mpvc_web()
             for (i = 1; i <= n; i++) { allowCmdList[a[i]] = 1; }
         }
 
-        /GET \/\?cmd=mpvc%20cycle-volume/ { mpvc("cyclev volume 0 10 20 30 35 40"); }
+        /GET \/\?cmd=mpvc%20cycle-volume/ { mpvc("cyclev volume 0 10 20 30 35 40 45"); }
         /GET \/\?cmd=mpvc%20vol%20-5/     { mpvc("vol -5") }
         /GET \/\?cmd=mpvc%20vol%20\+5/    { mpvc("vol +5") }
 
