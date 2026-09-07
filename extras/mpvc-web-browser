@@ -93,7 +93,12 @@ function filterFiles() {
 
 <!-- Directory Header Panel -->
 <div class='dir-header'>
-    <div> <strong>&gt; <a href=/>/</a> ${REQ_DIR#/}</strong> </div>
+    <div>
+    <strong>
+        <a href="" title='Reload (ProTip: accesskey=r)' accesskey=r>&gt;</a>
+        <a href=/>/</a> ${REQ_DIR#/}
+    </strong>
+    </div>
     <div>
         <form method=get>
         <input type='hidden' name='browser'>
@@ -133,7 +138,9 @@ html_body_close()
 
 gup()
 {
-    printf '%s' "$QUERY_STRING" | grep -o "$1" | cut -d= -f2 | sed 's/%20/ /g; s/%2F/\//g; s/%3A/:/g'
+    param="$1"
+    envvar="$2"
+    printf '%s' "$envvar" | grep -o "$param" | cut -d= -f2 | sed 's/%20/ /g; s/%2F/\//g; s/%3A/:/g'
 }
 
 write_request()
@@ -161,7 +168,7 @@ handle_config()
     [ -d "$MEDIA_ROOT" ] || mkdir -p "$MEDIA_ROOT"
 
     # Extract parameters natively from the URL query string
-    REQ_DIR=$(gup 'dir=[^&]*')
+    REQ_DIR=$(gup 'dir=[^&]*' "$QUERY_STRING")
 
     # Clean double slashes and target path construction
     TARGET_PATH="${MEDIA_ROOT}/${REQ_DIR}"
@@ -187,13 +194,18 @@ handle_action()
         return
     fi
 
+    postdata=""
+    if [ -n "$CONTENT_LENGTH" ] && [ "$CONTENT_LENGTH" -gt 0 ]; then
+        postdata=$(dd bs=1 count="$CONTENT_LENGTH" 2>/dev/null)
+    fi
+
     case "$action" in
-    stash-apply)    $MPVC -q stash apply "$(gup 'item=[^&]*')" ;;
-    stash-append)   $MPVC -q stash append "$(gup 'item=[^&]*')" ;;
-    equalizer-load) $MPVC-equalizer load "$(gup 'item=[^&]*')" ;;
-    playlist-play)  $MPVC -q play "$(gup 'item=[^&]*' | awk '{print $1}')" ;;
-    playlist-add)   $MPVC -q add "$(gup 'item=[^&]*' | awk '{print $1}')" ;;
-    chapter-play)   $MPVC -q chapter-play "$(gup 'item=[^&]*' | awk '{print $1}')" ;;
+    stash-apply)    $MPVC -q stash apply "$(gup 'item=[^&]*' "$postdata")" ;;
+    stash-append)   $MPVC -q stash append "$(gup 'item=[^&]*' "$postdata")" ;;
+    equalizer-load) $MPVC-equalizer load "$(gup 'item=[^&]*' "$postdata")" ;;
+    playlist-play)  $MPVC -q play "$(gup 'item=[^&]*' "$postdata" | awk '{print $1}')" ;;
+    playlist-add)   $MPVC -q add "$(gup 'item=[^&]*' "$postdata" | awk '{print $1}')" ;;
+    chapter-play)   $MPVC -q chapter-play "$(gup 'item=[^&]*' "$postdata" | awk '{print $1}')" ;;
     esac
 
     # Fast-path exit for asynchronous background JavaScript requests
@@ -222,8 +234,10 @@ handle_listing()
                 <span class='dir-name'>
                     <a href='$PROGNAME?browser&dir=${ENC_DIR}' class='folder-link'>📁 ${name}/</a>
                 </span>
-                <form action='$PROGNAME?browser&dir=${ENC_CURRENT_DIR}&action=playlist-add&item=${item}' method='POST' style='display:inline;'>
+                <form action='$PROGNAME?browser&dir=${ENC_CURRENT_DIR}&mode=$mode&action=playlist-add' method='POST' style='display:inline;'>
                     <button type='submit' class='btn-compact'>+</button>
+                    <input type='hidden' name='item' value=$item>
+
                     <!--<button type='submit' class='btn-compact'>-</button>-->
                 </form>
             </div>"
@@ -236,8 +250,10 @@ handle_listing()
                 echo "
                 <div class='row file-row'>
                     <span class='file-name'><a href='${media_file}'>🎵${name}</a></span>
-                    <form action='$PROGNAME?browser&dir=${ENC_CURRENT_DIR}&action=playlist-add&item=${item}' method='POST' style='display:inline;'>
+                    <form action='$PROGNAME?browser&dir=${ENC_CURRENT_DIR}&mode=$mode&action=playlist-add' method='POST' style='display:inline;'>
                         <button type='submit' class='btn-compact'>+</button>
+                        <input type='hidden' name='item' value=$item>
+
                         <!--<button type='submit' class='btn-compact'>-</button>-->
                     </form>
                 </div>"
@@ -291,12 +307,14 @@ handle_generic()
     cmdaction="$2"
 
     items=$(
-        $cmdlist | while IFS= read -r line;
+        $cmdlist |
+        while IFS= read -r item;
         do
             echo "<div class='row file-row'>
-                <span class='file-name'> 📝 ${line} </span>
-                <form action='$cmdaction&item=${line}' method='POST' style='display:inline;'>
+                <span class='file-name'> 📝 ${item} </span>
+                <form action='${cmdaction}&mode=$mode' method='POST' style='display:inline;'>
                     <button type='submit' class='btn-compact'>+</button>
+                    <input type='hidden' name='item' value=$item>
                 </form>
             </div>"
         done
@@ -312,9 +330,9 @@ handle_generic()
 
 mpvc_browser()
 {
-    mode=$(gup 'mode=[^&]*')
+    mode=$(gup 'mode=[^&]*' "$QUERY_STRING" )
     mode=${mode:-media}
-    action=$(gup 'action=[^&]*')
+    action=$(gup 'action=[^&]*' "$QUERY_STRING")
 
     handle_config
     handle_action
