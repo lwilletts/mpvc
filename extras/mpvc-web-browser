@@ -119,6 +119,7 @@ function filterFiles() {
     </div>
     <div>
         <a class='btn-action' href='/' title='Player'>🎧</a>
+        <a class='btn-action' href='/?cmd=mpvc toggle' title="Toggle playback (ProTip: accesskey=t)" accesskey=t>⏯️</a>
     </div>
 </div>
 
@@ -288,7 +289,7 @@ handle_playlist()
 
 handle_chapters()
 {
-    handle_generic "$MPVC chapter-list" "$PROGNAME?browser&action=chapter-play"
+    handle_generic "$MPVC chapter-list-full" "$PROGNAME?browser&action=chapter-play"
 }
 
 handle_equalizer()
