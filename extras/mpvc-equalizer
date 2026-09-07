@@ -233,23 +233,24 @@ main()
     if [ $# -lt 1 ]; then usage; fi
 
     case "$1" in
-    save)   shift; mpvc_save "$@";;
-    load)   shift; mpvc_load "$@";;
-    reset)  shift; mpvc_reset;;
-    clear)  shift; mpvc_clear;;
-    toggle) shift; mpvc_toggle;;
-    change) shift; mpvc_change "$@";;
-    preset) shift; mpvc_presets "$@";;
-    values) shift; mpvc_values;;
-    vals)   shift; mpvc_vals;;
-    bars)   shift; mpvc_bars;;
-    json)   shift; mpvc_json;;
+    save)       shift; mpvc_save "$@" ;;
+    load)       shift; mpvc_load "$@" ;;
+    reset)      shift; mpvc_reset ;;
+    clear)      shift; mpvc_clear ;;
+    toggle)     shift; mpvc_toggle ;;
+    change)     shift; mpvc_change "$@" ;;
+    preset)     shift; mpvc_presets "$@" ;;
+    preset-list)shift; mpvc_presets "$@" | awk '/ #preset:/ {print $NF}' ;;
+    values)     shift; mpvc_values;;
+    vals)       shift; mpvc_vals;;
+    bars)       shift; mpvc_bars;;
+    json)       shift; mpvc_json;;
 
-    inc)    shift; mpvc_add "$1"  "${2:-0.1}" ;;
-    dec)    shift; mpvc_add "$1" "-${2:-0.1}" ;;
+    inc)        shift; mpvc_add "$1"  "${2:-0.1}" ;;
+    dec)        shift; mpvc_add "$1" "-${2:-0.1}" ;;
 
-    help)  usage;;
-    *)     usage;;
+    help)      usage;;
+    *)         usage;;
     esac
 }
 
