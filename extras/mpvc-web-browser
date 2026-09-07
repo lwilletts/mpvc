@@ -188,22 +188,19 @@ handle_action()
     fi
 
     case "$ACTION" in
-    add)
-        TARGET_ITEM=$(gup 'item=[^&]*')
-        # Execute securely using the system's mpvc binary
-        if [ -d "$TARGET_ITEM" ] || [ -f "$TARGET_ITEM" ]; then
-            $MPVC -q add "$TARGET_ITEM"
-        fi
-        # Fast-path exit for asynchronous background JavaScript requests
-        if [ "${HTTP_X_REQUESTED_WITH:-}" = "XMLHttpRequest" ]; then
-            printf "Status: 200 OK\r\nContent-Type: text/plain\r\nConnection: close\r\nContent-Length: 2\r\n\r\nOK"
-            exit 0
-        fi
-        ;;
-
     stash-apply)    $MPVC -q stash apply "$(gup 'item=[^&]*')" ;;
+    stash-append)   $MPVC -q stash append "$(gup 'item=[^&]*')" ;;
     equalizer-load) $MPVC-equalizer load "$(gup 'item=[^&]*')" ;;
+    playlist-play)  $MPVC -q play "$(gup 'item=[^&]*' | awk '{print $1}')" ;;
+    playlist-add)   $MPVC -q add "$(gup 'item=[^&]*' | awk '{print $1}')" ;;
+    chapter-play)   $MPVC -q chapter-play "$(gup 'item=[^&]*' | awk '{print $1}')" ;;
     esac
+
+    # Fast-path exit for asynchronous background JavaScript requests
+    if [ "${HTTP_X_REQUESTED_WITH:-}" = "XMLHttpRequest" ]; then
+        printf "Status: 200 OK\r\nContent-Type: text/plain\r\nConnection: close\r\nContent-Length: 2\r\n\r\nOK"
+        exit 0
+    fi
 }
 
 # Generate HTML listings
@@ -236,7 +233,7 @@ handle_listing()
                 <span class='dir-name'>
                     <a href='$PROGNAME?browser&dir=${ENC_DIR}' class='folder-link'>📁 ${name}/</a>
                 </span>
-                <form action='$PROGNAME?browser&dir=${ENC_CURRENT_DIR}&action=add&item=${item}' method='POST' style='display:inline;'>
+                <form action='$PROGNAME?browser&dir=${ENC_CURRENT_DIR}&action=playlist-add&item=${item}' method='POST' style='display:inline;'>
                     <button type='submit' class='btn-compact'>+</button>
                     <!--<button type='submit' class='btn-compact'>-</button>-->
                 </form>
@@ -256,7 +253,7 @@ handle_listing()
                 FILE_LIST="${FILE_LIST}
                 <div class='row file-row'>
                     <span class='file-name'><a href='${media_file}'>🎵${name}</a></span>
-                    <form action='$PROGNAME?browser&dir=${ENC_CURRENT_DIR}&action=add&item=${item}' method='POST' style='display:inline;'>
+                    <form action='$PROGNAME?browser&dir=${ENC_CURRENT_DIR}&action=playlist-add&item=${item}' method='POST' style='display:inline;'>
                         <button type='submit' class='btn-compact'>+</button>
                         <!--<button type='submit' class='btn-compact'>-</button>-->
                     </form>
@@ -300,7 +297,7 @@ handle_equalizer()
 
 handle_remote()
 {
-    handle_generic "$MPVC-fzf search downtown-binary" "$PROGNAME?browser&action=equalizer-load"
+    handle_generic "$MPVC-fzf search downtown-binary" "$PROGNAME?browser&action=playlist-add"
 }
 
 handle_generic()
@@ -400,4 +397,3 @@ main()
 }
 
 main "$@"
-
