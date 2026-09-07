@@ -35,9 +35,13 @@ html_body_open()
         .btn-action { display: flex; background: #36b4d1; color: #fff; padding: 8px 8px; margin: 2px 2px; border-radius: 4px; font-weight: bold; font-size: 0.6rem; white-space: nowrap; text-decoration: none; min-height: 10px; min-width: 10px; align-items: center; flex-shrink: 0; }
         .btn-action:active { background: #2471a3; }
         .search-container { margin: 10px 0 15px 0; width: 100%; }
-        #libMode { width: 100%; box-sizing: border-box; background: #222; border: 1px solid #444; border-radius: 6px; color: #fff; min-height: 30px; }
-        #libSearch { width: 94%; box-sizing: border-box; background: #222; border: 1px solid #444; border-radius: 6px; color: #fff; min-height: 40px; }
+        .flex { display: flex; }
+        .flex-fixed { width: 4rem; flex-shrink: 0; margin: 4px; }
+        .flex-grow { flex-grow: 1; margin: 4px; }
+        #libMode { box-sizing: border-box; background: #222; border: 1px solid #444; border-radius: 6px; color: #fff; min-height: 30px; }
+        #libSearch { box-sizing: border-box; background: #222; border: 1px solid #444; border-radius: 6px; color: #fff; min-height: 40px; }
         #libSearch:focus { border-color: #2980b9; outline: none; }
+
         a { color: #3498db; text-decoration: none; }
         .row { display: flex; justify-content: space-between; align-items: center; padding: 4px 4px; border-bottom: 1px solid #555; }
         .folder-link { font-weight: bold; color: #f1c40f; display: block; width: 100%; padding: 4px 0; }
@@ -52,14 +56,14 @@ html_body_open()
         /* Explicitly style folder links so they remain high-contrast yellow */
         a.folder-link { color: #f1c40f; font-weight: bold; display: block; width: 100%; padding: 4px 0; }
 
-        /* SANER HOVER & VISITED STATES Combines standard text links and directory links to eliminate the browser's native purple/violet shift.  */
-        a:visited, a.folder-link:visited { color: inherit; /* Forces visited links to keep their original color instead of turning purple */ }
-        a:hover, a:focus { color: #5dade2; /* A slightly lighter, glowing blue on hover */ text-decoration: underline; /* Clear visual feedback for touch/mouse targeting */ }
-        a.folder-link:hover, a.folder-link:focus { color: #f4d03f; /* A slightly brighter yellow on hover */ text-decoration: underline; }
+        /* Saner hover & visited states */
+        a:visited, a.folder-link:visited { color: inherit; }
+        a:hover, a:focus { color: #5dade2; text-decoration: underline; }
+        a.folder-link:hover, a.folder-link:focus { color: #f4d03f; text-decoration: underline; }
 
         /* Styling for the back button to keep it neutral */
         .back-btn { display: inline-block; margin-bottom: 15px; padding: 8px 12px; background: #333; border-radius: 4px; color: #fff; }
-        .back-btn:hover { background: #444; color: #fff; text-decoration: none; /* Keeps the button block clean */ }
+        .back-btn:hover { background: #444; color: #fff; text-decoration: none; }
     </style>
 </head>
 <body>
@@ -80,10 +84,10 @@ html_body_open()
 
 <!-- Live Client-side Input Filtering Search Bar -->
 <div class='search-container'>
-<form id='filterForm' method=get>
+<form id='filterForm' class='flex' method=get>
     <input type='hidden' name='browser'>
 
-    <select id='libMode' name=mode style='width:5%!important;' onchange=this.form.submit() title='Mode (ProTip: accesskey=m)' accesskey=m>
+    <select id='libMode' name=mode class='flex-fixed' onchange=this.form.submit() title='Mode (ProTip: accesskey=m)' accesskey=m>
     <option value=>          Mode
     <option value=media>     Media
     <option value=stash>     Stash
@@ -97,7 +101,7 @@ html_body_open()
     <option value=remote>    Remote
     </select>
 
-    <input type='text' id='libSearch' name='filter' oninput='filterFiles()' onkeydown='filterKeyDown(event)' placeholder='🔍 Type to filter items ...' autocomplete='off' title='Search (ProTip: accesskey=s)' accesskey=s>
+    <input type='text' id='libSearch' name='filter' class='flex-grow' oninput='filterFiles()' onkeydown='filterKeyDown(event)' placeholder='🔍 Type to filter items ...' autocomplete='off' title='Search (ProTip: accesskey=s)' accesskey=s>
 </form>
 </div>
 
@@ -253,7 +257,7 @@ handle_listing()
 
     item_list=$(
     set +f
-    for item in "." ".." "$RESOLVED_PATH"/*;
+    for item in "." ".." "$RESOLVED_PATH"/*/ "$RESOLVED_PATH"/* ;
     do
         name=$(basename "$item")
         case "$name" in .);; ..);; .*) continue ;; esac
