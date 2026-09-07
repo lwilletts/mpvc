@@ -26,7 +26,7 @@ html_body_open()
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>mpvc Media Browser</title>
+    <title> 🎧$(hostname) mpvc MediaBrowser</title>
     <style>
         body { font-family: monospace, sans-serif; font-size: 0.8rem; background: #121212; color: #e0e0e0; margin: 0; padding: 15px 4px; }
         .browser { max-width: 99%; margin: 0 auto; }
@@ -36,7 +36,7 @@ html_body_open()
         .btn-action:active { background: #2471a3; }
         .search-container { margin: 10px 0 15px 0; width: 100%; }
         #libMode { width: 100%; box-sizing: border-box; background: #222; border: 1px solid #444; border-radius: 6px; color: #fff; min-height: 30px; }
-        #libSearch { width: 100%; box-sizing: border-box; background: #222; border: 1px solid #444; border-radius: 6px; color: #fff; min-height: 40px; }
+        #libSearch { width: 94%; box-sizing: border-box; background: #222; border: 1px solid #444; border-radius: 6px; color: #fff; min-height: 40px; }
         #libSearch:focus { border-color: #2980b9; outline: none; }
         a { color: #3498db; text-decoration: none; }
         .row { display: flex; justify-content: space-between; align-items: center; padding: 4px 4px; border-bottom: 1px solid #555; }
@@ -63,9 +63,53 @@ html_body_open()
     </style>
 </head>
 <body>
+<div class="browser">
+
+<!-- Directory Header Panel -->
+<div class='dir-header'>
+    <div>
+    <strong>
+        <a href="" title='Reload (ProTip: accesskey=r)' accesskey=r>&gt;</a>
+        <a href=/>/</a> ${REQ_DIR#/}
+    </strong>
+    </div>
+    <div>
+        <a class='btn-action' href='/?cmd=mpvc toggle' title="Toggle playback (ProTip: accesskey=t)" accesskey=t>⏯️</a>
+    </div>
+</div>
+
+<!-- Live Client-side Input Filtering Search Bar -->
+<div class='search-container'>
+<form id='filterForm' method=get>
+    <input type='hidden' name='browser'>
+
+    <select id='libMode' name=mode style='width:5%!important;' onchange=this.form.submit() title='Mode (ProTip: accesskey=m)' accesskey=m>
+    <option value=>          Mode
+    <option value=media>     Media
+    <option value=stash>     Stash
+
+    <option value=playlist>  Playlist
+    <option value=chapters>  Chapters
+    <option value=equalizer> Equalizer
+
+    <option value=video>     Video
+    <option value=feeds>     Feed
+    <option value=remote>    Remote
+    </select>
+
+    <input type='text' id='libSearch' name='filter' oninput='filterFiles()' onkeydown='filterKeyDown(event)' placeholder='🔍 Type to filter items ...' autocomplete='off' title='Search (ProTip: accesskey=s)' accesskey=s>
+</form>
+</div>
 
 <script>
-function filterFiles() {
+function gup(name)
+{
+    const params = new URLSearchParams(window.location.search);
+    return params.get(name);
+}
+
+function filterFiles()
+{
     let query = document.getElementById('libSearch').value.toLowerCase();
     let files = document.querySelectorAll('.file-row');
     files.forEach(row => {
@@ -87,46 +131,29 @@ function filterFiles() {
         }
     });
 }
+
+function filterKeyDown()
+{
+    const elem = document.getElementById('libMode')
+    const form = document.getElementById('filterForm')
+    if(elem && elem.vaue == 'remote' && event.key === 'Enter')
+    {
+        // submit to let mpvc-fzf search action populate results
+        form.submit()
+    }
+}
+
+function initModule()
+{
+    let elem = document.getElementById('libMode')
+    let mode = gup('mode')
+    if (elem && mode)
+        elem.value = mode
+}
+
+initModule();
 </script>
 
-<div class="browser">
-
-<!-- Directory Header Panel -->
-<div class='dir-header'>
-    <div>
-    <strong>
-        <a href="" title='Reload (ProTip: accesskey=r)' accesskey=r>&gt;</a>
-        <a href=/>/</a> ${REQ_DIR#/}
-    </strong>
-    </div>
-    <div>
-        <form method=get>
-        <input type='hidden' name='browser'>
-        <select id='libMode' name=mode onchange=this.form.submit() title='Mode (ProTip: accesskey=o)' accesskey=o>
-        <option value=>          Mode
-        <option value=media>     Media
-        <option value=stash>     Stash
-
-        <option value=playlist>  Playlist
-        <option value=chapters>  Chapters
-        <option value=equalizer> Equalizer
-
-        <option value=video>     Video
-        <option value=feeds>     Feed
-        <option value=remote>    Remote
-        </select>
-        </form>
-    </div>
-    <div>
-        <a class='btn-action' href='/' title='Player'>🎧</a>
-        <a class='btn-action' href='/?cmd=mpvc toggle' title="Toggle playback (ProTip: accesskey=t)" accesskey=t>⏯️</a>
-    </div>
-</div>
-
-<!-- Live Client-side Input Filtering Search Bar -->
-<div class='search-container'>
-        <input type='text' id='libSearch' oninput='filterFiles()' placeholder='🔍 Type to filter items ...' autocomplete='off' title='Search (ProTip: accesskey=s)' accesskey=s>
-</div>
 EOF
 }
 
@@ -211,7 +238,10 @@ handle_action()
 
     # Fast-path exit for asynchronous background JavaScript requests
     if [ "${HTTP_X_REQUESTED_WITH:-}" = "XMLHttpRequest" ]; then
-        printf "Status: 200 OK\r\nContent-Type: text/plain\r\nConnection: close\r\nContent-Length: 2\r\n\r\nOK"
+        printf "Status: 200 OK\r\n"
+        printf "Content-Type: text/plain\r\n"
+        printf "Connection: close\r\n"
+        printf "Content-Length: 2\r\n\r\nOK"
         exit 0
     fi
 }
@@ -223,13 +253,14 @@ handle_listing()
 
     item_list=$(
     set +f
-    for item in "." ".." "$RESOLVED_PATH"/*; do
+    for item in "." ".." "$RESOLVED_PATH"/*;
+    do
         name=$(basename "$item")
         case "$name" in .);; ..);; .*) continue ;; esac
+        ENC_DIR=$(printf '%s/%s' "$REQ_DIR" "$name" | tr -s '/' | sed 's/ /%20/g')
 
         # Handle subdirectories
         if [ -d "$item" ]; then
-            ENC_DIR=$(printf '%s/%s' "$REQ_DIR" "$name" | tr -s '/' | sed 's/ /%20/g')
             echo "
             <div class='row dir-row'>
                 <span class='dir-name'>
@@ -238,8 +269,6 @@ handle_listing()
                 <form action='$PROGNAME?browser&dir=${ENC_CURRENT_DIR}&mode=$mode&action=playlist-add' method='POST' style='display:inline;'>
                     <button type='submit' class='btn-compact'>+</button>
                     <input type='hidden' name='item' value=$item>
-
-                    <!--<button type='submit' class='btn-compact'>-</button>-->
                 </form>
             </div>"
         fi
@@ -254,8 +283,6 @@ handle_listing()
                     <form action='$PROGNAME?browser&dir=${ENC_CURRENT_DIR}&mode=$mode&action=playlist-add' method='POST' style='display:inline;'>
                         <button type='submit' class='btn-compact'>+</button>
                         <input type='hidden' name='item' value=$item>
-
-                        <!--<button type='submit' class='btn-compact'>-</button>-->
                     </form>
                 </div>"
                 ;;
@@ -299,7 +326,9 @@ handle_equalizer()
 
 handle_remote()
 {
-    handle_generic "$MPVC-fzf search downtown-binary" "$PROGNAME?browser&action=playlist-add"
+    filter=$(gup 'filter=[^&]*' "$QUERY_STRING")
+    # remote is special, as the user has to enter the query to pass to mpvc-fzf search before
+    handle_generic "$MPVC-fzf search $filter" "$PROGNAME?browser&action=playlist-add"
 }
 
 handle_generic()
