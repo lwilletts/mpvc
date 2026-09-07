@@ -43,7 +43,8 @@ html_body_open()
         .folder-link { font-weight: bold; color: #f1c40f; display: block; width: 100%; padding: 4px 0; }
         .file-name { padding-right: 15px; word-break: break-all; flex-grow: 1; }
         button.btn-compact { background: #27ae60; color: #fff; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; min-width: 24px; min-height: 24px; font-size: 1.0rem; padding: 0; display: flex; justify-content: center; align-items: center; flex-shrink: 0; }
-        button.btn-compact:active { background: #219653; }
+        button.btn-compact:active  { background: #219653; }
+        button.btn-compact:visited { background: #2762ae; }
         .back-btn { display: inline-block; margin-bottom: 15px; padding: 8px 12px; background: #333; border-radius: 4px; color: #fff; }
 
         /* Base link styles (removes default blue and forces smooth transitions) */
@@ -161,7 +162,6 @@ handle_config()
 
     # Extract parameters natively from the URL query string
     REQ_DIR=$(gup 'dir=[^&]*')
-    ACTION=$(gup 'action=[^&]*')
 
     # Clean double slashes and target path construction
     TARGET_PATH="${MEDIA_ROOT}/${REQ_DIR}"
@@ -187,7 +187,7 @@ handle_action()
         return
     fi
 
-    case "$ACTION" in
+    case "$action" in
     stash-apply)    $MPVC -q stash apply "$(gup 'item=[^&]*')" ;;
     stash-append)   $MPVC -q stash append "$(gup 'item=[^&]*')" ;;
     equalizer-load) $MPVC-equalizer load "$(gup 'item=[^&]*')" ;;
@@ -206,29 +206,25 @@ handle_action()
 # Generate HTML listings
 handle_listing()
 {
-    HTML_BODY=$(html_body_open)
-
     ENC_CURRENT_DIR=$(printf '%s' "$REQ_DIR" | sed 's/ /%20/g')
-
     ENC_PARENT="${ENC_PARENT:-}"
     # Render Parent Directory button if nested
     if [ -n "$REQ_DIR" ] && [ "$REQ_DIR" != "/" ]; then
         PARENT_DIR=$(dirname "$REQ_DIR")
         [ "$PARENT_DIR" = "." ] || [ "$PARENT_DIR" = "/" ] && PARENT_DIR=""
         ENC_PARENT=$(printf '%s' "$PARENT_DIR" | sed 's/ /%20/g')
-       # HTML_BODY="${HTML_BODY}"
     fi
 
-    # Handle subdirectories
+    item_list=$(
     set +f
-    DIR_LIST=""
     for item in "." ".." "$RESOLVED_PATH"/*; do
-        [ -d "$item" ] || continue
         name=$(basename "$item")
         case "$name" in .);; ..);; .*) continue ;; esac
 
-        ENC_DIR=$(printf '%s/%s' "$REQ_DIR" "$name" | tr -s '/' | sed 's/ /%20/g')
-        DIR_LIST="${DIR_LIST}
+        # Handle subdirectories
+        if [ -d "$item" ]; then
+            ENC_DIR=$(printf '%s/%s' "$REQ_DIR" "$name" | tr -s '/' | sed 's/ /%20/g')
+            echo "
             <div class='row dir-row'>
                 <span class='dir-name'>
                     <a href='$PROGNAME?browser&dir=${ENC_DIR}' class='folder-link'>📁 ${name}/</a>
@@ -238,19 +234,13 @@ handle_listing()
                     <!--<button type='submit' class='btn-compact'>-</button>-->
                 </form>
             </div>"
-    done
-    HTML_BODY="${HTML_BODY}${DIR_LIST}"
-
-    # Handle files: audio / non-audio
-    FILE_LIST=""
-    for item in "$RESOLVED_PATH"/*; do
-        [ -f "$item" ] || continue
-        name=$(basename "$item")
-
-        media_file="${MEDIA_URL}${item##"$MEDIA_ROOT"}"
-        case "$name" in
+        fi
+        # Handle files: audio / non-audio
+        if [ -f "$item" ]; then
+            media_file="${MEDIA_URL}${item##"$MEDIA_ROOT"}"
+            case "$name" in
             *.mp3|*.flac|*.m4a|*.ogg|*.opus|*.wav|*.mp4|*.mkv|*.webm|*webp)
-                FILE_LIST="${FILE_LIST}
+                echo "
                 <div class='row file-row'>
                     <span class='file-name'><a href='${media_file}'>🎵${name}</a></span>
                     <form action='$PROGNAME?browser&dir=${ENC_CURRENT_DIR}&action=playlist-add&item=${item}' method='POST' style='display:inline;'>
@@ -260,15 +250,17 @@ handle_listing()
                 </div>"
                 ;;
             *)
-                FILE_LIST="${FILE_LIST}
+                echo "
                 <div class='row file-row'>
                     <span class='file-name'><a href='${media_file}'>📄${name}</a></span>
                 </div>"
-        esac
+            esac
+        fi
     done
-    set -f
+    )
 
-    HTML_BODY="${HTML_BODY}${FILE_LIST}"
+    HTML_BODY=$(html_body_open)
+    HTML_BODY="${HTML_BODY}${item_list}"
     HTML_BODY="${HTML_BODY}$(html_body_close)"
 
     # Handle the request
@@ -329,6 +321,7 @@ mpvc_browser()
 {
     mode=$(gup 'mode=[^&]*')
     mode=${mode:-media}
+    action=$(gup 'action=[^&]*')
 
     handle_config
     handle_action
