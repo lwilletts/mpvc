@@ -575,7 +575,6 @@ function Help()
 EOF
 }
 
-
 mpvc_web_index()
 {
     cat <<EOF
@@ -641,8 +640,6 @@ mpvc_web_index()
             <a class=btn href="?cmd=mpvc mpv">mpv</a>
             <a class=btn href="?cmd=mpvc kill" ${MPVC_WEB_SHORTCUT_KILL}>kill</a>
             <a class=btn href="?cmd=mpvc clear">clear</a>
-            <a class=btn href="?cmd=mpvc vol -5" title="vol down">v-</a>
-            <a class=btn href="?cmd=mpvc vol +5" title="vol up">v+</a>
 
             <a class=btn href="?cmd=mpvc play">play</a>
             <a class=btn href="?cmd=mpvc --mute" ${MPVC_WEB_SHORTCUT_MUTE}>mute</a>
@@ -927,9 +924,6 @@ mpvc_web()
             n = split(allowCmdStr, a, /[[:space:]]+/)
             for (i = 1; i <= n; i++) { allowCmdList[a[i]] = 1; }
         }
-
-        /GET \/\?cmd=mpvc%20vol%20-5/     { mpvc("vol -5") }
-        /GET \/\?cmd=mpvc%20vol%20\+5/    { mpvc("vol +5") }
 
         /GET \/\?cmd=mpvc%20start%200/    { mpvc("start 0") }
         /GET \/\?cmd=mpvc%20start%20\$/   { mpvc("start $") }
