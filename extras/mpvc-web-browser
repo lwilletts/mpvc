@@ -28,20 +28,20 @@ html_body_open()
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>mpvc Media Browser</title>
     <style>
-        body { font-family: sans-serif; background: #121212; color: #e0e0e0; margin: 0; padding: 15px 4px; }
+        body { font-family: monospace, sans-serif; font-size: 0.8rem; background: #121212; color: #e0e0e0; margin: 0; padding: 15px 4px; }
         .browser { max-width: 99%; margin: 0 auto; }
         .dir-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 8px; margin-bottom: 10px; }
         .dir-header div { display: flex; flex-wrap: wrap; }
         .btn-action { display: flex; background: #36b4d1; color: #fff; padding: 8px 8px; margin: 2px 2px; border-radius: 4px; font-weight: bold; font-size: 0.6rem; white-space: nowrap; text-decoration: none; min-height: 10px; min-width: 10px; align-items: center; flex-shrink: 0; }
         .btn-action:active { background: #2471a3; }
         .search-container { margin: 10px 0 15px 0; width: 100%; }
-        #libMode { width: 100%; box-sizing: border-box; background: #222; border: 1px solid #444; border-radius: 6px; color: #fff; font-size: 1rem; min-height: 30px; }
-        #libSearch { width: 100%; box-sizing: border-box; background: #222; border: 1px solid #444; border-radius: 6px; color: #fff; font-size: 1rem; min-height: 40px; }
+        #libMode { width: 100%; box-sizing: border-box; background: #222; border: 1px solid #444; border-radius: 6px; color: #fff; min-height: 30px; }
+        #libSearch { width: 100%; box-sizing: border-box; background: #222; border: 1px solid #444; border-radius: 6px; color: #fff; min-height: 40px; }
         #libSearch:focus { border-color: #2980b9; outline: none; }
         a { color: #3498db; text-decoration: none; }
         .row { display: flex; justify-content: space-between; align-items: center; padding: 4px 4px; border-bottom: 1px solid #555; }
         .folder-link { font-weight: bold; color: #f1c40f; display: block; width: 100%; padding: 4px 0; }
-        .file-name { font-size: 0.95rem; padding-right: 15px; word-break: break-all; flex-grow: 1; }
+        .file-name { padding-right: 15px; word-break: break-all; flex-grow: 1; }
         button.btn-compact { background: #27ae60; color: #fff; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; min-width: 24px; min-height: 24px; font-size: 1.0rem; padding: 0; display: flex; justify-content: center; align-items: center; flex-shrink: 0; }
         button.btn-compact:active { background: #219653; }
         .back-btn { display: inline-block; margin-bottom: 15px; padding: 8px 12px; background: #333; border-radius: 4px; color: #fff; }
@@ -92,11 +92,11 @@ function filterFiles() {
 
 <!-- Directory Header Panel -->
 <div class='dir-header'>
-    <div> <strong>&gt; /${REQ_DIR#/}</strong> </div>
+    <div> <strong>&gt; <a href=/>/</a> ${REQ_DIR#/}</strong> </div>
     <div>
         <form method=get>
         <input type='hidden' name='browser'>
-        <select id='libMode' name=mode onchange=this.form.submit()>
+        <select id='libMode' name=mode onchange=this.form.submit() title='Mode (ProTip: accesskey=o)' accesskey=o>
         <option value=>          Mode
         <option value=media>     Media
         <option value=stash>     Stash
@@ -112,14 +112,13 @@ function filterFiles() {
         </form>
     </div>
     <div>
-        <a class='btn-action' href='' title='Reload' title='Reload (ProTip: accesskey=m)' accesskey=m>🔄</a>
         <a class='btn-action' href='/' title='Player'>🎧</a>
     </div>
 </div>
 
 <!-- Live Client-side Input Filtering Search Bar -->
 <div class='search-container'>
-        <input type='text' id='libSearch' oninput='filterFiles()' placeholder='🔍 Type to filter files...' autocomplete='off' title='Search (ProTip: accesskey=s)' accesskey=s>
+        <input type='text' id='libSearch' oninput='filterFiles()' placeholder='🔍 Type to filter items ...' autocomplete='off' title='Search (ProTip: accesskey=s)' accesskey=s>
 </div>
 EOF
 }
@@ -184,7 +183,7 @@ handle_config()
 # Process incoming mpvc actions
 handle_action()
 {
-    if [ "$REQUEST_METHOD" != "POST" ]; then
+    if [ "${REQUEST_METHOD:-}" != "POST" ]; then
         return
     fi
 
@@ -281,67 +280,48 @@ handle_listing()
 
 handle_stash()
 {
-    HTML_BODY=$(html_body_open)
-
-    stash_list=""
-    for item in $($MPVC stash ls | awk '{print $NF}'); do
-        stash_list="${stash_list}
-            <div class='row file-row'>
-                <span class='file-name'> 📝 ${item} </span>
-                <form action='$PROGNAME?browser&action=stash-apply&item=${item}' method='POST' style='display:inline;'>
-                    <button type='submit' class='btn-compact'>+</button>
-                    <!--<button type='submit' class='btn-compact'>-</button>-->
-                </form>
-            </div>"
-    done
-
-    HTML_BODY="${HTML_BODY}${stash_list}"
-    HTML_BODY="${HTML_BODY}$(html_body_close)"
-
-    # Handle the request
-    write_request "$HTML_BODY"
+    handle_generic "$MPVC stash ls" "$PROGNAME?browser&action=stash-apply"
 }
 
 handle_playlist()
 {
-    HTML_BODY=$(html_body_open)
+    handle_generic "$MPVC fullplaylist" "$PROGNAME?browser&action=playlist-play"
+}
 
-    play_list=""
-    for item in $($MPVC fullplaylist | sed 's| |_|g'); do
-        play_list="${play_list}
-            <div class='row file-row'>
-                <span class='file-name'> 📝 ${item} </span>
-                <form action='$PROGNAME?browser&action=playlist-play&item=${item}' method='POST' style='display:inline;'>
-                    <button type='submit' class='btn-compact'>+</button>
-                    <!--<button type='submit' class='btn-compact'>-</button>-->
-                </form>
-            </div>"
-    done
-
-    HTML_BODY="${HTML_BODY}${play_list}"
-    HTML_BODY="${HTML_BODY}$(html_body_close)"
-
-    # Handle the request
-    write_request "$HTML_BODY"
+handle_chapters()
+{
+    handle_generic "$MPVC chapter-list" "$PROGNAME?browser&action=chapter-play"
 }
 
 handle_equalizer()
 {
-    HTML_BODY=$(html_body_open)
+    handle_generic "$MPVC-equalizer preset-list" "$PROGNAME?browser&action=equalizer-load"
+}
 
-    eqz_list=""
-    for item in $($MPVC-equalizer preset | awk '/ #preset:/ {print $NF}'); do
-        eqz_list="${eqz_list}
-            <div class='row file-row'>
-                <span class='file-name'> 📝 ${item} </span>
-                <form action='$PROGNAME?browser&action=equalizer-load&item=${item}' method='POST' style='display:inline;'>
+handle_remote()
+{
+    handle_generic "$MPVC-fzf search downtown-binary" "$PROGNAME?browser&action=equalizer-load"
+}
+
+handle_generic()
+{
+    cmdlist="$1"
+    cmdaction="$2"
+
+    items=$(
+        $cmdlist | while IFS= read -r line;
+        do
+            echo "<div class='row file-row'>
+                <span class='file-name'> 📝 ${line} </span>
+                <form action='$cmdaction&item=${line}' method='POST' style='display:inline;'>
                     <button type='submit' class='btn-compact'>+</button>
-                    <!--<button type='submit' class='btn-compact'>-</button>-->
                 </form>
             </div>"
-    done
+        done
+    )
 
-    HTML_BODY="${HTML_BODY}${eqz_list}"
+    HTML_BODY=$(html_body_open)
+    HTML_BODY="${HTML_BODY}${items}"
     HTML_BODY="${HTML_BODY}$(html_body_close)"
 
     # Handle the request
@@ -360,7 +340,9 @@ mpvc_browser()
     media)      handle_listing ;;
     stash)      handle_stash ;;
     playlist)   handle_playlist ;;
+    chapters)   handle_chapters ;;
     equalizer)  handle_equalizer ;;
+    remote)     handle_remote ;;
     esac
 }
 
