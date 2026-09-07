@@ -207,13 +207,6 @@ handle_action()
 handle_listing()
 {
     ENC_CURRENT_DIR=$(printf '%s' "$REQ_DIR" | sed 's/ /%20/g')
-    ENC_PARENT="${ENC_PARENT:-}"
-    # Render Parent Directory button if nested
-    if [ -n "$REQ_DIR" ] && [ "$REQ_DIR" != "/" ]; then
-        PARENT_DIR=$(dirname "$REQ_DIR")
-        [ "$PARENT_DIR" = "." ] || [ "$PARENT_DIR" = "/" ] && PARENT_DIR=""
-        ENC_PARENT=$(printf '%s' "$PARENT_DIR" | sed 's/ /%20/g')
-    fi
 
     item_list=$(
     set +f
