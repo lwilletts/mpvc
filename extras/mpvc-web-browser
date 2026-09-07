@@ -172,7 +172,7 @@ gup()
 {
     param="$1"
     envvar="$2"
-    printf '%s' "$envvar" | grep -o "$param" | cut -d= -f2 | sed 's/%20/ /g; s/%2F/\//g; s/%3A/:/g'
+    printf '%s' "$envvar" | grep -o "$param" | cut -d= -f2 | sed 's/%20/ /g; s/%2F/\//g; s/%3A/:/g; s/+/ /g;'
 }
 
 write_request()
@@ -231,9 +231,11 @@ handle_action()
         postdata=$(dd bs=1 count="$CONTENT_LENGTH" 2>/dev/null)
     fi
 
+    mpvc_warn "$(gup 'item=[^&]*' "$postdata")"
+
     case "$action" in
-    stash-apply)    $MPVC -q stash apply "$(gup 'item=[^&]*' "$postdata")" ;;
-    stash-append)   $MPVC -q stash append "$(gup 'item=[^&]*' "$postdata")" ;;
+    stash-apply)    $MPVC -q stash apply "$(gup 'item=[^&]*' "$postdata" | awk '{print $NF}')" ;;
+    stash-append)   $MPVC -q stash append "$(gup 'item=[^&]*' "$postdata" | awk '{print $NF}')" ;;
     equalizer-load) $MPVC-equalizer load "$(gup 'item=[^&]*' "$postdata")" ;;
     playlist-play)  $MPVC -q play "$(gup 'item=[^&]*' "$postdata" | awk '{print $1}')" ;;
     playlist-add)   $MPVC -q add "$(gup 'item=[^&]*' "$postdata" | awk '{print $1}')" ;;
@@ -255,22 +257,24 @@ handle_listing()
 {
     ENC_CURRENT_DIR=$(printf '%s' "$REQ_DIR" | sed 's/ /%20/g')
 
+    dir_list=$(set +f; for d in "$RESOLVED_PATH"/*/; do [ -d "$d" ] && printf '%s\n' "$d" || true; done)
+    fil_list=$(set +f; for d in "$RESOLVED_PATH"/*;  do [ -f "$d" ] && printf '%s\n' "$d" || true; done)
+
     item_list=$(
-    set +f
-    for item in "." ".." "$RESOLVED_PATH"/*/ "$RESOLVED_PATH"/* ;
+    for item in "." ".." $dir_list $fil_list;
     do
         name=$(basename "$item")
         case "$name" in .);; ..);; .*) continue ;; esac
-        ENC_DIR=$(printf '%s/%s' "$REQ_DIR" "$name" | tr -s '/' | sed 's/ /%20/g')
+        enc_dir=$(printf '%s/%s' "$REQ_DIR" "$name" | tr -s '/' | sed 's/ /%20/g')
 
         # Handle subdirectories
         if [ -d "$item" ]; then
             echo "
             <div class='row dir-row'>
                 <span class='dir-name'>
-                    <a href='$PROGNAME?browser&dir=${ENC_DIR}' class='folder-link'>📁 ${name}/</a>
+                    <a href='$PROGNAME?browser&dir=${enc_dir}' class='folder-link'>📁 ${name}/</a>
                 </span>
-                <form action='$PROGNAME?browser&dir=${ENC_CURRENT_DIR}&mode=$mode&action=playlist-add' method='POST' style='display:inline;'>
+                <form action='$PROGNAME?browser&mode=$mode&action=playlist-add' method='POST' style='display:inline;'>
                     <button type='submit' class='btn-compact'>+</button>
                     <input type='hidden' name='item' value=$item>
                 </form>
@@ -284,7 +288,7 @@ handle_listing()
                 echo "
                 <div class='row file-row'>
                     <span class='file-name'><a href='${media_file}'>🎵${name}</a></span>
-                    <form action='$PROGNAME?browser&dir=${ENC_CURRENT_DIR}&mode=$mode&action=playlist-add' method='POST' style='display:inline;'>
+                    <form action='$PROGNAME?browser&mode=$mode&action=playlist-add' method='POST' style='display:inline;'>
                         <button type='submit' class='btn-compact'>+</button>
                         <input type='hidden' name='item' value=$item>
                     </form>
@@ -348,7 +352,7 @@ handle_generic()
                 <span class='file-name'> 📝 ${item} </span>
                 <form action='${cmdaction}&mode=$mode' method='POST' style='display:inline;'>
                     <button type='submit' class='btn-compact'>+</button>
-                    <input type='hidden' name='item' value=$item>
+                    <input type='hidden' name='item' value='$item'>
                 </form>
             </div>"
         done
