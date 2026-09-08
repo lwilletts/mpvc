@@ -67,7 +67,9 @@ mpvc_web_defaults()
     : "${MPVC_WEB_SHORTCUT_YTSEARCH:=accesskey=y}"
     : "${MPVC_WEB_SHORTCUT_HELP:=accesskey=h}"
 
-    MPVC_WEB_CGI="$MPVC_WEB_ROOT/cgi-bin/mpvc"
+    MPVC_WEB_CGI_DIR="$MPVC_WEB_ROOT/cgi-bin/"
+    MPVC_WEB_CGI_CMD="/cgi-bin/mpvc-web-browser"
+    MPVC_WEB_CGI_FILE="$MPVC_WEB_CGI_DIR/mpvc-web-browser"
 
     # if present load user config
     if [ -r "$MPVC_CONFIG" -a -O "$MPVC_CONFIG" ]; then
@@ -99,8 +101,17 @@ mpvc_web_style()
     cat <<-EOF
 /* mpvc-web style.css */
 
+.scheme-control { position: absolute; opacity: 0; pointer-events: none; }
+.theme-toggle-container { display: inline-flex; gap: 2px; }
+.theme-lbl { padding: 2px 6px; font-size: 12px; cursor: pointer; }
+
+.theme-lbl { display: none; }
+html:has(#scheme-auto:checked) .lbl-light { display: inline-block; }
+html:has(#scheme-light:checked) .lbl-dark { display: inline-block; }
+html:has(#scheme-dark:checked) .lbl-auto  { display: inline-block; }
+
 @supports (font: -apple-system-body) {
-    /* iOS/Safari ... */
+    /* Old iOS/Safari workaround XXX */
     :root {
       --bg-primary: #0f0f0f;
       --bg-secondary: #1a1a1a;
@@ -110,21 +121,12 @@ mpvc_web_style()
       --border: #666666;
       --accent: #00d4ff;
       --shadow: rgba(0, 0, 0, 0.5);
-
     }
 
     #scheme-dark:checked ~ main { filter: invert(--filter-dark); }
     #scheme-light:checked ~ main { filter: invert(--filter-light); }
+    iframe { background: var(--text-primary); filter: var(--filter-dark); }
 }
-
-.scheme-control { position: absolute; opacity: 0; pointer-events: none; }
-.theme-toggle-container { display: inline-flex; gap: 2px; }
-.theme-lbl { padding: 2px 6px; font-size: 12px; cursor: pointer; }
-
-.theme-lbl { display: none; }
-html:has(#scheme-auto:checked) .lbl-light { display: inline-block; }
-html:has(#scheme-light:checked) .lbl-dark { display: inline-block; }
-html:has(#scheme-dark:checked) .lbl-auto  { display: inline-block; }
 
 /* THEME */
 
@@ -415,8 +417,8 @@ iframe {
 fieldset {
   border: 1px solid #ccc;
   border-radius: 4px;
-  padding: 0.75rem;
-  margin-bottom: 0rem;
+  padding: 0.5rem;
+  margin: 0rem;
 }
 
 legend {
@@ -445,9 +447,9 @@ legend {
 }
 
 @media (max-width: 480px) {
-  body { padding: 8px; }
-  details { margin: 8px 0; }
-  summary { padding: 4px 8px; font-size: 13px; }
+  body { padding: 2px; }
+  details { margin: 4px 0; }
+  summary { padding: 4px 4px; font-size: 13px; }
   ul { gap: 6px; }
 
   a.btn {
@@ -522,144 +524,13 @@ mpvc_web_select_form()
     echo '</form>'
 }
 
-mpvc_web_yts()
-{
-cat <<EOF
-            <script>
-            function mpvcYtsOnKeyDownEvent(event, form) {
-                if (event.keyCode !== 13) return;
-
-                event.preventDefault();
-
-                var input = form.querySelector('input[name="mpvc-yts-query"]');
-                var select = document.getElementById('mpvc-yts-select');
-                var query = input.value.trim();
-
-                if (!query) {
-                    select.innerHTML = '<option value="" disabled selected>Please enter a search term</option>';
-                    return;
-                }
-
-                select.innerHTML = '<option value="" disabled selected>Loading...</option>';
-                select.disabled = true;
-                input.disabled = true;
-
-                var url = '';
-
-                url = '/cgi-bin/mpvc?mpvc-fzf+-s+' + encodeURIComponent(query);
-                mpvcHttpGet(url)
-                    .then(data => {
-                        if (!data || data.trim() === '') {
-                            select.innerHTML = '<option value="" disabled selected>No results found</option>';
-                            input.disabled = false;
-                            select.disabled = false;
-                            return;
-                        }
-
-                        var lines = data.split('\n').filter(line => line.trim() !== '');
-                        if (lines.length === 0) {
-                            select.innerHTML = '<option value="" disabled selected>No results found</option>';
-                            input.disabled = false;
-                            select.disabled = false;
-                            return;
-                        }
-
-                        var html = '<option value="" disabled>- Select a result to add -</option>';
-                        for (var i = 0; i < lines.length; i++) {
-                            var line = lines[i];
-                            var parts = line.split(/\s+/);
-                            var url = parts[0];
-
-                            html += '<option value="' +
-                                    url.replace(/"/g, '&quot;') +
-                                    '">' +
-                                    line.replace(/</g, '&lt;').replace(/>/g, '&gt;') +
-                                    '</option>';
-                        }
-
-                        // expand the select
-                        select.innerHTML = html;
-                        select.size = Math.min(lines + 1, 8);
-                        select.disabled = false;
-                        input.disabled = false;
-                        select.focus();
-                    })
-                    .catch(error => {
-                        console.error('Search error:', error);
-                        select.innerHTML = '<option value="" disabled selected>Search failed. Try again.</option>';
-                        input.disabled = false;
-                        select.disabled = false;
-                    });
-            }
-
-            // Handle Go button click: apply action to all selected results
-            function mpvcYtsSearchSubmit() {
-                var selectElement = document.getElementById('mpvc-yts-select');
-                var actionElement = document.getElementById('mpvc-yts-search-action');
-                var selectedOptions = selectElement.selectedOptions;
-
-                if (selectedOptions.length === 0) {
-                    console.log('No results selected');
-                    return;
-                }
-
-                // Process each selected result
-                var action = actionElement.value;
-                for (var i = 0; i < selectedOptions.length; i++) {
-                    var yturl = selectedOptions[i].value;
-                    var url = '/cgi-bin/mpvc?mpvc+' + action + '+' + yturl;
-                    mpvcHttpGet(url);
-                }
-
-                // Clear selection after submission
-                selectElement.value = '';
-            }
-            </script>
-
-            <!-- YTS Search Form (mobile-optimized with <select> fallback) -->
-            <form id="mpvc-yts-form" action="/" method="get" class="yts-search-form">
-                <label for="mpvc-yts-input">YTS</label>
-                <input type="search"
-                       id="mpvc-yts-input"
-                       name="mpvc-yts-query"
-                       placeholder="Search title or paste URL"
-                       title="Search YouTube or paste video URL (press Enter)"
-                       $MPVC_WEB_SHORTCUT_YTSEARCH
-                       onkeydown="mpvcYtsOnKeyDownEvent(event, this.form)">
-
-                <select id="mpvc-yts-search-action">
-                    <option value="add">play-last</option>
-                    <option value="playnext">play-next</option>
-                    <option value="playnow">play-now</option>
-                    <option value="mpvc-fzf+-g">download</option>
-                    <option value="mpvc-fzf+-a">stash</option>
-                </select>
-
-                <button id="mpvc-yts-search-submit" type="button" onclick="mpvcYtsSearchSubmit()">Go</button>
-
-                <select name="mpvc-yts-url"
-                        id="mpvc-yts-select"
-                        title="Search results"
-                        multiple
-                        size="1"
-                        style="margin-bottom: -6px; resize: auto;"
-                        >
-                    <option value="" disabled selected>Search results go here</option>
-                </select>
-
-            </form
-
-</form>
-EOF
-}
-
 mpvc_web_cli()
 {
 cat <<EOF
         <form action="/" method="get">
-            <label for="mpvc-cli-input">CLI </label>
+            <label for="mpvc-cli-input"></label>
             <input type="text" id="mpvc-cli-input" name="cli" accesskey="i" autocomplete="on"
-                   placeholder="Input mpvc cmds" title="mpvc cli"
+                   placeholder="💻Type mpvc commands" title="mpvc cli"
                    onkeydown="if (event.keyCode == 13) { this.form.submit(); return false; }">
         </form>
 EOF
@@ -704,51 +575,6 @@ function Help()
 EOF
 }
 
-mpvc_web_cgi() # /cgi-bin/mpvc
-{
-    cat <<EOF
-#!/bin/sh
-set -euf
-mpvc_warn()  { echo "\$@" >&2; }
-mpvc_strip() { sed '/\x1b\[7m/ { s|\x1b\[7m||; s| |+|; }; s|\x1b\[0m||;'; }
-mpvc_cmd()   { echo "Content-Type: text/plain"; echo; $MPVC "\$@"; }
-mpvc_plain() { echo "Content-Type: text/plain"; echo; echo "\$@"; }
-mpvc_html()  { echo "Content-Type: text/html";  echo; echo "\$@"; }
-mpvc_json()  { echo "Content-Type: application/json";  echo; echo "\$@"; }
-mpvc_redir() { if [ -n "\$1" -a "\$1" != "null" ]; then mpvc_html '<meta http-equiv=refresh content="0.1;url='\$1'" />'; fi; }
-mpvc_split() { for i in \$@; do echo "\$i"; done; }
-
-main()
-{
-    QUERY_STRING="\${QUERY_STRING:-\$@}"
-    if [ -n "\${USER:-}" ]; then
-        PATH=/usr/local/bin:/usr/bin:/bin
-        env -i PATH="\$PATH" HOME="\$HOME" TERM="\$TERM" QUERY_STRING="\${QUERY_STRING:-}" "\$0" "\$@";
-        exit;
-    fi
-    case "\$QUERY_STRING" in
-        volmute)                mpvc_redir "\$($MPVC-mpris volmute)" ;;
-        now-short)              mpvc_redir "\$($MPVC-fzf now short)" ;;
-        lyrics)                 mpvc_redir "\$($MPVC-fzf Lyrics '')" ;;
-        thumbnail)              mpvc_redir "\$($MPVC-fzf thumbnail)" ;;
-        thumbnail64)            mpvc_redir "\$($MPVC-fzf thumbnail64)" ;;
-        filename)               mpvc_redir "\$($MPVC filename current full)" ;;
-        metadata)               mpvc_plain "\$($MPVC metadata)" ;;
-        #related)               mpvc_plain "\$($MPVC-fzf \"\$($MPVC get media-title)\")" ;;
-
-        mpvc+status)            mpvc_cmd status | mpvc_strip ;;
-        mpvc+playlist)          mpvc_cmd playlist | mpvc_strip ;;
-        mpvc+chapter-list)      mpvc_cmd chapter-list-nr | mpvc_strip ;;
-
-        mpvc-fzf[+\ ]*)         mpvc_plain "\$($PROGDIR/\$(mpvc_split "\$@"))" ;;
-        mpvc-equalizer[+\ ]*)   mpvc_plain "\$($PROGDIR/\$(mpvc_split "\$@"))" ;;
-        mpvc[+\ ]*)             mpvc_plain "\$($PROGDIR/\$(mpvc_split "\$@"))" ;;
-    esac
-}
-main "\$@"
-EOF
-}
-
 mpvc_web_index()
 {
     cat <<EOF
@@ -773,8 +599,10 @@ mpvc_web_index()
     <style>
       $(mpvc_web_style)
     </style>
-    <link rel="preload" href="style.css" as="style" />
-    <link rel="stylesheet" href="style.css" />
+    $(if [ -n "$MPVC_WEB_CSS_STYLE" ]; then
+        echo '<link rel="preload" href="style.css" as="style" />'
+        echo '<link rel="stylesheet" href="style.css" />'
+    fi)
 
     </head>
 
@@ -786,13 +614,14 @@ mpvc_web_index()
         <main>
         <details>
         <summary ${MPVC_WEB_SHORTCUT_PLAYER}>
-        [
             <a href="." name="top" ${MPVC_WEB_SHORTCUT_REFRESH}>🎧 Player</a>
-        ]
         <span style="float:right">
             <a class=btn href="." title="Reload" aria-label="Reload">🔄</a>
-            <a class=btn href="?cmd=mpvc toggle" title="Toggle playback" aria-label="Toggle playback">⏯️</a>
-            <a class=btn href="?cmd=mpvc cycle-volume" title="Cycle Volume">🔊</a>
+
+            <button type=button class=btn onclick="mpvcHttpGet('?cmd=mpvc next')" title="Next track">⏭️</button>
+            <button type=button class=btn onclick="mpvcHttpGet('?cmd=mpvc cnext')" title="Next chapter">⏬</button>
+            <button type=button class=btn onclick="mpvcHttpGet('?cmd=mpvc toggle')" title="Toggle playback">⏯️</button>
+            <button type=button class=btn onclick="mpvcHttpGet('?cmd=mpvc cycle-volume')" title="Cycle Volume">🔊</button>
             <span class="theme-toggle-container">
                 <label for="scheme-auto" class="theme-lbl lbl-auto" title="System Theme">🌓</label>
                 <label for="scheme-light" class="theme-lbl lbl-light" title="Light Theme">☀️</label>
@@ -807,13 +636,10 @@ mpvc_web_index()
         <fieldset class="control-group">
           <legend>[ Playback ]</legend>
 
-            <!--<a href="?cmd=mpvc status">status</a>-->
             <a class=btn href="?cmd=mpvc toggle" ${MPVC_WEB_SHORTCUT_TOGGLE}>pause</a>
             <a class=btn href="?cmd=mpvc mpv">mpv</a>
             <a class=btn href="?cmd=mpvc kill" ${MPVC_WEB_SHORTCUT_KILL}>kill</a>
             <a class=btn href="?cmd=mpvc clear">clear</a>
-            <a class=btn href="?cmd=mpvc vol -5" title="vol down">v-</a>
-            <a class=btn href="?cmd=mpvc vol +5" title="vol up">v+</a>
 
             <a class=btn href="?cmd=mpvc play">play</a>
             <a class=btn href="?cmd=mpvc --mute" ${MPVC_WEB_SHORTCUT_MUTE}>mute</a>
@@ -827,6 +653,7 @@ mpvc_web_index()
             <a class=btn href="?cmd=mpvc seek +10" title="seek bwd">s+</a>
             -->
         </fieldset>
+
         <fieldset class="control-group">
           <legend>[ Modes ]</legend>
             <a class=btn href="?cmd=mpvc repeat">repeat</a>
@@ -850,19 +677,13 @@ mpvc_web_index()
             <a class=btn href="?cmd=mpvc cnext" title="cnext">ch+</a>
         </fieldset>
 
-        </details>
-
-        <details>
-        <summary>
-        [
-            <a href="#mpvc-web-tools" name="mpvc-web-tools">📻 Radio</a>
-            <a href="/cgi-bin/mpvc?now-short">#now</a>
-            $([ -n "$MPVC_WEB_ARCHIVE_ENABLE" ] && echo '<a href="ytdl-archive" title="#arc" >#a</a>'; )
-            $(for x in $MPVC_WEB_EXTRAS_URL; do n=$((${n:-0} + 1)); echo "<a href=$x title=#url-$n>#u$n</a>"; done)
-        ]
-        </summary>
-
-        <hr>
+        <fieldset class="control-group">
+          <legend>[ Control ]</legend>
+            $(printf " +30\n+20\n+10\n+5\n0\n-5\n-10\n-20\n-30" | mpvc_web_select_form "mpvc -q vol" "${MPVC_WEB_SHORTCUT_VOL}")
+            $(printf " +15\n+10\n+5\n+2\n+1\n0\n-1\n-2\n-5\n-10\n-15" | mpvc_web_select_form "mpvc -q track")
+            $(printf " +30\n+20\n+10\n+5\n+1\n0\n-1\n-5\n-10\n-20\n-30" | mpvc_web_select_form "mpvc -q cplay")
+            $(printf " +120\n+60\n+25\n0\n-25\n-60\n-120" | mpvc_web_select_form "mpvc -q seek" "${MPVC_WEB_SHORTCUT_SEEK}")
+        </fieldset>
 
 <!--
         <fieldset class="control-group">
@@ -874,68 +695,48 @@ mpvc_web_index()
         </fieldset>
 -->
 
-        <fieldset class="control-group">
-          <legend>[ Control ]</legend>
-            $(printf " +30\n+20\n+10\n+5\n0\n-5\n-10\n-20\n-30" | mpvc_web_select_form "mpvc -q vol" "${MPVC_WEB_SHORTCUT_VOL}")
-            $(printf " +15\n+10\n+5\n+2\n+1\n0\n-1\n-2\n-5\n-10\n-15" | mpvc_web_select_form "mpvc -q track")
-            $(printf " +30\n+20\n+10\n+5\n+1\n0\n-1\n-5\n-10\n-20\n-30" | mpvc_web_select_form "mpvc -q cplay")
-            $(printf " +120\n+60\n+25\n0\n-25\n-60\n-120" | mpvc_web_select_form "mpvc -q seek" "${MPVC_WEB_SHORTCUT_SEEK}")
+        </details>
 
-            $(mpvc-equalizer preset | awk '/ #preset:/ {print $NF}' | mpvc_web_select_form "mpvc-equalizer load" "${MPVC_WEB_SHORTCUT_EQUALIZER}")
-        </fieldset>
-
-        <fieldset class="control-group">
-          <legend>[ Media ]</legend>
-            $([ -n "${MPVC_WEB_DEV:-}" ] && mpvc_web_yts)
-            $([ -n "${MPVC_WEB_DEV:-}" ] && mpvc_web_cli)
-        </fieldset>
-
-        <fieldset class="control-group">
-          <legend>[ Stash ]</legend>
-
-            $(mpvc stash list | mpvc tac | mpvc-fzf -0 | mpvc_web_select_form "mpvc -q stash apply" "${MPVC_WEB_SHORTCUT_APPLY}")
-            $(mpvc stash list | mpvc tac | mpvc-fzf -0 | mpvc_web_select_form "mpvc -q stash append" "${MPVC_WEB_SHORTCUT_APPLY}")
-
-<!--
-            #$("$MPVC_WEB_CGI" mpvc save | mpvc_web_select_form "mpvc-fzf -g" "${MPVC_WEB_SHORTCUT_SEEK}")
-            #$(if [ -n "$MPVC_WEB_ARCHIVE_ENABLE" ]; then find "ytdl-archive/" | awk -F/ '{print "https://"$NF}' | mpvc_web_select_form "mpvc -q add" "${MPVC_WEB_SHORTCUT_ARCHIVE}"; fi)
--->
-        </fieldset>
-
-
+        <details>
+        <summary>
+            <a href="#mpvc-web-tools" name="mpvc-web-browse">📁 Browser</a>
+            <a href="$MPVC_WEB_CGI_CMD?browser">#new</a>
+            $(for x in $MPVC_WEB_EXTRAS_URL; do n=$((${n:-0} + 1)); echo "<a href=$x title=#url-$n>#$n</a>"; done)
+            <span style="float:right">
+                <a class=btn href="$MPVC_WEB_CGI_CMD?now-short" title="Now Playing (share)" aria-label="Now Playing">💿</a>
+                $([ -n "$MPVC_WEB_ARCHIVE_ENABLE" ] && echo '<a class=btn href="ytdl-archive" title="Archive" aria-label="Archive">🗃️</a>'; )
+            </span>
+        </summary>
+        <iframe name="mpvc-browser" title="mpvc-status" width="100%" height="420" frameborder="0" allowtransparency="true" src="$MPVC_WEB_CGI_CMD?browser" defer ></iframe>
         </details>
 
         <details open>
         <summary>
-        [
             <a href="#mpvc-web-status" name="mpvc-web-status">Status</a>
-            <a href="/cgi-bin/mpvc?metadata">#me</a>
-            <a href="/cgi-bin/mpvc?lyrics">#lyric</a>
-            <a href="/cgi-bin/mpvc?filename">#url</a>
-        ]
+            <a href="$MPVC_WEB_CGI_CMD?metadata">#me</a>
+            <a href="$MPVC_WEB_CGI_CMD?lyrics">#lyric</a>
+            <a href="$MPVC_WEB_CGI_CMD?filename">#url</a>
         </summary>
         <hr>
-        <iframe name="mpvc-status" title="mpvc-status" width="100%" height="80" frameborder="0" allowtransparency="true" src="/cgi-bin/mpvc?mpvc+status" defer ></iframe>
+        <iframe name="mpvc-status" title="mpvc-status" width="100%" height="80" frameborder="0" allowtransparency="true" src="$MPVC_WEB_CGI_CMD?mpvc+status" defer ></iframe>
         </details>
 
         <details>
         <summary ${MPVC_WEB_SHORTCUT_PLAYLIST}>
-        [
             <a href="#mpvc-web-playlist" name="mpvc-web-playlist">Playlist</a>
             <a href="#mpvc-web-fullplaylist" name="mpvc-web-fullplaylist">#full</a>
             <a href="#mpvc-web-rawplaylist" name="mpvc-web-fullplaylist">#raw</a>
-        ]
         </summary>
         <hr>
 
         <div style="display:flex">
-        <iframe name="mpvc-playlist" title="mpvc-playlist" width="100%" frameborder="0" allowtransparency="true" style="margin:auto; float:auto" src="/cgi-bin/mpvc?mpvc+playlist" defer ></iframe>
+        <iframe name="mpvc-playlist" title="mpvc-playlist" width="100%" frameborder="0" allowtransparency="true" style="margin:auto; float:auto" src="$MPVC_WEB_CGI_CMD?mpvc+playlist" defer ></iframe>
         <script type="text/javascript">
         var pl = document.getElementsByName('mpvc-playlist')[0];
         switch (window.location.hash) {
-        case '#mpvc-web-playlist':           { pl.src='/cgi-bin/mpvc?mpvc+playlist'; break; }
-        case '#mpvc-web-fullplaylist':       { pl.src='/cgi-bin/mpvc?mpvc+fullplaylist'; break; }
-        case '#mpvc-web-rawplaylist':       { pl.src='/cgi-bin/mpvc?mpvc+saven'; break; }
+        case '#mpvc-web-playlist':           { pl.src='$MPVC_WEB_CGI_CMD?mpvc+playlist'; break; }
+        case '#mpvc-web-fullplaylist':       { pl.src='$MPVC_WEB_CGI_CMD?mpvc+fullplaylist'; break; }
+        case '#mpvc-web-rawplaylist':        { pl.src='$MPVC_WEB_CGI_CMD?mpvc+saven'; break; }
         }
         </script>
         </div>
@@ -943,27 +744,23 @@ mpvc_web_index()
 
         <details>
         <summary>
-        [
             <a href="#mpvc-web-chapter-list" name="mpvc-web-chapterlist">Chapterlist</a>
             <a href="#mpvc-web-chapter-list-full" name="mpvc-web-chapter-list-full">#full</a>
             <a href="#mpvc-web-chapter-list-raw" name="mpvc-web-chapter-list-raw">#raw</a>
-        ]
         </summary>
         <hr>
-        <iframe name="mpvc-chapter-list" title="mpvc-chapter-list" width="100%" frameborder="0" allowtransparency="true" src="/cgi-bin/mpvc?mpvc+chapter-list" defer ></iframe>
+        <iframe name="mpvc-chapter-list" title="mpvc-chapter-list" width="100%" frameborder="0" allowtransparency="true" src="$MPVC_WEB_CGI_CMD?mpvc+chapter-list" defer ></iframe>
         </details>
 
         <details $(if [ -n "$MPVC_WEB_THUMBNAIL_ENABLE" ]; then echo open; fi)>
         <summary>
-        [
             <a href="#mpvc-web-thumbnail" name="mpvc-web-thumbnail">Thumbnail</a>
-            <a href="/cgi-bin/mpvc?thumbnail">#url</a>
-            <a href="/cgi-bin/mpvc?thumbnail64">#img</a>
-            <a href="/cgi-bin/mpvc?related">#rel</a>
-        ]
+            <a href="$MPVC_WEB_CGI_CMD?thumbnail">#url</a>
+            <a href="$MPVC_WEB_CGI_CMD?thumbnail64">#img</a>
+            <a href="$MPVC_WEB_CGI_CMD?related">#rel</a>
         </summary>
         <hr>
-            <iframe src="/cgi-bin/mpvc?thumbnail64" alt="thumbnail" title="thumbnail" style="$MPVC_WEB_THUMBNAIL_STYLE" defer ></iframe>
+            <iframe src="$MPVC_WEB_CGI_CMD?thumbnail64" alt="thumbnail" title="thumbnail" style="$MPVC_WEB_THUMBNAIL_STYLE" defer ></iframe>
         </details>
 
         </main>
@@ -1031,8 +828,8 @@ mpvc_web_setup()
         # setup http webroot
         echo "# $PROGNAME Setup $MPVC_WEB_ROOT"
         mkdir -p "$MPVC_WEB_ROOT" || return
-        mkdir -p "$MPVC_WEB_ROOT/cgi-bin/" || return
-        mkdir -p "$MPVC_WEB_ROOT/extras/" || return
+        mkdir -p "$MPVC_WEB_CGI_DIR" || return
+
         cd "$MPVC_WEB_ROOT" || return
         chmod -R u+w "${MPVC_WEB_ROOT%/*}"
 
@@ -1044,15 +841,14 @@ mpvc_web_setup()
 
         mpvc_web_index > "$MPVC_WEB_ROOT/index.html"
         echo > "$MPVC_WEB_ROOT/favicon.ico"
+        mpvc_web_manifest > "$MPVC_WEB_ROOT/manifest.json"
         mpvc_web_icon_svg > "$MPVC_WEB_ROOT/apple-touch-icon.svg"
-        > "$MPVC_WEB_ROOT/style.css"
+
         if [ -n "$MPVC_WEB_CSS_STYLE" ]; then
             cat "$MPVC_WEB_CSS_STYLE" > "$MPVC_WEB_ROOT/style.css"
         fi
-        mpvc_web_cgi > "$MPVC_WEB_CGI"
-        chmod u+x "$MPVC_WEB_CGI"
 
-        mpvc_web_manifest > "$MPVC_WEB_ROOT/manifest.json"
+        ln -s -f $PROGDIR/mpvc-web-browser "$MPVC_WEB_CGI_DIR"
 
         # setup https socat if requested
         if [ -n "${MPVC_WEB_SSL_ENABLE}" ]; then
@@ -1086,6 +882,11 @@ mpvc_web_setup()
     )
 }
 
+mpvc_web_envclean()
+{
+    env -i PATH=/usr/local/bin:/usr/bin:/bin HOME="$HOME" TERM="$TERM" MPVC=$(command -v mpvc) "$@"
+}
+
 mpvc_web()
 {
     mpvc_web_setup
@@ -1093,9 +894,9 @@ mpvc_web()
         cd "$MPVC_WEB_ROOT" || return
 
         # XXX handle cli commands, rewrite this mess
-        python3 -u -m http.server --cgi --bind "$MPVC_WEB_HOST" "$MPVC_WEB_PORT" "$@" 2>&1 |
-            #mawk -W interactive -v mpvcbin="$MPVC_WEB_CGI"
-            awk -v mpvcbin="$MPVC_WEB_CGI" \
+        mpvc_web_envclean python3 -u -m http.server --cgi --bind "$MPVC_WEB_HOST" "$MPVC_WEB_PORT" "$@" 2>&1 |
+            #mawk -W interactive -v mpvcbin="$MPVC_WEB_CGI_FILE"
+            mpvc_web_envclean awk -v mpvcbin="$MPVC_WEB_CGI_FILE" \
         '
         function mpvcsys(cmd) { system(mpvcbin" "cmd); }
         function mpvc(cmd)    { mpvcsys("mpvc -q "cmd); }
@@ -1117,20 +918,15 @@ mpvc_web()
         }
 
         BEGIN {
+            system("env")
             quiet=1
-            allowCmdStr = "mpv clear kill --mute toggle play stop prev next playrand shuffle unshuffle repeat single replay togglev aspect togglew togglef togglei creplay cloop cprev cnext cplayrand"
+            allowCmdStr = "mpv clear kill --mute toggle play stop prev next playrand shuffle unshuffle repeat single replay togglev aspect togglew togglef togglei creplay cloop cprev cnext cplayrand cycle-volume"
             n = split(allowCmdStr, a, /[[:space:]]+/)
             for (i = 1; i <= n; i++) { allowCmdList[a[i]] = 1; }
         }
 
-        /GET \/\?cmd=mpvc%20cycle-volume/ { mpvc("cyclev volume 0 10 20 30 35 40") }
-        /GET \/\?cmd=mpvc%20vol%20-5/     { mpvc("vol -5") }
-        /GET \/\?cmd=mpvc%20vol%20\+5/    { mpvc("vol +5") }
-
         /GET \/\?cmd=mpvc%20start%200/    { mpvc("start 0") }
         /GET \/\?cmd=mpvc%20start%20\$/   { mpvc("start $") }
-
-        /GET \/\?cmd=mpvc%20cstart/       { mpvc("cplay 0") }
 
         /GET \/\?cmd=mpvc%20.* / {
             cmd="";

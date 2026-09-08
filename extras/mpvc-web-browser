@@ -1,0 +1,441 @@
+#!/usr/bin/env sh
+#
+# @file mpvc-web-browser
+# @description mpvc web, A hack to remotely control mpvc from web/http
+# @author gmt4 <gmt4 at github.com> (c) Copyright 2022 GPLv2+
+# @url github.com/gmt4/mpvc
+# SPDX-License-Identifier: GPL-2.0-or-later
+#
+
+# REMEMBER This is a hack, DISCLAIMER * Use at Your Own Risk *
+# Use as a CGI or standalone with: socat tcp-listen:8888,reuseaddr,fork exec:mpvc-web-browser'
+
+PROGNAME=${0##*/}
+PROGDIR=${0%/*}
+PROGVERSION="v1.8"
+PROGAUTHOR=gmt4
+PROGURL="https://github.com/gmt4/mpvc"
+
+set -euf
+
+html_body_open()
+{
+    cat <<-EOF
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> 🎧$(hostname) mpvc MediaBrowser</title>
+    <style>
+        body { font-family: monospace, sans-serif; font-size: 0.8rem; background: #121212; color: #e0e0e0; margin: 0; padding: 15px 4px; }
+        .browser { max-width: 99%; margin: 0 auto; }
+        .dir-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 8px; margin-bottom: 10px; }
+        .dir-header div { display: flex; flex-wrap: wrap; }
+        .btn-action { display: flex; background: #36b4d1; color: #fff; padding: 8px 8px; margin: 2px 2px; border-radius: 4px; font-weight: bold; font-size: 0.6rem; white-space: nowrap; text-decoration: none; min-height: 10px; min-width: 10px; align-items: center; flex-shrink: 0; }
+        .btn-action:active { background: #2471a3; }
+        .search-container { margin: 10px 0 15px 0; width: 100%; }
+        .flex { display: flex; }
+        .flex-fixed { width: 4rem; flex-shrink: 0; margin: 4px; }
+        .flex-grow { flex-grow: 1; margin: 4px; }
+        #libMode { box-sizing: border-box; background: #222; border: 1px solid #444; border-radius: 6px; color: #fff; min-height: 30px; }
+        #libSearch { box-sizing: border-box; background: #222; border: 1px solid #444; border-radius: 6px; color: #fff; min-height: 40px; }
+        #libSearch:focus { border-color: #2980b9; outline: none; }
+
+        a { color: #3498db; text-decoration: none; }
+        .row { display: flex; justify-content: space-between; align-items: center; padding: 4px 4px; border-bottom: 1px solid #555; }
+        .folder-link { font-weight: bold; color: #f1c40f; display: block; width: 100%; padding: 4px 0; }
+        .file-name { padding-right: 15px; word-break: break-all; flex-grow: 1; }
+        button.btn-compact { background: #27ae60; color: #fff; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; min-width: 24px; min-height: 24px; font-size: 1.0rem; padding: 0; display: flex; justify-content: center; align-items: center; flex-shrink: 0; }
+        button.btn-compact:active  { background: #219653; }
+        button.btn-compact:visited { background: #2762ae; }
+        .back-btn { display: inline-block; margin-bottom: 15px; padding: 8px 12px; background: #333; border-radius: 4px; color: #fff; }
+
+        /* Base link styles (removes default blue and forces smooth transitions) */
+        a { color: #3498db; text-decoration: none; transition: color 0.2s ease; }
+        /* Explicitly style folder links so they remain high-contrast yellow */
+        a.folder-link { color: #f1c40f; font-weight: bold; display: block; width: 100%; padding: 4px 0; }
+
+        /* Saner hover & visited states */
+        a:visited, a.folder-link:visited { color: inherit; }
+        a:hover, a:focus { color: #5dade2; text-decoration: underline; }
+        a.folder-link:hover, a.folder-link:focus { color: #f4d03f; text-decoration: underline; }
+
+        /* Styling for the back button to keep it neutral */
+        .back-btn { display: inline-block; margin-bottom: 15px; padding: 8px 12px; background: #333; border-radius: 4px; color: #fff; }
+        .back-btn:hover { background: #444; color: #fff; text-decoration: none; }
+    </style>
+</head>
+<body>
+<div class="browser">
+
+<!-- Directory Header Panel -->
+<div class='dir-header'>
+    <div>
+    <strong>
+        <a href="" title='Reload (ProTip: accesskey=r)' accesskey=r>&gt;</a>
+        <a href=/>/</a> ${REQ_DIR#/}
+    </strong>
+    </div>
+    <div>
+        <a class='btn-action' href='/?cmd=mpvc toggle' title="Toggle playback (ProTip: accesskey=t)" accesskey=t>⏯️</a>
+    </div>
+</div>
+
+<!-- Live Client-side Input Filtering Search Bar -->
+<div class='search-container'>
+<form id='filterForm' class='flex' method=get>
+    <input type='hidden' name='browser'>
+
+    <select id='libMode' name=mode class='flex-fixed' onchange=this.form.submit() title='Mode (ProTip: accesskey=m)' accesskey=m>
+    <option value=>          Mode
+    <option value=media>     Media
+    <option value=stash>     Stash
+
+    <option value=playlist>  Playlist
+    <option value=chapters>  Chapters
+    <option value=equalizer> Equalizer
+
+    <option value=video>     Video
+    <option value=feeds>     Feed
+    <option value=remote>    Remote
+    </select>
+
+    <input type='text' id='libSearch' name='filter' class='flex-grow' oninput='filterFiles()' onkeydown='filterKeyDown(event)' placeholder='🔍 Type to filter items ...' autocomplete='off' title='Search (ProTip: accesskey=s)' accesskey=s>
+</form>
+</div>
+
+<script>
+function gup(name)
+{
+    const params = new URLSearchParams(window.location.search);
+    return params.get(name);
+}
+
+function filterFiles()
+{
+    let query = document.getElementById('libSearch').value.toLowerCase();
+    let files = document.querySelectorAll('.file-row');
+    files.forEach(row => {
+        let fileName = row.querySelector('.file-name').innerText.toLowerCase();
+        if (fileName.includes(query)) {
+            row.style.display = 'flex';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+
+    let dirs = document.querySelectorAll('.dir-row');
+    dirs.forEach(row => {
+        let fileName = row.querySelector('.dir-name').innerText.toLowerCase();
+        if (fileName.includes(query)) {
+            row.style.display = 'flex';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+
+function filterKeyDown()
+{
+    const elem = document.getElementById('libMode')
+    const form = document.getElementById('filterForm')
+    if(elem && elem.vaue == 'remote' && event.key === 'Enter')
+    {
+        // submit to let mpvc-fzf search action populate results
+        form.submit()
+    }
+}
+
+function initModule()
+{
+    let elem = document.getElementById('libMode')
+    let mode = gup('mode')
+    if (elem && mode)
+        elem.value = mode
+}
+
+initModule();
+</script>
+
+EOF
+}
+
+html_body_close()
+{
+    echo "</div>
+    </body>
+    </html>"
+}
+
+gup()
+{
+    param="$1"
+    envvar="$2"
+    printf '%s' "$envvar" | grep -o "$param" | cut -d= -f2 | sed 's/%20/ /g; s/%2F/\//g; s/%3A/:/g; s/+/ /g;'
+}
+
+write_request()
+{
+    data="$1"
+    byte_count=$(printf '%s' "$data" | wc -c)
+
+    printf "HTTP/1.0 200 OK\r\n"
+    printf "Status: 200 OK\r\n"
+    printf "Content-Type: text/html; charset=utf-8\r\n"
+    printf "Content-Length: %d\r\n" "$byte_count"
+    printf "Connection: close\r\n\r\n"
+
+    printf '%s' "$data"
+}
+
+# Configuration & security settings
+handle_config()
+{
+    # Change this to the absolute path of your media folder
+    MEDIA_ROOT="$HOME/.config/mpvc/ytdl-archive"
+    MEDIA_URL="../${MEDIA_ROOT##*/}"
+
+    # Fallback safely if the media directory doesn't exist
+    [ -d "$MEDIA_ROOT" ] || mkdir -p "$MEDIA_ROOT"
+
+    # Extract parameters natively from the URL query string
+    REQ_DIR=$(gup 'dir=[^&]*' "$QUERY_STRING")
+
+    # Clean double slashes and target path construction
+    TARGET_PATH="${MEDIA_ROOT}/${REQ_DIR}"
+    TARGET_PATH=$(printf '%s' "$TARGET_PATH" | tr -s '/')
+
+    # Strict Security Boundary: Ensure the path cannot escape MEDIA_ROOT
+    RESOLVED_PATH=$(realpath -m "$TARGET_PATH" 2>/dev/null || realpath "$TARGET_PATH")
+    case "$RESOLVED_PATH" in
+        "${MEDIA_ROOT}"*)
+            REQ_DIR=$(printf '%s' "$RESOLVED_PATH" | sed "s|^${MEDIA_ROOT}||")
+            ;;
+        *)
+            RESOLVED_PATH="$MEDIA_ROOT"
+            REQ_DIR=""
+            ;;
+    esac
+}
+
+# Process incoming mpvc actions
+handle_action()
+{
+    if [ "${REQUEST_METHOD:-}" != "POST" ]; then
+        return
+    fi
+
+    postdata=""
+    if [ -n "$CONTENT_LENGTH" ] && [ "$CONTENT_LENGTH" -gt 0 ]; then
+        postdata=$(dd bs=1 count="$CONTENT_LENGTH" 2>/dev/null)
+    fi
+
+    mpvc_warn "$(gup 'item=[^&]*' "$postdata")"
+
+    case "$action" in
+    stash-apply)    $MPVC -q stash apply "$(gup 'item=[^&]*' "$postdata" | awk '{print $NF}')" ;;
+    stash-append)   $MPVC -q stash append "$(gup 'item=[^&]*' "$postdata" | awk '{print $NF}')" ;;
+    equalizer-load) $MPVC-equalizer load "$(gup 'item=[^&]*' "$postdata")" ;;
+    playlist-play)  $MPVC -q play "$(gup 'item=[^&]*' "$postdata" | awk '{print $1}')" ;;
+    playlist-add)   $MPVC -q add "$(gup 'item=[^&]*' "$postdata" | awk '{print $1}')" ;;
+    chapter-play)   $MPVC -q chapter-play "$(gup 'item=[^&]*' "$postdata" | awk '{print $1}')" ;;
+    esac
+
+    # Fast-path exit for asynchronous background JavaScript requests
+    if [ "${HTTP_X_REQUESTED_WITH:-}" = "XMLHttpRequest" ]; then
+        printf "Status: 200 OK\r\n"
+        printf "Content-Type: text/plain\r\n"
+        printf "Connection: close\r\n"
+        printf "Content-Length: 2\r\n\r\nOK"
+        exit 0
+    fi
+}
+
+# Generate HTML listings
+handle_listing()
+{
+    ENC_CURRENT_DIR=$(printf '%s' "$REQ_DIR" | sed 's/ /%20/g')
+
+    dir_list=$(set +f; for d in "$RESOLVED_PATH"/*/; do [ -d "$d" ] && printf '%s\n' "$d" || true; done)
+    fil_list=$(set +f; for d in "$RESOLVED_PATH"/*;  do [ -f "$d" ] && printf '%s\n' "$d" || true; done)
+
+    item_list=$(
+    for item in "." ".." $dir_list $fil_list;
+    do
+        name=$(basename "$item")
+        case "$name" in .);; ..);; .*) continue ;; esac
+        enc_dir=$(printf '%s/%s' "$REQ_DIR" "$name" | tr -s '/' | sed 's/ /%20/g')
+
+        # Handle subdirectories
+        if [ -d "$item" ]; then
+            echo "
+            <div class='row dir-row'>
+                <span class='dir-name'>
+                    <a href='$PROGNAME?browser&dir=${enc_dir}' class='folder-link'>📁 ${name}/</a>
+                </span>
+                <form action='$PROGNAME?browser&mode=$mode&action=playlist-add' method='POST' style='display:inline;'>
+                    <button type='submit' class='btn-compact'>+</button>
+                    <input type='hidden' name='item' value=$item>
+                </form>
+            </div>"
+        fi
+        # Handle files: audio / non-audio
+        if [ -f "$item" ]; then
+            media_file="${MEDIA_URL}${item##"$MEDIA_ROOT"}"
+            case "$name" in
+            *.mp3|*.flac|*.m4a|*.ogg|*.opus|*.wav|*.mp4|*.mkv|*.webm|*webp)
+                echo "
+                <div class='row file-row'>
+                    <span class='file-name'><a href='${media_file}'>🎵${name}</a></span>
+                    <form action='$PROGNAME?browser&mode=$mode&action=playlist-add' method='POST' style='display:inline;'>
+                        <button type='submit' class='btn-compact'>+</button>
+                        <input type='hidden' name='item' value=$item>
+                    </form>
+                </div>"
+                ;;
+            *)
+                echo "
+                <div class='row file-row'>
+                    <span class='file-name'><a href='${media_file}'>📄${name}</a></span>
+                </div>"
+            esac
+        fi
+    done
+    )
+
+    HTML_BODY=$(html_body_open)
+    HTML_BODY="${HTML_BODY}${item_list}"
+    HTML_BODY="${HTML_BODY}$(html_body_close)"
+
+    # Handle the request
+    write_request "$HTML_BODY"
+}
+
+handle_stash()
+{
+    handle_generic "$MPVC stash ls" "$PROGNAME?browser&action=stash-apply"
+}
+
+handle_playlist()
+{
+    handle_generic "$MPVC fullplaylist" "$PROGNAME?browser&action=playlist-play"
+}
+
+handle_chapters()
+{
+    handle_generic "$MPVC chapter-list-full" "$PROGNAME?browser&action=chapter-play"
+}
+
+handle_equalizer()
+{
+    handle_generic "$MPVC-equalizer preset-list" "$PROGNAME?browser&action=equalizer-load"
+}
+
+handle_remote()
+{
+    filter=$(gup 'filter=[^&]*' "$QUERY_STRING")
+    # remote is special, as the user has to enter the query to pass to mpvc-fzf search before
+    handle_generic "$MPVC-fzf search $filter" "$PROGNAME?browser&action=playlist-add"
+}
+
+handle_generic()
+{
+    cmdlist="$1"
+    cmdaction="$2"
+
+    items=$(
+        $cmdlist |
+        while IFS= read -r item;
+        do
+            echo "<div class='row file-row'>
+                <span class='file-name'> 📝 ${item} </span>
+                <form action='${cmdaction}&mode=$mode' method='POST' style='display:inline;'>
+                    <button type='submit' class='btn-compact'>+</button>
+                    <input type='hidden' name='item' value='$item'>
+                </form>
+            </div>"
+        done
+    )
+
+    HTML_BODY=$(html_body_open)
+    HTML_BODY="${HTML_BODY}${items}"
+    HTML_BODY="${HTML_BODY}$(html_body_close)"
+
+    # Handle the request
+    write_request "$HTML_BODY"
+}
+
+mpvc_browser()
+{
+    mode=$(gup 'mode=[^&]*' "$QUERY_STRING" )
+    mode=${mode:-media}
+    action=$(gup 'action=[^&]*' "$QUERY_STRING")
+
+    handle_config
+    handle_action
+
+    case "$mode" in
+    media)      handle_listing ;;
+    stash)      handle_stash ;;
+    playlist)   handle_playlist ;;
+    chapters)   handle_chapters ;;
+    equalizer)  handle_equalizer ;;
+    remote)     handle_remote ;;
+    esac
+}
+
+mpvc_warn()  { echo "$@" >&2; }
+mpvc_strip() { sed '/\x1b\[7m/ { s|\x1b\[7m||; s| |+|; }; s|\x1b\[0m||;'; }
+mpvc_cmd()   { echo "Content-Type: text/plain"; echo "Connection: close"; echo; $MPVC "$@"; }
+mpvc_cmdl()  {
+               body=$($MPVC "$@"); bytes=$(printf '%s' "$body" | wc -c);
+               echo "Content-Type: text/plain"; echo "Connection: close"; echo "Content-Length: $bytes"
+               echo
+               echo "$body"
+}
+mpvc_plain() { echo "Content-Type: text/plain"; echo "Connection: close"; echo; echo "$@"; }
+mpvc_html()  { echo "Content-Type: text/html";  echo "Connection: close"; echo; echo "$@"; }
+mpvc_redir() { if [ -n "$1" -a "$1" != "null" ]; then mpvc_html '<meta http-equiv=refresh content="0.1;url='$1'" />'; fi; }
+mpvc_split() { for i in $@; do echo "$i"; done; }
+
+usage()
+{
+    cat <<EOF
+usage: $PROGNAME  args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
+ -h|help    : Show this help
+*tips: If unsure about where to begin, start with: $PROGNAME browser
+EOF
+    exit "${1:-0}"
+}
+
+main()
+{
+    MPVC=${MPVC:-$(command -v mpvc)}
+
+    QUERY_STRING="${QUERY_STRING:-$@}"
+    case "$QUERY_STRING" in
+        ''|help)                usage ;;
+
+        browser*)               mpvc_browser ;;
+
+        volmute)                mpvc_redir "$($MPVC-mpris volmute)" ;;
+        now-short)              mpvc_redir "$($MPVC-fzf now short)" ;;
+        lyrics)                 mpvc_redir "$($MPVC-fzf Lyrics '')" ;;
+        thumbnail)              mpvc_redir "$($MPVC-fzf thumbnail)" ;;
+        thumbnail64)            mpvc_redir "$($MPVC-fzf thumbnail64)" ;;
+        filename)               mpvc_redir "$($MPVC filename current full)" ;;
+        metadata)               mpvc_plain "$($MPVC metadata)" ;;
+        #related)               mpvc_plain "$($MPVC-fzf \"$($MPVC get media-title)\")" ;;
+
+        mpvc+status)            mpvc_cmdl status | mpvc_strip ;;
+        mpvc+playlist)          mpvc_cmdl playlist | mpvc_strip ;;
+        mpvc+chapter-list)      mpvc_cmdl chapter-list-nr | mpvc_strip ;;
+
+        mpvc-fzf[+\ ]*)         mpvc_plain "$(${MPVC%/*}/$(mpvc_split "$@"))" ;;
+        mpvc-equalizer[+\ ]*)   mpvc_plain "$(${MPVC%/*}/$(mpvc_split "$@"))" ;;
+        mpvc[+\ ]*)             mpvc_plain "$(${MPVC%/*}/$(mpvc_split "$@"))" ;;
+    esac
+}
+
+main "$@"

@@ -27,7 +27,7 @@ MPVC_CONFIG_DIR="${MPVC_CONFIG_DIR:-$HOME/.config/mpvc}"
 MANS="docs/man/man1/mpvc.1 docs/man/man1/mpvc-fzf.1 docs/man/man1/mpvc-tui.1"
 DOCS="README.md docs/config/mpv.conf docs/logbook.html"
 LICENSES="LICENSE.md"
-SCRIPT="mpvc extras/mpvc-tui extras/mpvc-fzf extras/mpvc-cut extras/mpvc-chapter extras/mpvc-mpris extras/mpvc-equalizer extras/mpvc-web extras/mpvc-autopilot extras/mpvc-installer"
+SCRIPT="mpvc extras/mpvc-tui extras/mpvc-fzf extras/mpvc-cut extras/mpvc-chapter extras/mpvc-mpris extras/mpvc-equalizer extras/mpvc-web extras/mpvc-web-browser extras/mpvc-autopilot extras/mpvc-installer"
 
 MPV_CONFIG="docs/config/mpv.conf"
 MPVC_CONFIG="docs/config/mpvc.conf docs/config/yt-dlp.conf docs/config/curlrc"

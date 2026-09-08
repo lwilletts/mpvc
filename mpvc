@@ -293,6 +293,11 @@ mpvc_ytquery_json() {
             url="$(echo "$url" | sed 's|://yewtu.be|://youtu.be|; s|/watch?v=|/|')"
             result=$(mpvc_curl_cache_json "$url")
             ;;
+        https://yewtu.be/playlist*)
+            url="$(echo "$url" | sed 's|://yewtu.be|://youtu.be|')"
+            url=$([ -n "${url##*/}" ] && echo "${url##*/}" || echo "$url")
+            result='{ "title":"'"${url}"'","request_id":0 }' # basenamed
+            ;;
         https://yewtu.be/*)
             url="$(echo "$url" | sed 's|://yewtu.be|://youtu.be|')"
             result=$(mpvc_curl_cache_json "$url")
@@ -1151,6 +1156,7 @@ main() {
             -T|--time|time)                  shift; mpvc_set_time "absolute" "${1:-}" ;;
             -v|--vol|vol)                    shift; mpvc_set_volume "${1:-}"  ;;
             -V|--volume|volume)              shift; mpvc_set_volume "${1:-}"  ;;
+               --cycle-volume|cycle-volume)  shift; mpvc_cyclev volume  0 10 20 30 35 40 45 50 55 ;;
             -x|--speed|speed)                shift; mpvc_add "speed" "${1:-}"  ;;
             -X|--speedval)                   shift; mpvc_set "speed" "${1:-}"  ;;
             -j|--track|track)                shift; mpvc_set_track "${1:-}" relative  ;;

@@ -52,7 +52,8 @@ For more on the features of this fork check: [Git](#git) install, [LogBook](#log
 - [mpvc](../../blob/master/mpvc): provides the core CLI commands to control mpv
 - [extras/mpvc-tui](../../blob/master/extras/mpvc-tui): provides a console TUI, using mpvc underneath
 - [extras/mpvc-fzf](../../blob/master/extras/mpvc-fzf): provides FZF integration to mpvc.
-- [extras/mpvc-web](../../blob/master/extras/mpvc-web): a hack to remotely control mpvc from web (handy on mobile)
+- [extras/mpvc-web](../../blob/master/extras/mpvc-web): web player to remotely control mpvc (a hack)
+- [extras/mpvc-web-browser](../../blob/master/extras/mpvc-web-browser): mpvc-web companion to browse media library (a hack)
 - [extras/mpvc-mpris](../../blob/master/extras/mpvc-mpris): speaks MPRIS to control mpv player through key-bindings.
 - [extras/mpvc-equalizer](../../blob/master/extras/mpvc-equalizer): provides a basic mpv equalizer for the CLI.
 - [extras/mpvc-autopilot](../../blob/master/extras/mpvc-autopilot): automatic mpv start/stop based on presence.
