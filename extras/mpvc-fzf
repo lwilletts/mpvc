@@ -601,6 +601,11 @@ mpvcfzf_feeds_search()
     jq -r "$jq" "$file"
 }
 
+mpvcfzf_feed_list()
+{
+    if [ -z "${1:-}" ]; then ls -ltr "$MPVC_CONFIG_DIR/feeds/" | tail -n +2; else cat "$MPVC_CONFIG_DIR/feeds//$1"; fi
+}
+
 mpvcfzf_feed_lofi()
 {
     for url in "${1:-https://lofigirl.com/wp-content/uploads/2023/06/}" "${1:-https://archive.org/download/lofigirl-youtube/mp3/}";
@@ -719,6 +724,8 @@ usage: $PROGNAME opts # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
   -v|version    : Return the $PROGNAME version.
 
     (--)now     : Return a shareable URL to the "now listening" playlist
+    (--)feeds   : Search & play feeds channels
+
     (--)lofi    : Search & play Lo-Fi channels
     (--)somafm  : Search & play SomaFM channels
     (--)rapi    : Search & play Radio-Browser API channels
@@ -790,6 +797,8 @@ main()
         -v|version)         shift; mpvcfzf_version; return ;;
 
         --now|now)          shift; mpvcfzf_now "${1:-}"; return ;;
+
+        --feed|feed)        shift; mpvcfzf_feed_list "${1:-}"; return ;;
         --lofi|lofi)        shift; mpvcfzf_feed_lofi "${1:-}"; return ;;
         --somafm|somafm)    shift; mpvcfzf_feed_somafm "${1:-}"; return ;;
         --rapi|rapi)        shift; mpvcfzf_feed_radioapi "${1:-}"; return ;;
