@@ -119,13 +119,12 @@ function filterFiles()
 {
     let query = document.getElementById('libSearch').value.toLowerCase();
     let files = document.querySelectorAll('.file-row');
-    let dirs = document.querySelectorAll('.dir-row');
-
     files.forEach(row => {
         let fileName = row.querySelector('.file-name').innerText.toLowerCase();
         row.style.display = fileName.includes(query) ? 'flex' : 'none' ;
     });
 
+    let dirs = document.querySelectorAll('.dir-row');
     dirs.forEach(row => {
         let fileName = row.querySelector('.dir-name').innerText.toLowerCase();
         row.style.display = fileName.includes(query) ? 'flex' : 'none' ;
@@ -263,15 +262,12 @@ handle_action()
 
     # Fast-path exit for asynchronous background JavaScript requests
     if [ "${HTTP_X_REQUESTED_WITH:-}" = "XMLHttpRequest" ]; then
-        printf "Status: 200 OK\r\n"
-        printf "Content-Type: text/plain\r\n"
-        printf "Connection: close\r\n"
-        printf "Content-Length: 2\r\n\r\nOK"
+        write_request "OK"
         exit 0
     fi
 }
 
-# Generate HTML media listings
+# Generate HTML listings
 handle_listing()
 {
     ENC_CURRENT_DIR=$(printf '%s' "$REQ_DIR" | sed 's/ /%20/g')
@@ -284,8 +280,22 @@ handle_listing()
     do
         name=$(basename "${item}")
         case "$name" in .);; ..);; .*) continue ;; esac
+        enc_dir=$(printf '%s/%s' "$REQ_DIR" "$name" | tr -s '/' | sed 's/ /%20/g')
 
-        # Handle listing dirs/files: audio / non-audio
+        # Handle subdirectories
+        if [ -d "$item" ]; then
+            echo "
+            <div class='row dir-row'>
+                <span class='dir-name'>
+                    <a href='$PROGNAME?browser&dir=${enc_dir}' class='folder-link'>📁 ${name}/</a>
+                </span>
+                <form action='$PROGNAME?browser&mode=$mode&action=playlist-add' method='POST' style='display:inline;'>
+                    <button type='submit' class='btn-compact'>+</button>
+                    <input type='hidden' name='item' value=$item>
+                </form>
+            </div>"
+        fi
+        # Handle files: audio / non-audio
         if [ -f "$item" ]; then
             media_file="${MEDIA_URL}${item##"$MEDIA_ROOT"}"
             case "$name" in
@@ -305,18 +315,6 @@ handle_listing()
                     <span class='file-name'><a href='${media_file}'>📄${name}</a></span>
                 </div>"
             esac
-        elif [ -d "$item" ]; then
-            enc_dir=$(printf '%s/%s' "$REQ_DIR" "$name" | tr -s '/' | sed 's/ /%20/g')
-            echo "
-            <div class='row dir-row'>
-                <span class='dir-name'>
-                    <a href='$PROGNAME?browser&dir=${enc_dir}' class='folder-link'>📁 ${name}/</a>
-                </span>
-                <form action='$PROGNAME?browser&mode=$mode&action=playlist-add' method='POST' style='display:inline;'>
-                    <button type='submit' class='btn-compact'>+</button>
-                    <input type='hidden' name='item' value=$item>
-                </form>
-            </div>"
         fi
     done
     )
