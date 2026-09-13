@@ -713,7 +713,7 @@ mpvc_web_index()
         <details open>
         <summary>
             <a href="#mpvc-web-status" name="mpvc-web-status">Status</a>
-            <a href="$MPVC_WEB_CGI_CMD?metadata">#me</a>
+            <a href="$MPVC_WEB_CGI_CMD?mpvc+metadata">#me</a>
             <a href="$MPVC_WEB_CGI_CMD?lyrics">#lyric</a>
             <a href="$MPVC_WEB_CGI_CMD?filename">#url</a>
         </summary>
@@ -755,9 +755,9 @@ mpvc_web_index()
         <details $(if [ -n "$MPVC_WEB_THUMBNAIL_ENABLE" ]; then echo open; fi)>
         <summary>
             <a href="#mpvc-web-thumbnail" name="mpvc-web-thumbnail">Thumbnail</a>
-            <a href="$MPVC_WEB_CGI_CMD?thumbnail">#url</a>
+            <a href="$MPVC_WEB_CGI_CMD?mpvc-fzf+thumbnail">#url</a>
             <a href="$MPVC_WEB_CGI_CMD?thumbnail64">#img</a>
-            <a href="$MPVC_WEB_CGI_CMD?related">#rel</a>
+            <a href="$MPVC_WEB_CGI_CMD?mpvc-fzf+related">#rel</a>
         </summary>
         <hr>
             <iframe src="$MPVC_WEB_CGI_CMD?thumbnail64" alt="thumbnail" title="thumbnail" style="$MPVC_WEB_THUMBNAIL_STYLE" defer ></iframe>
