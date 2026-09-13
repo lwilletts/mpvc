@@ -93,15 +93,15 @@ html_body_open()
     <select id='libMode' name=mode class='flex-fixed' onchange=this.form.submit() title='Mode (ProTip: accesskey=m)' accesskey=m>
     <option value=>          Mode
     <option value=media>     Media
+    <option value=yewtube>   YewtuBe
     <option value=stash>     Stash
+    <option value=feed>      Feed
 
     <option value=playlist>  Playlist
     <option value=chapters>  Chapters
     <option value=equalizer> Equalizer
 
     <option value=video>     Video
-    <option value=feeds>     Feed
-    <option value=remote>    Remote
     </select>
 
     <input type='text' id='libSearch' name='filter' class='flex-grow' oninput='filterFiles()' onkeydown='filterKeyDown(event)' placeholder='🔍 Type to filter items ...' autocomplete='off' title='Search (ProTip: accesskey=s)' accesskey=s>
@@ -347,6 +347,17 @@ handle_equalizer()
     handle_generic "$MPVC-equalizer preset-list" "$PROGNAME?browser&action=equalizer-load"
 }
 
+handle_feed()
+{
+    handle_generic "$MPVC-fzf feed" "$PROGNAME?browser&action=playlist-add"
+}
+
+handle_yewtube()
+{
+    filter=$(gup 'filter=[^&]*' "$QUERY_STRING")
+    handle_generic "$MPVC-fzf search $filter" "$PROGNAME?browser&action=playlist-add"
+}
+
 handle_remote()
 {
     filter=$(gup 'filter=[^&]*' "$QUERY_STRING")
@@ -391,10 +402,13 @@ mpvc_browser()
 
     case "$mode" in
     media)      handle_listing ;;
+    yewtube)    handle_yewtube ;;
     stash)      handle_stash ;;
     playlist)   handle_playlist ;;
     chapters)   handle_chapters ;;
     equalizer)  handle_equalizer ;;
+
+    feed)       handle_feed ;;
     remote)     handle_remote ;;
     esac
 }
