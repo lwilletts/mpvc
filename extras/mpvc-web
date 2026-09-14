@@ -618,10 +618,10 @@ mpvc_web_index()
         <span style="float:right">
             <a class=btn href="." title="Reload" aria-label="Reload">🔄</a>
 
-            <a class='btn' onclick="mpvcHttpGet('$PROGNAME?mpvc+next')" title="Next track">⏭️</a>
-            <a class='btn' onclick="mpvcHttpGet('$PROGNAME?mpvc+cnext')" title="Next chapter">⏬</a>
-            <a class='btn' onclick="mpvcHttpGet('$PROGNAME?mpvc+toggle')" title="Toggle playback (ProTip: accesskey=t)" accesskey=t>⏯️</a>
-            <a class='btn' onclick="mpvcHttpGet('$PROGNAME?mpvc+cycle-volume')" title="Cycle Volume">🔊</a>
+            <a class='btn' onclick="mpvcHttpGet('$PROGNAME-browser?mpvc+next')" title="Next track">⏭️</a>
+            <a class='btn' onclick="mpvcHttpGet('$PROGNAME-browser?mpvc+cnext')" title="Next chapter">⏬</a>
+            <a class='btn' onclick="mpvcHttpGet('$PROGNAME-browser?mpvc+toggle')" title="Toggle playback (ProTip: accesskey=t)" accesskey=t>⏯️</a>
+            <a class='btn' onclick="mpvcHttpGet('$PROGNAME-browser?mpvc+cycle-volume')" title="Cycle Volume">🔊</a>
             <span class="theme-toggle-container">
                 <label for="scheme-auto" class="theme-lbl lbl-auto" title="System Theme">🌓</label>
                 <label for="scheme-light" class="theme-lbl lbl-light" title="Light Theme">☀️</label>
