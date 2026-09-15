@@ -21,6 +21,8 @@ DOCDIR="${DOCDIR:-$PREFIX/docs}"
 MANDIR="${MANDIR:-$PREFIX/man/man1}"
 LICDIR="${LICDIR:-$PREFIX/licenses}"
 
+XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
+
 MPV_CONFIG_DIR="${MPV_CONFIG_DIR:-$HOME/.config/mpv}"
 MPVC_CONFIG_DIR="${MPVC_CONFIG_DIR:-$HOME/.config/mpvc}"
 
@@ -103,7 +105,6 @@ mpvc_fetch()
         file="$BINDIR/${script##*/}"
         url="$PROGURL/raw/master/$script"
         echo "Fetch $file"
-        #if [ -f "$file" ]; then echo "$PROGNAME: $file exists, overwriting."; fi
         if curl -fsSL -o "$file" "$url"; then
             chmod u+x "$file"
         fi
@@ -115,7 +116,10 @@ mpvc_man()
     mkdir -p "$MANDIR"
     for man in ${MANS};
     do
-        install -Dvm644 "$(pwd)/$man" "$MANDIR";
+        file="$MANDIR/${man##*/}"
+        url="$PROGURL/raw/master/$man"
+        echo "Fetch $file"
+        curl -fsSL -o "$file" "$url"
     done
 }
 
@@ -226,6 +230,12 @@ mpvc_quickstart()
         return 1
     fi
 
+    echo "# Quickstart: Fetching/installing manpages..."
+    if ! "$0" man-user; then
+        echo "❌ Quickstart failed: 'man-user' step encountered an error."
+        return 1
+    fi
+
     echo "# Quickstart: Configuring user directories..."
     if ! "$0" config-user; then
         echo "❌ Quickstart failed: 'config-user' step encountered an error."
@@ -285,9 +295,15 @@ usage: $PROGNAME args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
 
   check-update   : Check for updates
   check-reqs     : Check for required packages
-  config         : Fetch mpv config
-  config-user    : Fetch mpv config to BINDIR=$HOME/bin
-  config-sys     : Fetch mpv config to BINDIR=$PREFIX/bin
+
+  config         : Fetch mpvc config
+  config-user    : Fetch mpvc config to BINDIR=$HOME/bin
+  config-sys     : Fetch mpvc config to BINDIR=$PREFIX/bin
+
+  man            : Fetch mpvc manpages
+  man-user       : Fetch mpvc manpages to MANDIR=$XDG_DATA_HOME
+  man-sys        : Fetch mpvc manpages to MANDIR=$MANDIR
+
   fetch-user     : Fetch to BINDIR=$HOME/bin
   link-user      : Symlink to BINDIR=$HOME/bin
   install        : Install to BINDIR=$PREFIX/bin
@@ -325,6 +341,9 @@ main()
     install)         shift; mpvc_install "$@";;
     uninstall)       shift; mpvc_uninstall "$@";;
     config)          shift; mpvc_config "$@";;
+
+    man-user)        shift; MANDIR="$XDG_DATA_HOME/man/man1" $SHELL "$0" man;;
+    man-sys)         shift; MANDIR=${MANDIR} $SHELL "$0" man;;
 
     config-user)     shift; PREFIX=$HOME $SHELL "$0" config;;
     config-sys)      shift; PREFIX=/usr/local $SHELL "$0" config;;
