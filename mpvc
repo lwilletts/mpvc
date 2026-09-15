@@ -237,9 +237,10 @@ mpvc_config()
     # if not present, create config files
     if [ ! -e "$MPVC_CURL_CACHE" ]; then true > "$MPVC_CURL_CACHE"; fi
     # if present load user config
-    if [ -r "$MPVC_CONFIG" -a -O "$MPVC_CONFIG" ]; then
+    if [ -r "$MPVC_CONFIG" ] && [ -O "$MPVC_CONFIG" ]; then
         chmod "640" "$MPVC_CONFIG";
         mpvc_check_user_perms "$MPVC_CONFIG" "640";
+        # shellcheck source=docs/config/mpvc.conf
         . "$MPVC_CONFIG"
     else
         warn "# $PROGNAME Warning: ${MPVC_CONFIG##"$HOME/"} not found, see docs/mpvc.conf for defaults"
@@ -363,7 +364,7 @@ mpvc_cmdr_() {
 }
 
 mpvc_cmdr()  {
-    if [ -n "${1:-}" -a "${1:-}" = "run" ]; then return; fi # disable mpv run command
+    if [ -n "${1:-}" ] && [ "${1:-}" = "run" ]; then return; fi # disable mpv run command
     equiet echo "$(mpvc_cmdr_ "$@")" | mpvc_sockrepl;
 }
 mpvc_ecmdr() {
@@ -523,17 +524,7 @@ mpvc_get_playlist() {
 
 # saves playlist to file but with no path checking. we live dangerously
 mpvc_save_playlist() {
-    output="${1:-}"
-    if [ -z "$output" ]; then
-        output="/dev/stdout"
-    else
-        if [ -e "$output" ]; then
-            echo "Playlist $output exists! Overwrite? [Y/n] "; read -r key
-            if [ "$key" != "Y" ]; then return; fi
-        fi
-        echo "Adding files to $output ..."
-    fi
-    mpvc_get_playlist_once > "$output"
+    mpvc_get_playlist_once
     QUIETFLAG="true"
 }
 
@@ -699,7 +690,7 @@ mpvc_play_next() {
     # add track to the playlist & move to next position
     mpvc_appendtracks "$@"
 
-    if [ $(mpvc_get playlist-count) -eq 1 ]; then return; fi
+    if [ "$(mpvc_get playlist-count)" = 1 ]; then return; fi
 
     lid_last="$(( $(mpvc_get playlist-count) - 1 ))"
     lid_next="$(( $(mpvc_get playlist-pos) + 1 ))"
