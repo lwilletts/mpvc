@@ -869,12 +869,6 @@ mpvc_web_setup()
             echo "# $PROGNAME Setup extras/url features (MPVC_WEB_EXTRAS_URL=$MPVC_WEB_EXTRAS_URL is set)"
         fi
 
-        if [ -n "${MPVC_WEB_DEV:-}" ]; then
-            echo "# $PROGNAME Setup development/cli features (MPVC_WEB_DEV=$MPVC_WEB_DEV is set)"
-        else
-            echo "# $PROGNAME Setup development/cli features (MPVC_WEB_DEV=${MPVC_WEB_DEV:-} is not set)"
-        fi
-
         # setup http requested
         echo "# $PROGNAME Setup http://$MPVC_WEB_HOST:$MPVC_WEB_PORT"
 
@@ -900,22 +894,6 @@ mpvc_web()
         '
         function mpvcsys(cmd) { system(mpvcbin" "cmd); }
         function mpvc(cmd)    { mpvcsys("mpvc -q "cmd); }
-        function httpreq(r)
-        {
-            sub("HTTP.*$", "", r);
-            sub("^.*GET \\/\\?cli=(mpvc-)", "mpvc-", r);
-            sub("^.*GET \\/\\?cli=(mpvc)\\+", "mpvc ", r);
-            gsub("^("mpvcbin") [^a-zA-Z0-9 ]*", "", r);
-            gsub("\\+", " ", r);
-            gsub("%22", "\"", r);
-            gsub("%2B", "+", r);
-            gsub("%23", "#", r);
-            gsub("%2F", "/", r);
-            gsub("%3A", ":", r);
-            gsub("%3D", "=", r);
-            gsub("%3F", "?", r);
-            return r
-        }
 
         BEGIN {
             system("env")
@@ -930,22 +908,16 @@ mpvc_web()
 
         /GET \/\?cmd=mpvc%20.* / {
             cmd="";
-            if (match($0, /GET \/\?cmd=mpvc%20[-a-z]+/)) {
+
+            if (match($0, /GET \/\?cmd=mpvc%20[-a-z]+/))
+            {
                 n=length("GET /?cmd=mpvc%20")
                 cmd=substr($0, RSTART+n, RLENGTH-n)
             }
+
             if (cmd in allowCmdList)
             {
                 mpvc(cmd)
-            }
-        }
-
-        /GET \/\?cli=mpvc/    {
-            r=httpreq($0)
-            if (ENVIRON["MPVC_WEB_DEV"] && match(r, "^mpvc"))
-            {
-                #print(r)
-                mpvcsys(r) # XXX
             }
         }
 
@@ -983,7 +955,6 @@ main()
         h) usage ;;
         c) MPVC_WEB_CMD="$OPTARG"; ;;
         x) MPVC_WEB_EXTRAS_URL="${MPVC_WEB_EXTRAS_URL} $OPTARG"; ;;
-        d) MPVC_WEB_DEV="$OPTARG"; ;;
         b) MPVC_WEB_HOST="$OPTARG" ;;
         p) MPVC_WEB_PORT="$OPTARG" ;;
         P) MPVC_WEB_SSL_PORT="$OPTARG" ;;
