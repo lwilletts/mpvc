@@ -369,6 +369,21 @@ usage: mpvc-fzf opts # @version v1.8 (c) gmt4 https://github.com/gmt4/mpvc
 *tips: If unsure about where to begin, start: mpvc-fzf -p 'kupla mirage'
 ```
 
+### mpvc-web
+
+```console
+usage: mpvc-web -[ha:b:c:d:p:P:r:R:s:S:t:T:x:] args # @version v1.8 (c) gmt4 https://github.com/gmt4/mpvc
+  -c : Set mpvc-web HTTP server command: [start,stop] (*required)
+  -b : Set mpvc-web HTTP server bind address (default localhost)
+  -p : Set mpvc-web HTTP server port (default 8888)
+  -r : Set mpvc-web HTTP server root dir (default /tmp/mpvc-web/root)
+  -R : Set mpvc-web HTTP server HTML refresh (default 240)
+  -s : Set mpvc-web HTTP server SSL/TLS (default )
+  -a : Set mpvc-web HTTP server to include ytdl-archive/ (default )
+
+*tips: If unsure where to begin, run: mpvc-web -p 8888 -c start # serves @ http://localhost:8888
+```
+
 ### mpvc-installer
 
 ```console
