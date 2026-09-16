@@ -33,13 +33,13 @@ OPTIONS
 * `-p` <port>
   Set the mpvc-web HTTP server port. Defaults to `8888`.
 
-* `-r` <dir>
+* `-r` <directory>
   Set the mpvc-web HTTP server root directory path. Defaults to `/tmp/mpvc-web/root`.
 
 * `-R` <seconds>
   Set the mpvc-web HTTP server HTML auto-refresh interval in seconds. Defaults to `240`.
 
-* `-s` <tls>
+* `-s` <https>
   Set the mpvc-web HTTP server SSL/TLS configurations or certificate paths. Defaults to empty.
 
 * `-a` <archive>
