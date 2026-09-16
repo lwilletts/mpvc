@@ -24,35 +24,29 @@ over a network interface using standard HTTP methods or a mobile-friendly browse
 OPTIONS
 =======
 
-* `-H`, `--host=ADDRESS`
-  Bind the web server to the specified network interface ADDRESS. Defaults to 127.0.0.1.
+* `-c` <start|stop|status>
+  Set the mpvc-web HTTP server command. This option is **required**. Accepted values are `start` to daemonize the server, `stop` to terminate it, `status` to check is running.
 
-* `-P`, `--port=PORT`
-  Listen for incoming HTTP connections on the specified network PORT. Defaults to 8080.
+* `-b` <address>
+  Set the mpvc-web HTTP server bind address. Defaults to `localhost`.
 
-* `-s`, `--socket=PATH`
-  Path to the mpv IPC socket file. Overrides default environment fallback configurations.
+* `-p` <port>
+  Set the mpvc-web HTTP server port. Defaults to `8888`.
 
-* `-v`, `--verbose`
-  Enable verbose logging output to stdout for auditing incoming API requests.
+* `-r` <dir>
+  Set the mpvc-web HTTP server root directory path. Defaults to `/tmp/mpvc-web/root`.
+
+* `-R` <seconds>
+  Set the mpvc-web HTTP server HTML auto-refresh interval in seconds. Defaults to `240`.
+
+* `-s` <tls>
+  Set the mpvc-web HTTP server SSL/TLS configurations or certificate paths. Defaults to empty.
+
+* `-a` <archive>
+  Set the mpvc-web HTTP server to include a `ytdl-archive/` repository or path tracking download history. Defaults to empty.
 
 * `-h`, `--help`
   Display the help synopsis and exit.
-
-SUBCOMMANDS
-===========
-
-The web server exposes endpoints mimicking core `mpvc` commands. These can be executed
-via local tool parameters if the script supports immediate runtime hooks:
-
-* `start`
-  Daemonize and start the web server in the background.
-
-* `stop`
-  Locate and terminate the running background instance of the web server.
-
-* `status`
-  Query whether the web server process is actively listening on its designated interface.
 
 EXAMPLES
 ========
@@ -79,7 +73,10 @@ FILES
 SEE ALSO
 ========
 
-mpvc(1), mpvc-fzf(1), mpvc-tui(1), mpv(1)
+* `mpvc(1)`{.manual link="mpvc.html"}
+* `mpvc-fzf(1)`{.manual link="mpvc-fzf.html"}
+* `mpvc-tui(1)`{.manual link="mpvc-tui.html"}
+* `mpv(1)`{.manual link="mpv.html"}
 
 AUTHOR
 ======

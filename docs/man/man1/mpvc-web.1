@@ -15,34 +15,41 @@ instance remotely over a network interface using standard HTTP methods
 or a mobile-friendly browser interface.
 .SH OPTIONS
 .IP \[bu] 2
-\f[C]-H\f[R], \f[C]--host=ADDRESS\f[R] Bind the web server to the
-specified network interface ADDRESS.
-Defaults to 127.0.0.1.
+\f[C]-c\f[R] <start|stop|status> Set the mpvc-web HTTP server command.
+This option is \f[B]required\f[R].
+Accepted values are \f[C]start\f[R] to daemonize the server,
+\f[C]stop\f[R] to terminate it, \f[C]status\f[R] to check is running.
 .IP \[bu] 2
-\f[C]-P\f[R], \f[C]--port=PORT\f[R] Listen for incoming HTTP connections
-on the specified network PORT.
-Defaults to 8080.
+\f[C]-b\f[R]
+.RS 2
+.PP
+Set the mpvc-web HTTP server bind address.
+Defaults to \f[C]localhost\f[R].
+.RE
 .IP \[bu] 2
-\f[C]-s\f[R], \f[C]--socket=PATH\f[R] Path to the mpv IPC socket file.
-Overrides default environment fallback configurations.
+\f[C]-p\f[R] Set the mpvc-web HTTP server port.
+Defaults to \f[C]8888\f[R].
 .IP \[bu] 2
-\f[C]-v\f[R], \f[C]--verbose\f[R] Enable verbose logging output to
-stdout for auditing incoming API requests.
+\f[C]-r\f[R]
+.RS 2
+.PP
+Set the mpvc-web HTTP server root directory path.
+Defaults to \f[C]/tmp/mpvc-web/root\f[R].
+.RE
+.IP \[bu] 2
+\f[C]-R\f[R] Set the mpvc-web HTTP server HTML auto-refresh interval in
+seconds.
+Defaults to \f[C]240\f[R].
+.IP \[bu] 2
+\f[C]-s\f[R] Set the mpvc-web HTTP server SSL/TLS configurations or
+certificate paths.
+Defaults to empty.
+.IP \[bu] 2
+\f[C]-a\f[R] Set the mpvc-web HTTP server to include a
+\f[C]ytdl-archive/\f[R] repository or path tracking download history.
+Defaults to empty.
 .IP \[bu] 2
 \f[C]-h\f[R], \f[C]--help\f[R] Display the help synopsis and exit.
-.SH SUBCOMMANDS
-.PP
-The web server exposes endpoints mimicking core \f[C]mpvc\f[R] commands.
-These can be executed via local tool parameters if the script supports
-immediate runtime hooks:
-.IP \[bu] 2
-\f[C]start\f[R] Daemonize and start the web server in the background.
-.IP \[bu] 2
-\f[C]stop\f[R] Locate and terminate the running background instance of
-the web server.
-.IP \[bu] 2
-\f[C]status\f[R] Query whether the web server process is actively
-listening on its designated interface.
 .SH EXAMPLES
 .PP
 Start the remote controller on all local interfaces using port 8888:
@@ -64,8 +71,14 @@ $ mpvc-web --host 0.0.0.0 --port 8888
 \[ti]/.config/mpvc/mpvc.conf
 mpvc configuration file.
 .SH SEE ALSO
-.PP
-mpvc(1), mpvc-fzf(1), mpvc-tui(1), mpv(1)
+.IP \[bu] 2
+\f[C]mpvc(1)\f[R]
+.IP \[bu] 2
+\f[C]mpvc-fzf(1)\f[R]
+.IP \[bu] 2
+\f[C]mpvc-tui(1)\f[R]
+.IP \[bu] 2
+\f[C]mpv(1)\f[R]
 .SH AUTHOR
 .PP
 Manual written by gmt4.

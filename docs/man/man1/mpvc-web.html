@@ -27,18 +27,18 @@
 <p><strong>mpvc-web</strong> is a lightweight web interface and HTTP API wrapper for <code>mpvc</code>. It allows users to control an active local <code>mpv</code> media player instance remotely over a network interface using standard HTTP methods or a mobile-friendly browser interface.</p>
 <h1 id="options">OPTIONS</h1>
 <ul>
-<li><p><code>-H</code>, <code>--host=ADDRESS</code> Bind the web server to the specified network interface ADDRESS. Defaults to 127.0.0.1.</p></li>
-<li><p><code>-P</code>, <code>--port=PORT</code> Listen for incoming HTTP connections on the specified network PORT. Defaults to 8080.</p></li>
-<li><p><code>-s</code>, <code>--socket=PATH</code> Path to the mpv IPC socket file. Overrides default environment fallback configurations.</p></li>
-<li><p><code>-v</code>, <code>--verbose</code> Enable verbose logging output to stdout for auditing incoming API requests.</p></li>
+<li><p><code>-c</code> &lt;start|stop|status&gt; Set the mpvc-web HTTP server command. This option is <strong>required</strong>. Accepted values are <code>start</code> to daemonize the server, <code>stop</code> to terminate it, <code>status</code> to check is running.</p></li>
+<li><p><code>-b</code></p>
+<address>
+<p>Set the mpvc-web HTTP server bind address. Defaults to <code>localhost</code>.</p></li>
+<li><p><code>-p</code> <port> Set the mpvc-web HTTP server port. Defaults to <code>8888</code>.</p></li>
+<li><p><code>-r</code></p>
+<dir>
+<p>Set the mpvc-web HTTP server root directory path. Defaults to <code>/tmp/mpvc-web/root</code>.</p></li>
+<li><p><code>-R</code> <seconds> Set the mpvc-web HTTP server HTML auto-refresh interval in seconds. Defaults to <code>240</code>.</p></li>
+<li><p><code>-s</code> <tls> Set the mpvc-web HTTP server SSL/TLS configurations or certificate paths. Defaults to empty.</p></li>
+<li><p><code>-a</code> <archive> Set the mpvc-web HTTP server to include a <code>ytdl-archive/</code> repository or path tracking download history. Defaults to empty.</p></li>
 <li><p><code>-h</code>, <code>--help</code> Display the help synopsis and exit.</p></li>
-</ul>
-<h1 id="subcommands">SUBCOMMANDS</h1>
-<p>The web server exposes endpoints mimicking core <code>mpvc</code> commands. These can be executed via local tool parameters if the script supports immediate runtime hooks:</p>
-<ul>
-<li><p><code>start</code> Daemonize and start the web server in the background.</p></li>
-<li><p><code>stop</code> Locate and terminate the running background instance of the web server.</p></li>
-<li><p><code>status</code> Query whether the web server process is actively listening on its designated interface.</p></li>
 </ul>
 <h1 id="examples">EXAMPLES</h1>
 <p>Start the remote controller on all local interfaces using port 8888:</p>
@@ -55,7 +55,12 @@
 </dd>
 </dl>
 <h1 id="see-also">SEE ALSO</h1>
-<p>mpvc(1), mpvc-fzf(1), mpvc-tui(1), mpv(1)</p>
+<ul>
+<li><code class="manual" data-link="mpvc.html">mpvc(1)</code></li>
+<li><code class="manual" data-link="mpvc-fzf.html">mpvc-fzf(1)</code></li>
+<li><code class="manual" data-link="mpvc-tui.html">mpvc-tui(1)</code></li>
+<li><code class="manual" data-link="mpv.html">mpv(1)</code></li>
+</ul>
 <h1 id="author">AUTHOR</h1>
 <p>Manual written by gmt4. See https://github.com/gmt4/mpvc for more information.</p>
 <h1 id="reporting-bugs">REPORTING BUGS</h1>
