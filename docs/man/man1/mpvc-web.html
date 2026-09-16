@@ -40,14 +40,20 @@
 <li><p><code>stop</code> Locate and terminate the running background instance of the web server.</p></li>
 <li><p><code>status</code> Query whether the web server process is actively listening on its designated interface.</p></li>
 </ul>
+<h1 id="examples">EXAMPLES</h1>
+<p>Start the remote controller on all local interfaces using port 8888:</p>
+<pre><code>$ mpvc-web --host 0.0.0.0 --port 8888</code></pre>
 <h1 id="environment">ENVIRONMENT</h1>
 <ul>
 <li><p><code>MPVC_SOCKET</code> The default path to the mpv IPC socket if the <code>--socket</code> flag is omitted.</p></li>
 <li><p><code>MPVC_WEB_PORT</code> Defines a default network port fallback if <code>--port</code> is not explicitly set.</p></li>
 </ul>
-<h1 id="examples">EXAMPLES</h1>
-<p>Start the remote controller on all local interfaces using port 9000:</p>
-<pre><code>$ mpvc-web --host 0.0.0.0 --port 9000</code></pre>
+<h1 id="files">FILES</h1>
+<dl>
+<dt>~/.config/mpvc/mpvc.conf</dt>
+<dd>mpvc configuration file.
+</dd>
+</dl>
 <h1 id="see-also">SEE ALSO</h1>
 <p>mpvc(1), mpvc-fzf(1), mpvc-tui(1), mpv(1)</p>
 <h1 id="author">AUTHOR</h1>

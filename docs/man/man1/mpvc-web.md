@@ -54,6 +54,13 @@ via local tool parameters if the script supports immediate runtime hooks:
 * `status`
   Query whether the web server process is actively listening on its designated interface.
 
+EXAMPLES
+========
+
+Start the remote controller on all local interfaces using port 8888:
+
+    $ mpvc-web --host 0.0.0.0 --port 8888
+
 ENVIRONMENT
 ===========
 
@@ -63,12 +70,11 @@ ENVIRONMENT
 * `MPVC_WEB_PORT`
   Defines a default network port fallback if `--port` is not explicitly set.
 
-EXAMPLES
-========
+FILES
+=====
 
-Start the remote controller on all local interfaces using port 8888:
-
-    $ mpvc-web --host 0.0.0.0 --port 8888
+~/.config/mpvc/mpvc.conf
+: mpvc configuration file.
 
 SEE ALSO
 ========
