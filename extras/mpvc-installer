@@ -69,29 +69,25 @@ mpvc_config()
         chmod 644 "$file"
     done
 
-    for bin in "yt-dlp"
+    for bin in "yt-dlp" "deno"
     do
         file="$BINDIR/$bin"
         echo "Fetch $file"
         if [ -f "$file" ]; then
             echo "$PROGNAME: $file exists. Not overwriting."
         else
-            if curl -fsSL -o "$file" "https://github.com/$bin/$bin/releases/latest/download/$bin"; then
-                chmod a+rx "$file"
-            fi
-        fi
-    done
-
-    for bin in "deno"
-    do
-        file="$BINDIR/$bin"
-        echo "Fetch $file"
-        if [ -f "$file" ]; then
-            echo "$PROGNAME: $file exists. Not overwriting."
-        else
-            if curl -m 20 -fsSL -o - "https://github.com/denoland/$bin/releases/latest/download/$bin-$(uname -m)-unknown-linux-gnu.zip" | gunzip > "$file"; then
-                chmod a+rx "$file"
-            fi
+            case "$bin" in
+            yt-dlp)
+                if curl -fsSL -o "$file" "https://github.com/$bin/$bin/releases/latest/download/$bin"; then
+                    chmod a+rx "$file"
+                fi
+                ;;
+            deno)
+                if curl -m 20 -fsSL -o - "https://github.com/denoland/$bin/releases/latest/download/$bin-$(uname -m)-unknown-linux-gnu.zip" | gunzip > "$file"; then
+                    chmod a+rx "$file"
+                fi
+                ;;
+            esac
         fi
     done
 }
