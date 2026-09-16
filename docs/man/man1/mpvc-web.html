@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>mpvc-web(1)</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">mpvc-web(1)</h1>
+<p class="date">September, 2026</p>
+</header>
+<h1 id="name">NAME</h1>
+<p>mpvc-web – Web application interface for mpvc control</p>
+<h1 id="synopsis">SYNOPSIS</h1>
+<p>mpvc-web [option]</p>
+<h1 id="description">DESCRIPTION</h1>
+<p><strong>mpvc-web</strong> is a lightweight web interface and HTTP API wrapper for <code>mpvc</code>. It allows users to control an active local <code>mpv</code> media player instance remotely over a network interface using standard HTTP methods or a mobile-friendly browser interface.</p>
+<h1 id="options">OPTIONS</h1>
+<ul>
+<li><p><code>-H</code>, <code>--host=ADDRESS</code> Bind the web server to the specified network interface ADDRESS. Defaults to 127.0.0.1.</p></li>
+<li><p><code>-P</code>, <code>--port=PORT</code> Listen for incoming HTTP connections on the specified network PORT. Defaults to 8080.</p></li>
+<li><p><code>-s</code>, <code>--socket=PATH</code> Path to the mpv IPC socket file. Overrides default environment fallback configurations.</p></li>
+<li><p><code>-v</code>, <code>--verbose</code> Enable verbose logging output to stdout for auditing incoming API requests.</p></li>
+<li><p><code>-h</code>, <code>--help</code> Display the help synopsis and exit.</p></li>
+</ul>
+<h1 id="subcommands">SUBCOMMANDS</h1>
+<p>The web server exposes endpoints mimicking core <code>mpvc</code> commands. These can be executed via local tool parameters if the script supports immediate runtime hooks:</p>
+<ul>
+<li><p><code>start</code> Daemonize and start the web server in the background.</p></li>
+<li><p><code>stop</code> Locate and terminate the running background instance of the web server.</p></li>
+<li><p><code>status</code> Query whether the web server process is actively listening on its designated interface.</p></li>
+</ul>
+<h1 id="environment">ENVIRONMENT</h1>
+<ul>
+<li><p><code>MPVC_SOCKET</code> The default path to the mpv IPC socket if the <code>--socket</code> flag is omitted.</p></li>
+<li><p><code>MPVC_WEB_PORT</code> Defines a default network port fallback if <code>--port</code> is not explicitly set.</p></li>
+</ul>
+<h1 id="examples">EXAMPLES</h1>
+<p>Start the remote controller on all local interfaces using port 9000:</p>
+<pre><code>$ mpvc-web --host 0.0.0.0 --port 9000</code></pre>
+<h1 id="see-also">SEE ALSO</h1>
+<p>mpvc(1), mpvc-fzf(1), mpvc-tui(1), mpv(1)</p>
+<h1 id="author">AUTHOR</h1>
+<p>Manual written by gmt4. See https://github.com/gmt4/mpvc for more information.</p>
+<h1 id="reporting-bugs">REPORTING BUGS</h1>
+<p>Report bugs at: https://github.com/gmt4/mpvc/issues</p>
+</body>
+</html>
