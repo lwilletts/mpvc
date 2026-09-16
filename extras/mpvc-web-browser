@@ -420,7 +420,7 @@ mpvc_browser()
 mpvc_warn()  { echo "$@" >&2; }
 mpvc_html()  { echo "Content-Type: text/html";  echo "Connection: close"; echo; echo "$@"; }
 mpvc_strip() { sed '/\x1b\[7m/ { s|\x1b\[7m||; s| |+|; }; s|\x1b\[0m||;'; }
-mpvc_redir() { if [ -n "$1" -a "$1" != "null" ]; then mpvc_html '<meta http-equiv=refresh content="0.1;url='$1'" />'; fi; }
+mpvc_redir() { if [ -n "$1" ] && [ "$1" != "null" ]; then mpvc_html '<meta http-equiv=refresh content="0.1;url='$1'" />'; fi; }
 mpvc_split() { for i in $@; do echo "$i"; done; }
 
 usage()
