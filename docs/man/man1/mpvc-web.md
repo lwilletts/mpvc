@@ -27,7 +27,7 @@ OPTIONS
 * `-c` <start|stop|status>
   Set the mpvc-web HTTP server command. This option is **required**. Accepted values are `start` to daemonize the server, `stop` to terminate it, `status` to check is running.
 
-* `-b` <address>
+* `-b` <bind-address>
   Set the mpvc-web HTTP server bind address. Defaults to `localhost`.
 
 * `-p` <port>
@@ -73,10 +73,10 @@ FILES
 SEE ALSO
 ========
 
-* `mpvc(1)`{.manual link="mpvc.html"}
-* `mpvc-fzf(1)`{.manual link="mpvc-fzf.html"}
-* `mpvc-tui(1)`{.manual link="mpvc-tui.html"}
-* `mpv(1)`{.manual link="mpv.html"}
+`mpvc(1)`{.manual link="mpvc.html"},
+`mpvc-fzf(1)`{.manual link="mpvc-fzf.html"},
+`mpvc-tui(1)`{.manual link="mpvc-tui.html"},
+`mpv(1)`{.manual link="mpv.html"},
 
 AUTHOR
 ======
