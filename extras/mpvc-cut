@@ -17,6 +17,7 @@ set -euf
 PACTL=$(command -v pactl) || { echo "pactl not found"; exit 1; }
 FFMPEG=$(command -v ffmpeg) || { echo "ffmpeg not found"; exit 1; }
 FFPROBE=$(command -v ffprobe) || { echo "ffprobe not found"; exit 1; }
+XRANDR=$(command -v xrandr) || { echo "xrandr not found"; exit 1; }
 FFMPEG_LOGLEVEL=${FFMPEG_LOGLEVEL:-warning}
 
 mpvc_cut_ffmpeg()
@@ -96,7 +97,7 @@ mpvc_cut()
 
 mpvc_cut_vres()
 {
-    $(command -v xrandr) | awk '
+    $XRANDR | awk '
         /^Screen 0: .* current .*/ {
             r=$0; sub("^.* current ","",r); sub(", maximum .*$","",r); gsub(" ","",r); print r; exit
         }'
