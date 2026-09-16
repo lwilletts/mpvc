@@ -65,9 +65,11 @@ mpvcfzf_config()
     if [ ! -d "$MPVC_CONFIG_DIR/feeds/" ]; then mkdir -p "$MPVC_CONFIG_DIR/feeds/"; fi
     if [ ! -d "$MPVC_CACHE_DIR" ]; then mkdir -p "$MPVC_CACHE_DIR"; fi
     if [ ! -d "$MPVC_CACHE_DIR/thumbnail/" ]; then mkdir -p "$MPVC_CACHE_DIR/thumbnail/"; fi
+
     # if present load user config
-    if [ -r "$MPVC_CONFIG" -a -O "$MPVC_CONFIG" ]; then
-        . "$MPVC_CONFIG";
+    if [ -r "$MPVC_CONFIG" ] && [ -O "$MPVC_CONFIG" ]; then
+        # shellcheck source=docs/config/mpvc.conf
+        . "$MPVC_CONFIG"
     fi
     if ! quiet command -v fzf; then
         mpvcfzf_warn "$PROGNAME: Warning: No fzf, Install to get fuzzy media search & play support!"
