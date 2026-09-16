@@ -122,7 +122,7 @@ mpvctui_color()
     if [ -n "$NO_COLOR" ]; then
         printf '%s' "${@}"
     else
-        printf "${ccolor}$@${MPVC_TUI_CRST}"
+        printf "${ccolor}${*}${MPVC_TUI_CRST}"
     fi
 }
 
