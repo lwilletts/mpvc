@@ -430,7 +430,7 @@ usage: $PROGNAME  args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
  -h|help    : Show this help
 *tips: If unsure about where to begin, start with: $PROGNAME browser
 EOF
-    exit "${1:-0}"
+    exit 0
 }
 
 main()
