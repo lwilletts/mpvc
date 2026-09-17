@@ -239,8 +239,14 @@ FILES
 SEE ALSO
 ========
 
-mpvc-fzf(1), mpvc-web(1), mpvc-tui(1), mpvc-equalizer(1)
-mpv(1), fzf(1), yt-dlp(1), mpv(1)
+mpv(1),
+mpc(1),
+fzf(1),
+yt-dlp(1),
+[mpvc-fzf(1)](mpvc-fzf.html),
+[mpvc-tui(1)](mpvc-tui.html),
+[mpvc-web(1)](mpvc-web.html),
+[mpvc-equalizer(1)](mpvc-equalizer.html)
 
 AUTHOR
 ======
