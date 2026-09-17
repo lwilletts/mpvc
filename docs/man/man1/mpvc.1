@@ -1,125 +1,149 @@
-.TH "mpvc" "1" "April, 2026" ""
+.\"
+.TH "mpvc" "1" "April, 2026" "" ""
+.hy
 .SH NAME
-mpvc \- mpc\-like command\-line control interface for mpv
+.PP
+mpvc - mpc-like command-line control interface for mpv
 .SH SYNOPSIS
-mpvc options [file|url|playlist|\-]
+.PP
+mpvc options [file|url|playlist|-]
 .SH DESCRIPTION
-mpvc is a command\-line utility that provides mpc\-like control over the
+.PP
+mpvc is a command-line utility that provides mpc-like control over the
 mpv media player.
 It allows users to manage playback, control volume, add and remove media
 from the playlist, and display playlist information through a simple
-command\-line interface.
+command-line interface.
 .PP
 The tool communicates with mpv via a Unix socket, enabling remote
 control of playback without direct interaction with the mpv window.
 .SH OPTIONS
 .SS Playback Control
 .TP
-\f[CR]\-P\f[R], \f[CR]\-\-play\f[R]
+\f[B]\f[CB]-P\f[B]\f[R], \f[B]\f[CB]--play\f[B]\f[R]
 Start playback of the current media.
 .TP
-\f[CR]\-p\f[R], \f[CR]\-\-toggle\f[R]
+\f[B]\f[CB]-p\f[B]\f[R], \f[B]\f[CB]--toggle\f[B]\f[R]
 Toggle between play and pause states.
 .TP
-\f[CR]\-s\f[R], \f[CR]\-\-stop\f[R]
+\f[B]\f[CB]-s\f[B]\f[R], \f[B]\f[CB]--stop\f[B]\f[R]
 Stop playback completely.
 .TP
-\f[CR]\-\-next\f[R]
+\f[B]\f[CB]--next\f[B]\f[R]
 Jump to the next entry in the playlist.
 .TP
-\f[CR]\-\-prev\f[R]
+\f[B]\f[CB]--prev\f[B]\f[R]
 Jump to the previous entry in the playlist.
 .SS Playlist Management
 .TP
-\f[CR]\-a\f[R], \f[CR]\-\-add FILE\f[R]
+\f[B]\f[CB]-a\f[B]\f[R], \f[B]\f[CB]--add FILE\f[B]\f[R]
 Add a file or URL to the playlist.
 Supports local files, YouTube URLs, and other media sources.
 .TP
-\f[CR]\-r\f[R], \f[CR]\-\-remove ID\f[R]
+\f[B]\f[CB]-r\f[B]\f[R], \f[B]\f[CB]--remove ID\f[B]\f[R]
 Remove a playlist entry by its numeric ID.
 .TP
-\f[CR]\-i\f[R], \f[CR]\-\-playlist\f[R]
+\f[B]\f[CB]-i\f[B]\f[R], \f[B]\f[CB]--playlist\f[B]\f[R]
 Display the current playlist with filenames truncated to fit terminal
 width.
 .TP
-\f[CR]\-I\f[R], \f[CR]\-\-fullplaylist\f[R]
+\f[B]\f[CB]-I\f[B]\f[R], \f[B]\f[CB]--fullplaylist\f[B]\f[R]
 Display the complete current playlist with full filenames.
 .SS Loop and Repeat Modes
 .TP
-\f[CR]\-\-repeat\f[R]
+\f[B]\f[CB]--repeat\f[B]\f[R]
 Enable loop mode for the entire playlist.
 Playback will restart from the beginning after reaching the end.
 .TP
-\f[CR]\-\-single\f[R]
-Enable single\-file loop mode.
+\f[B]\f[CB]--single\f[B]\f[R]
+Enable single-file loop mode.
 The current file will repeat indefinitely.
 .SS Volume Control
 .TP
-\f[CR]\-v\f[R], \f[CR]\-\-vol [+\-]N\f[R]
+\f[B]\f[CB]-v\f[B]\f[R], \f[B]\f[CB]--vol [+-]N\f[B]\f[R]
 Adjust volume by the specified amount.
-Use +N to increase or \-N to decrease volume.
+Use +N to increase or -N to decrease volume.
 Without an argument, displays current volume.
 .SS Information and Help
 .TP
-\f[CR]\-h\f[R], \f[CR]\-\-help\f[R]
+\f[B]\f[CB]-h\f[B]\f[R], \f[B]\f[CB]--help\f[B]\f[R]
 Display short help message with basic usage information.
 .TP
-\f[CR]\-H\f[R], \f[CR]\-\-help\-long\f[R]
+\f[B]\f[CB]-H\f[B]\f[R], \f[B]\f[CB]--help-long\f[B]\f[R]
 Display detailed help message with all available options and examples.
 .SH EXAMPLES
+.PP
 Add a file to the playlist:
 .IP
-.EX
-mpvc \-a /path/to/song.mp3
-.EE
+.nf
+\f[C]
+mpvc -a /path/to/song.mp3
+\f[R]
+.fi
 .PP
 Toggle playback:
 .IP
-.EX
-mpvc \-p
-.EE
+.nf
+\f[C]
+mpvc -p
+\f[R]
+.fi
 .PP
 Increase volume by 5:
 .IP
-.EX
-mpvc \-v +5
-.EE
+.nf
+\f[C]
+mpvc -v +5
+\f[R]
+.fi
 .PP
 Decrease volume by 10:
 .IP
-.EX
-mpvc \-v \-10
-.EE
+.nf
+\f[C]
+mpvc -v -10
+\f[R]
+.fi
 .PP
 Display current playlist:
 .IP
-.EX
-mpvc \-i
-.EE
+.nf
+\f[C]
+mpvc -i
+\f[R]
+.fi
 .PP
 Jump to next track:
 .IP
-.EX
-mpvc \-\-next
-.EE
+.nf
+\f[C]
+mpvc --next
+\f[R]
+.fi
 .PP
 Stop playback:
 .IP
-.EX
-mpvc \-s
-.EE
+.nf
+\f[C]
+mpvc -s
+\f[R]
+.fi
 .PP
 Enable repeat mode:
 .IP
-.EX
-mpvc \-\-repeat
-.EE
+.nf
+\f[C]
+mpvc --repeat
+\f[R]
+.fi
 .PP
 Remove track with ID 3:
 .IP
-.EX
-mpvc \-r 3
-.EE
+.nf
+\f[C]
+mpvc -r 3
+\f[R]
+.fi
 .SH ENVIRONMENT
 .TP
 MPV_SOCKET
@@ -128,19 +152,21 @@ If not set, mpvc will attempt to locate the default socket
 automatically.
 .SH FILES
 .TP
-\(ti/.config/mpv/mpv.conf
+\[ti]/.config/mpv/mpv.conf
 Main mpv configuration file.
 .TP
-\(ti/.config/mpvc/mpvc.conf
-mpvc\-specific configuration file.
+\[ti]/.config/mpvc/mpvc.conf
+mpvc-specific configuration file.
 .TP
-\(ti/.config/mpvc/yt\-dlp.conf
-Configuration for yt\-dlp integration.
+\[ti]/.config/mpvc/yt-dlp.conf
+Configuration for yt-dlp integration.
 .SH SEE ALSO
-mpv(1), mpc(1), mpvc\-fzf(1), mpvc\-web(1), mpvc\-tui(1),
-mpvc\-equalizer(1)
+.PP
+mpv(1), mpc(1), mpvc-fzf(1), mpvc-web(1), mpvc-tui(1), mpvc-equalizer(1)
 .SH AUTHOR
+.PP
 Manual written by gmt4.
-See https://github.com/gmt4/mpvc for more information.
+See <https://github.com/gmt4/mpvc> for more information.
 .SH REPORTING BUGS
-Report bugs at: https://github.com/gmt4/mpvc/issues
+.PP
+Report bugs at: <https://github.com/gmt4/mpvc/issues>

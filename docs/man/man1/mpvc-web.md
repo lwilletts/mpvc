@@ -7,7 +7,7 @@ date: September, 2026
 NAME
 ====
 
-mpvc-web -- Web application interface for mpvc control
+mpvc-web -- Web and HTTP API interface for mpvc control
 
 SYNOPSIS
 ========
@@ -17,41 +17,41 @@ mpvc-web [option]
 DESCRIPTION
 ===========
 
-**mpvc-web** is a lightweight web interface and HTTP API wrapper for `mpvc`. It
-allows users to control an active local `mpv` media player instance remotely
+**mpvc-web** is a lightweight web interface and HTTP API wrapper for `mpvc`.
+It allows users to control an active local `mpv` media player instance remotely
 over a network interface using standard HTTP methods or a mobile-friendly browser interface.
 
 OPTIONS
 =======
 
-* `-c` <start|stop|status>
-  Set the mpvc-web HTTP server command. This option is **required**. Accepted values are `start` to daemonize the server, `stop` to terminate it, `status` to check is running.
+`-c` start|stop|status
+: Set the mpvc-web HTTP server command. This option is **required**. Accepted values are `start` to daemonize the server, `stop` to terminate it, `status` to check is running.
 
-* `-b` <bind-address>
-  Set the mpvc-web HTTP server bind address. Defaults to `localhost`.
+`-b` bind-address
+: Set the mpvc-web HTTP server bind address. Defaults to `localhost`.
 
-* `-p` <port>
-  Set the mpvc-web HTTP server port. Defaults to `8888`.
+`-p` port
+: Set the mpvc-web HTTP server port. Defaults to `8888`.
 
-* `-r` <directory>
-  Set the mpvc-web HTTP server root directory path. Defaults to `/tmp/mpvc-web/root`.
+`-r` directory
+: Set the mpvc-web HTTP server root directory path. Defaults to `/tmp/mpvc-web/root`.
 
-* `-R` <seconds>
-  Set the mpvc-web HTTP server HTML auto-refresh interval in seconds. Defaults to `240`.
+`-R` seconds
+: Set the mpvc-web HTTP server HTML auto-refresh interval in seconds. Defaults to `240`.
 
-* `-s` <https>
-  Set the mpvc-web HTTP server SSL/TLS configurations or certificate paths. Defaults to empty.
+`-s` https
+: Set the mpvc-web HTTP server SSL/TLS configurations or certificate paths. Defaults to empty.
 
-* `-a` <archive>
-  Set the mpvc-web HTTP server to include a `ytdl-archive/` repository or path tracking download history. Defaults to empty.
+`-a` archive
+: Set the mpvc-web HTTP server to include a `ytdl-archive/` repository or path tracking download history. Defaults to empty.
 
-* `-h`, `--help`
-  Display the help synopsis and exit.
+`-h`, `--help`
+: Display the help synopsis and exit.
 
 EXAMPLES
 ========
 
-Start the remote controller on all local interfaces using port 8888:
+Start the HTTP server listening on all interfaces at port 8888:
 
     $ mpvc-web --host 0.0.0.0 --port 8888
 
@@ -81,10 +81,10 @@ SEE ALSO
 AUTHOR
 ======
 
-Manual written by gmt4. See https://github.com/gmt4/mpvc for more information.
+Manual written by gmt4. See <https://github.com/gmt4/mpvc> for more information.
 
 REPORTING BUGS
 ==============
 
-Report bugs at: https://github.com/gmt4/mpvc/issues
+Report bugs at: <https://github.com/gmt4/mpvc/issues>
 

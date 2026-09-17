@@ -151,10 +151,10 @@ mpv(1), mpc(1), mpvc-fzf(1), mpvc-web(1), mpvc-tui(1), mpvc-equalizer(1)
 AUTHOR
 ======
 
-Manual written by gmt4. See https://github.com/gmt4/mpvc for more information.
+Manual written by gmt4. See <https://github.com/gmt4/mpvc> for more information.
 
 REPORTING BUGS
 ==============
 
-Report bugs at: https://github.com/gmt4/mpvc/issues
+Report bugs at: <https://github.com/gmt4/mpvc/issues>
 

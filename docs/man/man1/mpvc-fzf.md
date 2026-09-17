@@ -245,10 +245,10 @@ mpv(1), fzf(1), yt-dlp(1), mpv(1)
 AUTHOR
 ======
 
-Manual written by gmt4. See https://github.com/gmt4/mpvc for more information.
+Manual written by gmt4. See <https://github.com/gmt4/mpvc> for more information.
 
 REPORTING BUGS
 ==============
 
-Report bugs at: https://github.com/gmt4/mpvc/issues
+Report bugs at: <https://github.com/gmt4/mpvc/issues>
 

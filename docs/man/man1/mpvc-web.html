@@ -20,24 +20,40 @@
 <p class="date">September, 2026</p>
 </header>
 <h1 id="name">NAME</h1>
-<p>mpvc-web – Web application interface for mpvc control</p>
+<p>mpvc-web – Web and HTTP API interface for mpvc control</p>
 <h1 id="synopsis">SYNOPSIS</h1>
 <p>mpvc-web [option]</p>
 <h1 id="description">DESCRIPTION</h1>
 <p><strong>mpvc-web</strong> is a lightweight web interface and HTTP API wrapper for <code>mpvc</code>. It allows users to control an active local <code>mpv</code> media player instance remotely over a network interface using standard HTTP methods or a mobile-friendly browser interface.</p>
 <h1 id="options">OPTIONS</h1>
-<ul>
-<li><p><code>-c</code> &lt;start|stop|status&gt; Set the mpvc-web HTTP server command. This option is <strong>required</strong>. Accepted values are <code>start</code> to daemonize the server, <code>stop</code> to terminate it, <code>status</code> to check is running.</p></li>
-<li><p><code>-b</code> <bind-address> Set the mpvc-web HTTP server bind address. Defaults to <code>localhost</code>.</p></li>
-<li><p><code>-p</code> <port> Set the mpvc-web HTTP server port. Defaults to <code>8888</code>.</p></li>
-<li><p><code>-r</code> <directory> Set the mpvc-web HTTP server root directory path. Defaults to <code>/tmp/mpvc-web/root</code>.</p></li>
-<li><p><code>-R</code> <seconds> Set the mpvc-web HTTP server HTML auto-refresh interval in seconds. Defaults to <code>240</code>.</p></li>
-<li><p><code>-s</code> <https> Set the mpvc-web HTTP server SSL/TLS configurations or certificate paths. Defaults to empty.</p></li>
-<li><p><code>-a</code> <archive> Set the mpvc-web HTTP server to include a <code>ytdl-archive/</code> repository or path tracking download history. Defaults to empty.</p></li>
-<li><p><code>-h</code>, <code>--help</code> Display the help synopsis and exit.</p></li>
-</ul>
+<dl>
+<dt><code>-c</code> start|stop|status</dt>
+<dd>Set the mpvc-web HTTP server command. This option is <strong>required</strong>. Accepted values are <code>start</code> to daemonize the server, <code>stop</code> to terminate it, <code>status</code> to check is running.
+</dd>
+<dt><code>-b</code> bind-address</dt>
+<dd>Set the mpvc-web HTTP server bind address. Defaults to <code>localhost</code>.
+</dd>
+<dt><code>-p</code> port</dt>
+<dd>Set the mpvc-web HTTP server port. Defaults to <code>8888</code>.
+</dd>
+<dt><code>-r</code> directory</dt>
+<dd>Set the mpvc-web HTTP server root directory path. Defaults to <code>/tmp/mpvc-web/root</code>.
+</dd>
+<dt><code>-R</code> seconds</dt>
+<dd>Set the mpvc-web HTTP server HTML auto-refresh interval in seconds. Defaults to <code>240</code>.
+</dd>
+<dt><code>-s</code> https</dt>
+<dd>Set the mpvc-web HTTP server SSL/TLS configurations or certificate paths. Defaults to empty.
+</dd>
+<dt><code>-a</code> archive</dt>
+<dd>Set the mpvc-web HTTP server to include a <code>ytdl-archive/</code> repository or path tracking download history. Defaults to empty.
+</dd>
+<dt><code>-h</code>, <code>--help</code></dt>
+<dd>Display the help synopsis and exit.
+</dd>
+</dl>
 <h1 id="examples">EXAMPLES</h1>
-<p>Start the remote controller on all local interfaces using port 8888:</p>
+<p>Start the HTTP server listening on all interfaces at port 8888:</p>
 <pre><code>$ mpvc-web --host 0.0.0.0 --port 8888</code></pre>
 <h1 id="environment">ENVIRONMENT</h1>
 <ul>
@@ -53,8 +69,8 @@
 <h1 id="see-also">SEE ALSO</h1>
 <p><code class="manual" data-link="mpvc.html">mpvc(1)</code>, <code class="manual" data-link="mpvc-fzf.html">mpvc-fzf(1)</code>, <code class="manual" data-link="mpvc-tui.html">mpvc-tui(1)</code>, <code class="manual" data-link="mpv.html">mpv(1)</code>,</p>
 <h1 id="author">AUTHOR</h1>
-<p>Manual written by gmt4. See https://github.com/gmt4/mpvc for more information.</p>
+<p>Manual written by gmt4. See <a href="https://github.com/gmt4/mpvc" class="uri">https://github.com/gmt4/mpvc</a> for more information.</p>
 <h1 id="reporting-bugs">REPORTING BUGS</h1>
-<p>Report bugs at: https://github.com/gmt4/mpvc/issues</p>
+<p>Report bugs at: <a href="https://github.com/gmt4/mpvc/issues" class="uri">https://github.com/gmt4/mpvc/issues</a></p>
 </body>
 </html>
