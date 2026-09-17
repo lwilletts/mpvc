@@ -52,8 +52,8 @@ mpris_get_volume()
 
 mpris_set_volume()
 {
-    local cVolume=$(mpris_get_volume)
-    local pVolume=$cVolume
+    cVolume=$(mpris_get_volume)
+    pVolume=$cVolume
 
     case "$1" in
     volmute) pVolume=$(awk "END { print ($pVolume == 0)? 0.5: 0; }" /dev/null );;
@@ -75,14 +75,14 @@ mpris_get_status()
 
 mpris_set_shuffle()
 {
-    local current=$(mpris_get string:Shuffle | awk '/^   variant / {print $3}')
+    current=$(mpris_get string:Shuffle | awk '/^   variant / {print $3}')
     if [ "$current" = "true" ]; then other=false; else other=false; fi
     mpris_set string:Shuffle "variant:boolean:$other"
 }
 
 mpris_detect_player()
 {
-    local name=""
+    name=""
     for name in $MPVC_MPRIS_PLAYERS "";
     do
         mpris_name="$name"
@@ -120,9 +120,9 @@ main()
     mpris_defaults
     if [ $# -lt 1 ]; then usage; fi
 
-    local cmd="$1"
-    local volincr=0.1
-    local sink=@DEFAULT_SINK@
+    cmd="$1"
+    volincr=0.1
+    sink=@DEFAULT_SINK@
     mpris_name="$(mpris_detect_player)"
 
     case "$cmd" in
