@@ -91,15 +91,14 @@ html_body_open()
     <input type='hidden' name='browser'>
 
     <select id='libMode' name=mode class='flex-fixed' onchange=this.form.submit() title='Mode (ProTip: accesskey=m)' accesskey=m>
-    <option value=>          Mode
+    <option value=playlist>  Playlist
+    <option value=chapters>  Chapters
+    <option value=equalizer> Equalizer
+
     <option value=media>     Media
     <option value=yewtube>   YewtuBe
     <option value=stash>     Stash
     <option value=feeds>     Feeds
-
-    <option value=playlist>  Playlist
-    <option value=chapters>  Chapters
-    <option value=equalizer> Equalizer
 
     <option value=video>     Video
     </select>
@@ -398,18 +397,18 @@ handle_generic()
 mpvc_browser()
 {
     mode=$(gup 'mode=[^&]*' "$QUERY_STRING" )
-    mode=${mode:-media}
+    mode=${mode:-playlist}
     action=$(gup 'action=[^&]*' "$QUERY_STRING")
 
     handle_config
     handle_action
 
     case "$mode" in
+    playlist)   handle_playlist ;;
+    chapters)   handle_chapters ;;
     media)      handle_listing ;;
     yewtube)    handle_yewtube ;;
     stash)      handle_stash ;;
-    playlist)   handle_playlist ;;
-    chapters)   handle_chapters ;;
     equalizer)  handle_equalizer ;;
 
     feeds)      handle_feeds ;;
