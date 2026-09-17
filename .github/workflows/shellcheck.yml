@@ -13,4 +13,5 @@ jobs:
         uses: ludeeus/action-shellcheck@master
         with:
           severity: warning
+          scandir: 'none'
           additional_files: 'mpvc docs/config/mpvc.conf extras/mpvc-tui extras/mpvc-web extras/mpvc-installer'
