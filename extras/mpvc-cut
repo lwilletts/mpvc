@@ -27,11 +27,11 @@ mpvc_cut_ffmpeg()
 
 mpvc_cutfile()
 {
-    local operation="$1"
-    local path="$2"
-    local pointA="$3"
-    local pointB="$4"
-    local length="$(mpvc -f '%length%')"
+    operation="$1"
+    path="$2"
+    pointA="$3"
+    pointB="$4"
+    length="$(mpvc -f '%length%')"
 
     if [ -z "$path" ] || [ ! -f "$path" ]; then usage 1; fi
     if [ -z "$pointA" ] || [ "$pointA" = "no" ]; then usage 1; fi
@@ -40,10 +40,10 @@ mpvc_cutfile()
     if ! printf '%f' "$pointA" >/dev/null 2>&1; then usage 1; fi
     if ! printf '%f' "$pointB" >/dev/null 2>&1; then usage 1; fi
 
-    local fileExt="${path#*.}"
-    local infile="${path##*/}"
-    local infile="${infile##"$fileExt"}"
-    local outfile="${infile}_${pointA}_${pointB}"
+    fileExt="${path#*.}"
+    infile="${path##*/}"
+    infile="${infile##"$fileExt"}"
+    outfile="${infile}_${pointA}_${pointB}"
 
     outfile=$(printf '%s' "$outfile" | sed 's/[^a-zA-Z0-9._-]/_/g')
 
@@ -87,9 +87,9 @@ mpvc_cutfile()
 
 mpvc_cut()
 {
-    local path=$(mpvc g 'path') || usage 1
-    local pointA=$(mpvc g 'ab-loop-a') || usage 1
-    local pointB=$(mpvc g 'ab-loop-b') || usage 1
+    path=$(mpvc g 'path') || usage 1
+    pointA=$(mpvc g 'ab-loop-a') || usage 1
+    pointB=$(mpvc g 'ab-loop-b') || usage 1
 
     mpvc_cutfile "$operation" "$path" "$pointA" "$pointB"
 }
@@ -105,7 +105,7 @@ mpvc_cut_vres()
 
 mpvc_cut_info()
 {
-    local mode="$1"; shift
+    mode="$1"; shift
     "$FFPROBE" -hide_banner -loglevel info "$@" 2>&1 |
         case "$mode" in
         info) awk '/^Input/ {print} /Stream #/ {print} /Duration:/ {print}' ;;
@@ -126,11 +126,11 @@ mpvc_cut_asrc()
 
 mpvc_screencast()
 {
-    local vres="$(mpvc_cut_vres)"
-    local asrc="$(mpvc_cut_asrc)"
+    vres="$(mpvc_cut_vres)"
+    asrc="$(mpvc_cut_asrc)"
 
-    local fout="mpvc-cast-$(date +%Y%m%d-%H%M%S).mkv"
-    local framerate="25"
+    fout="mpvc-cast-$(date +%Y%m%d-%H%M%S).mkv"
+    framerate="25"
 
     if [ -z "$vres" ]; then usage 1; fi
     if [ -z "$asrc" ]; then usage 1; fi
