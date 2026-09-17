@@ -51,9 +51,13 @@ OPTIONS
 EXAMPLES
 ========
 
-Start the HTTP server listening on all interfaces at port 8888:
+Start the HTTP server listening on localhost at port 8888:
 
-    $ mpvc-web --host 0.0.0.0 --port 8888
+    $ mpvc-web -c start -b 127.0.0.1
+
+Start the HTTP server listening on all interfaces at port 8443:
+
+    $ mpvc-web -c start -b 0.0.0.0 -s 1
 
 ENVIRONMENT
 ===========

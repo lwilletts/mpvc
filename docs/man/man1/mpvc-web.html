@@ -59,8 +59,10 @@
 </dd>
 </dl>
 <h1 id="examples">EXAMPLES</h1>
-<p>Start the HTTP server listening on all interfaces at port 8888:</p>
-<pre><code>$ mpvc-web --host 0.0.0.0 --port 8888</code></pre>
+<p>Start the HTTP server listening on localhost at port 8888:</p>
+<pre><code>$ mpvc-web -c start -b 127.0.0.1</code></pre>
+<p>Start the HTTP server listening on all interfaces at port 8443:</p>
+<pre><code>$ mpvc-web -c start -b 0.0.0.0 -s 1</code></pre>
 <h1 id="environment">ENVIRONMENT</h1>
 <ul>
 <li><p><code>MPVC_SOCKET</code> The default path to the mpv IPC socket if the <code>--socket</code> flag is omitted.</p></li>

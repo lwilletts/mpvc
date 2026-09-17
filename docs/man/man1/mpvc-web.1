@@ -52,11 +52,19 @@ Defaults to empty.
 Display the help synopsis and exit.
 .SH EXAMPLES
 .PP
-Start the HTTP server listening on all interfaces at port 8888:
+Start the HTTP server listening on localhost at port 8888:
 .IP
 .nf
 \f[C]
-$ mpvc-web --host 0.0.0.0 --port 8888
+$ mpvc-web -c start -b 127.0.0.1
+\f[R]
+.fi
+.PP
+Start the HTTP server listening on all interfaces at port 8443:
+.IP
+.nf
+\f[C]
+$ mpvc-web -c start -b 0.0.0.0 -s 1
 \f[R]
 .fi
 .SH ENVIRONMENT
