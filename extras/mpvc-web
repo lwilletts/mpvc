@@ -695,13 +695,13 @@ mpvc_web_index()
             <a class=btn href="?cmd=mpvc togglef" title="togglef">fs</a>
         </fieldset>
 -->
-
         </details>
 
         <details>
         <summary>
             <a href="#mpvc-web-tools" name="mpvc-web-browse">📁 Browser</a>
             <a href="$MPVC_WEB_CGI_CMD?browser">#new</a>
+            <a href="$MPVC_WEB_CGI_CMD?browser">#max</a>
             $(for x in $MPVC_WEB_EXTRAS_URL; do n=$((${n:-0} + 1)); echo "<a href=$x title=#url-$n>#$n</a>"; done)
             <span style="float:right">
                 <a class=btn href="$MPVC_WEB_CGI_CMD?now-short" title="Now Playing (share)" aria-label="Now Playing">💿</a>
@@ -720,37 +720,6 @@ mpvc_web_index()
         </summary>
         <hr>
         <iframe name="mpvc-status" title="mpvc-status" width="100%" height="80" frameborder="0" allowtransparency="true" src="$MPVC_WEB_CGI_CMD?mpvc+status" defer ></iframe>
-        </details>
-
-        <details>
-        <summary ${MPVC_WEB_SHORTCUT_PLAYLIST}>
-            <a href="#mpvc-web-playlist" name="mpvc-web-playlist">Playlist</a>
-            <a href="#mpvc-web-fullplaylist" name="mpvc-web-fullplaylist">#full</a>
-            <a href="#mpvc-web-rawplaylist" name="mpvc-web-fullplaylist">#raw</a>
-        </summary>
-        <hr>
-
-        <div style="display:flex">
-        <iframe name="mpvc-playlist" title="mpvc-playlist" width="100%" frameborder="0" allowtransparency="true" style="margin:auto; float:auto" src="$MPVC_WEB_CGI_CMD?mpvc+playlist" defer ></iframe>
-        <script type="text/javascript">
-        var pl = document.getElementsByName('mpvc-playlist')[0];
-        switch (window.location.hash) {
-        case '#mpvc-web-playlist':           { pl.src='$MPVC_WEB_CGI_CMD?mpvc+playlist'; break; }
-        case '#mpvc-web-fullplaylist':       { pl.src='$MPVC_WEB_CGI_CMD?mpvc+fullplaylist'; break; }
-        case '#mpvc-web-rawplaylist':        { pl.src='$MPVC_WEB_CGI_CMD?mpvc+saven'; break; }
-        }
-        </script>
-        </div>
-        </details>
-
-        <details>
-        <summary>
-            <a href="#mpvc-web-chapter-list" name="mpvc-web-chapterlist">Chapterlist</a>
-            <a href="#mpvc-web-chapter-list-full" name="mpvc-web-chapter-list-full">#full</a>
-            <a href="#mpvc-web-chapter-list-raw" name="mpvc-web-chapter-list-raw">#raw</a>
-        </summary>
-        <hr>
-        <iframe name="mpvc-chapter-list" title="mpvc-chapter-list" width="100%" frameborder="0" allowtransparency="true" src="$MPVC_WEB_CGI_CMD?mpvc+chapter-list" defer ></iframe>
         </details>
 
         <details $(if [ -n "$MPVC_WEB_THUMBNAIL_ENABLE" ]; then echo open; fi)>
