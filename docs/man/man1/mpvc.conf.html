@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>mpvc.conf</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <style>
+  body { max-width: 95%; margin-left: auto; margin-right: auto; }
+  em, i { font-style: normal; text-decoration: underline; }
+  pre, code { white-space: pre-wrap; }
+  pre { border: 1px solid currentColor; border-radius: 6px; background-color: #f6f8fa; overflow-x: auto; padding: 12px; }
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">mpvc.conf</h1>
+<p class="date">September 2026</p>
+</header>
+<h1 id="name">NAME</h1>
+<p>mpvc.conf - Configuration file for mpvc</p>
+<h1 id="description">DESCRIPTION</h1>
+<p>The <strong>mpvc.conf</strong> file serves as the unified configuration profile and text layout interface for the <code>mpvc(1)</code>.</p>
+<p>Because the ecosystem is written entirely in POSIX shell scripting, the configuration file is parsed by directly sourcing it into the environment during execution.</p>
+<p>The file is divided into clear configuration sections using comment block headers to group each tool configuration on its own section.</p>
+<h1 id="configuration-sections">CONFIGURATION SECTIONS</h1>
+<h2 id="mpvc">MPVC</h2>
+<p>This section defines the mpvc(1) configuration variables.</p>
+<dl>
+<dt><code>MPVC_MPV</code></dt>
+<dd>Defines the executable binary name or path for the core player engine. Defaults to <code>mpv</code>.
+</dd>
+<dt><code>MPVC_SOCAT</code></dt>
+<dd>Defines the executable binary name or path used to stream JSON data over unix sockets. Defaults to <code>socat</code>.
+</dd>
+<dt><code>MPVC_LOCAL_CACHE</code></dt>
+<dd>Boolean flag switch (<code>true</code> or <code>false</code>) controlling whether regional caching routines are activated during playback sequences.
+</dd>
+<dt><code>MPVC_FMTSTR</code>, <code>MPVC_FMTSTR_LOFI</code></dt>
+<dd>Customizes the output of the <code>mpvc [status]</code> command to display a summary of the mpv playing state, shown by the rest of tools.
+</dd>
+</dl>
+<h3 id="formatting-string-tokens">Formatting String Tokens</h3>
+<p>The status strings (<code>MPVC_FMTSTR</code> and <code>MPVC_FMTSTR_LOFI</code>) parse the following tokens dynamically at runtime to generate the <code>mpvc [status]</code> terminal layout view:</p>
+<ul>
+<li><code>%status%</code> : Active player state icon or text (e.g., Playing, Paused).</li>
+<li><code>%statuslofi%</code> : Stream-specific processing states.</li>
+<li><code>%title%</code> : Metadata title track string of the current media file.</li>
+<li><code>%percentage%%</code> : Numerical percentage tracking playback progress.</li>
+<li><code>%length%</code> : Total temporal duration length of the active track asset.</li>
+<li><code>%position%</code> : Index tracking the numerical item number of the track.</li>
+<li><code>%playlistlength%</code> : Cumulative count tracking total track objects in queue.</li>
+<li><code>%=chapter%</code> : Numeric label naming the current playing chapter layer.</li>
+<li><code>/%chapters%</code> : Total embedded chapter segments discovered in media container.</li>
+<li><code>%mutelofi%</code> : Toggle status indicator flagging audio muting behaviors.</li>
+<li><code>%volume%%</code> : Current audio speaker sound level gain percentage metrics.</li>
+<li><code>%shufflelofi%</code> : Tracks if random shuffling behaviors are enabled.</li>
+<li><code>%ablooplofi%</code> : Displays segment loop hooks.</li>
+<li><code>%singlelofi%</code> : Tracks if a single file loop freeze constraint is active.</li>
+<li><code>%repeatlofi%</code> : Tracks if playlist wrapper re-looping sequences are active.</li>
+<li><code>%idlelofi%</code> : Displays if player engines are idling without an active container.</li>
+<li><code>%videolofi%</code> : Video layer processing status symbols.</li>
+</ul>
+<h2 id="mpvc-tui">MPVC-TUI</h2>
+<p>This section configures terminal environment variables and scaling preferences for the terminal visual frontend interface <strong>mpvc-tui</strong>(1).</p>
+<dl>
+<dt><code>MPVC_TUI_TERM</code></dt>
+<dd>Declares the explicit target shell terminal application spawned specifically when launching graphical console configurations in detached windows.
+</dd>
+</dl>
+<h2 id="mpvc-fzf">MPVC-FZF</h2>
+<p>This section contains option flags, remote scraping node overrides, and execution properties for the interactive search interface <strong>mpvc-fzf</strong>(1).</p>
+<dl>
+<dt><code>MPVC_TERM</code></dt>
+<dd>Defines the system terminal emulator tool launched to spawn detached windows when passing the selection flag <code>-x</code> or <code>launch</code>. Defaults to <code>xterm</code>.
+</dd>
+<dt><code>MPVC_FZF_INVID_URL</code></dt>
+<dd>Stores your preferred URL address link pointing to a public or self-hosted <strong>Invidious</strong> API instance mirror node to handle global text lookups.
+</dd>
+</dl>
+<h2 id="mpvc-web">MPVC-WEB</h2>
+<p>This section handles server port rules, encryption endpoints, UI refresh behaviors, and thumbnail parsing switches for the local HTTP daemon interface controller <strong>mpvc-web</strong>(1).</p>
+<dl>
+<dt><code>MPVC_WEB_PORT</code></dt>
+<dd>Specifies the default plaintext HTTP listening network port assigned to the web gateway server daemon. Defaults to <code>8888</code>.
+</dd>
+<dt><code>MPVC_WEB_SSL_PORT</code></dt>
+<dd>Declares the network port assigned to handle secure, encrypted HTTPS client browser connections. Defaults to <code>8443</code>.
+</dd>
+<dt><code>MPVC_WEB_THUMBNAIL_ENABLE</code></dt>
+<dd>Boolean flag switch (<code>true</code> or <code>false</code>) controlling whether the web frontend interface actively pulls, parses, and shows media artwork thumbnail images over the network dashboard.
+</dd>
+<dt><code>MPVC_WEB_HTML_REFRESH</code></dt>
+<dd>Establishes a time interval integer (measured in seconds) instructing client web browsers how frequently to automatically reload the page interface state to stay synchronized with track changes. Defaults to <code>240</code>.
+</dd>
+</dl>
+<h1 id="see-also">SEE ALSO</h1>
+<p>mpv(1), <a href="mpvc.html">mpvc(1)</a>, <a href="mpvc-fzf.html">mpvc-fzf(1)</a>, <a href="mpvc-tui.html">mpvc-tui(1)</a>, <a href="mpvc-web.html">mpvc-web(1)</a>,</p>
+<h1 id="author">AUTHOR</h1>
+<p>Manual written by gmt4. See <a href="https://github.com/gmt4/mpvc" class="uri">https://github.com/gmt4/mpvc</a> for more information.</p>
+<h1 id="reporting-bugs">REPORTING BUGS</h1>
+<p>Report bugs at: <a href="https://github.com/gmt4/mpvc/issues" class="uri">https://github.com/gmt4/mpvc/issues</a></p>
+</body>
+</html>
