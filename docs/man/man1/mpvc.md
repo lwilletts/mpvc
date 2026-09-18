@@ -1,7 +1,9 @@
 ---
 title: mpvc(1)
 section: 1
+version: v1.8
 date: April, 2026
+manual: User Commands
 ---
 
 NAME
@@ -31,31 +33,31 @@ OPTIONS
 Playback Control
 ----------------
 
-`-P`, `--play`
+`-P`, `--play`, `play`
 : Start playback of the current media.
 
-`-p`, `--toggle`
+`-p`, `--toggle`, `toggle`
 : Toggle between play and pause states.
 
-`-s`, `--stop`
+`-s`, `--stop`, `stop`
 : Stop playback completely.
 
-`--next`
+`--next`, `next`
 : Jump to the next entry in the playlist.
 
-`--prev`
+`--prev`, `prev`
 : Jump to the previous entry in the playlist.
 
 Playlist Management
 -------------------
 
-`-a`, `--add FILE`
+`-a`, `--add FILE`,, `add FILE`
 : Add a file or URL to the playlist. Supports local files, YouTube URLs, and other media sources.
 
-`-r`, `--remove ID`
+`-r`, `--rm ID`, `rm ID`
 : Remove a playlist entry by its numeric ID.
 
-`-i`, `--playlist`
+`-i`, `--playlist`, `playlist`
 : Display the current playlist with filenames truncated to fit terminal width.
 
 `-I`, `--fullplaylist`
@@ -64,10 +66,10 @@ Playlist Management
 Loop and Repeat Modes
 ---------------------
 
-`--repeat`
+`--repeat`, `repeat`
 : Enable loop mode for the entire playlist. Playback will restart from the beginning after reaching the end.
 
-`--single`
+`--single`, `single`
 : Enable single-file loop mode. The current file will repeat indefinitely.
 
 Volume Control

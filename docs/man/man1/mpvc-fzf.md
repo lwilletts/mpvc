@@ -1,7 +1,9 @@
 ---
 title: mpvc-fzf(1)
 section: 1
+version: v1.8
 date: April, 2026
+manual: User Commands
 ---
 
 NAME
@@ -111,25 +113,25 @@ Metadata and Information
 Radio and Streaming Services
 ----------------------------
 
-`--now`
+`--now`, `now`,
 : Return shareable "now listening" playlist with current media information.
 
-`--lofi`
+`--lofi`, `lofi`
 : Search and play Lo-Fi music channels.
 
-`--somafm`
+`--somafm`, `somafm`
 : Search and play SomaFM streaming channels.
 
-`--rapi`
+`--rapi`, `rapi`
 : Search and play stations from Radio Browser API.
 
-`--ntsr`
+`--ntsr`, `ntsr`
 : Search and play stations from NTS Radio API.
 
-`--custom`
+`--custom`, `custom`
 : Search and play custom media feeds.
 
-`custom-gen`
+`custom-gen`, `custom-gen`
 : Generate a custom feeds template for configuration.
 
 `invid-list`

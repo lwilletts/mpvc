@@ -1,7 +1,9 @@
 ---
 title: mpvc-web(1)
 section: 1
+version: v1.8
 date: September, 2026
+manual: User Commands
 ---
 
 NAME
@@ -12,7 +14,7 @@ mpvc-web -- Web and HTTP API interface for mpvc control
 SYNOPSIS
 ========
 
-mpvc-web [option]
+mpvc-web [options]
 
 DESCRIPTION
 ===========
@@ -55,18 +57,18 @@ Start the HTTP server listening on localhost at port 8888:
 
     $ mpvc-web -c start -b 127.0.0.1
 
-Start the HTTP server listening on all interfaces at port 8443:
+Start the HTTP server with SSL/TLS listening on all interfaces at port 8443:
 
     $ mpvc-web -c start -b 0.0.0.0 -s 1
 
 ENVIRONMENT
 ===========
 
-* `MPVC_SOCKET`
+* `MPV_SOCKET`
   The default path to the mpv IPC socket if the `--socket` flag is omitted.
 
 * `MPVC_WEB_PORT`
-  Defines a default network port fallback if `--port` is not explicitly set.
+  Defines a default network port fallback if `-p` port is not explicitly set.
 
 FILES
 =====

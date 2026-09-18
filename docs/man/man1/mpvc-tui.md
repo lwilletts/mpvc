@@ -1,7 +1,9 @@
 ---
 title: mpvc-tui(1)
 section: 1
+version: v1.8
 date: April, 2026
+manual: User Commands
 ---
 
 NAME
