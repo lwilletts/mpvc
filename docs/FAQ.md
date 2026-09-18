@@ -42,7 +42,7 @@ The current focus is on UNIX/Linux OSes, supporting Windows is out of scope ATM.
 Your best aim for using mpvc under Windows is to follow mpv documentation: [https://mpv.io/manual/master/#command-prompt-example](https://mpv.io/manual/master/#command-prompt-example)
 - First, step should be installing Cygwin/MSYS2 and mpv.
 - Second, step should be getting mpvc.
-- Third, should be getting a socat (see [socat.ps1](https://github.com/gmt4/mpvc/blob/master/extras/win32/socat.ps1)) replacement command under windows to perform read/write on the `MPVC_SOCKET` named pipe used by mpv/mpvc.
+- Third, should be getting a socat (see [socat.ps1](https://github.com/gmt4/mpvc/blob/master/extras/win32/socat.ps1)) replacement command under windows to perform read/write on the `MPV_SOCKET` named pipe used by mpv/mpvc.
 - Last, AFAIK nobody has got to this point, so if somebody gets mpvc working on windows, report back, and update this. 
 
 ## MPRIS support?
