@@ -27,6 +27,8 @@ BINDIR=$HOME/bin SHELL=/bin/sh $SHELL ./mpvc-installer quickstart
 ### 1. Base Player Controls (mpvc)
 ```bash
 mpvc toggle                          # Toggle playback state (play/pause)
+mpvc togglev                         # Toggle video playback state (on/off)
+mpvc togglei                         # Toggle idle playback state (once/always/off)
 mpvc next                            # Skip to the next track in the playlist
 mpvc add "https://youtube.com..."    # Stream online media via yt-dlp
 find ~/Music -type f -name "*.mp3" | mpvc load    # Pipe local directories into the active queue
