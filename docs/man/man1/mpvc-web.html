@@ -28,7 +28,7 @@
 <h1 id="name">NAME</h1>
 <p>mpvc-web – Web and HTTP API interface for mpvc control</p>
 <h1 id="synopsis">SYNOPSIS</h1>
-<p>mpvc-web [option]</p>
+<p>mpvc-web <a href="#options">options</a></p>
 <h1 id="description">DESCRIPTION</h1>
 <p><strong>mpvc-web</strong> is a lightweight web interface and HTTP API wrapper for <code>mpvc</code>. It allows users to control an active local <code>mpv</code> media player instance remotely over a network interface using standard HTTP methods or a mobile-friendly browser interface.</p>
 <h1 id="options">OPTIONS</h1>
@@ -61,12 +61,12 @@
 <h1 id="examples">EXAMPLES</h1>
 <p>Start the HTTP server listening on localhost at port 8888:</p>
 <pre><code>$ mpvc-web -c start -b 127.0.0.1</code></pre>
-<p>Start the HTTP server listening on all interfaces at port 8443:</p>
+<p>Start the HTTP server with SSL/TLS listening on all interfaces at port 8443:</p>
 <pre><code>$ mpvc-web -c start -b 0.0.0.0 -s 1</code></pre>
 <h1 id="environment">ENVIRONMENT</h1>
 <ul>
-<li><p><code>MPVC_SOCKET</code> The default path to the mpv IPC socket if the <code>--socket</code> flag is omitted.</p></li>
-<li><p><code>MPVC_WEB_PORT</code> Defines a default network port fallback if <code>--port</code> is not explicitly set.</p></li>
+<li><p><code>MPV_SOCKET</code> The default path to the mpv IPC socket if the <code>--socket</code> flag is omitted.</p></li>
+<li><p><code>MPVC_WEB_PORT</code> Defines a default network port fallback if <code>-p</code> port is not explicitly set.</p></li>
 </ul>
 <h1 id="files">FILES</h1>
 <dl>

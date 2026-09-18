@@ -1,0 +1,144 @@
+.\"
+.TH "mpvc-installer" "1" "September, 2026" "" ""
+.hy
+.SH NAME
+.PP
+mpvc-installer - Automated deployment, updates, and configuration
+manager for mpvc
+.SH SYNOPSIS
+.PP
+\f[B]mpvc-installer\f[R] \f[I]COMMAND\f[R]
+.SH DESCRIPTION
+.PP
+\f[B]mpvc-installer\f[R] is a dedicated deployment and configuration
+manager for the \f[B]mpvc\f[R] ecosystem.
+Written in POSIX-compliant shell scripting, it automates script
+downloading, system-wide or user-level symlinking, dependency checks,
+and default configuration setups.
+.SH COMMANDS
+.TP
+\f[B]\f[CB]quickstart\f[B]\f[R]
+Execute an automated initial setup routine designed for first-time
+users, fetching and configuring assets locally.
+.TP
+\f[B]\f[CB]quickstart-rm\f[B]\f[R]
+Cleanly remove all temporary configurations and installations
+initialized by the quickstart routine.
+.TP
+\f[B]\f[CB]check-update\f[B]\f[R]
+Query the remote upstream Git repository to discover available software
+updates.
+.TP
+\f[B]\f[CB]check-reqs\f[B]\f[R]
+Audit the local system \f[C]$PATH\f[R] environment to ensure that core
+required tools (\f[C]mpv\f[R], \f[C]socat\f[R], \f[C]gawk\f[R]) and
+extras are installed.
+.TP
+\f[B]\f[CB]config\f[B]\f[R]
+Fetch the standard global baseline \f[C]mpv\f[R] communication
+parameters and configuration targets.
+.TP
+\f[B]\f[CB]config-user\f[B]\f[R]
+Populate local user configuration directories under
+\f[C]BINDIR=\[ti]/bin/\f[R] with default profiles.
+.TP
+\f[B]\f[CB]config-sys\f[B]\f[R]
+Deploy default profiles globally for system-wide access under
+\f[C]/usr/local/bin\f[R].
+.TP
+\f[B]\f[CB]fetch-user\f[B]\f[R]
+Fetch and download the standalone script collection directly into the
+user\[cq]s execution directory (\f[C]\[ti]/bin/\f[R]).
+.TP
+\f[B]\f[CB]link-user\f[B]\f[R]
+Create localized symlinks within \f[C]\[ti]/bin/\f[R] pointing to a
+manually cloned repository tree.
+.TP
+\f[B]\f[CB]install\f[B]\f[R]
+Move and register the application binaries systematically to the
+universal \f[C]/usr/local/bin\f[R] folder block.
+.TP
+\f[B]\f[CB]uninstall\f[B]\f[R]
+Completely remove systemic application components from
+\f[C]/usr/local/bin\f[R].
+.TP
+\f[B]\f[CB]install-user\f[B]\f[R]
+Compile, move, and configure the standalone suite targets for a single
+local user profile (\f[C]\[ti]/bin/\f[R]).
+.TP
+\f[B]\f[CB]install-sys\f[B]\f[R]
+Execute a full administrative installation routing binaries to
+\f[C]/usr/local/bin\f[R] (implicitly sets \f[C]PREFIX=/usr/local\f[R]).
+.TP
+\f[B]\f[CB]uninstall-user\f[B]\f[R]
+Discard user-level script mappings and configurations from the local
+path context.
+.TP
+\f[B]\f[CB]uninstall-sys\f[B]\f[R]
+Erase all administrative global binary elements and dependencies from
+system folders.
+.SH ENVIRONMENT
+.TP
+\f[B]\f[CB]BINDIR\f[B]\f[R]
+Explicitly overrides the destination binary folder path during localized
+setups.
+Defaults to \f[C]$HOME/bin\f[R].
+.TP
+\f[B]\f[CB]PREFIX\f[B]\f[R]
+Declares the baseline administrative root pathway prefix for global
+installations.
+Defaults to \f[C]/usr/local\f[R].
+.SH FILES
+.TP
+\f[B]\f[CB]\[ti]/.config/mpvc/\f[B]\f[R]
+Destination directory where \f[C]config-user\f[R] populates the default
+\f[C]mpvc.conf\f[R], \f[C]mpv.conf\f[R], and \f[C]yt-dlp.conf\f[R]
+blueprints.
+.SH EXAMPLES
+.PP
+Perform a fully automated, standalone setup tracking standard user
+folder limits:
+.IP
+.nf
+\f[C]
+mpvc-installer quickstart
+\f[R]
+.fi
+.PP
+Completely purge and clean up environment trails introduced via the
+quickstart interface:
+.IP
+.nf
+\f[C]
+mpvc-installer quickstart-rm
+\f[R]
+.fi
+.PP
+Audit your current install for required tools/versions (such as socat or
+gawk):
+.IP
+.nf
+\f[C]
+mpvc-installer check-reqs
+\f[R]
+.fi
+.PP
+Extract and mirror the default configuration profile layout assets
+inside your user profile directory path:
+.IP
+.nf
+\f[C]
+mpvc-installer config-user
+\f[R]
+.fi
+.SH SEE ALSO
+.PP
+mpv(1), mpc(1), fzf(1), yt-dlp(1), mpvc(1), mpvc-fzf(1), mpvc-tui(1),
+mpvc-web(1),
+.SH AUTHOR
+.PP
+Manual written by gmt4.
+See <https://github.com/gmt4/mpvc> for more information.
+.SH REPORTING BUGS
+.PP
+Report bugs at: <https://github.com/gmt4/mpvc/issues>

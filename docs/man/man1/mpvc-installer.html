@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>mpvc-installer(1)</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <style>
+  body { max-width: 95%; margin-left: auto; margin-right: auto; }
+  em, i { font-style: normal; text-decoration: underline; }
+  pre, code { white-space: pre-wrap; }
+  pre { border: 1px solid currentColor; border-radius: 6px; background-color: #f6f8fa; overflow-x: auto; padding: 12px; }
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">mpvc-installer(1)</h1>
+<p class="date">September, 2026</p>
+</header>
+<h1 id="name">NAME</h1>
+<p>mpvc-installer - Automated deployment, updates, and configuration manager for mpvc</p>
+<h1 id="synopsis">SYNOPSIS</h1>
+<p><strong>mpvc-installer</strong> <em>COMMAND</em></p>
+<h1 id="description">DESCRIPTION</h1>
+<p><strong>mpvc-installer</strong> is a dedicated deployment and configuration manager for the <strong>mpvc</strong> ecosystem. Written in POSIX-compliant shell scripting, it automates script downloading, system-wide or user-level symlinking, dependency checks, and default configuration setups.</p>
+<h1 id="commands">COMMANDS</h1>
+<dl>
+<dt><code>quickstart</code></dt>
+<dd>Execute an automated initial setup routine designed for first-time users, fetching and configuring assets locally.
+</dd>
+<dt><code>quickstart-rm</code></dt>
+<dd>Cleanly remove all temporary configurations and installations initialized by the quickstart routine.
+</dd>
+<dt><code>check-update</code></dt>
+<dd>Query the remote upstream Git repository to discover available software updates.
+</dd>
+<dt><code>check-reqs</code></dt>
+<dd>Audit the local system <code>$PATH</code> environment to ensure that core required tools (<code>mpv</code>, <code>socat</code>, <code>gawk</code>) and extras are installed.
+</dd>
+<dt><code>config</code></dt>
+<dd>Fetch the standard global baseline <code>mpv</code> communication parameters and configuration targets.
+</dd>
+<dt><code>config-user</code></dt>
+<dd>Populate local user configuration directories under <code>BINDIR=~/bin/</code> with default profiles.
+</dd>
+<dt><code>config-sys</code></dt>
+<dd>Deploy default profiles globally for system-wide access under <code>/usr/local/bin</code>.
+</dd>
+<dt><code>fetch-user</code></dt>
+<dd>Fetch and download the standalone script collection directly into the user’s execution directory (<code>~/bin/</code>).
+</dd>
+<dt><code>link-user</code></dt>
+<dd>Create localized symlinks within <code>~/bin/</code> pointing to a manually cloned repository tree.
+</dd>
+<dt><code>install</code></dt>
+<dd>Move and register the application binaries systematically to the universal <code>/usr/local/bin</code> folder block.
+</dd>
+<dt><code>uninstall</code></dt>
+<dd>Completely remove systemic application components from <code>/usr/local/bin</code>.
+</dd>
+<dt><code>install-user</code></dt>
+<dd>Compile, move, and configure the standalone suite targets for a single local user profile (<code>~/bin/</code>).
+</dd>
+<dt><code>install-sys</code></dt>
+<dd>Execute a full administrative installation routing binaries to <code>/usr/local/bin</code> (implicitly sets <code>PREFIX=/usr/local</code>).
+</dd>
+<dt><code>uninstall-user</code></dt>
+<dd>Discard user-level script mappings and configurations from the local path context.
+</dd>
+<dt><code>uninstall-sys</code></dt>
+<dd>Erase all administrative global binary elements and dependencies from system folders.
+</dd>
+</dl>
+<h1 id="environment">ENVIRONMENT</h1>
+<dl>
+<dt><code>BINDIR</code></dt>
+<dd>Explicitly overrides the destination binary folder path during localized setups. Defaults to <code>$HOME/bin</code>.
+</dd>
+<dt><code>PREFIX</code></dt>
+<dd>Declares the baseline administrative root pathway prefix for global installations. Defaults to <code>/usr/local</code>.
+</dd>
+</dl>
+<h1 id="files">FILES</h1>
+<dl>
+<dt><code>~/.config/mpvc/</code></dt>
+<dd>Destination directory where <code>config-user</code> populates the default <code>mpvc.conf</code>, <code>mpv.conf</code>, and <code>yt-dlp.conf</code> blueprints.
+</dd>
+</dl>
+<h1 id="examples">EXAMPLES</h1>
+<p>Perform a fully automated, standalone setup tracking standard user folder limits:</p>
+<pre><code>mpvc-installer quickstart</code></pre>
+<p>Completely purge and clean up environment trails introduced via the quickstart interface:</p>
+<pre><code>mpvc-installer quickstart-rm</code></pre>
+<p>Audit your current install for required tools/versions (such as socat or gawk):</p>
+<pre><code>mpvc-installer check-reqs</code></pre>
+<p>Extract and mirror the default configuration profile layout assets inside your user profile directory path:</p>
+<pre><code>mpvc-installer config-user</code></pre>
+<h1 id="see-also">SEE ALSO</h1>
+<p>mpv(1), mpc(1), fzf(1), yt-dlp(1), <a href="mpvc.html">mpvc(1)</a>, <a href="mpvc-fzf.html">mpvc-fzf(1)</a>, <a href="mpvc-tui.html">mpvc-tui(1)</a>, <a href="mpvc-web.html">mpvc-web(1)</a>,</p>
+<h1 id="author">AUTHOR</h1>
+<p>Manual written by gmt4. See <a href="https://github.com/gmt4/mpvc" class="uri">https://github.com/gmt4/mpvc</a> for more information.</p>
+<h1 id="reporting-bugs">REPORTING BUGS</h1>
+<p>Report bugs at: <a href="https://github.com/gmt4/mpvc/issues" class="uri">https://github.com/gmt4/mpvc/issues</a></p>
+</body>
+</html>
