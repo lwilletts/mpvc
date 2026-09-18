@@ -106,6 +106,7 @@ yt-dlp(1),
 [mpvc-fzf(1)](mpvc-fzf.html),
 [mpvc-tui(1)](mpvc-tui.html),
 [mpvc-web(1)](mpvc-web.html),
+[mpvc-index](.),
 
 AUTHOR
 ======
