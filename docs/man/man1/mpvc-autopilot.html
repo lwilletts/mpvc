@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>mpvc-autopilot(1)</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <style>
+  body { max-width: 95%; margin-left: auto; margin-right: auto; }
+  em, i { font-style: normal; text-decoration: underline; }
+  pre, code { white-space: pre-wrap; }
+  pre { border: 1px solid currentColor; border-radius: 6px; background-color: #f6f8fa; overflow-x: auto; padding: 12px; }
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">mpvc-autopilot(1)</h1>
+<p class="date">September, 2026</p>
+</header>
+<h1 id="name">NAME</h1>
+<p>mpvc-autopilot - Autopilot mode with auto start/stop, and random playlist playback daemon</p>
+<h1 id="synopsis">SYNOPSIS</h1>
+<p>mpvc-autopilot options args</p>
+<h1 id="description">DESCRIPTION</h1>
+<p>mpvc-autopilot puts mpvc on autopilot mode. It operates in two primary modes: managing absolute playback states based on local network presence, or continuously cycling randomized background tracks during set hours.</p>
+<h1 id="options">OPTIONS</h1>
+<dl>
+<dt>-c MODE</dt>
+<dd>Set the loop operation mode. Available modes:
+</dd>
+</dl>
+<ul>
+<li>mpvcap_autostart: (Default) Toggles play/pause when a device IP enters or leaves the local network.</li>
+<li>mpvcap_autopilot: Continuously injects and plays random background tracks from your media directory.</li>
+</ul>
+<dl>
+<dt>-C CMD</dt>
+<dd>Set the low-level execution command used for checking target presence (defaults to <em>mpvcap_pingcheck</em>).
+</dd>
+<dt>-h, –help</dt>
+<dd>Display the utility usage help message and exit.
+</dd>
+<dt>-i IP</dt>
+<dd>Specify the local LAN IP address of the device (such as a smartphone or tablet) to track for network presence. <strong>Required</strong> when using presence-based tracking modes.
+</dd>
+<dt>-m HOUR</dt>
+<dd>Set the minimum hour constraint (24-hour integer format) when automated tracking or playback routines are allowed to start (defaults to <em>6</em> AM).
+</dd>
+<dt>-M HOUR</dt>
+<dd>Set the maximum hour constraint (24-hour integer format) when automated routines must pause or stop (defaults to <em>20</em> PM).
+</dd>
+<dt>-n COUNT</dt>
+<dd>The maximum number of sequential failed presence checks allowed before forcing mpvc to pause playback (defaults to <em>3</em>).
+</dd>
+<dt>-p PERIOD</dt>
+<dd>Set the countdown sleep delay in seconds between tracking checks or background track rotations (defaults to <em>300</em>).
+</dd>
+</dl>
+<h1 id="examples">EXAMPLES</h1>
+<p>Start tracking network presence using a phone’s IP address with a 1-minute interval:</p>
+<pre><code>mpvc-autopilot -i 192.168.0.2 -p 60 -n 2</code></pre>
+<p>Run a continuous random background music loop during office hours:</p>
+<pre><code>mpvc-autopilot -c mpvcap_autopilot -p 180 -m 9 -M 17</code></pre>
+<h1 id="environment">ENVIRONMENT</h1>
+<dl>
+<dt>XDG_CONFIG_HOME</dt>
+<dd>Directory where mpvc configuration is stored. Defaults to ~/.config/ if not set.
+</dd>
+</dl>
+<h1 id="files">FILES</h1>
+<dl>
+<dt>~/.config/mpvc/mpvc.conf</dt>
+<dd>mpvc-specific configuration file.
+</dd>
+</dl>
+<h1 id="see-also">SEE ALSO</h1>
+<p><a href="mpvc.html">mpvc(1)</a>, <a href="mpvc.conf.html">mpvc(5)</a>, <a href="mpvc-fzf.html">mpvc-fzf(1)</a>, <a href="mpvc-tui.html">mpvc-tui(1)</a>, <a href="mpvc-web.html">mpvc-web(1)</a>, <a href="mpvc-equalizer.html">mpvc-equalizer(1)</a> <a href=".">mpvc-index</a>,</p>
+<h1 id="author">AUTHOR</h1>
+<p>Manual written by gmt4. See <a href="https://github.com/gmt4/mpvc" class="uri">https://github.com/gmt4/mpvc</a> for more information.</p>
+<h1 id="reporting-bugs">REPORTING BUGS</h1>
+<p>Report bugs at: <a href="https://github.com/gmt4/mpvc/issues" class="uri">https://github.com/gmt4/mpvc/issues</a></p>
+</body>
+</html>
