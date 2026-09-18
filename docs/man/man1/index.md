@@ -16,6 +16,7 @@ manual: User Manuals Index
 *   [mpvc-installer(1)](mpvc-installer.html) - Environment checker deployments, system upgrades, and configuration template generators.
 *   [mpvc-tui(1)](mpvc-tui.html) - Terminal dashboard matrix, album art injection hooks, and live tracker overlays.
 *   [mpvc-web(1)](mpvc-web.html) - Minimalist HTTP server control panel and zero-config browser interaction portal.
+*   [mpvc-autopilot(1)](mpvc-autopilot.html) - Autopilot mode with auto start/stop, and random playlist playback daemon
 
 ### Section 5 - File Formats & Configurations (man5)
 
