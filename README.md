@@ -40,18 +40,14 @@ mpvc-fzf --lofi     # Instantly search and play live Lo-Fi audio feeds
 mpvc-fzf --somafm   # Browse and stream live background channels from SomaFM
 ```
 
-*Looking for high-level script wrappers, playlist stashes, or advanced command examples? Check out the **[Complete Usage Examples in docs/README.md](docs/README.md#usage)**.*
-
----
-
-## 🌐 Web Browser Control (mpvc-web)
-
-Start the local control wrapper with `mpvc-web -c start` and open `http://localhost:8888` in your browser. It turns any web browser into a clean media remote control interface without heavy dependencies.
+### 3. Web Browser Control (mpvc-web)
 
 ```bash
-mpvc-web -c start
-# Open `http://localhost:8888` in your browser
+mpvc-web -c start       # Start, and open `http://localhost:8888` in your browser
+mpvc-web -c start -s1   # Start, and open `https://localhost:8443` in your browser
 ```
+
+*Looking for high-level script wrappers, playlist stashes, or advanced command examples? Check out the **[Complete Usage Examples in docs/README.md](docs/README.md#git)**.*
 
 ---
 
