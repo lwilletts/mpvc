@@ -83,7 +83,7 @@ mpvc-web -c start
 ![mpvc-tui -T screenshot](../../blob/master/docs/assets/mpvc-tui.png)
 </details>
 
-<details open>
+<details>
 <summary>mpvc-fzf -f: running with fzf to manage the playlist <i>(click to view screenshot)</i></summary>
 
 ![mpvc-fzf screenshot](../../blob/master/docs/assets/mpvc-tui-arch.png)
@@ -127,9 +127,9 @@ Documentation can be found in the man pages, FAQ, README, and dev log:
 * [https://gmt4.github.io/mpvc/logbook.html](https://gmt4.github.io/mpvc/logbook.html)
 : The logbook (blog) is a companion of mpvc that covers mpvc usage & evolution:
 
-[https://github.com/gmt4/mpvc](https://github.com/gmt4/mpvc)
-* The project site at github.
+* [https://github.com/gmt4/mpvc](https://github.com/gmt4/mpvc)
+: The project site at github.
 
-### Issues
+## Issues
 
 If you encounter a bug file an [Issue](../../issues).
