@@ -13,7 +13,7 @@ An elegant, lightweight, mpc-like command-line and web controller for the mpv me
 ## ⚡ Installation
 
 ```bash
-curl -fsSLO https://github.com/lwilletts/mpvc/raw/master/extras/mpvc-installer;
+curl -fsSLO https://github.com/gmt4/mpvc/raw/master/extras/mpvc-installer;
 # take your time to review the mpvc-installer for peace-of-mind
 BINDIR=$HOME/bin SHELL=/bin/sh $SHELL ./mpvc-installer quickstart
 ```
@@ -121,7 +121,7 @@ Documentation can be found in the man pages, FAQ, README, and dev log:
 * [https://gmt4.github.io/mpvc/man/man1/](https://gmt4.github.io/mpvc/man/man1/)
 : For the `mpvc` command-line tools read the manual page.
 
-* [docs/FAQ.md](../../blob/master/docs/FAQ.md)
+* [docs/FAQ.md](docs/FAQ.md)
 : Check the FAQ for any questions left after reading the above docs.
 
 * [https://gmt4.github.io/mpvc/logbook.html](https://gmt4.github.io/mpvc/logbook.html)
