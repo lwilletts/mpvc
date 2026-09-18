@@ -118,7 +118,7 @@ Config file located at `~/.config/mpvc/mpvc.conf`.
 
 Documentation can be found in the man pages, FAQ, README, and dev log:
 
-* [docs/man/](../../blob/master/docs/man/)
+* [https://gmt4.github.io/mpvc/man/man1/](https://gmt4.github.io/mpvc/man/man1/)
 : For the `mpvc` command-line tools read the manual page.
 
 * [docs/FAQ.md](../../blob/master/docs/FAQ.md)
