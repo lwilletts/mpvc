@@ -79,7 +79,7 @@ usage()
     cat <<EOF
 usage: $PROGNAME -[$optflags] args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
  -i : The IP of the device to detect ping presence for $PROGNAME (*required)
- -c : The operation cmd to run $PROGNAME (default: $MPVC_AP_CMD)
+ -c : The operation cmd to run $PROGNAME (default: $MPVC_AP_CMD [mpvcap_autostart,mpvcap_autopilot])
  -C : The presence check to run $PROGNAME (default: $MPVC_AP_CHECK)
  -p : The number of seconds between ping presence checks (default: $MPVC_AP_PERIOD)
  -n : The number of failed ping presence checks after which to pause mpvc (default: $MPVC_AP_NCHECK)
