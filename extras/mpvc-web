@@ -459,16 +459,12 @@ legend {
   }
 }
 
-/* ANIMATIONS & TRANSITIONS */
-
 @media (prefers-reduced-motion: no-preference) {
   * {
     transition-property: background, color, border, box-shadow, transform;
     transition-duration: 0.2s;
   }
 }
-
-/* ACCESSIBILITY */
 
 :focus-visible {
   outline: 2px solid var(--accent);
@@ -632,7 +628,6 @@ mpvc_web_index()
 
         </summary>
         <hr>
-        <ul>
 
         <fieldset class="control-group">
           <legend>[ Playback ]</legend>
@@ -772,7 +767,7 @@ mpvc_web_qrcode()
     host=$MPVC_WEB_HOST
     if ! command -v qrencode >/dev/null; then return; fi
 
-    if [ "$host" -eq "0" ]; then
+    if [ "$host" = "0" ]; then
         host=$(ip -j route get 1.1.1.1 | jq -r '.[0].prefsrc')
     fi
 
