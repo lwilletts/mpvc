@@ -242,7 +242,6 @@ SEE ALSO
 ========
 
 mpv(1),
-mpc(1),
 fzf(1),
 yt-dlp(1),
 [mpvc(1)](mpvc.html),
