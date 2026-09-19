@@ -26,7 +26,7 @@ html_body_open()
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> 🎧$(hostname) mpvc MediaBrowser</title>
+    <title> 🎧$(hostname) mpvc browser</title>
     <style>
         body { font-family: monospace, sans-serif; font-size: 0.8rem; background: #121212; color: #e0e0e0; margin: 0; padding: 15px 4px; }
         .browser { max-width: 99%; margin: 0 auto; }
@@ -36,7 +36,7 @@ html_body_open()
         .btn-action:active { background: #2471a3; }
         .search-container { margin: 10px 0 15px 0; width: 100%; }
         .flex { display: flex; }
-        .flex-fixed { width: 4rem; flex-shrink: 0; margin: 4px; }
+        .flex-fixed { width: 5rem; flex-shrink: 0; margin: 4px; }
         .flex-grow { flex-grow: 1; margin: 4px; }
         #libMode { box-sizing: border-box; background: #222; border: 1px solid #444; border-radius: 6px; color: #fff; min-height: 30px; }
         #libSearch { box-sizing: border-box; background: #222; border: 1px solid #444; border-radius: 6px; color: #fff; min-height: 40px; }
@@ -100,7 +100,9 @@ html_body_open()
     <option value=stash>     Stash
     <option value=feeds>     Feeds
 
+    <option value=somafm>    SomaFM
     <option value=video>     Video
+    <option value=volume>    Volume
     </select>
 
     <input type='text' id='libSearch' name='filter' class='flex-grow' oninput='filterFiles()' onkeydown='filterKeyDown(event)' placeholder='🔍 Type to filter items ...' autocomplete='off' title='Search (ProTip: accesskey=s)' accesskey=s>
@@ -260,6 +262,7 @@ handle_action()
     equalizer-load) "$MPVC-equalizer" load "$item" ;;
     playlist-play)  "$MPVC" -q play "$item1" ;;
     playlist-add)   "$MPVC" -q add "$item1" ;;
+    playlist-rm)    "$MPVC" -q rm "$item1" ;;
     chapter-play)   "$MPVC" -q chapter-play "$item1" ;;
     esac
 
@@ -367,6 +370,11 @@ handle_remote()
     handle_generic "$MPVC-fzf search $filter" "$PROGNAME?browser&action=playlist-add"
 }
 
+handle_somafm()
+{
+    handle_generic "$MPVC-fzf somafm-raw" "$PROGNAME?browser&action=playlist-add"
+}
+
 handle_generic()
 {
     cmdlist="$1"
@@ -412,6 +420,7 @@ mpvc_browser()
     equalizer)  handle_equalizer ;;
 
     feeds)      handle_feeds ;;
+    somafm)     handle_somafm ;;
     remote)     handle_remote ;;
     esac
 }
