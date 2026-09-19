@@ -57,11 +57,11 @@ background track rotations (defaults to \f[I]300\f[R]).
 .SH EXAMPLES
 .PP
 Start tracking network presence using a phone\[cq]s IP address with a
-1-minute interval:
+5-minute interval:
 .IP
 .nf
 \f[C]
-mpvc-autopilot -i 192.168.0.2 -p 60 -n 2
+mpvc-autopilot -i 192.168.0.2 -p 300 -n 2
 \f[R]
 .fi
 .PP
@@ -69,7 +69,7 @@ Run a continuous random background music loop during office hours:
 .IP
 .nf
 \f[C]
-mpvc-autopilot -c mpvcap_autopilot -p 180 -m 9 -M 17
+mpvc-autopilot -c mpvcap_autopilot -p 180 -m 9 -M 17 -i 1
 \f[R]
 .fi
 .SH ENVIRONMENT

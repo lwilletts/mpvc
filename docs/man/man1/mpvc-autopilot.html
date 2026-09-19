@@ -65,10 +65,10 @@
 </dd>
 </dl>
 <h1 id="examples">EXAMPLES</h1>
-<p>Start tracking network presence using a phone’s IP address with a 1-minute interval:</p>
-<pre><code>mpvc-autopilot -i 192.168.0.2 -p 60 -n 2</code></pre>
+<p>Start tracking network presence using a phone’s IP address with a 5-minute interval:</p>
+<pre><code>mpvc-autopilot -i 192.168.0.2 -p 300 -n 2</code></pre>
 <p>Run a continuous random background music loop during office hours:</p>
-<pre><code>mpvc-autopilot -c mpvcap_autopilot -p 180 -m 9 -M 17</code></pre>
+<pre><code>mpvc-autopilot -c mpvcap_autopilot -p 180 -m 9 -M 17 -i 1</code></pre>
 <h1 id="environment">ENVIRONMENT</h1>
 <dl>
 <dt>XDG_CONFIG_HOME</dt>

@@ -54,13 +54,13 @@ OPTIONS
 EXAMPLES
 ========
 
-Start tracking network presence using a phone's IP address with a 1-minute interval:
+Start tracking network presence using a phone's IP address with a 5-minute interval:
 
-    mpvc-autopilot -i 192.168.0.2 -p 60 -n 2
+    mpvc-autopilot -i 192.168.0.2 -p 300 -n 2
 
 Run a continuous random background music loop during office hours:
 
-    mpvc-autopilot -c mpvcap_autopilot -p 180 -m 9 -M 17
+    mpvc-autopilot -c mpvcap_autopilot -p 180 -m 9 -M 17 -i 1
 
 ENVIRONMENT
 ===========
