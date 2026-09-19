@@ -23,7 +23,9 @@ mpvc_defaults()
 
     : "${MPVC_CHAPTERS_DIR:=$MPVC_CONFIG_DIR/chapters}"
 
-    [ ! -d "$MPVC_CHAPTERS_DIR" ] && mkdir -p "$MPVC_CHAPTERS_DIR" || true
+    if [ ! -d "$MPVC_CHAPTERS_DIR" ]; then
+        mkdir -p "$MPVC_CHAPTERS_DIR"
+    fi
 
     FFMPEG=$(command -v ffmpeg) || { echo "ffmpeg not found"; exit 1; }
 }
