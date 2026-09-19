@@ -18,7 +18,7 @@ curl -fsSLO https://github.com/gmt4/mpvc/raw/master/extras/mpvc-installer;
 BINDIR=$HOME/bin SHELL=/bin/sh $SHELL ./mpvc-installer quickstart
 ```
 
-*Prefer using package managers like Homebrew, Nix, Pkg, Gentoo, or the Arch AUR? See the **[Detailed Installation steps in docs/README.md](docs/README.md#installation)**.*
+*Prefer using package managers like Homebrew, Nix, Pkg, Gentoo, or the Arch AUR? See the **[Detailed Installation steps in docs/README.md](docs/#installation)**.*
 
 ---
 
@@ -49,7 +49,7 @@ mpvc-web -c start       # Start, and open `http://localhost:8888` in your browse
 mpvc-web -c start -s1   # Start, and open `https://localhost:8443` in your browser
 ```
 
-*Looking for high-level script wrappers, playlist stashes, or advanced command examples? Check out the **[Complete Usage Examples in docs/README.md](docs/README.md#git)**.*
+*Looking for high-level script wrappers, playlist stashes, or advanced command examples? Check out the **[Complete Usage Examples in docs/README.md](docs/#git)**.*
 
 ---
 
@@ -59,7 +59,7 @@ mpvc-web -c start -s1   # Start, and open `https://localhost:8443` in your brows
 *   **mpvc-fzf:** Interactive fuzzy-finder integration to look up tracks and stream streams.
 *   **mpvc-tui:** Terminal-user-interface console to display tracks and desktop notifications.
 
-*To see the full breakdown and capabilities of each tool script, read our **[Overview in docs/README.md](docs/README.md#overview)**.*
+*To see the full breakdown and capabilities of each tool script, read our **[Overview in docs/README.md](docs/#overview)**.*
 
 ### Screenshots
 
@@ -100,7 +100,7 @@ mpvc-web -c start -s1   # Start, and open `https://localhost:8443` in your brows
 *   **Required:** POSIX-compliant shell (`sh`), `mpv`, `socat`.
 *   **Recommended:** `fzf`, `yt-dlp`.
 
-*For package manager setups or troubleshooting tips, consult the **[Prerequisites Guide in docs/README.md](docs/README.md#requirements)**.*
+*For package manager setups or troubleshooting tips, consult the **[Prerequisites Guide in docs/README.md](docs/#requirements)**.*
 
 ---
 
@@ -108,7 +108,7 @@ mpvc-web -c start -s1   # Start, and open `https://localhost:8443` in your brows
 
 Config file located at `~/.config/mpvc/mpvc.conf`.
 
-*For full variable template defaults or configuring backend rules (`mpv.conf` / `yt-dlp.conf`), look over our **[Configuration in docs/README.md](docs/README.md#configuration)**.*
+*For full variable template defaults or configuring backend rules (`mpv.conf` / `yt-dlp.conf`), look over our **[Configuration in docs/README.md](docs/#configuration)**.*
 
 ---
 
@@ -116,17 +116,17 @@ Config file located at `~/.config/mpvc/mpvc.conf`.
 
 Documentation can be found in the man pages, FAQ, README, and dev log:
 
+* [https://github.com/gmt4/mpvc](https://github.com/gmt4/mpvc)
+: The project site at github.
+
 * [https://gmt4.github.io/mpvc/man/man1/](https://gmt4.github.io/mpvc/man/man1/)
 : For the `mpvc` command-line tools read the manual page.
-
-* [docs/FAQ.md](docs/FAQ.md)
-: Check the FAQ for any questions left after reading the above docs.
 
 * [https://gmt4.github.io/mpvc/logbook.html](https://gmt4.github.io/mpvc/logbook.html)
 : The logbook (blog) is a companion of mpvc that covers mpvc usage & evolution:
 
-* [https://github.com/gmt4/mpvc](https://github.com/gmt4/mpvc)
-: The project site at github.
+* [https://github.com/gmt4/mpvc/docs/FAQ.md](docs/FAQ.md)
+: Check the FAQ for any questions left after reading the above docs.
 
 ## Issues
 
