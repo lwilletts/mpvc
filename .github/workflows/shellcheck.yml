@@ -14,4 +14,4 @@ jobs:
         with:
           severity: warning
           scandir: 'none'
-          additional_files: 'mpvc docs/config/mpvc.conf extras/mpvc-tui extras/mpvc-web extras/mpvc-autopilot extras/mpvc-installer'
+          additional_files: 'mpvc docs/config/mpvc.conf extras/mpvc-tui extras/mpvc-web extras/mpvc-cut extras/mpvc-chapter extras/mpvc-autopilot extras/mpvc-installer'
