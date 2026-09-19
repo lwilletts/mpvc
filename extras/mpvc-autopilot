@@ -28,23 +28,44 @@ mpvcap_defaults()
 
 mpvcap_date() { echo "[$(date +%H:%M)]"; }
 mpvcap_pingcheck() { ping -c 5 "$@" | awk 'NR == 2 && /time=/ { sub(":.*time=",": time="); print }'; }
-mpvcap_btcheck()   { hcitool scan | awk "/$@/ {print}"; }
+mpvcap_btcheck()   { hcitool scan | awk "/$*/ {print}"; }
 
 # autopilot play tracks at random from musicdir each PERIOD secs
 mpvcap_autopilot()
 {
-    echo "# $(mpvcap_date) $PROGNAME $@ $MPVC_AP_CMD $MPVC_AP_CHECK PERIOD=$MPVC_AP_PERIOD NCHECK=$MPVC_AP_NCHECK [$MPVC_AP_HOURMIN,$MPVC_AP_HOURMAX]"
-    outputdir=$(mpvc-fzf -OO)
-    while sleep ${MPVC_AP_PERIOD}
+    echo "# $(mpvcap_date) $PROGNAME $* $MPVC_AP_CMD $MPVC_AP_CHECK PERIOD=$MPVC_AP_PERIOD"
+
+    music_dir=$(mpvc-fzf -OO 2>/dev/null || echo "$HOME/Music")
+    history_file="/tmp/mpvc_history"
+    touch "$history_file"
+
+    current_album=""
+    tracks_played_in_album=0
+
+    while sleep "${MPVC_AP_PERIOD}"
     do
         hour=$(date +%_H)
-        if [ "$hour" -ge ${MPVC_AP_HOURMIN} -a "$hour" -lt ${MPVC_AP_HOURMAX} ]
+        if [ "$hour" -ge "${MPVC_AP_HOURMIN}" ] && [ "$hour" -lt "${MPVC_AP_HOURMAX}" ]
         then
             pause=$(mpvc -q get pause || true)
-            next=$(find $(mpvc-fzf -OO) -type f | shuf -n1)
-            echo "# $(mpvcap_date) $PROGNAME next $next"
             if [ "$pause" != "yes" ]; then
-                mpvc -n "$next"
+                if [ -z "$current_album" ] || [ "$tracks_played_in_album" -ge 3 ]; then
+                    current_album=$(find "$music_dir" -type f | sed 's|/[^/]*$||' | shuf -n1)
+                    tracks_played_in_album=0
+                fi
+
+                next=$(find "$current_album" -maxdepth 1 -type f | shuf -n1)
+                if [ -z "$next" ]; then current_album=""; continue; fi
+                if grep -qxF "$next" "$history_file"; then
+                    continue
+                fi
+
+                echo "$next" >> "$history_file"
+                tail -n 30 "$history_file" > "${history_file}.tmp" && mv "${history_file}.tmp" "$history_file"
+
+                echo "# $(mpvcap_date) $PROGNAME next $next (Album: $(basename "$current_album"))"
+                mpvc -n "$next" || true
+                tracks_played_in_album=$((tracks_played_in_album + 1))
             fi
         fi
     done
@@ -56,20 +77,37 @@ mpvcap_autostart()
     target="$1"
     ncheck=0
 
-    echo "# $PROGNAME $@ $MPVC_AP_CMD $MPVC_AP_CHECK PERIOD=$MPVC_AP_PERIOD NCHECK=$MPVC_AP_NCHECK [$MPVC_AP_HOURMIN,$MPVC_AP_HOURMAX]"
-    while sleep ${MPVC_AP_PERIOD}
+    echo "# $PROGNAME $* $MPVC_AP_CMD $MPVC_AP_CHECK PERIOD=$MPVC_AP_PERIOD NCHECK=$MPVC_AP_NCHECK [$MPVC_AP_HOURMIN,$MPVC_AP_HOURMAX]"
+    while sleep "${MPVC_AP_PERIOD}"
     do
         hour=$(date +%_H)
         pause=$(mpvc -q get pause || true)
         check="$($MPVC_AP_CHECK "$target")"
-        nsign=$(if [ -n "$check" ]; then echo +; else echo -; fi)
-        ncheck=$(( ( $ncheck $nsign 1 ) % ( $MPVC_AP_NCHECK + 1 ) ))
-        if [ "$hour" -ge ${MPVC_AP_HOURMIN} -a "$hour" -lt ${MPVC_AP_HOURMAX} ]
-        then
-            if [ "$ncheck" -gt 0 ]; then mpvc -q resume || true; fi       # n>0 pings up: resume
-            if [ "$ncheck" -le -$MPVC_AP_NCHECK ]; then mpvc -q pause || true; fi # n<0 pings down: pause
+
+        # Device present/absent
+        if [ -n "$check" ]; then
+            if [ $ncheck -lt 0 ]; then ncheck=0; fi
+            ncheck=$(( ncheck + 1 ))
+            if [ "$ncheck" -gt "$MPVC_AP_NCHECK" ]; then ncheck=$MPVC_AP_NCHECK; fi
+        else
+            if [ "$ncheck" -gt 0 ]; then ncheck=0; fi
+            ncheck=$(( ncheck - 1 ))
         fi
-        echo "# $(mpvcap_date) $PROGNAME PERIOD=$MPVC_AP_PERIOD NCHECK=$MPVC_AP_NCHECK pause=$pause c=${#check} n=${ncheck} $check" # $@
+
+        # Check time window bounds
+        if [ "$hour" -ge "${MPVC_AP_HOURMIN}" ] && [ "$hour" -lt "${MPVC_AP_HOURMAX}" ]
+        then
+            # First successful verification -> resume
+            if [ "$ncheck" -eq 1 ]; then
+                mpvc -q resume || true
+            fi
+            # Threshold of consecutive failures reached -> pause
+            if [ "$ncheck" -le "-$MPVC_AP_NCHECK" ]; then
+                mpvc -q pause || true
+                ncheck=-$MPVC_AP_NCHECK
+            fi
+        fi
+        echo "# $(mpvcap_date) $PROGNAME PERIOD=$MPVC_AP_PERIOD NCHECK=$MPVC_AP_NCHECK pause=$pause c=${#check} n=${ncheck} $check"
     done
 }
 
