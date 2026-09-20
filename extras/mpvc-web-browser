@@ -373,12 +373,12 @@ handle_remote()
 
 handle_somafm()
 {
-    handle_generic "$MPVC-fzf somafm-raw" "$PROGNAME?browser&action=playlist-add"
+    handle_generic "mpvc_csv $MPVC-fzf somafm-raw" "$PROGNAME?browser&action=playlist-add"
 }
 
 handle_radioparadise()
 {
-    handle_generic "$MPVC-fzf rp-raw" "$PROGNAME?browser&action=playlist-add"
+    handle_generic "mpvc_csv $MPVC-fzf rp-raw" "$PROGNAME?browser&action=playlist-add"
 }
 
 handle_generic()
@@ -433,6 +433,8 @@ mpvc_browser()
 }
 
 mpvc_warn()  { echo "$@" >&2; }
+mpvc_csv()   { "$@" | sed 's/;/ /g'; }
+
 mpvc_html()  { echo "Content-Type: text/html";  echo "Connection: close"; echo; echo "$@"; }
 mpvc_strip() { sed '/\x1b\[7m/ { s|\x1b\[7m||; s| |+|; }; s|\x1b\[0m||;'; }
 mpvc_redir() { if [ -n "$1" ] && [ "$1" != "null" ]; then mpvc_html '<meta http-equiv=refresh content="0.1;url='$1'" />'; fi; }
