@@ -651,10 +651,13 @@ mpvcfzf_feed_radioapi_args()
 mpvcfzf_feed_radioapi_std() { mpvcfzf_feeds "${1:-}" $(mpvcfzf_feed_radioapi_args); }
 mpvcfzf_feed_radioapi_raw() { mpvcfzf_feeds_search $(mpvcfzf_feed_radioapi_args); }
 
-mpvcfzf_feed_ntsradio()
+mpvcfzf_feed_ntsradio_args()
 {
-    mpvcfzf_feeds "${1:-}" "$MPVC_FZF_NTSRADIO_FILE" "https://www.nts.live/api/v2/mixtapes" '.results | .[] | (.audio_stream_endpoint+";"+.title+";"+.subtitle+"\n")'
+    echo "$MPVC_FZF_NTSRADIO_FILE" "https://www.nts.live/api/v2/mixtapes" '.results|.[]|(.audio_stream_endpoint+";"+.title+";"+.subtitle)'
 }
+
+mpvcfzf_feed_ntsradio_std() { mpvcfzf_feeds "${1:-}" $(mpvcfzf_feed_ntsradio_args); }
+mpvcfzf_feed_ntsradio_raw() { mpvcfzf_feeds_search $(mpvcfzf_feed_ntsradio_args); }
 
 mpvcfzf_feed_custom()
 {
