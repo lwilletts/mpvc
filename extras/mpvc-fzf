@@ -49,6 +49,7 @@ mpvcfzf_defaults()
     : "${MPVC_FZF_IMGVIEWER:=lsix}"
 
     : "${MPVC_FZF_SOMAFM_FILE:=$MPVC_CONFIG_DIR/feeds/somafm-channels.json}"
+    : "${MPVC_FZF_RP_FILE:=$MPVC_CONFIG_DIR/feeds/radioparadise-channels.json}"
     : "${MPVC_FZF_RADIOAPI_FILE:=$MPVC_CONFIG_DIR/feeds/radioapi-channels.json}"
     : "${MPVC_FZF_NTSRADIO_FILE:=$MPVC_CONFIG_DIR/feeds/ntsradio-channels.json}"
     : "${MPVC_FZF_CUSTOM_FILE:=$MPVC_CONFIG_DIR/feeds/custom-channels.json}"
@@ -613,6 +614,8 @@ mpvcfzf_feed_list()
     fi
 }
 
+# Feeds
+
 mpvcfzf_feed_lofi()
 {
     for url in "${1:-https://lofigirl.com/wp-content/uploads/2023/06/}" "${1:-https://archive.org/download/lofigirl-youtube/mp3/}";
@@ -624,20 +627,29 @@ mpvcfzf_feed_lofi()
     done
 }
 
-mpvcfzf_feed_somafm()
+mpvcfzf_feed_rp_args()
 {
-    mpvcfzf_feeds "${1:-}" "$MPVC_FZF_SOMAFM_FILE" "https://somafm.com/channels.json" '.channels | sort_by(.listeners | tonumber) | reverse | .[] | (.playlists[3]|.url) + ";" + .listeners + " ls "+.genre+";"+ .title'
+    echo "$MPVC_FZF_RP_FILE" "https://all.api.radio-browser.info/json/stations/topvote?hidebroken=true&limit=4096&name=Radio%20Paradise" '.[]|select(.name|test("Radio.Paradise.(Main|Mellow|Rock|World)";"i"))|(.url_resolved+";"+.name+";"+.codec+";"+(.bitrate|tostring))'
 }
 
-mpvcfzf_feed_somafm_raw()
+mpvcfzf_feed_rp_std() { mpvcfzf_feeds "${1:-}" $(mpvcfzf_feed_rp_args); }
+mpvcfzf_feed_rp_raw() { mpvcfzf_feeds_search $(mpvcfzf_feed_rp_args); }
+
+mpvcfzf_feed_somafm_args()
 {
-    mpvcfzf_feeds_search "$MPVC_FZF_SOMAFM_FILE" "https://somafm.com/channels.json" '.channels | sort_by(.listeners | tonumber) | reverse | .[] | (.playlists[3]|.url) + ";" + .listeners + " ls "+.genre+";"+ .title' | sed 's/;/ /' # XXX
+    echo "$MPVC_FZF_SOMAFM_FILE" "https://somafm.com/channels.json" '.channels|sort_by(.listeners|tonumber)|reverse|.[]|(.playlists[3]|.url)+";"+.listeners+"ls-"+.genre+";"+.title'
 }
 
-mpvcfzf_feed_radioapi()
+mpvcfzf_feed_somafm_std() { mpvcfzf_feeds "${1:-}" $(mpvcfzf_feed_somafm_args); }
+mpvcfzf_feed_somafm_raw() { mpvcfzf_feeds_search $(mpvcfzf_feed_somafm_args); }
+
+mpvcfzf_feed_radioapi_args()
 {
-    mpvcfzf_feeds "${1:-}" "$MPVC_FZF_RADIOAPI_FILE" "https://all.api.radio-browser.info/json/stations/topvote?hidebroken=true&limit=4096" '.[] | select( (.url|length) < 80 ) | (.url+";"+(.votes|tostring)+" "+.name)'
+    echo "$MPVC_FZF_RADIOAPI_FILE" "https://all.api.radio-browser.info/json/stations/topvote?hidebroken=true&limit=4096" '.[]|select((.url|length)<80)|(.url+";"+(.votes|tostring)+"-"+.name)'
 }
+
+mpvcfzf_feed_radioapi_std() { mpvcfzf_feeds "${1:-}" $(mpvcfzf_feed_radioapi_args); }
+mpvcfzf_feed_radioapi_raw() { mpvcfzf_feeds_search $(mpvcfzf_feed_radioapi_args); }
 
 mpvcfzf_feed_ntsradio()
 {
@@ -740,6 +752,7 @@ usage: $PROGNAME opts # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
 
     (--)lofi    : Search & play Lo-Fi channels
     (--)somafm  : Search & play SomaFM channels
+    (--)rp      : Search & play RadioParadise channels
     (--)rapi    : Search & play Radio-Browser API channels
     (--)ntsr    : Search & play NTS-Radio API channels
     (--)custom  : Search & play your custom feeds (channels, playlists, ...)
@@ -812,10 +825,14 @@ main()
 
         --feed|feed)            shift; mpvcfzf_feed_list "${@:-}"; return ;;
         --lofi|lofi)            shift; mpvcfzf_feed_lofi "${1:-}"; return ;;
-        --somafm|somafm)        shift; mpvcfzf_feed_somafm "${1:-}"; return ;;
+        --somafm|somafm)        shift; mpvcfzf_feed_somafm_std "${1:-}"; return ;;
         --somafm-raw|somafm-raw)shift; mpvcfzf_feed_somafm_raw "${1:-}"; return ;;
-        --rapi|rapi)            shift; mpvcfzf_feed_radioapi "${1:-}"; return ;;
-        --ntsr|ntsr)            shift; mpvcfzf_feed_ntsradio "${1:-}"; return ;;
+        --rp|rp)                shift; mpvcfzf_feed_rp_std "${1:-}"; return ;;
+        --rp-raw|rp-raw)        shift; mpvcfzf_feed_rp_raw "${1:-}"; return ;;
+        --rapi|rapi)            shift; mpvcfzf_feed_radioapi_std "${1:-}"; return ;;
+        --rapi-raw|rapi-raw)    shift; mpvcfzf_feed_radioapi_raw "${1:-}"; return ;;
+        --ntsr|ntsr)            shift; mpvcfzf_feed_ntsradio_std "${1:-}"; return ;;
+        --ntsr-raw|ntsr-raw)    shift; mpvcfzf_feed_ntsradio_raw "${1:-}"; return ;;
         --custom|custom)        shift; mpvcfzf_feed_custom "$@"; return ;;
         custom-gen)             shift; mpvcfzf_feed_custom_gen "$@"; return ;;
         invid-list)             shift; mpvcfzf_invid_instances "$@"; return ;;
