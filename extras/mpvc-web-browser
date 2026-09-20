@@ -95,14 +95,15 @@ html_body_open()
     <option value=chapters>  Chapters
     <option value=equalizer> Equalizer
 
-    <option value=media>     Media
-    <option value=yewtube>   YewtuBe
-    <option value=stash>     Stash
-    <option value=feeds>     Feeds
+    <option value=media>        Media
+    <option value=yewtube>      YewtuBe
+    <option value=stash>        Stash
+    <option value=feeds>        Feeds
 
-    <option value=somafm>    SomaFM
-    <option value=video>     Video
-    <option value=volume>    Volume
+    <option value=somafm>       SomaFM
+    <option value=radioparadise>    RadioParadise
+    <option value=video>        Video
+    <option value=volume>       Volume
     </select>
 
     <input type='text' id='libSearch' name='filter' class='flex-grow' oninput='filterFiles()' onkeydown='filterKeyDown(event)' placeholder='🔍 Type to filter items ...' autocomplete='off' title='Search (ProTip: accesskey=s)' accesskey=s>
@@ -375,6 +376,11 @@ handle_somafm()
     handle_generic "$MPVC-fzf somafm-raw" "$PROGNAME?browser&action=playlist-add"
 }
 
+handle_radioparadise()
+{
+    handle_generic "$MPVC-fzf rp-raw" "$PROGNAME?browser&action=playlist-add"
+}
+
 handle_generic()
 {
     cmdlist="$1"
@@ -412,16 +418,17 @@ mpvc_browser()
     handle_action
 
     case "$mode" in
-    playlist)   handle_playlist ;;
-    chapters)   handle_chapters ;;
-    media)      handle_listing ;;
-    yewtube)    handle_yewtube ;;
-    stash)      handle_stash ;;
-    equalizer)  handle_equalizer ;;
+    playlist)       handle_playlist ;;
+    chapters)       handle_chapters ;;
+    media)          handle_listing ;;
+    yewtube)        handle_yewtube ;;
+    stash)          handle_stash ;;
+    equalizer)      handle_equalizer ;;
 
-    feeds)      handle_feeds ;;
-    somafm)     handle_somafm ;;
-    remote)     handle_remote ;;
+    feeds)          handle_feeds ;;
+    somafm)         handle_somafm ;;
+    radioparadise)  handle_radioparadise ;;
+    remote)         handle_remote ;;
     esac
 }
 
