@@ -732,11 +732,14 @@ mpvc_web_index()
 
         <footer>
         <hr>
+        <small>
         🎧
-        <a href="$PROGURL">$PROGNAME</a>
-        <a href="$PROGURL">$PROGVERSION</a>
-        <a href="${PROGURL%/*}">$PROGAUTHOR</a> $(date +%Y) ©
+        • <a href="$PROGURL">${PROGNAME%-*} $PROGVERSION</a>
+        • <a href="$PROGURL/releases/">changelog</a>
+        • <a href="$PROGURL/issues">issues</a>
+        $(date +%Y) ©
         <a href="javascript:Help()" title="help" ${MPVC_WEB_SHORTCUT_HELP}>/h</a>
+        </small>
         </footer>
     </body>
     <script type="text/javascript">
