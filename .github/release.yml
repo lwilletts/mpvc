@@ -1,0 +1,16 @@
+changelog:
+  exclude:
+    labels:
+      - duplicate
+    authors:
+      - dependabot[bot]
+
+  categories:
+    - title: "🚀 Features"
+      labels:
+        - enhancement
+        - feature
+    - title: "🪲 Fixes"
+      labels:
+        - bug
+        - hotfix
