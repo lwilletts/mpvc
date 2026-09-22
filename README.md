@@ -24,6 +24,8 @@ BINDIR=$HOME/bin SHELL=/bin/sh $SHELL ./mpvc-installer quickstart
 
 ## 🚀 Quickstart Guide
 
+Note you can use `m/mx` instead of `mpvc/mpvc-fzf` when typing on the CLI, these are setup by `mpvc-installer`.
+
 ### 1. Base Player Controls (mpvc)
 ```bash
 mpvc toggle                          # Toggle playback state (play/pause)
@@ -38,6 +40,7 @@ find ~/Music -type f -name "*.mp3" | mpvc load    # Pipe local directories into 
 ```bash
 mpvc-fzf -f         # Launch fzf to visually manage your current playlist queue
 mpvc-fzf -p 'query' # Search on Invidious/YouTube and stream matching audio
+mpvc-fzf --rp       # Instantly search and play live RadioParadise audio feeds
 mpvc-fzf --lofi     # Instantly search and play live Lo-Fi audio feeds
 mpvc-fzf --somafm   # Browse and stream live background channels from SomaFM
 ```
