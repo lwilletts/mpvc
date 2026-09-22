@@ -106,6 +106,9 @@ mpvc_fetch()
             chmod u+x "$file"
         fi
     done
+
+    ln -s "$BINDIR/mpvc" "$BINDIR/m"
+    ln -s "$BINDIR/mpvc-fzf" "$BINDIR/mx"
 }
 
 mpvc_man()
@@ -146,6 +149,9 @@ mpvc_link()
     do
         ln "$lnops" "$(pwd)/$f" "$BINDIR";
     done
+
+    ln -s "$BINDIR/mpvc" "$BINDIR/m"
+    ln -s "$BINDIR/mpvc-fzf" "$BINDIR/mx"
 }
 
 mpvc_install()
@@ -156,6 +162,9 @@ mpvc_install()
     do
         install -Dvm755 "$(pwd)/$script" "$BINDIR";
     done
+
+    ln -s "$BINDIR/mpvc" "$BINDIR/m"
+    ln -s "$BINDIR/mpvc-fzf" "$BINDIR/mx"
 }
 
 mpvc_uninstall()
@@ -170,6 +179,8 @@ mpvc_uninstall()
         rm -v  "$BINDIR/${external##*/}";
     done
 
+    rm -v "$BINDIR/m"
+    rm -v "$BINDIR/mx"
 }
 
 mpvc_check_requirements()
