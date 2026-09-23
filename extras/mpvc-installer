@@ -227,13 +227,13 @@ mpvc_completions()
     for man in $MANS; do
         CMDS=""
 
-        manfile="$MANDIR/$(basename $man)"
+        manfile="$MANDIR/$(basename "$man")"
         [ -e "$manfile" ] || continue
 
         cmd_name=$(basename "$manfile" .1)
 
         # Try local parsing syntax (Linux/BSD man -l), fallback to direct mandoc engine (macOS)
-        CLEAN_TEXT=$(MANPAGER=cat man -l "$manfile" 2>/dev/null || mandoc -Tascii "$manfile" 2>/dev/null)
+        CLEAN_TEXT=$(MANPAGER="cat" man -l "$manfile" 2>/dev/null || mandoc -Tascii "$manfile" 2>/dev/null)
         if [ -n "$CLEAN_TEXT" ]; then
             # Scrape legitimate options (--play, -P, etc.) from the flattened plaintext output string
             CMDS=$(echo "$CLEAN_TEXT" | grep -oE '\-\-[a-z-]+|\-[A-Za-z]' | sort -u | tr '\n' ' ')
