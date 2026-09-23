@@ -1,13 +1,13 @@
 ---
-title: mpvc Manual Pages Index
+title: mpvc Manual Pages
 version: v1.8
 date: April, 2026
-manual: User Manuals Index
+manual: User Commands
 ---
 
 # INDEX
 
-`mpvc` manpages are listed below
+`mpvc`-related manual pages are listed below:
 
 ### Section 1 - User Commands (man1)
 

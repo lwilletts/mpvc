@@ -27,8 +27,8 @@ OPTIONS
 -c MODE
 : Set the loop operation mode. Available modes:
 
-* mpvcap_autostart: (Default) Toggles play/pause when a device IP enters or leaves the local network.
-* mpvcap_autopilot: Continuously injects and plays random background tracks from your media directory.
+* `mpvcap_autostart`: (Default) Toggles play/pause when a device IP enters or leaves the local network.
+* `mpvcap_autopilot`: Continuously injects and plays random background tracks from your media directory.
 
 -C CMD
 : Set the low-level execution command used for checking target presence (defaults to *mpvcap_pingcheck*).

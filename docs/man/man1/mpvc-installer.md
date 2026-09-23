@@ -99,7 +99,6 @@ Extract and mirror the default configuration profile layout assets inside your u
 # SEE ALSO
 
 mpv(1),
-mpc(1),
 fzf(1),
 yt-dlp(1),
 [mpvc(1)](mpvc.html),
