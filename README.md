@@ -6,8 +6,6 @@
 ![GitHub top language](https://img.shields.io/github/languages/top/lwilletts/mpvc)
 ![GitHub lines of Code](https://sloc.xyz/github/lwilletts/mpvc/?category=code)
 
-[ [Intro](#%EF%B8%8F-overview-1) | [Reqs](#requirements) | [Install](#installation) | [Config](#configuration) | [Docs](#documentation) | [Usage](#usage) ]
-
 An elegant, lightweight, mpc-like command-line and web controller for the mpv media player, built on POSIX shell scripts and Unix sockets.
 
 ## ⚡ Installation
