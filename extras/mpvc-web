@@ -695,8 +695,7 @@ mpvc_web_index()
         <details>
         <summary>
             <a href="#mpvc-web-tools" name="mpvc-web-browse">📁 Browser</a>
-            <a href="$MPVC_WEB_CGI_CMD?browser">#new</a>
-            <a href="$MPVC_WEB_CGI_CMD?browser">#max</a>
+            <a href="$MPVC_WEB_CGI_CMD?browser">#n</a>
             $(for x in $MPVC_WEB_EXTRAS_URL; do n=$((${n:-0} + 1)); echo "<a href=$x title=#url-$n>#$n</a>"; done)
             <span style="float:right">
                 <a class=btn href="$MPVC_WEB_CGI_CMD?now-short" title="Now Playing (share)" aria-label="Now Playing">💿</a>
