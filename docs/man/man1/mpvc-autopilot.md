@@ -14,7 +14,16 @@ mpvc-autopilot - Autopilot mode with auto start/stop, and random playlist playba
 SYNOPSIS
 ========
 
-mpvc-autopilot options args
+    usage: mpvc-autopilot -[c:hi:n:p:m:M:] args # @version v1.8 (c) gmt4 https://github.com/gmt4/mpvc
+     -i : The IP of the device to detect ping presence for mpvc-autopilot (*required)
+     -c : The operation cmd to run mpvc-autopilot (default: mpvcap_autostart [mpvcap_autostart,mpvcap_autopilot])
+     -C : The presence check to run mpvc-autopilot (default: mpvcap_pingcheck)
+     -p : The number of seconds between ping presence checks (default: 300)
+     -n : The number of failed ping presence checks after which to pause mpvc (default: 3)
+     -m : The minimum hour when to start ping presence (default: 6h AM)
+     -M : The maximum hour when to stop ping presence (default: 20h PM)
+    *tips: If unsure where to begin, run: mpvc-autopilot -i 192.168.0.2 # your tablet/phone LAN IP
+
 
 DESCRIPTION
 ===========

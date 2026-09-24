@@ -28,7 +28,15 @@
 <h1 id="name">NAME</h1>
 <p>mpvc-web – Web and HTTP API interface for mpvc control</p>
 <h1 id="synopsis">SYNOPSIS</h1>
-<p>mpvc-web <a href="#options">options</a></p>
+<pre><code>usage: mpvc-web -[ha:b:c:d:p:P:r:R:s:S:t:T:x:] args # @version v1.8 (c) gmt4 https://github.com/gmt4/mpvc
+  -c : Set mpvc-web HTTP server command: [start,stop] (*required)
+  -b : Set mpvc-web HTTP server bind address (default localhost)
+  -p : Set mpvc-web HTTP server port (default 8888)
+  -r : Set mpvc-web HTTP server root dir (default /tmp/mpvc-web/root)
+  -R : Set mpvc-web HTTP server HTML refresh (default 240)
+  -s : Set mpvc-web HTTP server SSL/TLS (default )
+  -a : Set mpvc-web HTTP server to include ytdl-archive/ (default )
+*tips: If unsure where to begin, run: mpvc-web -p 8888 -c start # serves @ http://localhost:8888</code></pre>
 <h1 id="description">DESCRIPTION</h1>
 <p><strong>mpvc-web</strong> is a lightweight web interface and HTTP API wrapper for <code>mpvc</code>. It allows users to control an active local <code>mpv</code> media player instance remotely over a network interface using standard HTTP methods or a mobile-friendly browser interface.</p>
 <h1 id="options">OPTIONS</h1>

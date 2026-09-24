@@ -6,8 +6,27 @@
 mpvc-tui - Terminal User Interface for displaying the MPV playlist and
 playback
 .SH SYNOPSIS
-.PP
-mpvc-tui options files
+.IP
+.nf
+\f[C]
+usage: mpvc-tui opts # \[at]version v1.8 (c) gmt4 https://github.com/gmt4/mpvc
+ -d|dir         : Set the WD to the media directory given as argument
+ -h|help        : This help you are reading
+ -H|history     : Starts the mpvc-tui history
+ -k|kill        : Stop the running mpvc-tui
+ -n|notify      : Desktop notification using notify on mpvc events (notify-send*)
+   |socket      : Set mpv socket [default: ].
+ -s|suggest     : Suggest a random media to play based on previous media played
+ -S|scrobler    : Starts the mpvc-tui scrobbler
+ -t|tui         : Starts the mpvc-tui TUI
+ -tt|tinytui    : Starts the mpvc-tui TUI (tiny mode)
+ -ttt|ttinytui  : Starts the mpvc-tui TUI (ttiny mode)
+ -T|Tui         : Combo that starts mpvc-tui -t -n, and adds media given as args
+ -x|launch      : Starts mpvc-tui in a new xterm ($MPVC_TUI_TERM) # combine with 
+ -v|version     : Prints the mpvc-tui version.
+*tips: If unsure about where to begin, start with: mpvc-tui -d /path/to/media/ -T
+\f[R]
+.fi
 .SH DESCRIPTION
 .PP
 mpvc-tui is a terminal-based user interface that displays

@@ -28,7 +28,23 @@
 <h1 id="name">NAME</h1>
 <p>mpvc - mpc-like command-line control interface for mpv</p>
 <h1 id="synopsis">SYNOPSIS</h1>
-<p>mpvc <a href="#options">options</a> [file|url|playlist|-]</p>
+<pre><code>usage: mpvc opts # @version v1.8 (c) gmt4 https://github.com/gmt4/mpvc
+ -a | --add | add         : Add media to playlist (see --load for stdin).
+ -r | --remove | rm       : Remove media by id from playlist (see searchrm for rm by title)
+ -s | --stop | stop       : Always stop playback.
+ -P | --play | play       : Always start playback.
+ -p | --toggle            : Toggle playback.
+      --repeat | repeat   : Loop the playlist.
+      --single | single   : Loop a single file.
+    | --next | next       : Jump to next entry in the playlist
+    | --prev | prev       : Jump to previous entry in the playlist
+ -i | --playlist          : Print filenames of tracks to fit within terminal.
+ -I | --fullplaylist      : Print all filenames of tracks in current playlist.
+ -v | --vol | vol         : Increase/decrease volume relative to current volume.
+ -h | --help              : Prints the short help.
+ -H | --help-long         : Prints the long help (tip: mpvc -H 2&gt;&amp;1 | less).
+
+*tips: If unsure about where to begin, have a look at https://gmt4.github.io/mpvc</code></pre>
 <h1 id="description">DESCRIPTION</h1>
 <p>mpvc is a command-line utility that provides mpc-like control over the mpv media player. It allows users to manage playback, control volume, add and remove media from the playlist, and display playlist information through a simple command-line interface.</p>
 <p>The tool communicates with mpv via a Unix socket, enabling remote control of playback without direct interaction with the mpv window.</p>
@@ -53,7 +69,7 @@
 </dl>
 <h2 id="playlist-management">Playlist Management</h2>
 <dl>
-<dt><code>-a</code>, <code>--add FILE</code>,, <code>add FILE</code></dt>
+<dt><code>-a</code>, <code>--add FILE</code>, <code>add FILE</code></dt>
 <dd>Add a file or URL to the playlist. Supports local files, YouTube URLs, and other media sources.
 </dd>
 <dt><code>-r</code>, <code>--rm ID</code>, <code>rm ID</code></dt>
