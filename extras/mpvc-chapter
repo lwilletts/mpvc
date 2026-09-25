@@ -41,7 +41,7 @@ mpvc_chapter_info()
 {
     chaptersfile=${1:-$(mpvc_chapter_file)}
 
-    if [ ! -e "$chaptersfile" ]; then usage; fi
+    if [ ! -e "$chaptersfile" ]; then mpvc_chapter_usage; fi
 
     #echo "# $chaptersfile"
     awk '
@@ -61,7 +61,7 @@ mpvc_chapter_merge() # usage: merge in.opus ffmetadata.txt out.opus
     ffmetafile="${2:-}"
     dstfile="${3:-/tmp/$(basename "$srcfile")}"
 
-    if [ -z "$srcfile" ] || [ ! -e "$srcfile" ]; then usage; fi
+    if [ -z "$srcfile" ] || [ ! -e "$srcfile" ]; then mpvc_chapter_usage; fi
 
     if [ -z "$dstfile" ] || [ ! -e "$ffmetafile" ];
     then
@@ -85,7 +85,7 @@ mpvc_chapter_gen() # usage: gen 0 < chapterlist.txt, generates a ffmpeg metadata
 
     if [ -z "$chaptersfile" ] || [ -z "$path" ] || [ -z "$mediatitle" ];
     then
-        usage;
+        mpvc_chapter_usage;
     fi
 
     awk -v isabsolute="$isabsolute" -v mediatitle="$mediatitle" -v path="$path" '
@@ -161,39 +161,40 @@ mpvc_chapter_edit()
     "${EDITOR:-vi}" "${MPVC_CHAPTERS_DIR}"
 }
 
-usage()
+mpvc_chapter_usage()
 {
     cat <<EOF
 usage: $PROGNAME args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
- list : List ffmetadata chapter-files
- file : Show current ffmetadata chapter-file
- info : Info current ffmetadata chapter-file
- reset: Reset current ffmetadata chapter-file
- load : Load current ffmetadata chapter-file
- gen  : Gen a ffmetadata chapter-file from a < chapterlist.txt
- merge: Merge ffmetadata chapter-file to audio file (args: in ffmeta out)
+ (--)list : List ffmetadata chapter-files
+ (--)file : Show current ffmetadata chapter-file
+ (--)info : Info current ffmetadata chapter-file
+ (--)reset: Reset current ffmetadata chapter-file
+ (--)load : Load current ffmetadata chapter-file
+ (--)gen  : Gen a ffmetadata chapter-file from a < chapterlist.txt
+ (--)merge: Merge ffmetadata chapter-file to audio file (args: in ffmeta out)
 EOF
     exit;
 }
 
 main()
 {
-    if [ $# -lt 1 ]; then usage; fi
+    if [ $# -lt 1 ]; then mpvc_chapter_usage; fi
 
     mpvc_defaults
 
     case "$1" in
-    file)   shift; mpvc_chapter_file "$@" ;;
-    info)   shift; mpvc_chapter_info "$@" ;;
-    load)   shift; mpvc_chapter_load "$@" ;;
-    clear)  shift; mpvc_chapter_clear "$@" ;;
-    gen)    shift; mpvc_chapter_gen "$@" ;;
-    merge)  shift; mpvc_chapter_merge "$@" ;;
-    reset)  shift; mpvc_chapter_reset "$@" ;;
-    list)   shift; mpvc_chapter_list "$@" ;;
-    edit)   shift; mpvc_chapter_edit "$@" ;;
-    help)   shift; usage "$@" ;;
-    *)      shift; usage "$@" ;;
+    --file|file)       shift; mpvc_chapter_file "$@" ;;
+    --info|info)       shift; mpvc_chapter_info "$@" ;;
+    --load|load)       shift; mpvc_chapter_load "$@" ;;
+    --clear|clear)     shift; mpvc_chapter_clear "$@" ;;
+    --gen|gen)         shift; mpvc_chapter_gen "$@" ;;
+    --merge|merge)     shift; mpvc_chapter_merge "$@" ;;
+    --reset|reset)     shift; mpvc_chapter_reset "$@" ;;
+    --list|list)       shift; mpvc_chapter_list "$@" ;;
+    --edit|edit)       shift; mpvc_chapter_edit "$@" ;;
+    --help|help)       shift; mpvc_chapter_usage "$@" ;;
+#   --version|version) shift; mpvc_chapter_version "$@" ;;
+    *)                 shift; mpvc_chapter_usage "$@" ;;
     esac
 }
 
