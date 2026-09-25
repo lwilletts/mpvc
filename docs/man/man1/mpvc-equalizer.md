@@ -1,7 +1,7 @@
 ---
 title: mpvc-equalizer(1)
 section: 1
-version: v1.8
+version: v1.9
 date: April, 2026
 manual: User Commands
 layout: default
@@ -15,7 +15,7 @@ mpvc-equalizer - manage and adjust audio filter equalizer settings for mpvc
 SYNOPSIS
 ========
 
-    usage: mpvc-equalizer opts # @version v1.8 (c) gmt4 https://github.com/gmt4/mpvc
+    usage: mpvc-equalizer opts # @version v1.9 (c) gmt4 https://github.com/gmt4/mpvc
      save   : Saves equalizer settings
      load   : Loads equalizer settings
      reset  : Resets equalizer settings (set af gains to 0)

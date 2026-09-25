@@ -1,7 +1,7 @@
 ---
 title: mpvc-web(1)
 section: 1
-version: v1.8
+version: v1.9
 date: September, 2026
 manual: User Commands
 layout: default
@@ -15,7 +15,7 @@ mpvc-web -- Web and HTTP API interface for mpvc control
 SYNOPSIS
 ========
 
-    usage: mpvc-web -[ha:b:c:d:p:P:r:R:s:S:t:T:x:] args # @version v1.8 (c) gmt4 https://github.com/gmt4/mpvc
+    usage: mpvc-web -[ha:b:c:d:p:P:r:R:s:S:t:T:x:] args # @version v1.9 (c) gmt4 https://github.com/gmt4/mpvc
       -c : Set mpvc-web HTTP server command: [start,stop] (*required)
       -b : Set mpvc-web HTTP server bind address (default localhost)
       -p : Set mpvc-web HTTP server port (default 8888)

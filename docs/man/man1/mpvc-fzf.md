@@ -1,7 +1,7 @@
 ---
 title: mpvc-fzf(1)
 section: 1
-version: v1.8
+version: v1.9
 date: April, 2026
 manual: User Commands
 layout: default
@@ -15,7 +15,7 @@ mpvc-fzf - fuzzy search interface for discovering and playing media with mpvc
 SYNOPSIS
 ========
 
-    usage: mpvc-fzf opts # @version v1.8 (c) gmt4 https://github.com/gmt4/mpvc
+    usage: mpvc-fzf opts # @version v1.9 (c) gmt4 https://github.com/gmt4/mpvc
       -a|stash      : Start fzf to manage mpvc stashes
       -b|browse     : Start fzf to manage the provided ytdl-archive URL
       -c|chapters   : Start fzf to manage the current mpv chapterlist

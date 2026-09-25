@@ -1,7 +1,7 @@
 ---
 title: mpvc-chapter(1)
 section: 1
-version: v1.8
+version: v1.9
 date: April, 2026
 manual: User Commands
 layout: default
@@ -15,7 +15,7 @@ mpvc-chapter - manage and merge ffmetadata chapter files for mpvc
 SYNOPSIS
 ========
 
-    usage: mpvc-chapter args # @version v1.8 (c) gmt4 https://github.com/gmt4/mpvc
+    usage: mpvc-chapter args # @version v1.9 (c) gmt4 https://github.com/gmt4/mpvc
      (--)list : List ffmetadata chapter-files
      (--)file : Show current ffmetadata chapter-file
      (--)info : Info current ffmetadata chapter-file

@@ -1,7 +1,7 @@
 ---
 title: mpvc-autopilot(1)
 section: 1
-version: v1.8
+version: v1.9
 date: September, 2026
 manual: User Commands
 layout: default
@@ -15,7 +15,7 @@ mpvc-autopilot - Autopilot mode with auto start/stop, and random playlist playba
 SYNOPSIS
 ========
 
-    usage: mpvc-autopilot -[c:hi:n:p:m:M:] args # @version v1.8 (c) gmt4 https://github.com/gmt4/mpvc
+    usage: mpvc-autopilot -[c:hi:n:p:m:M:] args # @version v1.9 (c) gmt4 https://github.com/gmt4/mpvc
      -i : The IP of the device to detect ping presence for mpvc-autopilot (*required)
      -c : The operation cmd to run mpvc-autopilot (default: mpvcap_autostart [mpvcap_autostart,mpvcap_autopilot])
      -C : The presence check to run mpvc-autopilot (default: mpvcap_pingcheck)

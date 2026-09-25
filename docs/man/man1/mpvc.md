@@ -1,7 +1,7 @@
 ---
 title: mpvc(1)
 section: 1
-version: v1.8
+version: v1.9
 date: April, 2026
 manual: User Commands
 layout: default
@@ -15,7 +15,7 @@ mpvc - mpc-like command-line control interface for mpv
 SYNOPSIS
 ========
 
-    usage: mpvc opts # @version v1.8 (c) gmt4 https://github.com/gmt4/mpvc
+    usage: mpvc opts # @version v1.9 (c) gmt4 https://github.com/gmt4/mpvc
      -a | --add | add         : Add media to playlist (see --load for stdin).
      -r | --remove | rm       : Remove media by id from playlist (see searchrm for rm by title)
      -s | --stop | stop       : Always stop playback.

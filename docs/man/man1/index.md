@@ -1,6 +1,6 @@
 ---
 title: "Man Pages"
-version: v1.8
+version: v1.9
 date: April, 2026
 manual: User Commands
 layout: default

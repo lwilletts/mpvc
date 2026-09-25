@@ -1,7 +1,7 @@
 ---
 title: mpvc-tui(1)
 section: 1
-version: v1.8
+version: v1.9
 date: April, 2026
 manual: User Commands
 layout: default
@@ -15,7 +15,7 @@ mpvc-tui - Terminal User Interface for displaying the MPV playlist and playback
 SYNOPSIS
 ========
 
-    usage: mpvc-tui opts # @version v1.8 (c) gmt4 https://github.com/gmt4/mpvc
+    usage: mpvc-tui opts # @version v1.9 (c) gmt4 https://github.com/gmt4/mpvc
      -d|dir         : Set the WD to the media directory given as argument
      -h|help        : This help you are reading
      -H|history     : Starts the mpvc-tui history

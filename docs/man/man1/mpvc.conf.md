@@ -2,7 +2,7 @@
 title: mpvc.conf
 section: 5
 date: September 2026
-version: v1.8
+version: v1.9
 manual: File Formats and Configurations
 layout: default
 ---

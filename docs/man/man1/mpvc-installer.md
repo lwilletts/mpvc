@@ -1,7 +1,7 @@
 ---
 title: mpvc-installer(1)
 section: 1
-version: v1.8
+version: v1.9
 date: September, 2026
 manual: User Commands
 layout: default
@@ -13,7 +13,7 @@ mpvc-installer - Automated deployment, updates, and configuration manager for mp
 
 # SYNOPSIS
 
-    usage: mpvc-installer args # @version v1.8 (c) gmt4 https://github.com/gmt4/mpvc
+    usage: mpvc-installer args # @version v1.9 (c) gmt4 https://github.com/gmt4/mpvc
       check-update   : Check for updates
       check-reqs     : Check for required packages
       config         : Fetch mpv config
