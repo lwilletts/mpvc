@@ -4,7 +4,7 @@ section: 5
 date: September 2026
 version: v1.8
 manual: File Formats and Configurations
-layout: page
+layout: default
 ---
 
 NAME

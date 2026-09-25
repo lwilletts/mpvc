@@ -1,9 +1,9 @@
 ---
-title: mpvc Manual Pages
+title: "Man Pages"
 version: v1.8
 date: April, 2026
 manual: User Commands
-layout: page
+layout: default
 ---
 
 # INDEX
