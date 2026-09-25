@@ -1,5 +1,5 @@
 ---
-title: Log
+title: Log Book
 layout: home
 ---
 

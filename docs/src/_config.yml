@@ -26,7 +26,8 @@ url: "" # the base hostname & protocol for your site, e.g. http://example.com
 github_username:  gmt4
 
 aux_links:
-  "github/mpvc": "https://github.com/gmt4/mpvc/"
+  "site":  "https://gmt4.github.io/mpvc/"
+  "#mpvc": "https://github.com/gmt4/mpvc/"
   "@gmt4": "https://github.com/gmt4"
 
 # Optional: Force auxiliary links to open in a new web browser tab
@@ -42,6 +43,9 @@ plugins:
 relative_links:
   enabled: true
   collections: true
+
+compress_html:
+  blanklines: true
 
 collections:
   man:
