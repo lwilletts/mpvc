@@ -21,8 +21,8 @@
 title: mpvc
 email: gmt4@localhost
 description: description
-baseurl: "" # the subpath of your site, e.g. /blog
-url: "" # the base hostname & protocol for your site, e.g. http://example.com
+baseurl: "/mpvc"              # the subpath of your site, e.g. /blog
+url: "https://gmt4.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 github_username:  gmt4
 
 aux_links:
@@ -45,7 +45,11 @@ relative_links:
   collections: true
 
 compress_html:
+  clippings: all
+  comments: all
+  endings: all
   blanklines: true
+  profile: false
 
 collections:
   man:
