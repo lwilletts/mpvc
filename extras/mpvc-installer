@@ -26,7 +26,7 @@ XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 MPV_CONFIG_DIR="${MPV_CONFIG_DIR:-$HOME/.config/mpv}"
 MPVC_CONFIG_DIR="${MPVC_CONFIG_DIR:-$HOME/.config/mpvc}"
 
-MANS="docs/man/man1/mpvc.1 docs/man/man1/mpvc-fzf.1 docs/man/man1/mpvc-tui.1 docs/man/man1/mpvc-web.1 docs/man/man1/mpvc-autopilot.1 docs/man/man1/mpvc-installer.1"
+MANS="docs/man/man1/mpvc.1 docs/man/man1/mpvc-fzf.1 docs/man/man1/mpvc-tui.1 docs/man/man1/mpvc-web.1 docs/man/man1/mpvc-chapter.1 docs/man/man1/mpvc-autopilot.1 docs/man/man1/mpvc-installer.1"
 
 DOCS="README.md docs/config/mpv.conf docs/logbook.html"
 LICENSES="LICENSE.md"
