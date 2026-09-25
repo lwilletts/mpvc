@@ -445,6 +445,7 @@ usage()
     cat <<EOF
 usage: $PROGNAME  args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
  -h|help    : Show this help
+   |browser : Run the browser CGI
 *tips: If unsure about where to begin, start with: $PROGNAME browser
 EOF
     exit 0
