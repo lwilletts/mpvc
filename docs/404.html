@@ -7,42 +7,27 @@
 <link rel="stylesheet" href="/mpvc/assets/css/just-the-docs-default.css">
 <link rel="stylesheet" href="/mpvc/assets/css/just-the-docs-head-nav.css" id="jtd-head-nav-stylesheet">
  <style id="jtd-nav-activation">
-    .site-nav > ul.nav-list:first-child > li:not(:nth-child(6)) > a,
-    .site-nav > ul.nav-list:first-child > li > ul > li a {
+    .site-nav ul li a {
       background-image: none;
-    }
-    .site-nav > ul.nav-list:not(:first-child) a,
-    .site-nav li.external a {
-      background-image: none;
-    }
-    .site-nav > ul.nav-list:first-child > li:nth-child(6) > a {
-      font-weight: 600;
-      text-decoration: none;
-    }.site-nav > ul.nav-list:first-child > li:nth-child(6) > button svg {
-      transform: rotate(-90deg);
-    }.site-nav > ul.nav-list:first-child > li.nav-list-item:nth-child(6) > ul.nav-list {
-      display: block;
     }
  </style>
     <script src="/mpvc/assets/js/vendor/lunr.min.js"></script>
   <script src="/mpvc/assets/js/just-the-docs.js"></script>
  <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>mpvc-chapter(1) | mpvc</title>
+<title>mpvc | description</title>
 <meta name="generator" content="Jekyll v4.4.1" />
-<meta property="og:title" content="mpvc-chapter(1)" />
+<meta property="og:title" content="mpvc" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="description" />
 <meta name="twitter:description" property="og:description" content="description" />
-<link rel="canonical" href="https://gmt4.github.io/mpvc/man/man1/mpvc-chapter.html" />
-<meta property="og:url" content="https://gmt4.github.io/mpvc/man/man1/mpvc-chapter.html" />
+<link rel="canonical" href="https://gmt4.github.io/mpvc/404.html" />
+<meta property="og:url" content="https://gmt4.github.io/mpvc/404.html" />
 <meta property="og:site_name" content="mpvc" />
-<meta property="og:type" content="article" />
-<meta property="article:published_time" content="2026-04-01T00:00:00+00:00" />
-<meta property="article:modified_time" content="2026-04-01T00:00:00+00:00" />
+<meta property="og:type" content="website" />
 <meta name="twitter:card" content="summary" />
-<meta name="twitter:title" content="mpvc-chapter(1)" />
+<meta name="twitter:title" content="mpvc" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2026-04-01T00:00:00+00:00","datePublished":"2026-04-01T00:00:00+00:00","description":"description","headline":"mpvc-chapter(1)","mainEntityOfPage":{"@type":"WebPage","@id":"https://gmt4.github.io/mpvc/man/man1/mpvc-chapter.html"},"url":"https://gmt4.github.io/mpvc/man/man1/mpvc-chapter.html"}</script>
+{"@context":"https://schema.org","@type":"WebPage","description":"description","headline":"mpvc","url":"https://gmt4.github.io/mpvc/404.html"}</script>
 <body>
   <a class="skip-to-main" href="#main-content">Skip to main content</a>
   <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
@@ -149,93 +134,26 @@
    <div class="main-content-wrap">
      <div id="main-content" class="main-content">
        <main>
-           <h1 id="name">
-    <a href="#name" class="anchor-heading" aria-labelledby="name"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> NAME
+           <style type="text/css" media="screen">
+  .container {
+    margin: 10px auto;
+    max-width: 600px;
+    text-align: center;
+  }
+  h1 {
+    margin: 30px 0;
+    font-size: 4em;
+    line-height: 1;
+    letter-spacing: -1px;
+  }
+</style>
+<div class="container">
+<h1>
+    404
 </h1>
-<p>mpvc-chapter - manage and merge ffmetadata chapter files for mpvc</p>
-<h1 id="synopsis">
-    <a href="#synopsis" class="anchor-heading" aria-labelledby="synopsis"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> SYNOPSIS
-</h1>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>usage: mpvc-chapter args # @version v1.8 (c) gmt4 https://github.com/gmt4/mpvc
- (--)list : List ffmetadata chapter-files
- (--)file : Show current ffmetadata chapter-file
- (--)info : Info current ffmetadata chapter-file
- (--)reset: Reset current ffmetadata chapter-file
- (--)load : Load current ffmetadata chapter-file
- (--)gen  : Gen a ffmetadata chapter-file from a &lt; chapterlist.txt
- (--)merge: Merge ffmetadata chapter-file to audio file (args: in ffmeta out)
-</code></pre></div></div>
-<h1 id="description">
-    <a href="#description" class="anchor-heading" aria-labelledby="description"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> DESCRIPTION
-</h1>
-<p>mpvc-chapter is a utility helper script bundled with mpvc that automates the tracking, creation, parsing, and merging of chapter structures within media files using FFmpeg’s ffmetadata format container layout maps.</p>
-<h1 id="options">
-    <a href="#options" class="anchor-heading" aria-labelledby="options"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> OPTIONS
-</h1>
-<dl>
- <dt><code class="language-plaintext highlighter-rouge">--list</code>
- <dd>List all compiled or cached ffmetadata chapter files currently tracking active streaming or media profiles.
- <dt><code class="language-plaintext highlighter-rouge">--file</code>
- <dd>Print the absolute path of the currently active ffmetadata chapter asset configuration.
- <dt><code class="language-plaintext highlighter-rouge">--info</code>
- <dd>Display metadata headers, timestamp tracks, layout intervals, and internal structure properties contained within the active chapter file.
- <dt><code class="language-plaintext highlighter-rouge">--reset</code>
- <dd>Wipe, clear, and re-initialize the target chapter configuration metadata layout map back to pristine system defaults.
- <dt><code class="language-plaintext highlighter-rouge">--load</code>
- <dd>Explicitly register and hot-load the active chapter markers map directly into the running instance workspace.
- <dt><code class="language-plaintext highlighter-rouge">--gen</code>
- <dd>Generate a syntactically correct ffmetadata map stream file parsed from standard input. This reads sequential text layouts containing raw timestamp intervals and titles.
- <dt><code class="language-plaintext highlighter-rouge">--merge</code>
- <dd>Merge a standalone ffmetadata layout directly back into a targeted physical media container. This command strictly requires three continuous sequential file parameters passed as trailing arguments: the input audio file, the source ffmetadata map file, and the output destination container path.
-</dl>
-<h1 id="examples">
-    <a href="#examples" class="anchor-heading" aria-labelledby="examples"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> EXAMPLES
-</h1>
-<p>Generate an ffmetadata chapter map file from a text listing input stream</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    mpvc-chapter --gen &lt; chapterlist.txt
-</code></pre></div></div>
-<p>Bake an extracted or parsed metadata layout map directly into an audio track file</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    mpvc-chapter --merge input.mp3 track_layout.ffmeta processed_album.mp3
-</code></pre></div></div>
-<p>List all tracked workspace chapter files</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    mpvc-chapter --list
-</code></pre></div></div>
-<p>Check properties and internal metadata of the active tracking file</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    mpvc-chapter --info
-</code></pre></div></div>
-<h1 id="environment">
-    <a href="#environment" class="anchor-heading" aria-labelledby="environment"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> ENVIRONMENT
-</h1>
-<dl>
- <dt>MPV_SOCKET
- <dd>Override the default MPV socket path. Used by internal companion script wrappers to identify which instance target context boundaries apply.
- <dt>XDG_CONFIG_HOME
- <dd>Directory where mpvc configurations are systematically discovered. Defaults to ~/.config/ if not specified by your shell environment variables.
-</dl>
-<h1 id="files">
-    <a href="#files" class="anchor-heading" aria-labelledby="files"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> FILES
-</h1>
-<dl>
- <dt>~/.config/mpvc/mpvc.conf
- <dd>Core mpvc-specific runtime configurations, variable flags, and system mapping settings.
-</dl>
-<h1 id="see-also">
-    <a href="#see-also" class="anchor-heading" aria-labelledby="see-also"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> SEE ALSO
-</h1>
-<p><a href="mpvc.html">mpvc(1)</a>,
-<a href="mpvc.conf.html">mpvc(5)</a>,
-<a href="mpvc-fzf.html">mpvc-fzf(1)</a>,
-<a href="mpvc-tui.html">mpvc-tui(1)</a>,
-<a href="mpvc-web.html">mpvc-web(1)</a>,
-<a href=".">mpvc-index</a>,</p>
-<h1 id="author">
-    <a href="#author" class="anchor-heading" aria-labelledby="author"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> AUTHOR
-</h1>
-<p>Manual written by gmt4. See <a href="https://github.com/gmt4/mpvc">https://github.com/gmt4/mpvc</a> for more information.</p>
-<h1 id="reporting-bugs">
-    <a href="#reporting-bugs" class="anchor-heading" aria-labelledby="reporting-bugs"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> REPORTING BUGS
-</h1>
-<p>Report bugs at: <a href="https://github.com/gmt4/mpvc/issues">https://github.com/gmt4/mpvc/issues</a></p>
+ <p><strong>Page not found :(</strong></p>
+ <p>The requested page could not be found.</p>
+</div>
        </main>
 <hr>
 <footer>

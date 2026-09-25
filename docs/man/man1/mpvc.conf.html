@@ -1,112 +1,262 @@
+
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<html lang="en-US">
 <head>
-  <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>mpvc.conf</title>
-  <style>
-    code{white-space: pre-wrap;}
-    span.smallcaps{font-variant: small-caps;}
-    span.underline{text-decoration: underline;}
-    div.column{display: inline-block; vertical-align: top; width: 50%;}
-    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-    ul.task-list{list-style: none;}
-  </style>
-  <style>
-  body { max-width: 95%; margin-left: auto; margin-right: auto; }
-  em, i { font-style: normal; text-decoration: underline; }
-  pre, code { white-space: pre-wrap; }
-  pre { border: 1px solid currentColor; border-radius: 6px; background-color: #f6f8fa; overflow-x: auto; padding: 12px; }
-  </style>
-</head>
+ <meta charset="UTF-8">
+ <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+<link rel="stylesheet" href="/mpvc/assets/css/just-the-docs-default.css">
+<link rel="stylesheet" href="/mpvc/assets/css/just-the-docs-head-nav.css" id="jtd-head-nav-stylesheet">
+ <style id="jtd-nav-activation">
+    .site-nav > ul.nav-list:first-child > li:not(:nth-child(12)) > a,
+    .site-nav > ul.nav-list:first-child > li > ul > li a {
+      background-image: none;
+    }
+    .site-nav > ul.nav-list:not(:first-child) a,
+    .site-nav li.external a {
+      background-image: none;
+    }
+    .site-nav > ul.nav-list:first-child > li:nth-child(12) > a {
+      font-weight: 600;
+      text-decoration: none;
+    }.site-nav > ul.nav-list:first-child > li:nth-child(12) > button svg {
+      transform: rotate(-90deg);
+    }.site-nav > ul.nav-list:first-child > li.nav-list-item:nth-child(12) > ul.nav-list {
+      display: block;
+    }
+ </style>
+    <script src="/mpvc/assets/js/vendor/lunr.min.js"></script>
+  <script src="/mpvc/assets/js/just-the-docs.js"></script>
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+<title>mpvc.conf | mpvc</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="mpvc.conf" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="description" />
+<meta name="twitter:description" property="og:description" content="description" />
+<link rel="canonical" href="https://gmt4.github.io/mpvc/man/man1/mpvc.conf.html" />
+<meta property="og:url" content="https://gmt4.github.io/mpvc/man/man1/mpvc.conf.html" />
+<meta property="og:site_name" content="mpvc" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-09-01T00:00:00+00:00" />
+<meta property="article:modified_time" content="2026-09-01T00:00:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="mpvc.conf" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2026-09-01T00:00:00+00:00","datePublished":"2026-09-01T00:00:00+00:00","description":"description","headline":"mpvc.conf","mainEntityOfPage":{"@type":"WebPage","@id":"https://gmt4.github.io/mpvc/man/man1/mpvc.conf.html"},"url":"https://gmt4.github.io/mpvc/man/man1/mpvc.conf.html"}</script>
 <body>
-<header id="title-block-header">
-<h1 class="title">mpvc.conf</h1>
-<p class="date">September 2026</p>
+  <a class="skip-to-main" href="#main-content">Skip to main content</a>
+  <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
+  <symbol id="svg-link" viewBox="0 0 24 24">
+ <title>Link</title>
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-link">
+   <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+  </svg>
+</symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+ <title>Menu</title>
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu">
+   <line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line>
+  </svg>
+</symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+ <title>Expand</title>
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+   <polyline points="9 18 15 12 9 6"></polyline>
+  </svg>
+</symbol>
+<symbol id="svg-external-link" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-external-link">
+ <title id="svg-external-link-title">(external link)</title>
+ <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line>
+</symbol>
+    <symbol id="svg-doc" viewBox="0 0 24 24">
+ <title>Document</title>
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file">
+   <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline>
+  </svg>
+</symbol>
+    <symbol id="svg-search" viewBox="0 0 24 24">
+ <title>Search</title>
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search">
+    <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+  </svg>
+</symbol>
+<symbol id="svg-copy" viewBox="0 0 16 16">
+ <title>Copy</title>
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard" viewBox="0 0 16 16">
+   <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+   <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+  </svg>
+</symbol>
+<symbol id="svg-copied" viewBox="0 0 16 16">
+ <title>Copied</title>
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard-check-fill" viewBox="0 0 16 16">
+   <path d="M6.5 0A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3Zm3 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3Z"/>
+   <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1A2.5 2.5 0 0 1 9.5 5h-3A2.5 2.5 0 0 1 4 2.5v-1Zm6.854 7.354-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708L7.5 10.793l2.646-2.647a.5.5 0 0 1 .708.708Z"/>
+  </svg>
+</symbol>
+</svg>
+  <header class="side-bar">
+ <div class="site-header">
+    <a href="/mpvc/" class="site-title lh-tight">
+  mpvc
+</a>
+    <button id="menu-button" class="site-button btn-reset" aria-label="Menu" aria-expanded="false">
+      <svg viewBox="0 0 24 24" class="icon" aria-hidden="true"><use xlink:href="#svg-menu"></use></svg>
+    </button>
+ </div>
+ <nav aria-label="Main" id="site-nav" class="site-nav">
+   <ul class="nav-list"><li class="nav-list-item"><a href="/mpvc/get-started.html" class="nav-list-link">Get Started</a><li class="nav-list-item"><a href="/mpvc/logbook.html" class="nav-list-link">Log Book</a><li class="nav-list-item"><a href="/mpvc/man/man1/" class="nav-list-link">Man Pages</a><li class="nav-list-item"><a href="/mpvc/man/man1/mpvc.html" class="nav-list-link">mpvc(1)</a><li class="nav-list-item"><a href="/mpvc/man/man1/mpvc-autopilot.html" class="nav-list-link">mpvc-autopilot(1)</a><li class="nav-list-item"><a href="/mpvc/man/man1/mpvc-chapter.html" class="nav-list-link">mpvc-chapter(1)</a><li class="nav-list-item"><a href="/mpvc/man/man1/mpvc-equalizer.html" class="nav-list-link">mpvc-equalizer(1)</a><li class="nav-list-item"><a href="/mpvc/man/man1/mpvc-fzf.html" class="nav-list-link">mpvc-fzf(1)</a><li class="nav-list-item"><a href="/mpvc/man/man1/mpvc-installer.html" class="nav-list-link">mpvc-installer(1)</a><li class="nav-list-item"><a href="/mpvc/man/man1/mpvc-tui.html" class="nav-list-link">mpvc-tui(1)</a><li class="nav-list-item"><a href="/mpvc/man/man1/mpvc-web.html" class="nav-list-link">mpvc-web(1)</a><li class="nav-list-item"><a href="/mpvc/man/man1/mpvc.conf.html" class="nav-list-link">mpvc.conf</a></ul>
+</nav>
+<div class="d-md-block d-none site-footer">
+    This site uses <a href="https://github.com/just-the-docs/just-the-docs">Just the Docs</a>, a documentation theme for Jekyll.
+ </div>
 </header>
-<h1 id="name">NAME</h1>
+ <div class="main" id="top">
+   <div id="main-header" class="main-header">
+<div class="search" role="search">
+ <div class="search-input-wrap">
+    <input type="text" id="search-input" class="search-input" tabindex="0" placeholder="Search mpvc" autocomplete="off">
+    <label for="search-input" class="search-label">
+      <span class="sr-only">Search mpvc</span>
+      <svg viewBox="0 0 24 24" class="search-icon" aria-hidden="true"><use xlink:href="#svg-search"></use></svg>
+    </label>
+ </div>
+ <div id="search-results" class="search-results"></div>
+</div>
+   <nav aria-label="Auxiliary" class="aux-nav">
+ <ul class="aux-nav-list">
+     <li class="aux-nav-list-item">
+        <a href="https://gmt4.github.io/mpvc/" class="site-button"
+          target="_blank" rel="noopener noreferrer"
+        >
+          site
+        </a>
+     <li class="aux-nav-list-item">
+        <a href="https://github.com/gmt4/mpvc/" class="site-button"
+          target="_blank" rel="noopener noreferrer"
+        >
+          #mpvc
+        </a>
+     <li class="aux-nav-list-item">
+        <a href="https://github.com/gmt4" class="site-button"
+          target="_blank" rel="noopener noreferrer"
+        >
+          @gmt4
+        </a>
+ </ul>
+</nav>
+</div>
+   <div class="main-content-wrap">
+     <div id="main-content" class="main-content">
+       <main>
+           <h1 id="name">
+    <a href="#name" class="anchor-heading" aria-labelledby="name"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> NAME
+</h1>
 <p>mpvc.conf - Configuration file for mpvc</p>
-<h1 id="description">DESCRIPTION</h1>
-<p>The <strong>mpvc.conf</strong> file serves as the unified configuration profile and text layout interface for the <code>mpvc(1)</code>.</p>
+<h1 id="description">
+    <a href="#description" class="anchor-heading" aria-labelledby="description"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> DESCRIPTION
+</h1>
+<p>The <strong>mpvc.conf</strong> file serves as the unified configuration profile and text layout interface for the <code class="language-plaintext highlighter-rouge">mpvc(1)</code>.</p>
 <p>Because the ecosystem is written entirely in POSIX shell scripting, the configuration file is parsed by directly sourcing it into the environment during execution.</p>
 <p>The file is divided into clear configuration sections using comment block headers to group each tool configuration on its own section.</p>
-<h1 id="configuration-sections">CONFIGURATION SECTIONS</h1>
-<h2 id="mpvc">MPVC</h2>
+<h1 id="configuration-sections">
+    <a href="#configuration-sections" class="anchor-heading" aria-labelledby="configuration-sections"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> CONFIGURATION SECTIONS
+</h1>
+<h2 id="mpvc">
+    <a href="#mpvc" class="anchor-heading" aria-labelledby="mpvc"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> MPVC
+</h2>
 <p>This section defines the mpvc(1) configuration variables.</p>
 <dl>
-<dt><code>MPVC_MPV</code></dt>
-<dd>Defines the executable binary name or path for the core player engine. Defaults to <code>mpv</code>.
-</dd>
-<dt><code>MPVC_SOCAT</code></dt>
-<dd>Defines the executable binary name or path used to stream JSON data over unix sockets. Defaults to <code>socat</code>.
-</dd>
-<dt><code>MPVC_LOCAL_CACHE</code></dt>
-<dd>Boolean flag switch (<code>true</code> or <code>false</code>) controlling whether regional caching routines are activated during playback sequences.
-</dd>
-<dt><code>MPVC_FMTSTR</code>, <code>MPVC_FMTSTR_LOFI</code></dt>
-<dd>Customizes the output of the <code>mpvc [status]</code> command to display a summary of the mpv playing state, shown by the rest of tools.
-</dd>
+ <dt><code class="language-plaintext highlighter-rouge">MPVC_MPV</code>
+ <dd>Defines the executable binary name or path for the core player engine. Defaults to <code class="language-plaintext highlighter-rouge">mpv</code>.
+ <dt><code class="language-plaintext highlighter-rouge">MPVC_SOCAT</code>
+ <dd>Defines the executable binary name or path used to stream JSON data over unix sockets. Defaults to <code class="language-plaintext highlighter-rouge">socat</code>.
+ <dt><code class="language-plaintext highlighter-rouge">MPVC_LOCAL_CACHE</code>
+ <dd>Boolean flag switch (<code class="language-plaintext highlighter-rouge">true</code> or <code class="language-plaintext highlighter-rouge">false</code>) controlling whether regional caching routines are activated during playback sequences.
+ <dt><code class="language-plaintext highlighter-rouge">MPVC_FMTSTR</code>, <code class="language-plaintext highlighter-rouge">MPVC_FMTSTR_LOFI</code>
+ <dd>Customizes the output of the <code class="language-plaintext highlighter-rouge">mpvc [status]</code> command to display a summary of the mpv playing state, shown by the rest of tools.
 </dl>
-<h3 id="formatting-string-tokens">Formatting String Tokens</h3>
-<p>The status strings (<code>MPVC_FMTSTR</code> and <code>MPVC_FMTSTR_LOFI</code>) parse the following tokens dynamically at runtime to generate the <code>mpvc [status]</code> terminal layout view:</p>
+<h3 id="formatting-string-tokens">
+    <a href="#formatting-string-tokens" class="anchor-heading" aria-labelledby="formatting-string-tokens"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Formatting String Tokens
+</h3>
+<p>The status strings (<code class="language-plaintext highlighter-rouge">MPVC_FMTSTR</code> and <code class="language-plaintext highlighter-rouge">MPVC_FMTSTR_LOFI</code>) parse the following tokens dynamically at runtime to generate the <code class="language-plaintext highlighter-rouge">mpvc [status]</code> terminal layout view:</p>
 <ul>
-<li><code>%status%</code> : Active player state icon or text (e.g., Playing, Paused).</li>
-<li><code>%statuslofi%</code> : Stream-specific processing states.</li>
-<li><code>%title%</code> : Metadata title track string of the current media file.</li>
-<li><code>%percentage%%</code> : Numerical percentage tracking playback progress.</li>
-<li><code>%length%</code> : Total temporal duration length of the active track asset.</li>
-<li><code>%position%</code> : Index tracking the numerical item number of the track.</li>
-<li><code>%playlistlength%</code> : Cumulative count tracking total track objects in queue.</li>
-<li><code>%=chapter%</code> : Numeric label naming the current playing chapter layer.</li>
-<li><code>/%chapters%</code> : Total embedded chapter segments discovered in media container.</li>
-<li><code>%mutelofi%</code> : Toggle status indicator flagging audio muting behaviors.</li>
-<li><code>%volume%%</code> : Current audio speaker sound level gain percentage metrics.</li>
-<li><code>%shufflelofi%</code> : Tracks if random shuffling behaviors are enabled.</li>
-<li><code>%ablooplofi%</code> : Displays segment loop hooks.</li>
-<li><code>%singlelofi%</code> : Tracks if a single file loop freeze constraint is active.</li>
-<li><code>%repeatlofi%</code> : Tracks if playlist wrapper re-looping sequences are active.</li>
-<li><code>%idlelofi%</code> : Displays if player engines are idling without an active container.</li>
-<li><code>%videolofi%</code> : Video layer processing status symbols.</li>
+ <li><code class="language-plaintext highlighter-rouge">%status%</code>         : Active player state icon or text (e.g., Playing, Paused).
+ <li><code class="language-plaintext highlighter-rouge">%statuslofi%</code>     : Stream-specific processing states.
+ <li><code class="language-plaintext highlighter-rouge">%title%</code>          : Metadata title track string of the current media file.
+ <li><code class="language-plaintext highlighter-rouge">%percentage%%</code>    : Numerical percentage tracking playback progress.
+ <li><code class="language-plaintext highlighter-rouge">%length%</code>         : Total temporal duration length of the active track asset.
+ <li><code class="language-plaintext highlighter-rouge">%position%</code>       : Index tracking the numerical item number of the track.
+ <li><code class="language-plaintext highlighter-rouge">%playlistlength%</code> : Cumulative count tracking total track objects in queue.
+ <li><code class="language-plaintext highlighter-rouge">%=chapter%</code>       : Numeric label naming the current playing chapter layer.
+ <li><code class="language-plaintext highlighter-rouge">/%chapters%</code>      : Total embedded chapter segments discovered in media container.
+ <li><code class="language-plaintext highlighter-rouge">%mutelofi%</code>       : Toggle status indicator flagging audio muting behaviors.
+ <li><code class="language-plaintext highlighter-rouge">%volume%%</code>        : Current audio speaker sound level gain percentage metrics.
+ <li><code class="language-plaintext highlighter-rouge">%shufflelofi%</code>    : Tracks if random shuffling behaviors are enabled.
+ <li><code class="language-plaintext highlighter-rouge">%ablooplofi%</code>     : Displays segment loop hooks.
+ <li><code class="language-plaintext highlighter-rouge">%singlelofi%</code>     : Tracks if a single file loop freeze constraint is active.
+ <li><code class="language-plaintext highlighter-rouge">%repeatlofi%</code>     : Tracks if playlist wrapper re-looping sequences are active.
+ <li><code class="language-plaintext highlighter-rouge">%idlelofi%</code>       : Displays if player engines are idling without an active container.
+ <li><code class="language-plaintext highlighter-rouge">%videolofi%</code>      : Video layer processing status symbols.
 </ul>
-<h2 id="mpvc-tui">MPVC-TUI</h2>
+<h2 id="mpvc-tui">
+    <a href="#mpvc-tui" class="anchor-heading" aria-labelledby="mpvc-tui"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> MPVC-TUI
+</h2>
 <p>This section configures terminal environment variables and scaling preferences for the terminal visual frontend interface <strong>mpvc-tui</strong>(1).</p>
 <dl>
-<dt><code>MPVC_TUI_TERM</code></dt>
-<dd>Declares the explicit target shell terminal application spawned specifically when launching graphical console configurations in detached windows.
-</dd>
+ <dt><code class="language-plaintext highlighter-rouge">MPVC_TUI_TERM</code>
+ <dd>Declares the explicit target shell terminal application spawned specifically when launching graphical console configurations in detached windows.
 </dl>
-<h2 id="mpvc-fzf">MPVC-FZF</h2>
+<h2 id="mpvc-fzf">
+    <a href="#mpvc-fzf" class="anchor-heading" aria-labelledby="mpvc-fzf"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> MPVC-FZF
+</h2>
 <p>This section contains option flags, remote scraping node overrides, and execution properties for the interactive search interface <strong>mpvc-fzf</strong>(1).</p>
 <dl>
-<dt><code>MPVC_TERM</code></dt>
-<dd>Defines the system terminal emulator tool launched to spawn detached windows when passing the selection flag <code>-x</code> or <code>launch</code>. Defaults to <code>xterm</code>.
-</dd>
-<dt><code>MPVC_FZF_INVID_URL</code></dt>
-<dd>Stores your preferred URL address link pointing to a public or self-hosted <strong>Invidious</strong> API instance mirror node to handle global text lookups.
-</dd>
+ <dt><code class="language-plaintext highlighter-rouge">MPVC_TERM</code>
+ <dd>Defines the system terminal emulator tool launched to spawn detached windows when passing the selection flag <code class="language-plaintext highlighter-rouge">-x</code> or <code class="language-plaintext highlighter-rouge">launch</code>. Defaults to <code class="language-plaintext highlighter-rouge">xterm</code>.
+ <dt><code class="language-plaintext highlighter-rouge">MPVC_FZF_INVID_URL</code>
+ <dd>Stores your preferred URL address link pointing to a public or self-hosted <strong>Invidious</strong> API instance mirror node to handle global text lookups.
 </dl>
-<h2 id="mpvc-web">MPVC-WEB</h2>
+<h2 id="mpvc-web">
+    <a href="#mpvc-web" class="anchor-heading" aria-labelledby="mpvc-web"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> MPVC-WEB
+</h2>
 <p>This section handles server port rules, encryption endpoints, UI refresh behaviors, and thumbnail parsing switches for the local HTTP daemon interface controller <strong>mpvc-web</strong>(1).</p>
 <dl>
-<dt><code>MPVC_WEB_PORT</code></dt>
-<dd>Specifies the default plaintext HTTP listening network port assigned to the web gateway server daemon. Defaults to <code>8888</code>.
-</dd>
-<dt><code>MPVC_WEB_SSL_PORT</code></dt>
-<dd>Declares the network port assigned to handle secure, encrypted HTTPS client browser connections. Defaults to <code>8443</code>.
-</dd>
-<dt><code>MPVC_WEB_THUMBNAIL_ENABLE</code></dt>
-<dd>Boolean flag switch (<code>true</code> or <code>false</code>) controlling whether the web frontend interface actively pulls, parses, and shows media artwork thumbnail images over the network dashboard.
-</dd>
-<dt><code>MPVC_WEB_HTML_REFRESH</code></dt>
-<dd>Establishes a time interval integer (measured in seconds) instructing client web browsers how frequently to automatically reload the page interface state to stay synchronized with track changes. Defaults to <code>240</code>.
-</dd>
+ <dt><code class="language-plaintext highlighter-rouge">MPVC_WEB_PORT</code>
+ <dd>Specifies the default plaintext HTTP listening network port assigned to the web gateway server daemon. Defaults to <code class="language-plaintext highlighter-rouge">8888</code>.
+ <dt><code class="language-plaintext highlighter-rouge">MPVC_WEB_SSL_PORT</code>
+ <dd>Declares the network port assigned to handle secure, encrypted HTTPS client browser connections. Defaults to <code class="language-plaintext highlighter-rouge">8443</code>.
+ <dt><code class="language-plaintext highlighter-rouge">MPVC_WEB_THUMBNAIL_ENABLE</code>
+ <dd>Boolean flag switch (<code class="language-plaintext highlighter-rouge">true</code> or <code class="language-plaintext highlighter-rouge">false</code>) controlling whether the web frontend interface actively pulls, parses, and shows media artwork thumbnail images over the network dashboard.
+ <dt><code class="language-plaintext highlighter-rouge">MPVC_WEB_HTML_REFRESH</code>
+ <dd>Establishes a time interval integer (measured in seconds) instructing client web browsers how frequently to automatically reload the page interface state to stay synchronized with track changes. Defaults to <code class="language-plaintext highlighter-rouge">240</code>.
 </dl>
-<h1 id="see-also">SEE ALSO</h1>
-<p>mpv(1), <a href="mpvc.html">mpvc(1)</a>, <a href="mpvc-fzf.html">mpvc-fzf(1)</a>, <a href="mpvc-tui.html">mpvc-tui(1)</a>, <a href="mpvc-web.html">mpvc-web(1)</a>, <a href=".">mpvc-index</a>,</p>
-<h1 id="author">AUTHOR</h1>
-<p>Manual written by gmt4. See <a href="https://github.com/gmt4/mpvc" class="uri">https://github.com/gmt4/mpvc</a> for more information.</p>
-<h1 id="reporting-bugs">REPORTING BUGS</h1>
-<p>Report bugs at: <a href="https://github.com/gmt4/mpvc/issues" class="uri">https://github.com/gmt4/mpvc/issues</a></p>
-</body>
-</html>
+<h1 id="see-also">
+    <a href="#see-also" class="anchor-heading" aria-labelledby="see-also"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> SEE ALSO
+</h1>
+<p>mpv(1),
+<a href="mpvc.html">mpvc(1)</a>,
+<a href="mpvc-fzf.html">mpvc-fzf(1)</a>,
+<a href="mpvc-tui.html">mpvc-tui(1)</a>,
+<a href="mpvc-web.html">mpvc-web(1)</a>,
+<a href=".">mpvc-index</a>,</p>
+<h1 id="author">
+    <a href="#author" class="anchor-heading" aria-labelledby="author"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> AUTHOR
+</h1>
+<p>Manual written by gmt4. See <a href="https://github.com/gmt4/mpvc">https://github.com/gmt4/mpvc</a> for more information.</p>
+<h1 id="reporting-bugs">
+    <a href="#reporting-bugs" class="anchor-heading" aria-labelledby="reporting-bugs"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> REPORTING BUGS
+</h1>
+<p>Report bugs at: <a href="https://github.com/gmt4/mpvc/issues">https://github.com/gmt4/mpvc/issues</a></p>
+       </main>
+<hr>
+<footer>
+ <div class="d-md-none mt-4 fs-2">
+      This site uses <a href="https://github.com/just-the-docs/just-the-docs">Just the Docs</a>, a documentation theme for Jekyll.
+ </div>
+</footer>
+     </div>
+   </div>
+<div class="search-overlay"></div>
+ </div>
+  
