@@ -161,40 +161,40 @@ posix-sh mpv-player mpvc mpvc-tui
  <li><strong>promote</strong> Star, share, and promote our work through the buttons
 below if you find it useful. Thanks!
 </ul><hr />
-<h2 id="logbook">
+<h1 id="logbook">
     <a href="#logbook" class="anchor-heading" aria-labelledby="logbook"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Logbook
-</h2>
+</h1>
 <p>The logbook below is just that, a log of notes as I use and work on
 mpvc. Entries are chronologically ordered with oldest first, and,
 attempt to be self-contained focused on a certain functionality/topic,
 to the extent that it is possible.</p>
-<h3 id="on-playing-urls-30-mar-2022">
+<h2 id="on-playing-urls-30-mar-2022">
     <a href="#on-playing-urls-30-mar-2022" class="anchor-heading" aria-labelledby="on-playing-urls-30-mar-2022"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> On playing URLs, 30 Mar 2022
-</h3>
+</h2>
 <p>What got me started on using mpvc is being able to play URLs. This is
 the cause to start writing what you are reading now (this repo at
 <a href="https://github.com/gmt4/mpvc/">https://github.com/gmt4/mpvc/</a>). As in</p>
 <ul>
  <li><code class="language-plaintext highlighter-rouge">mpvc add https://kuplasound.bandcamp.com/album/mirage/</code>
 </ul>
-<h3 id="on-securing-mpv-socket-location-14-nov-2022">
+<h2 id="on-securing-mpv-socket-location-14-nov-2022">
     <a href="#on-securing-mpv-socket-location-14-nov-2022" class="anchor-heading" aria-labelledby="on-securing-mpv-socket-location-14-nov-2022"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> On securing mpv socket location, 14 Nov 2022
-</h3>
+</h2>
 <p>One thing that bothers me when using mpvc, is that most programs
 performing ipc on mpv socket, just leave the socket at <code class="language-plaintext highlighter-rouge">/tmp/mpvsocket</code>.
 A better default location for the mpv socket is
 <code class="language-plaintext highlighter-rouge">$HOME/.config/mpvc/mpvsocket</code>.</p>
-<h3 id="on-loadsave-functionality-18-nov-2022">
+<h2 id="on-loadsave-functionality-18-nov-2022">
     <a href="#on-loadsave-functionality-18-nov-2022" class="anchor-heading" aria-labelledby="on-loadsave-functionality-18-nov-2022"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> On load/save functionality, 18 Nov 2022
-</h3>
+</h2>
 <p>A thing that I’d like to be able to do is to perform <code class="language-plaintext highlighter-rouge">mpvc load/save</code> of
 the playlist, and, be able of manipulating the playlist using standard
 Unix commands eg. grep. The easiest way that comes to mind, is something
 a la: <code class="language-plaintext highlighter-rouge">mpvc save | grep -v artist | mpvc load</code>, this enables to filter
 out an artist, and drop all the songs by this artist.</p>
-<h3 id="on-persistent-mpv-startup-20-nov-2022">
+<h2 id="on-persistent-mpv-startup-20-nov-2022">
     <a href="#on-persistent-mpv-startup-20-nov-2022" class="anchor-heading" aria-labelledby="on-persistent-mpv-startup-20-nov-2022"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> On persistent mpv startup, 20 Nov 2022
-</h3>
+</h2>
 <p>One particular feature where improvement could be done is
 <code class="language-plaintext highlighter-rouge">mpvc -a audio.opus</code>, when mpv finishes playing audio.opus, mpv
 terminates, and, the current playlist is lost. This happens as mpv is
@@ -202,18 +202,18 @@ started with –idle=once. A solution for this is to start mpv separately
 with –idle=yes. A shortcut for this is to run <code class="language-plaintext highlighter-rouge">mpvc --mpv</code> that does
 exactly this, after this the mpv instance can be manipulated with mpvc,
 and does not terminate once mpv finishes playing.</p>
-<h3 id="on-a-minimal-mpvc-tui-03-dec-2022">
+<h2 id="on-a-minimal-mpvc-tui-03-dec-2022">
     <a href="#on-a-minimal-mpvc-tui-03-dec-2022" class="anchor-heading" aria-labelledby="on-a-minimal-mpvc-tui-03-dec-2022"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> On a minimal mpvc-tui, 03 Dec 2022
-</h3>
+</h2>
 <p>One thing I keep doing a lot, is typing mpvc status and mpvc -i, to
 check the mpv playlist and status. To this end I’ve quickly hacked a
 minimal TUI named <code class="language-plaintext highlighter-rouge">mpvc-tui</code>, that continuously shows the mpvc playlist
 and status. In addition, while in mpvc-tui you can Control+C, to get a
 mpvc prompt to run quick mpvc commands, like: prev, next, pause, toggle,
 seek, volume, etc.</p>
-<h3 id="on-using-the-mpvc-tui-prompt-13-dec-2022">
+<h2 id="on-using-the-mpvc-tui-prompt-13-dec-2022">
     <a href="#on-using-the-mpvc-tui-prompt-13-dec-2022" class="anchor-heading" aria-labelledby="on-using-the-mpvc-tui-prompt-13-dec-2022"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> On using the mpvc-tui prompt, 13 Dec 2022
-</h3>
+</h2>
 <p>As explained above, mpvc-tui does three things: 1) display status, 2)
 display playlist, 3) prompt the user for interaction. Once we hit
 Control+C, and land on the user prompt, the following can be done:</p>
@@ -239,17 +239,17 @@ filenames. This can be achieved using `rlwrap(1)` in one shot mode
 that becomes a life-saver. Now, you get a more comfortable prompt, where
 TAB completion works on commands and filenames, as well as Control+R to
 repeat previous commands in the history file.</p>
-<h3 id="on-using-the-mpvc-tui--x-launcher-14-dec-2022">
+<h2 id="on-using-the-mpvc-tui--x-launcher-14-dec-2022">
     <a href="#on-using-the-mpvc-tui--x-launcher-14-dec-2022" class="anchor-heading" aria-labelledby="on-using-the-mpvc-tui--x-launcher-14-dec-2022"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> On using the mpvc-tui -x launcher, 14 Dec 2022
-</h3>
+</h2>
 <p>Another nifty detail of mpvc-tui, is that it can be quickly spawn from
 the WM launcher by using <code class="language-plaintext highlighter-rouge">mpvc-tui -x</code>, then type a few mpvc commands to
 setup music, and close it. Or it can be started on the current terminal
 with `mpvc-tui` and left running as a long running program, and get
 back to it when needed.</p>
-<h3 id="on-managing-playlists-with-mpvc-autoloadautosave-15-dec-2022">
+<h2 id="on-managing-playlists-with-mpvc-autoloadautosave-15-dec-2022">
     <a href="#on-managing-playlists-with-mpvc-autoloadautosave-15-dec-2022" class="anchor-heading" aria-labelledby="on-managing-playlists-with-mpvc-autoloadautosave-15-dec-2022"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> On managing playlists with mpvc autoload/autosave, 15 Dec 2022
-</h3>
+</h2>
 <p>When using <code class="language-plaintext highlighter-rouge">mpc(1)</code>, playlists can be managed using the mpc
 load/save/lsplaylists commands. In addition to load/save, mpvc adds the
 autoload/autosave commands:</p>
@@ -267,20 +267,20 @@ $XDG_CONFIG_HOME/mpvc/playlist/.
 <p>The above enables to arrange a playlist, and once we are happy with it,
 save it with `mpvc autosave playlist.m3u`, later, we can replay it
 again with: `mpvc autoload playlist.m3u`.</p>
-<h3 id="on-customizing-mpvc-tui-look-and-feel-18-dec-2022">
+<h2 id="on-customizing-mpvc-tui-look-and-feel-18-dec-2022">
     <a href="#on-customizing-mpvc-tui-look-and-feel-18-dec-2022" class="anchor-heading" aria-labelledby="on-customizing-mpvc-tui-look-and-feel-18-dec-2022"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> On customizing mpvc-tui look and feel, 18 Dec 2022
-</h3>
+</h2>
 <p>While using <code class="language-plaintext highlighter-rouge">mpvc-tui</code>, one ends up wanting to configure the minimal
 look and feel that mpvc-tui provides. To this end the file <code class="language-plaintext highlighter-rouge">mpvc.conf</code>
 under $XDG_CONFIG_HOME/mpvc/ provides a place to overwrite the default
 settings of mpvc-tui.</p>
-<h3 id="show-hn-mpvc-tui--a-minimal-mpc-like-cli-and-tui-for-controlling-mpv-16-dec-2022">
+<h2 id="show-hn-mpvc-tui--a-minimal-mpc-like-cli-and-tui-for-controlling-mpv-16-dec-2022">
     <a href="#show-hn-mpvc-tui--a-minimal-mpc-like-cli-and-tui-for-controlling-mpv-16-dec-2022" class="anchor-heading" aria-labelledby="show-hn-mpvc-tui--a-minimal-mpc-like-cli-and-tui-for-controlling-mpv-16-dec-2022"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Show HN: mpvc-tui – A minimal mpc-like CLI and TUI for controlling mpv, 16 Dec 2022
-</h3>
+</h2>
 <p>We are on “Show HN”! <a href="https://news.ycombinator.com/item?id=34013149">https://news.ycombinator.com/item?id=34013149</a></p>
-<h3 id="on-issuing-direct-json-ipc-commands-to-mpv-17-dec-2022">
+<h2 id="on-issuing-direct-json-ipc-commands-to-mpv-17-dec-2022">
     <a href="#on-issuing-direct-json-ipc-commands-to-mpv-17-dec-2022" class="anchor-heading" aria-labelledby="on-issuing-direct-json-ipc-commands-to-mpv-17-dec-2022"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> On issuing direct JSON IPC commands to mpv, 17 Dec 2022
-</h3>
+</h2>
 <p>That one is easy, for that purpose <code class="language-plaintext highlighter-rouge">mpvc cmd args</code> sends the
 <code class="language-plaintext highlighter-rouge">{ "command": args }</code> to the JSON IPC, use <code class="language-plaintext highlighter-rouge">mpvc cmdr args</code> to send the
 command, and retrieve the JSON IPC response. Some usage examples to test
@@ -293,9 +293,9 @@ are:</p>
 </ul>
 <p>Note, audio filter commands above are lifted from
 https://github.com/mpv-player/mpv/issues/6210.</p>
-<h3 id="on-playing-music-from-streaming-services-as-youtube-and-co-19-dec-2022">
+<h2 id="on-playing-music-from-streaming-services-as-youtube-and-co-19-dec-2022">
     <a href="#on-playing-music-from-streaming-services-as-youtube-and-co-19-dec-2022" class="anchor-heading" aria-labelledby="on-playing-music-from-streaming-services-as-youtube-and-co-19-dec-2022"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> On playing music from streaming services as youtube and co., 19 Dec 2022
-</h3>
+</h2>
 <p>Mpv already plays URLs (both video and audio) from streaming platforms
 as youtube. So the one thing missing is to be able to search, select,
 and enqueue music from these services. This is provided by mpvc-fzf
@@ -318,9 +318,9 @@ does the whole thing.
 </ul>
 <p>Note, that you can use this command from inside mpvc-tui too, by hitting
 Control+C and then typing “!mpvc-fzf -p rolling stones”</p>
-<h3 id="on-subscribing-and-receiving-mpv-events-21-dec-2022">
+<h2 id="on-subscribing-and-receiving-mpv-events-21-dec-2022">
     <a href="#on-subscribing-and-receiving-mpv-events-21-dec-2022" class="anchor-heading" aria-labelledby="on-subscribing-and-receiving-mpv-events-21-dec-2022"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> On subscribing and receiving mpv events, 21 Dec 2022
-</h3>
+</h2>
 <p>Mpv IPC JSON socket allows receiving the media events generated by the
 running mpv instance. Subscribing to the mpv events can be done using
 the command: mpvc idleloop, by default events appear on standard output
@@ -337,9 +337,9 @@ select a random track when the current ends.
 </ul>
 <p>The <code class="language-plaintext highlighter-rouge">mpvc-tui -n</code> uses <code class="language-plaintext highlighter-rouge">mpvc idleloop</code> to raise desktop notifications,
 as shown above.</p>
-<h3 id="on-using-mpv-together-with-the-fzf-fuzzy-finder-27-dec-2022">
+<h2 id="on-using-mpv-together-with-the-fzf-fuzzy-finder-27-dec-2022">
     <a href="#on-using-mpv-together-with-the-fzf-fuzzy-finder-27-dec-2022" class="anchor-heading" aria-labelledby="on-using-mpv-together-with-the-fzf-fuzzy-finder-27-dec-2022"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> On using mpv together with the fzf fuzzy finder, 27 Dec 2022
-</h3>
+</h2>
 <p>I discovered fzf while adding support for selecting and playing YT
 videos <a href="#logbook-20221219">#logbook-20221219</a>, so I’m quite a newbie on
 fzf. Still I’ve been playing with fzf+mpvc to get them working together.
@@ -358,9 +358,9 @@ comes handy is to search chapters like:
 </ul>
 <p>This is still on a very preliminary state, but it’s amazing what fzf can
 do, and so far, seems to fit very well with mpvc.</p>
-<h3 id="on-using-mpv-together-with-the-fzf-fuzzy-finder-12-jan-2023">
+<h2 id="on-using-mpv-together-with-the-fzf-fuzzy-finder-12-jan-2023">
     <a href="#on-using-mpv-together-with-the-fzf-fuzzy-finder-12-jan-2023" class="anchor-heading" aria-labelledby="on-using-mpv-together-with-the-fzf-fuzzy-finder-12-jan-2023"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> On using mpv together with the fzf fuzzy finder, 12 Jan 2023
-</h3>
+</h2>
 <p>Continuing on the topic of using fzf with mpv, I’ve decided to split the
 code into three scripts:</p>
 <ul>
@@ -372,9 +372,9 @@ code into three scripts:</p>
 and more fzf functionality, that was unrelated to the TUI. This breaks
 some things, as for example, uses of <code class="language-plaintext highlighter-rouge">mpvc-tui -[lfFspP]</code> that now have
 become <code class="language-plaintext highlighter-rouge">mpvc-fzf -[lfFspP]</code>.</p>
-<h3 id="on-controlling-multiple-remotely-running-mpv-instances-19-jan-2023">
+<h2 id="on-controlling-multiple-remotely-running-mpv-instances-19-jan-2023">
     <a href="#on-controlling-multiple-remotely-running-mpv-instances-19-jan-2023" class="anchor-heading" aria-labelledby="on-controlling-multiple-remotely-running-mpv-instances-19-jan-2023"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> On controlling multiple remotely running mpv instances, 19 Jan 2023
-</h3>
+</h2>
 <p>A work in progress update, in no particular order, but, mostly focused
 on using mpvc to control a remote box (Raspberry Pi) acting as an
 audio/media center:</p>
@@ -398,9 +398,9 @@ playlist: <code class="language-plaintext highlighter-rouge">mpvc -q play $(( $R
 </ul>
 <p>This goes together with other related command as:
 <code class="language-plaintext highlighter-rouge">mpvc cmd/sockcmd/repl/get/set/cycle</code>.</p>
-<h3 id="on-stashing-mpv-media-player-state-to-restore-later-19-feb-2023">
+<h2 id="on-stashing-mpv-media-player-state-to-restore-later-19-feb-2023">
     <a href="#on-stashing-mpv-media-player-state-to-restore-later-19-feb-2023" class="anchor-heading" aria-labelledby="on-stashing-mpv-media-player-state-to-restore-later-19-feb-2023"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> On stashing mpv media player state to restore later, 19 Feb 2023
-</h3>
+</h2>
 <p>Something experimental I’ve been testing lately is using: <code class="language-plaintext highlighter-rouge">mpvc stash</code>
 command to save the currently playing state, to be restored later. The
 commands implemented by <code class="language-plaintext highlighter-rouge">mpvc stash [list|show|push|drop|apply]</code> are
@@ -417,9 +417,9 @@ inspired by <code class="language-plaintext highlighter-rouge">git-stash(1)</cod
 playlist, as <code class="language-plaintext highlighter-rouge">mpvc stash</code> saves the current playing settings including:
 <code class="language-plaintext highlighter-rouge">playlist-pos, playback-time, volume, mute, pause, etc.</code> together with
 the playlist.</p>
-<h3 id="css-rss--casts-updates-on-the-gmt4githubiompvc-site-31-mar-2023">
+<h2 id="css-rss--casts-updates-on-the-gmt4githubiompvc-site-31-mar-2023">
     <a href="#css-rss--casts-updates-on-the-gmt4githubiompvc-site-31-mar-2023" class="anchor-heading" aria-labelledby="css-rss--casts-updates-on-the-gmt4githubiompvc-site-31-mar-2023"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> CSS, RSS &amp; casts updates on the gmt4.github.io/mpvc site, 31 Mar 2023
-</h3>
+</h2>
 <p>A few things have been going on since last entry, some effort focused on
 getting a “decent” site (this HTML thing you’re reading right now @
 <a href="https://gmt4.github.io/mpvc">gmt4.github.io/mpvc</a> ) where its easy keep
@@ -432,9 +432,9 @@ now to keep track.
 screencasts.
 </ul>
 <p>Keep posted.</p>
-<h3 id="introducing-mpvc-equalizer-a-basic-mpv-equalizer-for-the-cli-25-apr-2023">
+<h2 id="introducing-mpvc-equalizer-a-basic-mpv-equalizer-for-the-cli-25-apr-2023">
     <a href="#introducing-mpvc-equalizer-a-basic-mpv-equalizer-for-the-cli-25-apr-2023" class="anchor-heading" aria-labelledby="introducing-mpvc-equalizer-a-basic-mpv-equalizer-for-the-cli-25-apr-2023"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Introducing mpvc-equalizer: a basic mpv equalizer for the CLI, 25 Apr 2023
-</h3>
+</h2>
 <p>This entry introduces
 <a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-equalizer">mpvc-equalizer</a>
 a Linear Phase 15-Bands Equalizer for the CLI/shell based on the
@@ -455,9 +455,9 @@ classical music:</p>
  mpvc-equalizer bars
  mpvc-equalizer reset
 </code></pre></div></div>
-<h3 id="on-applying-ffmpeg-av-filters-using-the-mpv-json-ipc-2-june-2023">
+<h2 id="on-applying-ffmpeg-av-filters-using-the-mpv-json-ipc-2-june-2023">
     <a href="#on-applying-ffmpeg-av-filters-using-the-mpv-json-ipc-2-june-2023" class="anchor-heading" aria-labelledby="on-applying-ffmpeg-av-filters-using-the-mpv-json-ipc-2-june-2023"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> On applying ffmpeg AV filters using the MPV JSON IPC, 2 June 2023
-</h3>
+</h2>
 <p>Continuing with the topic of the previous post about mpvc-equalizer, one
 reason for starting mpvc, was to ease was to managing audio from the
 CLI. In that sense mpv integrates well with ffmpeg to apply AV filters
@@ -519,9 +519,9 @@ mpvc cmdr vf toggle '@vstack:lavfi=[[vid1]split[v1][v2];[v1][v2]vstack[t]]'
 using (c-o apply):</p>
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>grep '^mpvc cmdr' docs/logbook.html | mpvc-fzf cmds
 </code></pre></div></div>
-<h3 id="introducing-mpvc-web-a-mpvc-tui-like-hack-for-the-webbrowser-21-july-2023">
+<h2 id="introducing-mpvc-web-a-mpvc-tui-like-hack-for-the-webbrowser-21-july-2023">
     <a href="#introducing-mpvc-web-a-mpvc-tui-like-hack-for-the-webbrowser-21-july-2023" class="anchor-heading" aria-labelledby="introducing-mpvc-web-a-mpvc-tui-like-hack-for-the-webbrowser-21-july-2023"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Introducing mpvc-web: a mpvc-tui like hack for the web/browser, 21 July 2023
-</h3>
+</h2>
 <p>A few things have been going on lately, among them, the most recent has
 been adding <code class="language-plaintext highlighter-rouge">mpvc-web</code> that is just a quick hack to control a running
 mpv instance from when no <code class="language-plaintext highlighter-rouge">mpvc</code> cli is available, a typical example is
@@ -555,9 +555,9 @@ scrobbling code to generate a simple list of the most played media. The
 <a href="https://en.wikipedia.org/wiki/Anti_EP">Anti EP</a> by
 <a href="https://en.wikipedia.org/wiki/Autechre">Autechre</a> has raised to the top
 position.</p>
-<h3 id="introducing-mpvc-autopilot-automatic-startstop-based-on-presence-15-sep-2023">
+<h2 id="introducing-mpvc-autopilot-automatic-startstop-based-on-presence-15-sep-2023">
     <a href="#introducing-mpvc-autopilot-automatic-startstop-based-on-presence-15-sep-2023" class="anchor-heading" aria-labelledby="introducing-mpvc-autopilot-automatic-startstop-based-on-presence-15-sep-2023"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Introducing mpvc-autopilot: automatic start/stop based on presence, 15 Sep 2023
-</h3>
+</h2>
 <p>A simple need to have some background music automatically playing while
 I’m near the device where <code class="language-plaintext highlighter-rouge">mpvc</code> is running, lets say, in media center
 mode, and, pausing the audio when I’m away. A solution for this was to
@@ -601,9 +601,9 @@ parameters, increase the time without pauses, for example NCHECK=6
 or NCHECK=12 will pause audio when the device is not seen for 30 or
 60 minutes, respectively.
 </ol>
-<h3 id="on-mpvc-usage-patterns-for-playing-musicvideos-16-sep-2023">
+<h2 id="on-mpvc-usage-patterns-for-playing-musicvideos-16-sep-2023">
     <a href="#on-mpvc-usage-patterns-for-playing-musicvideos-16-sep-2023" class="anchor-heading" aria-labelledby="on-mpvc-usage-patterns-for-playing-musicvideos-16-sep-2023"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> On mpvc usage patterns for playing music/videos, 16 Sep 2023
-</h3>
+</h2>
 <p>This entry aims to provide a comprehensive view of the usage patterns of
 <a href="https://github.com/gmt4/mpvc/">mpvc</a>. Several of the usage patterns
 have been already covered in the previous entries of the logbook, like:
@@ -656,9 +656,9 @@ probably is worth watching to show the workings. <em>Note</em> that, as always,
 this is only a personal take on mpvc usage patterns at a point in time,
 that will probably evolve, and is limited to a personal take on this
 topic, since others can have completely different usage patterns.</p>
-<h3 id="on-observing-mpv-property-changes-26-oct-2023">
+<h2 id="on-observing-mpv-property-changes-26-oct-2023">
     <a href="#on-observing-mpv-property-changes-26-oct-2023" class="anchor-heading" aria-labelledby="on-observing-mpv-property-changes-26-oct-2023"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> On observing mpv property changes, 26 Oct 2023
-</h3>
+</h2>
 <p>Recently basic support for <code class="language-plaintext highlighter-rouge">mpvc observe</code> landed on <code class="language-plaintext highlighter-rouge">mpvc</code>, to observe
 mpv property changes. This can be used as show below to watch for volume
 changes:</p>
@@ -666,9 +666,9 @@ changes:</p>
 {"event":"property-change","id":1,"name":"volume","data":"20.000000"}
 {"event":"property-change","id":1,"name":"volume","data":"21.000000"}
 </code></pre></div></div>
-<h3 id="on-the-security-of-mpvc-web-17-nov-2023">
+<h2 id="on-the-security-of-mpvc-web-17-nov-2023">
     <a href="#on-the-security-of-mpvc-web-17-nov-2023" class="anchor-heading" aria-labelledby="on-the-security-of-mpvc-web-17-nov-2023"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> On the security of mpvc-web, 17 Nov 2023
-</h3>
+</h2>
 <p>Besides the standard fixes, new functionality, and, performance
 improvements to the core functionality of mpvc, a few tools under
 extras/ have also received additional attention.</p>
@@ -717,9 +717,9 @@ network, however, is easily accomplished in modern browsers that allow
 easy import of P12 certs.</p>
 <p>So with this security issue addressed, I can keep on using and improving
 mpvc-web.</p>
-<h3 id="on-http-streaming-media-using-mpvc-web-16-jan-2024">
+<h2 id="on-http-streaming-media-using-mpvc-web-16-jan-2024">
     <a href="#on-http-streaming-media-using-mpvc-web-16-jan-2024" class="anchor-heading" aria-labelledby="on-http-streaming-media-using-mpvc-web-16-jan-2024"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> On http-streaming media using mpvc-web, 16 Jan 2024
-</h3>
+</h2>
 <p>A few changes have been going on
 <a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-web">extras/mpvc-web</a>
 , latest changes add the option <code class="language-plaintext highlighter-rouge">MPVC_WEB_ARCHIVE_ENABLE</code> to serve the
@@ -737,9 +737,9 @@ default queries <code class="language-plaintext highlighter-rouge">https://local
 <code class="language-plaintext highlighter-rouge">mpvc-fzf -b https://your-mediacenter:8443/ytdl-archive/</code> or any other
 URL to query other archives.</p>
 <p>Stay tuned</p>
-<h3 id="on-mpris-support-14-feb-2024">
+<h2 id="on-mpris-support-14-feb-2024">
     <a href="#on-mpris-support-14-feb-2024" class="anchor-heading" aria-labelledby="on-mpris-support-14-feb-2024"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> On MPRIS support, 14 Feb 2024
-</h3>
+</h2>
 <p>MPRIS stands for <a href="https://www.freedesktop.org/wiki/Specifications/mpris-spec/">Media Player Remote Interfacing
 Specification</a>
 and its a handy thing to have, as WM have builtin support this to
@@ -751,16 +751,16 @@ below is a quick setup:
 Then, start a new instance of mpv player that loads `mpris.so`<br />
 Check that mpv speaks MPRIS by running `mpvc-mpris status`, or get
 <a href="https://github.com/altdesktop/playerctl">playerctl</a></p>
-<h3 id="on-support-unixes-besides-gnulinux-bsd-and-macos-1-mar-2024">
+<h2 id="on-support-unixes-besides-gnulinux-bsd-and-macos-1-mar-2024">
     <a href="#on-support-unixes-besides-gnulinux-bsd-and-macos-1-mar-2024" class="anchor-heading" aria-labelledby="on-support-unixes-besides-gnulinux-bsd-and-macos-1-mar-2024"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> On support UNIXes besides GNU/Linux: BSD and MacOS, 1 Mar 2024
-</h3>
+</h2>
 <p>Well, been “moving fast &amp; breaking things” lately (there’ll be more
 breakage to come), yet the goal is achieved, and, now this thing (mpvc)
 runs on FreeBSD and MacOS. I consider them to be working, and, usable
 but rought, since are not UNIXes that I do not run regularly.</p>
-<h3 id="introducing-mpvc-chapter-helper-for-managing-chapters-5-apr-2024">
+<h2 id="introducing-mpvc-chapter-helper-for-managing-chapters-5-apr-2024">
     <a href="#introducing-mpvc-chapter-helper-for-managing-chapters-5-apr-2024" class="anchor-heading" aria-labelledby="introducing-mpvc-chapter-helper-for-managing-chapters-5-apr-2024"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Introducing mpvc-chapter: helper for managing chapters, 5 Apr 2024
-</h3>
+</h2>
 <p>Mpv does a great job on handling chapters stored as metadata in media
 files, however, sometimes you end up wanting to modify chapters to
 existing media, or media that lacks chapters. This is the purpose of
@@ -783,9 +783,9 @@ incremental timestamps in MM:SS, and generates a chapter-file
 <p>PS: Although the title says “Introducing mpvc-chapter”, it has been
 present for a long time, it was just an small auxiliar command, missing
 documentation, the above lines addresses this.</p>
-<h3 id="introducing-mpvc-osd-interfacing-mpvc-with-a-4x20-usb-lcd-5-may-2024">
+<h2 id="introducing-mpvc-osd-interfacing-mpvc-with-a-4x20-usb-lcd-5-may-2024">
     <a href="#introducing-mpvc-osd-interfacing-mpvc-with-a-4x20-usb-lcd-5-may-2024" class="anchor-heading" aria-labelledby="introducing-mpvc-osd-interfacing-mpvc-with-a-4x20-usb-lcd-5-may-2024"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Introducing mpvc-osd: interfacing mpvc with a 4x20 USB LCD, 5 May 2024
-</h3>
+</h2>
 <p>While mpvc was playing `The Number 4` from Khruangbin’s EP `The
 Infamous Bill` decided it would be fun to interface mpvc with a USB LCD
 on the Raspberry PI that acts as a jukebox, so each time a track starts
@@ -796,9 +796,9 @@ record the output from <code class="language-plaintext highlighter-rouge">mpvc-t
 ` mpvc-tui -S ‘echo $(date +”T%H:%M”) $(mpvc -f “[%status%] #%position%/%playlistlength% %time% %artist% - %title% - %path%”)’ ‘false’ `.
 And this is how it looks:</p>
 <p><img src="assets/mpvc-osd-usblcd.jpg" style="width:90.0%" alt="mpvc-osd usblcd" /></p>
-<h3 id="some-notes-on-my-current-mpvc-setup-4-july-2024">
+<h2 id="some-notes-on-my-current-mpvc-setup-4-july-2024">
     <a href="#some-notes-on-my-current-mpvc-setup-4-july-2024" class="anchor-heading" aria-labelledby="some-notes-on-my-current-mpvc-setup-4-july-2024"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Some notes on my current mpvc setup, 4 July 2024
-</h3>
+</h2>
 <p>Some notes on my current mpvc setup, I’ve setled on having the following
 commands continuosly running on background: mpvc-tui, mpvc-web,
 mpvc-autopilot, and mpvc-osd:</p>
@@ -826,9 +826,9 @@ ssh-client to control the remote mpv running on X11, an example
 invocation is:</p>
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ssh -X $USER@$HOST x2x -west -to :0 # be sure to read x2x(1)
 </code></pre></div></div>
-<h3 id="on-mpvc-lowfi-and-mpvc-fzf-url-browser-26-october-2024">
+<h2 id="on-mpvc-lowfi-and-mpvc-fzf-url-browser-26-october-2024">
     <a href="#on-mpvc-lowfi-and-mpvc-fzf-url-browser-26-october-2024" class="anchor-heading" aria-labelledby="on-mpvc-lowfi-and-mpvc-fzf-url-browser-26-october-2024"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> On mpvc lowfi and mpvc-fzf URL browser, 26 October 2024
-</h3>
+</h2>
 <p>Recently landed the commands <code class="language-plaintext highlighter-rouge">mpvc lowfi/hifi</code>, <code class="language-plaintext highlighter-rouge">lowfi</code> features a
 minimal mpvc status that leverages emojis to represent a one-line
 compressed playing status. This is done by defining a custom
@@ -854,9 +854,9 @@ browsed with ctrl+[yu]
 </ul>
 <p>The above <code class="language-plaintext highlighter-rouge">ctrl+[tyu]</code> shortcuts for mpvc-fzf work as well for local,
 remote, and other media URLs.</p>
-<h3 id="on-customizing-mpvc-fzf-key-bindings-16-june-2025">
+<h2 id="on-customizing-mpvc-fzf-key-bindings-16-june-2025">
     <a href="#on-customizing-mpvc-fzf-key-bindings-16-june-2025" class="anchor-heading" aria-labelledby="on-customizing-mpvc-fzf-key-bindings-16-june-2025"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> On customizing mpvc-fzf key-bindings, 16 June 2025
-</h3>
+</h2>
 <p>Until now the mpvc-fzf keybidings have been <code class="language-plaintext highlighter-rouge">hard-coded</code>, now these live
 where they belong in the <code class="language-plaintext highlighter-rouge">mpvc.conf</code> config file. This way anyone can
 <code class="language-plaintext highlighter-rouge">add/edit/delete</code> mpvc-fzf keybindings. I think this is relevant, since
@@ -871,9 +871,9 @@ shift-up:execute-silent(mpvc -q vol +1 &amp;),\
 ctrl-space:execute-silent(mpvc toggle &amp;)\
 "
 </code></pre></div></div>
-<h3 id="on-companion-tools-that-go-well-with-mpvc-08-november-2025">
+<h2 id="on-companion-tools-that-go-well-with-mpvc-08-november-2025">
     <a href="#on-companion-tools-that-go-well-with-mpvc-08-november-2025" class="anchor-heading" aria-labelledby="on-companion-tools-that-go-well-with-mpvc-08-november-2025"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> On companion tools that go well with mpvc, 08 November 2025
-</h3>
+</h2>
 <p>The <a href="https://github.com/gmt4/mpvc/blob/master/docs/FAQ.md">docs/FAQ</a> has
 been updated to keep a list of companion tools that go well with mpvc,
 among these is <a href="https://github.com/9001/copyparty">copyparty</a>, that
@@ -885,9 +885,9 @@ directory listings should do, but copyparty really makes things easy.
 Combine that with Tailscale or a cheap VPS and to have:</p>
 <p><strong>your music, your way, everywhere, without much hassle &amp; complicated
 setups</strong>.</p>
-<h3 id="on-a-sample-setup-using-crontab5-for-mpvc-28-december-2025">
+<h2 id="on-a-sample-setup-using-crontab5-for-mpvc-28-december-2025">
     <a href="#on-a-sample-setup-using-crontab5-for-mpvc-28-december-2025" class="anchor-heading" aria-labelledby="on-a-sample-setup-using-crontab5-for-mpvc-28-december-2025"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> On a sample setup using crontab(5) for mpvc, 28 December 2025
-</h3>
+</h2>
 <p>The commands below have been on my user crontab(5) for a long time,
 these take care of starting and stopping music on a daily basis, also
 taking care of controlling volume level, and un/muting audio output at
@@ -907,9 +907,9 @@ stash.</p>
  0  7 * * * $HOME/bin/mpvc -q resume "" volume 20
 30  7 * * * $HOME/bin/mpvc -q volume 30
 </code></pre></div></div>
-<h3 id="introducing-mpvc-web-browser-a-mpvc-web-companion-browser-07-september-2026">
+<h2 id="introducing-mpvc-web-browser-a-mpvc-web-companion-browser-07-september-2026">
     <a href="#introducing-mpvc-web-browser-a-mpvc-web-companion-browser-07-september-2026" class="anchor-heading" aria-labelledby="introducing-mpvc-web-browser-a-mpvc-web-companion-browser-07-september-2026"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Introducing mpvc-web-browser: a mpvc-web companion browser, 07 September 2026
-</h3>
+</h2>
 <p>This entry introduces
 <a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-web-browser">mpvc-web-browser</a>.
 The <code class="language-plaintext highlighter-rouge">mpvc-web-browser</code> allows to browse/manage the mpvc Media Library
@@ -931,9 +931,9 @@ recently, mainly focused on improving the mpvc-web,</p>
  <li>Dark/Light theme support
  <li>Performance improvements
 </ul>
-<h2 id="the-end">
+<h1 id="the-end">
     <a href="#the-end" class="anchor-heading" aria-labelledby="the-end"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> The End
-</h2>
+</h1>
 <p>Return to the <a href="#gmt4-mpvc-fork">Start</a></p><hr />
 <p><em>📅 Sat, 08 Nov 2025 by <a href="https://gmt4.github.io">gmt4</a></em>
 <span style="float: right;"> <em>⚡ PoweredBy #HTML</em> </span></p>

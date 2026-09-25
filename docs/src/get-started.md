@@ -111,24 +111,20 @@ best chance is to try, play, and have fun).
 
 mpvc-fzf running on mac OS (screenshot click to view)
 
-<img src="assets/mpvc-fzf-mac.jpg" style="width:95.0%"
-alt="mpvc-fzf on Mac OS screenshot" />
+<img src="assets/mpvc-fzf-mac.jpg" style="width:95.0%" alt="mpvc-fzf on Mac OS screenshot" />
 
 mpvc-tui -T: running the mpvc TUI (screenshot click to view)
 
-<img src="assets/mpvc-tui.png" style="width:95.0%"
-alt="mpvc-tui -T screenshot" />
+<img src="assets/mpvc-tui.png" style="width:95.0%" alt="mpvc-tui -T screenshot" />
 
 mpvc-tui -f: running with fzf (screenshot click to view)
 
-<img src="assets/mpvc-tui-arch.png" style="width:95.0%"
-alt="mpvc-tui fzf screenshot" />
+<img src="assets/mpvc-tui-arch.png" style="width:95.0%" alt="mpvc-tui fzf screenshot" />
 
 mpvc-tui: running with fzf and desktop notifications on the upper-right
 corner (screenshot click to view)
 
-<img src="assets/mpvc-tui-fzf.png" style="width:95.0%"
-alt="mpvc-tui fzf+notify screenshot" />
+<img src="assets/mpvc-tui-fzf.png" style="width:95.0%" alt="mpvc-tui fzf+notify screenshot" />
 
 ------------------------------------------------------------------------
 

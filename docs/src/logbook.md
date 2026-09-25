@@ -17,14 +17,14 @@ layout: home
 
 ------------------------------------------------------------------------
 
-## Logbook
+# Logbook
 
 The logbook below is just that, a log of notes as I use and work on
 mpvc. Entries are chronologically ordered with oldest first, and,
 attempt to be self-contained focused on a certain functionality/topic,
 to the extent that it is possible.
 
-### On playing URLs, 30 Mar 2022
+## On playing URLs, 30 Mar 2022
 
 What got me started on using mpvc is being able to play URLs. This is
 the cause to start writing what you are reading now (this repo at
@@ -32,14 +32,14 @@ the cause to start writing what you are reading now (this repo at
 
 - `mpvc add https://kuplasound.bandcamp.com/album/mirage/`
 
-### On securing mpv socket location, 14 Nov 2022
+## On securing mpv socket location, 14 Nov 2022
 
 One thing that bothers me when using mpvc, is that most programs
 performing ipc on mpv socket, just leave the socket at `/tmp/mpvsocket`.
 A better default location for the mpv socket is
 `$HOME/.config/mpvc/mpvsocket`.
 
-### On load/save functionality, 18 Nov 2022
+## On load/save functionality, 18 Nov 2022
 
 A thing that I'd like to be able to do is to perform `mpvc load/save` of
 the playlist, and, be able of manipulating the playlist using standard
@@ -47,7 +47,7 @@ Unix commands eg. grep. The easiest way that comes to mind, is something
 a la: `mpvc save | grep -v artist | mpvc load`, this enables to filter
 out an artist, and drop all the songs by this artist.
 
-### On persistent mpv startup, 20 Nov 2022
+## On persistent mpv startup, 20 Nov 2022
 
 One particular feature where improvement could be done is
 `mpvc -a audio.opus`, when mpv finishes playing audio.opus, mpv
@@ -57,7 +57,7 @@ with --idle=yes. A shortcut for this is to run `mpvc --mpv` that does
 exactly this, after this the mpv instance can be manipulated with mpvc,
 and does not terminate once mpv finishes playing.
 
-### On a minimal mpvc-tui, 03 Dec 2022
+## On a minimal mpvc-tui, 03 Dec 2022
 
 One thing I keep doing a lot, is typing mpvc status and mpvc -i, to
 check the mpv playlist and status. To this end I've quickly hacked a
@@ -66,7 +66,7 @@ and status. In addition, while in mpvc-tui you can Control+C, to get a
 mpvc prompt to run quick mpvc commands, like: prev, next, pause, toggle,
 seek, volume, etc.
 
-### On using the mpvc-tui prompt, 13 Dec 2022
+## On using the mpvc-tui prompt, 13 Dec 2022
 
 As explained above, mpvc-tui does three things: 1) display status, 2)
 display playlist, 3) prompt the user for interaction. Once we hit
@@ -94,7 +94,7 @@ that becomes a life-saver. Now, you get a more comfortable prompt, where
 TAB completion works on commands and filenames, as well as Control+R to
 repeat previous commands in the history file.
 
-### On using the mpvc-tui -x launcher, 14 Dec 2022
+## On using the mpvc-tui -x launcher, 14 Dec 2022
 
 Another nifty detail of mpvc-tui, is that it can be quickly spawn from
 the WM launcher by using `mpvc-tui -x`, then type a few mpvc commands to
@@ -102,7 +102,7 @@ setup music, and close it. Or it can be started on the current terminal
 with \`mpvc-tui\` and left running as a long running program, and get
 back to it when needed.
 
-### On managing playlists with mpvc autoload/autosave, 15 Dec 2022
+## On managing playlists with mpvc autoload/autosave, 15 Dec 2022
 
 When using `mpc(1)`, playlists can be managed using the mpc
 load/save/lsplaylists commands. In addition to load/save, mpvc adds the
@@ -122,18 +122,18 @@ The above enables to arrange a playlist, and once we are happy with it,
 save it with \`mpvc autosave playlist.m3u\`, later, we can replay it
 again with: \`mpvc autoload playlist.m3u\`.
 
-### On customizing mpvc-tui look and feel, 18 Dec 2022
+## On customizing mpvc-tui look and feel, 18 Dec 2022
 
 While using `mpvc-tui`, one ends up wanting to configure the minimal
 look and feel that mpvc-tui provides. To this end the file `mpvc.conf`
 under \$XDG_CONFIG_HOME/mpvc/ provides a place to overwrite the default
 settings of mpvc-tui.
 
-### Show HN: mpvc-tui – A minimal mpc-like CLI and TUI for controlling mpv, 16 Dec 2022
+## Show HN: mpvc-tui – A minimal mpc-like CLI and TUI for controlling mpv, 16 Dec 2022
 
 We are on "Show HN"! <https://news.ycombinator.com/item?id=34013149>
 
-### On issuing direct JSON IPC commands to mpv, 17 Dec 2022
+## On issuing direct JSON IPC commands to mpv, 17 Dec 2022
 
 That one is easy, for that purpose `mpvc cmd args` sends the
 `{ "command": args }` to the JSON IPC, use `mpvc cmdr args` to send the
@@ -148,7 +148,7 @@ are:
 Note, audio filter commands above are lifted from
 https://github.com/mpv-player/mpv/issues/6210.
 
-### On playing music from streaming services as youtube and co., 19 Dec 2022
+## On playing music from streaming services as youtube and co., 19 Dec 2022
 
 Mpv already plays URLs (both video and audio) from streaming platforms
 as youtube. So the one thing missing is to be able to search, select,
@@ -173,7 +173,7 @@ Some usage examples of the above are:
 Note, that you can use this command from inside mpvc-tui too, by hitting
 Control+C and then typing "!mpvc-fzf -p rolling stones"
 
-### On subscribing and receiving mpv events, 21 Dec 2022
+## On subscribing and receiving mpv events, 21 Dec 2022
 
 Mpv IPC JSON socket allows receiving the media events generated by the
 running mpv instance. Subscribing to the mpv events can be done using
@@ -192,7 +192,7 @@ the above are:
 The `mpvc-tui -n` uses `mpvc idleloop` to raise desktop notifications,
 as shown above.
 
-### On using mpv together with the fzf fuzzy finder, 27 Dec 2022
+## On using mpv together with the fzf fuzzy finder, 27 Dec 2022
 
 I discovered fzf while adding support for selecting and playing YT
 videos [\#logbook-20221219](#logbook-20221219), so I'm quite a newbie on
@@ -213,7 +213,7 @@ So far I've focused on 4 points:
 This is still on a very preliminary state, but it's amazing what fzf can
 do, and so far, seems to fit very well with mpvc.
 
-### On using mpv together with the fzf fuzzy finder, 12 Jan 2023
+## On using mpv together with the fzf fuzzy finder, 12 Jan 2023
 
 Continuing on the topic of using fzf with mpv, I’ve decided to split the
 code into three scripts:
@@ -227,7 +227,7 @@ and more fzf functionality, that was unrelated to the TUI. This breaks
 some things, as for example, uses of `mpvc-tui -[lfFspP]` that now have
 become `mpvc-fzf -[lfFspP]`.
 
-### On controlling multiple remotely running mpv instances, 19 Jan 2023
+## On controlling multiple remotely running mpv instances, 19 Jan 2023
 
 A work in progress update, in no particular order, but, mostly focused
 on using mpvc to control a remote box (Raspberry Pi) acting as an
@@ -253,7 +253,7 @@ audio/media center:
 This goes together with other related command as:
 `mpvc cmd/sockcmd/repl/get/set/cycle`.
 
-### On stashing mpv media player state to restore later, 19 Feb 2023
+## On stashing mpv media player state to restore later, 19 Feb 2023
 
 Something experimental I've been testing lately is using: `mpvc stash`
 command to save the currently playing state, to be restored later. The
@@ -272,7 +272,7 @@ playlist, as `mpvc stash` saves the current playing settings including:
 `playlist-pos, playback-time, volume, mute, pause, etc.` together with
 the playlist.
 
-### CSS, RSS & casts updates on the gmt4.github.io/mpvc site, 31 Mar 2023
+## CSS, RSS & casts updates on the gmt4.github.io/mpvc site, 31 Mar 2023
 
 A few things have been going on since last entry, some effort focused on
 getting a “decent” site (this HTML thing you’re reading right now @
@@ -287,7 +287,7 @@ track of whats going on. This effort has :
 
 Keep posted.
 
-### Introducing mpvc-equalizer: a basic mpv equalizer for the CLI, 25 Apr 2023
+## Introducing mpvc-equalizer: a basic mpv equalizer for the CLI, 25 Apr 2023
 
 This entry introduces
 [mpvc-equalizer](https://github.com/gmt4/mpvc/blob/master/extras/mpvc-equalizer)
@@ -310,7 +310,7 @@ classical music:
      mpvc-equalizer bars
      mpvc-equalizer reset
 
-### On applying ffmpeg AV filters using the MPV JSON IPC, 2 June 2023
+## On applying ffmpeg AV filters using the MPV JSON IPC, 2 June 2023
 
 Continuing with the topic of the previous post about mpvc-equalizer, one
 reason for starting mpvc, was to ease was to managing audio from the
@@ -376,7 +376,7 @@ using (c-o apply):
 
     grep '^mpvc cmdr' docs/logbook.html | mpvc-fzf cmds
 
-### Introducing mpvc-web: a mpvc-tui like hack for the web/browser, 21 July 2023
+## Introducing mpvc-web: a mpvc-tui like hack for the web/browser, 21 July 2023
 
 A few things have been going on lately, among them, the most recent has
 been adding `mpvc-web` that is just a quick hack to control a running
@@ -415,7 +415,7 @@ scrobbling code to generate a simple list of the most played media. The
 [Autechre](https://en.wikipedia.org/wiki/Autechre) has raised to the top
 position.
 
-### Introducing mpvc-autopilot: automatic start/stop based on presence, 15 Sep 2023
+## Introducing mpvc-autopilot: automatic start/stop based on presence, 15 Sep 2023
 
 A simple need to have some background music automatically playing while
 I'm near the device where `mpvc` is running, lets say, in media center
@@ -462,7 +462,7 @@ fully disable mpvc-autopilot for a time, because:
     or NCHECK=12 will pause audio when the device is not seen for 30 or
     60 minutes, respectively.
 
-### On mpvc usage patterns for playing music/videos, 16 Sep 2023
+## On mpvc usage patterns for playing music/videos, 16 Sep 2023
 
 This entry aims to provide a comprehensive view of the usage patterns of
 [mpvc](https://github.com/gmt4/mpvc/). Several of the usage patterns
@@ -513,7 +513,7 @@ this is only a personal take on mpvc usage patterns at a point in time,
 that will probably evolve, and is limited to a personal take on this
 topic, since others can have completely different usage patterns.
 
-### On observing mpv property changes, 26 Oct 2023
+## On observing mpv property changes, 26 Oct 2023
 
 Recently basic support for `mpvc observe` landed on `mpvc`, to observe
 mpv property changes. This can be used as show below to watch for volume
@@ -523,7 +523,7 @@ changes:
     {"event":"property-change","id":1,"name":"volume","data":"20.000000"}
     {"event":"property-change","id":1,"name":"volume","data":"21.000000"}
 
-### On the security of mpvc-web, 17 Nov 2023
+## On the security of mpvc-web, 17 Nov 2023
 
 Besides the standard fixes, new functionality, and, performance
 improvements to the core functionality of mpvc, a few tools under
@@ -579,7 +579,7 @@ easy import of P12 certs.
 So with this security issue addressed, I can keep on using and improving
 mpvc-web.
 
-### On http-streaming media using mpvc-web, 16 Jan 2024
+## On http-streaming media using mpvc-web, 16 Jan 2024
 
 A few changes have been going on
 [extras/mpvc-web](https://github.com/gmt4/mpvc/blob/master/extras/mpvc-web)
@@ -602,7 +602,7 @@ URL to query other archives.
 
 Stay tuned
 
-### On MPRIS support, 14 Feb 2024
+## On MPRIS support, 14 Feb 2024
 
 MPRIS stands for [Media Player Remote Interfacing
 Specification](https://www.freedesktop.org/wiki/Specifications/mpris-spec/)
@@ -617,14 +617,14 @@ Then, start a new instance of mpv player that loads \`mpris.so\`
 Check that mpv speaks MPRIS by running \`mpvc-mpris status\`, or get
 [playerctl](https://github.com/altdesktop/playerctl)
 
-### On support UNIXes besides GNU/Linux: BSD and MacOS, 1 Mar 2024
+## On support UNIXes besides GNU/Linux: BSD and MacOS, 1 Mar 2024
 
 Well, been "moving fast & breaking things" lately (there'll be more
 breakage to come), yet the goal is achieved, and, now this thing (mpvc)
 runs on FreeBSD and MacOS. I consider them to be working, and, usable
 but rought, since are not UNIXes that I do not run regularly.
 
-### Introducing mpvc-chapter: helper for managing chapters, 5 Apr 2024
+## Introducing mpvc-chapter: helper for managing chapters, 5 Apr 2024
 
 Mpv does a great job on handling chapters stored as metadata in media
 files, however, sometimes you end up wanting to modify chapters to
@@ -650,7 +650,7 @@ PS: Although the title says "Introducing mpvc-chapter", it has been
 present for a long time, it was just an small auxiliar command, missing
 documentation, the above lines addresses this.
 
-### Introducing mpvc-osd: interfacing mpvc with a 4x20 USB LCD, 5 May 2024
+## Introducing mpvc-osd: interfacing mpvc with a 4x20 USB LCD, 5 May 2024
 
 While mpvc was playing \`The Number 4\` from Khruangbin's EP \`The
 Infamous Bill\` decided it would be fun to interface mpvc with a USB LCD
@@ -665,7 +665,7 @@ And this is how it looks:
 <img src="assets/mpvc-osd-usblcd.jpg" style="width:90.0%"
 alt="mpvc-osd usblcd" />
 
-### Some notes on my current mpvc setup, 4 July 2024
+## Some notes on my current mpvc setup, 4 July 2024
 
 Some notes on my current mpvc setup, I've setled on having the following
 commands continuosly running on background: mpvc-tui, mpvc-web,
@@ -696,7 +696,7 @@ invocation is:
 
     ssh -X $USER@$HOST x2x -west -to :0 # be sure to read x2x(1)
 
-### On mpvc lowfi and mpvc-fzf URL browser, 26 October 2024
+## On mpvc lowfi and mpvc-fzf URL browser, 26 October 2024
 
 Recently landed the commands `mpvc lowfi/hifi`, `lowfi` features a
 minimal mpvc status that leverages emojis to represent a one-line
@@ -728,7 +728,7 @@ The `mpvc-fzf -b [URL]` browser works as follows:
 The above `ctrl+[tyu]` shortcuts for mpvc-fzf work as well for local,
 remote, and other media URLs.
 
-### On customizing mpvc-fzf key-bindings, 16 June 2025
+## On customizing mpvc-fzf key-bindings, 16 June 2025
 
 Until now the mpvc-fzf keybidings have been `hard-coded`, now these live
 where they belong in the `mpvc.conf` config file. This way anyone can
@@ -745,7 +745,7 @@ Below is an excerpt of the current keybindings in `mpvc.conf`:
     ctrl-space:execute-silent(mpvc toggle &)\
     "
 
-### On companion tools that go well with mpvc, 08 November 2025
+## On companion tools that go well with mpvc, 08 November 2025
 
 The [docs/FAQ](https://github.com/gmt4/mpvc/blob/master/docs/FAQ.md) has
 been updated to keep a list of companion tools that go well with mpvc,
@@ -760,7 +760,7 @@ Combine that with Tailscale or a cheap VPS and to have:
 **your music, your way, everywhere, without much hassle & complicated
 setups**.
 
-### On a sample setup using crontab(5) for mpvc, 28 December 2025
+## On a sample setup using crontab(5) for mpvc, 28 December 2025
 
 The commands below have been on my user crontab(5) for a long time,
 these take care of starting and stopping music on a daily basis, also
@@ -782,7 +782,7 @@ stash.
      0  7 * * * $HOME/bin/mpvc -q resume "" volume 20
     30  7 * * * $HOME/bin/mpvc -q volume 30
 
-### Introducing mpvc-web-browser: a mpvc-web companion browser, 07 September 2026
+## Introducing mpvc-web-browser: a mpvc-web companion browser, 07 September 2026
 
 This entry introduces
 [mpvc-web-browser](https://github.com/gmt4/mpvc/blob/master/extras/mpvc-web-browser).
@@ -806,7 +806,7 @@ recently, mainly focused on improving the mpvc-web,
 - Dark/Light theme support
 - Performance improvements
 
-## The End
+# The End
 
 Return to the [Start](#gmt4-mpvc-fork)
 
