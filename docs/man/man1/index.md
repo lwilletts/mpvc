@@ -17,6 +17,7 @@ manual: User Commands
 *   [mpvc-tui(1)](mpvc-tui.html) - Terminal dashboard matrix, album art injection hooks, and live tracker overlays.
 *   [mpvc-web(1)](mpvc-web.html) - Minimalist HTTP server control panel and zero-config browser interaction portal.
 *   [mpvc-chapter(1)](mpvc-chapter.html) - Manage and merge ffmetadata chapter files for mpvc
+*   [mpvc-equalizer(1)](mpvc-equalizer.html) - Manage and adjust audio filter equalizer settings for mpvc
 *   [mpvc-autopilot(1)](mpvc-autopilot.html) - Autopilot mode with auto start/stop, and random playlist playback daemon
 
 ### Section 5 - File Formats & Configurations (man5)

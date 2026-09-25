@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>mpvc-equalizer(1)</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <style>
+  body { max-width: 95%; margin-left: auto; margin-right: auto; }
+  em, i { font-style: normal; text-decoration: underline; }
+  pre, code { white-space: pre-wrap; }
+  pre { border: 1px solid currentColor; border-radius: 6px; background-color: #f6f8fa; overflow-x: auto; padding: 12px; }
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">mpvc-equalizer(1)</h1>
+<p class="date">April, 2026</p>
+</header>
+<h1 id="name">NAME</h1>
+<p>mpvc-equalizer - manage and adjust audio filter equalizer settings for mpvc</p>
+<h1 id="synopsis">SYNOPSIS</h1>
+<pre><code>usage: mpvc-equalizer opts # @version v1.8 (c) gmt4 https://github.com/gmt4/mpvc
+ save   : Saves equalizer settings
+ load   : Loads equalizer settings
+ reset  : Resets equalizer settings (set af gains to 0)
+ clear  : Clears equalizer settings (clear af)
+ toggle : toggle equalizer settings (toggle af)
+ preset : Show/Set equalizer settings preset
+ values : Show equalizer settings as float values
+ bars   : Show equalizer settings as graph bars
+ json   : Show equalizer settings as JSON
+*tips: If unsure about where to begin, start with: mpvc-equalizer preset</code></pre>
+<h1 id="description">DESCRIPTION</h1>
+<p>mpvc-equalizer is a utility helper script bundled with mpvc that configures, toggles, and displays the audio filter (af) equalizer settings of a running mpv instance via local Unix socket connections.</p>
+<h1 id="options">OPTIONS</h1>
+<dl>
+<dt><code>save</code></dt>
+<dd>Save the current audio filter equalizer adjustments and gain parameters to the configuration storage.
+</dd>
+<dt><code>load</code></dt>
+<dd>Load previously saved audio filter equalizer configuration profiles directly into the active playback engine workspace.
+</dd>
+<dt><code>reset</code></dt>
+<dd>Reset all equalizer configuration adjustments back to a flat level by setting all audio filter gains to 0.
+</dd>
+<dt><code>clear</code></dt>
+<dd>Clear and completely remove the active audio filter configuration settings from the running instance context.
+</dd>
+<dt><code>toggle</code></dt>
+<dd>Toggle the audio filter equalizer settings on or off to quickly contrast modified frequencies with baseline flat audio output.
+</dd>
+<dt><code>preset</code></dt>
+<dd>Show the active audio filter configuration profile or set the equalizer matrix to a predefined listening preset.
+</dd>
+<dt><code>values</code></dt>
+<dd>Output the current audio filter equalizer gain parameters formatted as a list of raw float values.
+</dd>
+<dt><code>bars</code></dt>
+<dd>Render a visual representation of the active frequency band gain configurations using terminal text graph bars.
+</dd>
+<dt><code>json</code></dt>
+<dd>Export the complete active equalizer audio filter settings profile structured into a standard JSON payload format string.
+</dd>
+</dl>
+<h1 id="examples">EXAMPLES</h1>
+<p>Interact with or assign predefined audio equalizing balance templates</p>
+<pre><code>    mpvc-equalizer preset</code></pre>
+<p>Visually audit configured frequency band gains using terminal graphs</p>
+<pre><code>    mpvc-equalizer bars</code></pre>
+<p>Toggle active equalizer constraints to evaluate listening profiles</p>
+<pre><code>    mpvc-equalizer toggle</code></pre>
+<p>Reset all frequency gains back to 0 to balance structural playback</p>
+<pre><code>    mpvc-equalizer reset</code></pre>
+<h1 id="environment">ENVIRONMENT</h1>
+<dl>
+<dt>MPV_SOCKET</dt>
+<dd>Override the default MPV socket path. Used by internal companion script wrappers to identify which instance target context boundaries apply.
+</dd>
+<dt>XDG_CONFIG_HOME</dt>
+<dd>Directory where mpvc configurations are systematically discovered. Defaults to ~/.config/ if not specified by your shell environment variables.
+</dd>
+</dl>
+<h1 id="files">FILES</h1>
+<dl>
+<dt>~/.config/mpvc/mpvc.conf</dt>
+<dd>Core mpvc-specific runtime configurations, variable flags, and system mapping settings.
+</dd>
+</dl>
+<h1 id="see-also">SEE ALSO</h1>
+<p><a href="mpvc.html">mpvc(1)</a>, <a href="mpvc.conf.html">mpvc(5)</a>, <a href="mpvc-chapter.html">mpvc-chapter(1)</a>, <a href="mpvc-fzf.html">mpvc-fzf(1)</a>, <a href="mpvc-tui.html">mpvc-tui(1)</a>, <a href="mpvc-web.html">mpvc-web(1)</a>, <a href=".">mpvc-index</a>,</p>
+<h1 id="author">AUTHOR</h1>
+<p>Manual written by gmt4. See <a href="https://github.com/gmt4/mpvc" class="uri">https://github.com/gmt4/mpvc</a> for more information.</p>
+<h1 id="reporting-bugs">REPORTING BUGS</h1>
+<p>Report bugs at: <a href="https://github.com" class="uri">https://github.com</a></p>
+</body>
+</html>
