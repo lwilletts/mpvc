@@ -3,6 +3,7 @@ title: mpvc Manual Pages
 version: v1.8
 date: April, 2026
 manual: User Commands
+layout: page
 ---
 
 # INDEX

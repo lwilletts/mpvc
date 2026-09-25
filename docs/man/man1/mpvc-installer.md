@@ -4,6 +4,7 @@ section: 1
 version: v1.8
 date: September, 2026
 manual: User Commands
+layout: page
 ---
 
 # NAME
