@@ -1,0 +1,103 @@
+.\"
+.TH "mpvc-web" "1" "September, 2026" "" ""
+.hy
+.SH NAME
+.PP
+mpvc-web \[en] Web and HTTP API interface for mpvc control
+.SH SYNOPSIS
+.IP
+.nf
+\f[C]
+usage: mpvc-web -[ha:b:c:d:p:P:r:R:s:S:t:T:x:] args # \[at]version v1.9 (c) gmt4 https://github.com/gmt4/mpvc
+  -c : Set mpvc-web HTTP server command: [start,stop] (*required)
+  -b : Set mpvc-web HTTP server bind address (default localhost)
+  -p : Set mpvc-web HTTP server port (default 8888)
+  -r : Set mpvc-web HTTP server root dir (default /tmp/mpvc-web/root)
+  -R : Set mpvc-web HTTP server HTML refresh (default 240)
+  -s : Set mpvc-web HTTP server SSL/TLS (default )
+  -a : Set mpvc-web HTTP server to include ytdl-archive/ (default )
+*tips: If unsure where to begin, run: mpvc-web -p 8888 -c start # serves \[at] http://localhost:8888
+\f[R]
+.fi
+.SH DESCRIPTION
+.PP
+\f[B]mpvc-web\f[R] is a lightweight web interface and HTTP API wrapper
+for \f[C]mpvc\f[R].
+It allows users to control an active local \f[C]mpv\f[R] media player
+instance remotely over a network interface using standard HTTP methods
+or a mobile-friendly browser interface.
+.SH OPTIONS
+.TP
+\f[B]\f[CB]-c\f[B]\f[R] start|stop|status
+Set the mpvc-web HTTP server command.
+This option is \f[B]required\f[R].
+Accepted values are \f[C]start\f[R] to daemonize the server,
+\f[C]stop\f[R] to terminate it, \f[C]status\f[R] to check is running.
+.TP
+\f[B]\f[CB]-b\f[B]\f[R] bind-address
+Set the mpvc-web HTTP server bind address.
+Defaults to \f[C]localhost\f[R].
+.TP
+\f[B]\f[CB]-p\f[B]\f[R] port
+Set the mpvc-web HTTP server port.
+Defaults to \f[C]8888\f[R].
+.TP
+\f[B]\f[CB]-r\f[B]\f[R] directory
+Set the mpvc-web HTTP server root directory path.
+Defaults to \f[C]/tmp/mpvc-web/root\f[R].
+.TP
+\f[B]\f[CB]-R\f[B]\f[R] seconds
+Set the mpvc-web HTTP server HTML auto-refresh interval in seconds.
+Defaults to \f[C]240\f[R].
+.TP
+\f[B]\f[CB]-s\f[B]\f[R] https
+Set the mpvc-web HTTP server SSL/TLS configurations or certificate
+paths.
+Defaults to empty.
+.TP
+\f[B]\f[CB]-a\f[B]\f[R] archive
+Set the mpvc-web HTTP server to include a \f[C]ytdl-archive/\f[R]
+repository or path tracking download history.
+Defaults to empty.
+.TP
+\f[B]\f[CB]-h\f[B]\f[R], \f[B]\f[CB]--help\f[B]\f[R]
+Display the help synopsis and exit.
+.SH EXAMPLES
+.PP
+Start the HTTP server listening on localhost at port 8888:
+.IP
+.nf
+\f[C]
+$ mpvc-web -c start -b 127.0.0.1
+\f[R]
+.fi
+.PP
+Start the HTTP server with SSL/TLS listening on all interfaces at port
+8443:
+.IP
+.nf
+\f[C]
+$ mpvc-web -c start -b 0.0.0.0 -s 1
+\f[R]
+.fi
+.SH ENVIRONMENT
+.IP \[bu] 2
+\f[C]MPV_SOCKET\f[R] The default path to the mpv IPC socket if the
+\f[C]--socket\f[R] flag is omitted.
+.IP \[bu] 2
+\f[C]MPVC_WEB_PORT\f[R] Defines a default network port fallback if
+\f[C]-p\f[R] port is not explicitly set.
+.SH FILES
+.TP
+\[ti]/.config/mpvc/mpvc.conf
+mpvc configuration file.
+.SH SEE ALSO
+.PP
+mpv(1), mpvc(1), mpvc-fzf(1), mpvc-tui(1), mpvc-index,
+.SH AUTHOR
+.PP
+Manual written by gmt4.
+See <https://github.com/gmt4/mpvc> for more information.
+.SH REPORTING BUGS
+.PP
+Report bugs at: <https://github.com/gmt4/mpvc/issues>

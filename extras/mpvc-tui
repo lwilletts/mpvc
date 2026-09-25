@@ -8,7 +8,7 @@
 #
 
 PROGNAME=${0##*/}
-PROGVERSION="v1.8"
+PROGVERSION="v1.9"
 PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
 SITEURL="https://gmt4.github.io/mpvc"
@@ -78,8 +78,10 @@ mpvctui_config()
     # if not present, create config dir
     mkdir -p "$MPVC_CONFIG_DIR"
     touch "$MPVC_TUI_HISTORY"
+
     # if present load user config
-    if [ -r "$MPVC_CONFIG" -a -O "$MPVC_CONFIG" ]; then
+    if [ -r "$MPVC_CONFIG" ] && [ -O "$MPVC_CONFIG" ]; then
+        # shellcheck source=docs/config/mpvc.conf
         . "$MPVC_CONFIG"
     fi
     if ! quiet command -v rlwrap; then
@@ -120,7 +122,7 @@ mpvctui_color()
     if [ -n "$NO_COLOR" ]; then
         printf '%s' "${@}"
     else
-        printf "${ccolor}$@${MPVC_TUI_CRST}"
+        printf "${ccolor}${*}${MPVC_TUI_CRST}"
     fi
 }
 
@@ -212,7 +214,7 @@ mpvctui_watch()
         output=$(mpvctui_watcher "$tuimode" 2>&1)
         if [ $(( mpvctui_count % MPVC_TUI_CLEARC )) -eq 0 ]; then printf "${MPVC_TUI_CLEAR}"; fi
         printf "${MPVC_TUI_CUP}"
-        echo -n "$output"
+        printf "%s" "$output"
         mpvctui_count=$(( mpvctui_count + 1 ))
         sleep "$MPVC_TUI_UPDATEC"
     done

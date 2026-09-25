@@ -1,118 +1,156 @@
-.TH "mpvc\-tui" "1" "April, 2026" ""
+.\"
+.TH "mpvc-tui" "1" "April, 2026" "" ""
+.hy
 .SH NAME
-mpvc\-tui \- Terminal User Interface for displaying the MPV playlist and
+.PP
+mpvc-tui - Terminal User Interface for displaying the MPV playlist and
 playback
 .SH SYNOPSIS
-mpvc\-tui options files
+.IP
+.nf
+\f[C]
+usage: mpvc-tui opts # \[at]version v1.9 (c) gmt4 https://github.com/gmt4/mpvc
+ -d|dir         : Set the WD to the media directory given as argument
+ -h|help        : This help you are reading
+ -H|history     : Starts the mpvc-tui history
+ -k|kill        : Stop the running mpvc-tui
+ -n|notify      : Desktop notification using notify on mpvc events (notify-send*)
+   |socket      : Set mpv socket [default: ].
+ -s|suggest     : Suggest a random media to play based on previous media played
+ -S|scrobler    : Starts the mpvc-tui scrobbler
+ -t|tui         : Starts the mpvc-tui TUI
+ -tt|tinytui    : Starts the mpvc-tui TUI (tiny mode)
+ -ttt|ttinytui  : Starts the mpvc-tui TUI (ttiny mode)
+ -T|Tui         : Combo that starts mpvc-tui -t -n, and adds media given as args
+ -x|launch      : Starts mpvc-tui in a new xterm ($MPVC_TUI_TERM) # combine with 
+ -v|version     : Prints the mpvc-tui version.
+*tips: If unsure about where to begin, start with: mpvc-tui -d /path/to/media/ -T
+\f[R]
+.fi
 .SH DESCRIPTION
-mpvc\-tui is a terminal\-based user interface that displays
+.PP
+mpvc-tui is a terminal-based user interface that displays
 status/playlist info of the currently mpv instance.
 .SH OPTIONS
 .TP
-\f[CR]\-d\f[R], \f[CR]\-\-dir PATH\f[R]
+\f[B]\f[CB]-d\f[B]\f[R], \f[B]\f[CB]--dir PATH\f[B]\f[R]
 Set the working directory to the specified media directory.
 All media operations will be relative to this directory.
 .TP
-\f[CR]\-h\f[R], \f[CR]\-\-help\f[R]
+\f[B]\f[CB]-h\f[B]\f[R], \f[B]\f[CB]--help\f[B]\f[R]
 Display the help message and exit.
 .TP
-\f[CR]\-H\f[R], \f[CR]\-\-history\f[R]
-Start the mpvc\-tui history interface.
+\f[B]\f[CB]-H\f[B]\f[R], \f[B]\f[CB]--history\f[B]\f[R]
+Start the mpvc-tui history interface.
 This allows you to browse and replay previously played media.
 .TP
-\f[CR]\-k\f[R], \f[CR]\-\-kill\f[R]
-Stop the currently running mpvc\-tui instance.
+\f[B]\f[CB]-k\f[B]\f[R], \f[B]\f[CB]--kill\f[B]\f[R]
+Stop the currently running mpvc-tui instance.
 .TP
-\f[CR]\-n\f[R], \f[CR]\-\-notify\f[R]
-Enable desktop notifications for mpvc events using notify\-send.
+\f[B]\f[CB]-n\f[B]\f[R], \f[B]\f[CB]--notify\f[B]\f[R]
+Enable desktop notifications for mpvc events using notify-send.
 Notifications will appear for playback state changes and media
 transitions.
 .TP
-\f[CR]\-\-socket PATH\f[R]
+\f[B]\f[CB]--socket PATH\f[B]\f[R]
 Set the MPV socket path.
-Overrides the default socket connection (defaults to MPV\(cqs standard
+Overrides the default socket connection (defaults to MPV\[cq]s standard
 socket if not specified).
 .TP
-\f[CR]\-s\f[R], \f[CR]\-\-suggest\f[R]
+\f[B]\f[CB]-s\f[B]\f[R], \f[B]\f[CB]--suggest\f[B]\f[R]
 Suggest a random media item to play based on previously played media.
 Useful for discovering content from your history.
 .TP
-\f[CR]\-S\f[R], \f[CR]\-\-scrobbler\f[R]
-Start the mpvc\-tui scrobbler interface.
+\f[B]\f[CB]-S\f[B]\f[R], \f[B]\f[CB]--scrobbler\f[B]\f[R]
+Start the mpvc-tui scrobbler interface.
 This feature tracks and logs media that you play.
 .TP
-\f[CR]\-t\f[R], \f[CR]\-\-tui\f[R]
+\f[B]\f[CB]-t\f[B]\f[R], \f[B]\f[CB]--tui\f[B]\f[R]
 Start the main TUI for managing the MPV playlist (uses rlwrap for
 enhanced readline functionality).
 .TP
-\f[CR]\-T\f[R], \f[CR]\-\-Tui\f[R]
-Combo option that starts mpvc\-tui with both TUI (\-t) and desktop
-notifications (\-n) enabled.
+\f[B]\f[CB]-T\f[B]\f[R], \f[B]\f[CB]--Tui\f[B]\f[R]
+Combo option that starts mpvc-tui with both TUI (-t) and desktop
+notifications (-n) enabled.
 This is the recommended starting option.
 Additional files provided as arguments will be added to the playlist.
 .TP
-\f[CR]\-x\f[R], \f[CR]\-\-launch\f[R]
-Start mpvc\-tui in a new xterm window.
-This respects the \f[CR]$MPVC_TUI_TERM\f[R] environment variable for
+\f[B]\f[CB]-x\f[B]\f[R], \f[B]\f[CB]--launch\f[B]\f[R]
+Start mpvc-tui in a new xterm window.
+This respects the \f[C]$MPVC_TUI_TERM\f[R] environment variable for
 terminal selection.
 Can be combined with other options.
 .TP
-\f[CR]\-v\f[R], \f[CR]\-\-version\f[R]
-Display the mpvc\-tui version and exit.
+\f[B]\f[CB]-v\f[B]\f[R], \f[B]\f[CB]--version\f[B]\f[R]
+Display the mpvc-tui version and exit.
 .SH EXAMPLES
+.PP
 Start TUI with notifications for a media directory
 .IP
-.EX
-mpvc\-tui \-d \(ti/Music \-T
-mpvc\-tui \-t
-.EE
+.nf
+\f[C]
+mpvc-tui -d \[ti]/Music -T
+mpvc-tui -t
+\f[R]
+.fi
 .PP
 Enable desktop notifications separately
 .IP
-.EX
-mpvc\-tui \-n
-.EE
+.nf
+\f[C]
+mpvc-tui -n
+\f[R]
+.fi
 .PP
 Launch in a new terminal window
 .IP
-.EX
-mpvc\-tui \-x \-t \-d \(ti/Music
-.EE
+.nf
+\f[C]
+mpvc-tui -x -t -d \[ti]/Music
+\f[R]
+.fi
 .PP
 Access playback history
 .IP
-.EX
-mpvc\-tui \-H
-.EE
+.nf
+\f[C]
+mpvc-tui -H
+\f[R]
+.fi
 .PP
 Enable media scrobbling
 .IP
-.EX
-mpvc\-tui \-S
-.EE
+.nf
+\f[C]
+mpvc-tui -S
+\f[R]
+.fi
 .SH ENVIRONMENT
 .TP
 MPVC_TUI_TERM
-Specifies the terminal emulator to use when launching mpvc\-tui with the
-\-x option.
+Specifies the terminal emulator to use when launching mpvc-tui with the
+-x option.
 If not set, xterm is used as the default.
 .TP
 MPV_SOCKET
 Override the default MPV socket path.
-Can also be set directly using the \(ensocket option.
+Can also be set directly using the \[en]socket option.
 .TP
 XDG_CONFIG_HOME
 Directory where mpvc configuration is stored.
-Defaults to \(ti/.config/ if not set.
+Defaults to \[ti]/.config/ if not set.
 .SH FILES
 .TP
-\(ti/.config/mpvc/mpvc.conf
-mpvc\-specific configuration file.
+\[ti]/.config/mpvc/mpvc.conf
+mpvc-specific configuration file.
 .SH SEE ALSO
-mpv(1), mpc(1), mpvc\-fzf(1), mpvc\-web(1), mpvc\-tui(1),
-mpvc\-equalizer(1)
+.PP
+mpvc(1), mpvc(5), mpvc-fzf(1), mpvc-tui(1), mpvc-web(1),
+mpvc-equalizer(1) mpvc-index,
 .SH AUTHOR
+.PP
 Manual written by gmt4.
-See https://github.com/gmt4/mpvc for more information.
+See <https://github.com/gmt4/mpvc> for more information.
 .SH REPORTING BUGS
-Report bugs at: https://github.com/gmt4/mpvc/issues
+.PP
+Report bugs at: <https://github.com/gmt4/mpvc/issues>

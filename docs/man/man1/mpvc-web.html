@@ -1,0 +1,250 @@
+
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+ <meta charset="UTF-8">
+ <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+<link rel="stylesheet" href="/mpvc/assets/css/just-the-docs-default.css">
+<link rel="stylesheet" href="/mpvc/assets/css/just-the-docs-head-nav.css" id="jtd-head-nav-stylesheet">
+ <style id="jtd-nav-activation">
+    .site-nav > ul.nav-list:first-child > li:not(:nth-child(11)) > a,
+    .site-nav > ul.nav-list:first-child > li > ul > li a {
+      background-image: none;
+    }
+    .site-nav > ul.nav-list:not(:first-child) a,
+    .site-nav li.external a {
+      background-image: none;
+    }
+    .site-nav > ul.nav-list:first-child > li:nth-child(11) > a {
+      font-weight: 600;
+      text-decoration: none;
+    }.site-nav > ul.nav-list:first-child > li:nth-child(11) > button svg {
+      transform: rotate(-90deg);
+    }.site-nav > ul.nav-list:first-child > li.nav-list-item:nth-child(11) > ul.nav-list {
+      display: block;
+    }
+ </style>
+    <script src="/mpvc/assets/js/vendor/lunr.min.js"></script>
+  <script src="/mpvc/assets/js/just-the-docs.js"></script>
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+<title>mpvc-web(1) | mpvc</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="mpvc-web(1)" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="description" />
+<meta name="twitter:description" property="og:description" content="description" />
+<link rel="canonical" href="https://gmt4.github.io/mpvc/man/man1/mpvc-web.html" />
+<meta property="og:url" content="https://gmt4.github.io/mpvc/man/man1/mpvc-web.html" />
+<meta property="og:site_name" content="mpvc" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-09-01T00:00:00+00:00" />
+<meta property="article:modified_time" content="2026-09-01T00:00:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="mpvc-web(1)" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2026-09-01T00:00:00+00:00","datePublished":"2026-09-01T00:00:00+00:00","description":"description","headline":"mpvc-web(1)","mainEntityOfPage":{"@type":"WebPage","@id":"https://gmt4.github.io/mpvc/man/man1/mpvc-web.html"},"url":"https://gmt4.github.io/mpvc/man/man1/mpvc-web.html"}</script>
+<body>
+  <a class="skip-to-main" href="#main-content">Skip to main content</a>
+  <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
+  <symbol id="svg-link" viewBox="0 0 24 24">
+ <title>Link</title>
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-link">
+   <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+  </svg>
+</symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+ <title>Menu</title>
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu">
+   <line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line>
+  </svg>
+</symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+ <title>Expand</title>
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+   <polyline points="9 18 15 12 9 6"></polyline>
+  </svg>
+</symbol>
+<symbol id="svg-external-link" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-external-link">
+ <title id="svg-external-link-title">(external link)</title>
+ <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line>
+</symbol>
+    <symbol id="svg-doc" viewBox="0 0 24 24">
+ <title>Document</title>
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file">
+   <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline>
+  </svg>
+</symbol>
+    <symbol id="svg-search" viewBox="0 0 24 24">
+ <title>Search</title>
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search">
+    <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+  </svg>
+</symbol>
+<symbol id="svg-copy" viewBox="0 0 16 16">
+ <title>Copy</title>
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard" viewBox="0 0 16 16">
+   <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+   <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+  </svg>
+</symbol>
+<symbol id="svg-copied" viewBox="0 0 16 16">
+ <title>Copied</title>
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard-check-fill" viewBox="0 0 16 16">
+   <path d="M6.5 0A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3Zm3 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3Z"/>
+   <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1A2.5 2.5 0 0 1 9.5 5h-3A2.5 2.5 0 0 1 4 2.5v-1Zm6.854 7.354-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708L7.5 10.793l2.646-2.647a.5.5 0 0 1 .708.708Z"/>
+  </svg>
+</symbol>
+</svg>
+  <header class="side-bar">
+ <div class="site-header">
+    <a href="/mpvc/" class="site-title lh-tight">
+  mpvc
+</a>
+    <button id="menu-button" class="site-button btn-reset" aria-label="Menu" aria-expanded="false">
+      <svg viewBox="0 0 24 24" class="icon" aria-hidden="true"><use xlink:href="#svg-menu"></use></svg>
+    </button>
+ </div>
+ <nav aria-label="Main" id="site-nav" class="site-nav">
+   <ul class="nav-list"><li class="nav-list-item"><a href="/mpvc/get-started.html" class="nav-list-link">Get Started</a><li class="nav-list-item"><a href="/mpvc/logbook.html" class="nav-list-link">Log Book</a><li class="nav-list-item"><a href="/mpvc/man/man1/" class="nav-list-link">Man Pages</a><li class="nav-list-item"><a href="/mpvc/man/man1/mpvc.html" class="nav-list-link">mpvc(1)</a><li class="nav-list-item"><a href="/mpvc/man/man1/mpvc-autopilot.html" class="nav-list-link">mpvc-autopilot(1)</a><li class="nav-list-item"><a href="/mpvc/man/man1/mpvc-chapter.html" class="nav-list-link">mpvc-chapter(1)</a><li class="nav-list-item"><a href="/mpvc/man/man1/mpvc-equalizer.html" class="nav-list-link">mpvc-equalizer(1)</a><li class="nav-list-item"><a href="/mpvc/man/man1/mpvc-fzf.html" class="nav-list-link">mpvc-fzf(1)</a><li class="nav-list-item"><a href="/mpvc/man/man1/mpvc-installer.html" class="nav-list-link">mpvc-installer(1)</a><li class="nav-list-item"><a href="/mpvc/man/man1/mpvc-tui.html" class="nav-list-link">mpvc-tui(1)</a><li class="nav-list-item"><a href="/mpvc/man/man1/mpvc-web.html" class="nav-list-link">mpvc-web(1)</a><li class="nav-list-item"><a href="/mpvc/man/man1/mpvc.conf.html" class="nav-list-link">mpvc.conf</a></ul>
+</nav>
+<div class="d-md-block d-none site-footer">
+    This site uses <a href="https://github.com/just-the-docs/just-the-docs">Just the Docs</a>, a documentation theme for Jekyll.
+ </div>
+</header>
+ <div class="main" id="top">
+   <div id="main-header" class="main-header">
+<div class="search" role="search">
+ <div class="search-input-wrap">
+    <input type="text" id="search-input" class="search-input" tabindex="0" placeholder="Search mpvc" autocomplete="off">
+    <label for="search-input" class="search-label">
+      <span class="sr-only">Search mpvc</span>
+      <svg viewBox="0 0 24 24" class="search-icon" aria-hidden="true"><use xlink:href="#svg-search"></use></svg>
+    </label>
+ </div>
+ <div id="search-results" class="search-results"></div>
+</div>
+   <nav aria-label="Auxiliary" class="aux-nav">
+ <ul class="aux-nav-list">
+     <li class="aux-nav-list-item">
+        <a href="https://gmt4.github.io/mpvc/" class="site-button"
+          target="_blank" rel="noopener noreferrer"
+        >
+          site
+        </a>
+     <li class="aux-nav-list-item">
+        <a href="https://github.com/gmt4/mpvc/" class="site-button"
+          target="_blank" rel="noopener noreferrer"
+        >
+          #mpvc
+        </a>
+     <li class="aux-nav-list-item">
+        <a href="https://github.com/gmt4" class="site-button"
+          target="_blank" rel="noopener noreferrer"
+        >
+          @gmt4
+        </a>
+ </ul>
+</nav>
+</div>
+   <div class="main-content-wrap">
+     <div id="main-content" class="main-content">
+       <main>
+           <h1 id="name">
+    <a href="#name" class="anchor-heading" aria-labelledby="name"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> NAME
+</h1>
+<p>mpvc-web – Web and HTTP API interface for mpvc control</p>
+<h1 id="synopsis">
+    <a href="#synopsis" class="anchor-heading" aria-labelledby="synopsis"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> SYNOPSIS
+</h1>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>usage: mpvc-web -[ha:b:c:d:p:P:r:R:s:S:t:T:x:] args # @version v1.9 (c) gmt4 https://github.com/gmt4/mpvc
+  -c : Set mpvc-web HTTP server command: [start,stop] (*required)
+  -b : Set mpvc-web HTTP server bind address (default localhost)
+  -p : Set mpvc-web HTTP server port (default 8888)
+  -r : Set mpvc-web HTTP server root dir (default /tmp/mpvc-web/root)
+  -R : Set mpvc-web HTTP server HTML refresh (default 240)
+  -s : Set mpvc-web HTTP server SSL/TLS (default )
+  -a : Set mpvc-web HTTP server to include ytdl-archive/ (default )
+*tips: If unsure where to begin, run: mpvc-web -p 8888 -c start # serves @ http://localhost:8888
+</code></pre></div></div>
+<h1 id="description">
+    <a href="#description" class="anchor-heading" aria-labelledby="description"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> DESCRIPTION
+</h1>
+<p><strong>mpvc-web</strong> is a lightweight web interface and HTTP API wrapper for <code class="language-plaintext highlighter-rouge">mpvc</code>.
+It allows users to control an active local <code class="language-plaintext highlighter-rouge">mpv</code> media player instance remotely
+over a network interface using standard HTTP methods or a mobile-friendly browser interface.</p>
+<h1 id="options">
+    <a href="#options" class="anchor-heading" aria-labelledby="options"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> OPTIONS
+</h1>
+<dl>
+ <dt><code class="language-plaintext highlighter-rouge">-c</code> start|stop|status
+ <dd>Set the mpvc-web HTTP server command. This option is <strong>required</strong>. Accepted values are <code class="language-plaintext highlighter-rouge">start</code> to daemonize the server, <code class="language-plaintext highlighter-rouge">stop</code> to terminate it, <code class="language-plaintext highlighter-rouge">status</code> to check is running.
+ <dt><code class="language-plaintext highlighter-rouge">-b</code> bind-address
+ <dd>Set the mpvc-web HTTP server bind address. Defaults to <code class="language-plaintext highlighter-rouge">localhost</code>.
+ <dt><code class="language-plaintext highlighter-rouge">-p</code> port
+ <dd>Set the mpvc-web HTTP server port. Defaults to <code class="language-plaintext highlighter-rouge">8888</code>.
+ <dt><code class="language-plaintext highlighter-rouge">-r</code> directory
+ <dd>Set the mpvc-web HTTP server root directory path. Defaults to <code class="language-plaintext highlighter-rouge">/tmp/mpvc-web/root</code>.
+ <dt><code class="language-plaintext highlighter-rouge">-R</code> seconds
+ <dd>Set the mpvc-web HTTP server HTML auto-refresh interval in seconds. Defaults to <code class="language-plaintext highlighter-rouge">240</code>.
+ <dt><code class="language-plaintext highlighter-rouge">-s</code> https
+ <dd>Set the mpvc-web HTTP server SSL/TLS configurations or certificate paths. Defaults to empty.
+ <dt><code class="language-plaintext highlighter-rouge">-a</code> archive
+ <dd>Set the mpvc-web HTTP server to include a <code class="language-plaintext highlighter-rouge">ytdl-archive/</code> repository or path tracking download history. Defaults to empty.
+ <dt><code class="language-plaintext highlighter-rouge">-h</code>, <code class="language-plaintext highlighter-rouge">--help</code>
+ <dd>Display the help synopsis and exit.
+</dl>
+<h1 id="examples">
+    <a href="#examples" class="anchor-heading" aria-labelledby="examples"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> EXAMPLES
+</h1>
+<p>Start the HTTP server listening on localhost at port 8888:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ mpvc-web -c start -b 127.0.0.1
+</code></pre></div></div>
+<p>Start the HTTP server with SSL/TLS listening on all interfaces at port 8443:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ mpvc-web -c start -b 0.0.0.0 -s 1
+</code></pre></div></div>
+<h1 id="environment">
+    <a href="#environment" class="anchor-heading" aria-labelledby="environment"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> ENVIRONMENT
+</h1>
+<ul>
+ <li>
+   <p><code class="language-plaintext highlighter-rouge">MPV_SOCKET</code>
+The default path to the mpv IPC socket if the <code class="language-plaintext highlighter-rouge">--socket</code> flag is omitted.</p>
+ <li>
+   <p><code class="language-plaintext highlighter-rouge">MPVC_WEB_PORT</code>
+Defines a default network port fallback if <code class="language-plaintext highlighter-rouge">-p</code> port is not explicitly set.</p>
+</ul>
+<h1 id="files">
+    <a href="#files" class="anchor-heading" aria-labelledby="files"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> FILES
+</h1>
+<dl>
+ <dt>~/.config/mpvc/mpvc.conf
+ <dd>mpvc configuration file.
+</dl>
+<h1 id="see-also">
+    <a href="#see-also" class="anchor-heading" aria-labelledby="see-also"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> SEE ALSO
+</h1>
+<p>mpv(1),
+<a href="mpvc.html">mpvc(1)</a>,
+<a href="mpvc-fzf.html">mpvc-fzf(1)</a>,
+<a href="mpvc-tui.html">mpvc-tui(1)</a>,
+<a href=".">mpvc-index</a>,</p>
+<h1 id="author">
+    <a href="#author" class="anchor-heading" aria-labelledby="author"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> AUTHOR
+</h1>
+<p>Manual written by gmt4. See <a href="https://github.com/gmt4/mpvc">https://github.com/gmt4/mpvc</a> for more information.</p>
+<h1 id="reporting-bugs">
+    <a href="#reporting-bugs" class="anchor-heading" aria-labelledby="reporting-bugs"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> REPORTING BUGS
+</h1>
+<p>Report bugs at: <a href="https://github.com/gmt4/mpvc/issues">https://github.com/gmt4/mpvc/issues</a></p>
+       </main>
+<hr>
+<footer>
+ <div class="d-md-none mt-4 fs-2">
+      This site uses <a href="https://github.com/just-the-docs/just-the-docs">Just the Docs</a>, a documentation theme for Jekyll.
+ </div>
+</footer>
+     </div>
+   </div>
+<div class="search-overlay"></div>
+ </div>
+  

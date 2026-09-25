@@ -1,0 +1,106 @@
+.\"
+.TH "mpvc-autopilot" "1" "September, 2026" "" ""
+.hy
+.SH NAME
+.PP
+mpvc-autopilot - Autopilot mode with auto start/stop, and random
+playlist playback daemon
+.SH SYNOPSIS
+.IP
+.nf
+\f[C]
+usage: mpvc-autopilot -[c:hi:n:p:m:M:] args # \[at]version v1.9 (c) gmt4 https://github.com/gmt4/mpvc
+ -i : The IP of the device to detect ping presence for mpvc-autopilot (*required)
+ -c : The operation cmd to run mpvc-autopilot (default: mpvcap_autostart [mpvcap_autostart,mpvcap_autopilot])
+ -C : The presence check to run mpvc-autopilot (default: mpvcap_pingcheck)
+ -p : The number of seconds between ping presence checks (default: 300)
+ -n : The number of failed ping presence checks after which to pause mpvc (default: 3)
+ -m : The minimum hour when to start ping presence (default: 6h AM)
+ -M : The maximum hour when to stop ping presence (default: 20h PM)
+*tips: If unsure where to begin, run: mpvc-autopilot -i 192.168.0.2 # your tablet/phone LAN IP
+\f[R]
+.fi
+.SH DESCRIPTION
+.PP
+mpvc-autopilot puts mpvc on autopilot mode.
+It operates in two primary modes: managing absolute playback states
+based on local network presence, or continuously cycling randomized
+background tracks during set hours.
+.SH OPTIONS
+.TP
+-c MODE
+Set the loop operation mode.
+Available modes:
+.IP \[bu] 2
+\f[C]mpvcap_autostart\f[R]: (Default) Toggles play/pause when a device
+IP enters or leaves the local network.
+.IP \[bu] 2
+\f[C]mpvcap_autopilot\f[R]: Continuously injects and plays random
+background tracks from your media directory.
+.TP
+-C CMD
+Set the low-level execution command used for checking target presence
+(defaults to \f[I]mpvcap_pingcheck\f[R]).
+.TP
+-h, \[en]help
+Display the utility usage help message and exit.
+.TP
+-i IP
+Specify the local LAN IP address of the device (such as a smartphone or
+tablet) to track for network presence.
+\f[B]Required\f[R] when using presence-based tracking modes.
+.TP
+-m HOUR
+Set the minimum hour constraint (24-hour integer format) when automated
+tracking or playback routines are allowed to start (defaults to
+\f[I]6\f[R] AM).
+.TP
+-M HOUR
+Set the maximum hour constraint (24-hour integer format) when automated
+routines must pause or stop (defaults to \f[I]20\f[R] PM).
+.TP
+-n COUNT
+The maximum number of sequential failed presence checks allowed before
+forcing mpvc to pause playback (defaults to \f[I]3\f[R]).
+.TP
+-p PERIOD
+Set the countdown sleep delay in seconds between tracking checks or
+background track rotations (defaults to \f[I]300\f[R]).
+.SH EXAMPLES
+.PP
+Start tracking network presence using a phone\[cq]s IP address with a
+5-minute interval:
+.IP
+.nf
+\f[C]
+mpvc-autopilot -i 192.168.0.2 -p 300 -n 2
+\f[R]
+.fi
+.PP
+Run a continuous random background music loop during office hours:
+.IP
+.nf
+\f[C]
+mpvc-autopilot -c mpvcap_autopilot -p 180 -m 9 -M 17 -i 1
+\f[R]
+.fi
+.SH ENVIRONMENT
+.TP
+XDG_CONFIG_HOME
+Directory where mpvc configuration is stored.
+Defaults to \[ti]/.config/ if not set.
+.SH FILES
+.TP
+\[ti]/.config/mpvc/mpvc.conf
+mpvc-specific configuration file.
+.SH SEE ALSO
+.PP
+mpvc(1), mpvc(5), mpvc-fzf(1), mpvc-tui(1), mpvc-web(1),
+mpvc-equalizer(1) mpvc-index,
+.SH AUTHOR
+.PP
+Manual written by gmt4.
+See <https://github.com/gmt4/mpvc> for more information.
+.SH REPORTING BUGS
+.PP
+Report bugs at: <https://github.com/gmt4/mpvc/issues>

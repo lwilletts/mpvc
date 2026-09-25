@@ -1,7 +1,10 @@
 ---
 title: mpvc(1)
 section: 1
+version: v1.9
 date: April, 2026
+manual: User Commands
+layout: default
 ---
 
 NAME
@@ -12,7 +15,23 @@ mpvc - mpc-like command-line control interface for mpv
 SYNOPSIS
 ========
 
-mpvc [options] [file|url|playlist|-]
+    usage: mpvc opts # @version v1.9 (c) gmt4 https://github.com/gmt4/mpvc
+     -a | --add | add         : Add media to playlist (see --load for stdin).
+     -r | --remove | rm       : Remove media by id from playlist (see searchrm for rm by title)
+     -s | --stop | stop       : Always stop playback.
+     -P | --play | play       : Always start playback.
+     -p | --toggle            : Toggle playback.
+          --repeat | repeat   : Loop the playlist.
+          --single | single   : Loop a single file.
+        | --next | next       : Jump to next entry in the playlist
+        | --prev | prev       : Jump to previous entry in the playlist
+     -i | --playlist          : Print filenames of tracks to fit within terminal.
+     -I | --fullplaylist      : Print all filenames of tracks in current playlist.
+     -v | --vol | vol         : Increase/decrease volume relative to current volume.
+     -h | --help              : Prints the short help.
+     -H | --help-long         : Prints the long help (tip: mpvc -H 2>&1 | less).
+
+    *tips: If unsure about where to begin, have a look at https://gmt4.github.io/mpvc
 
 DESCRIPTION
 ===========
@@ -31,31 +50,31 @@ OPTIONS
 Playback Control
 ----------------
 
-`-P`, `--play`
+`-P`, `--play`, `play`
 : Start playback of the current media.
 
-`-p`, `--toggle`
+`-p`, `--toggle`, `toggle`
 : Toggle between play and pause states.
 
-`-s`, `--stop`
+`-s`, `--stop`, `stop`
 : Stop playback completely.
 
-`--next`
+`--next`, `next`
 : Jump to the next entry in the playlist.
 
-`--prev`
+`--prev`, `prev`
 : Jump to the previous entry in the playlist.
 
 Playlist Management
 -------------------
 
-`-a`, `--add FILE`
+`-a`, `--add FILE`, `add FILE`
 : Add a file or URL to the playlist. Supports local files, YouTube URLs, and other media sources.
 
-`-r`, `--remove ID`
+`-r`, `--rm ID`, `rm ID`
 : Remove a playlist entry by its numeric ID.
 
-`-i`, `--playlist`
+`-i`, `--playlist`, `playlist`
 : Display the current playlist with filenames truncated to fit terminal width.
 
 `-I`, `--fullplaylist`
@@ -64,10 +83,10 @@ Playlist Management
 Loop and Repeat Modes
 ---------------------
 
-`--repeat`
+`--repeat`, `repeat`
 : Enable loop mode for the entire playlist. Playback will restart from the beginning after reaching the end.
 
-`--single`
+`--single`, `single`
 : Enable single-file loop mode. The current file will repeat indefinitely.
 
 Volume Control
@@ -146,15 +165,20 @@ FILES
 SEE ALSO
 ========
 
-mpv(1), mpc(1), mpvc-fzf(1), mpvc-web(1), mpvc-tui(1), mpvc-equalizer(1)
+mpv(1),
+[mpvc-fzf(1)](mpvc-fzf.html),
+[mpvc-tui(1)](mpvc-tui.html),
+[mpvc-web(1)](mpvc-web.html),
+[mpvc-equalizer(1)](mpvc-equalizer.html)
+[mpvc-index](.),
 
 AUTHOR
 ======
 
-Manual written by gmt4. See https://github.com/gmt4/mpvc for more information.
+Manual written by gmt4. See <https://github.com/gmt4/mpvc> for more information.
 
 REPORTING BUGS
 ==============
 
-Report bugs at: https://github.com/gmt4/mpvc/issues
+Report bugs at: <https://github.com/gmt4/mpvc/issues>
 

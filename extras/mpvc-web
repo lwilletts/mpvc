@@ -16,7 +16,7 @@
 
 PROGNAME=${0##*/}
 PROGDIR=${0%/*}
-PROGVERSION="v1.8"
+PROGVERSION="v1.9"
 PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
 #PROGINFO="A hack to remotely control mpvc from web # DISCLAIMER * Use at Your Own Risk *"
@@ -72,7 +72,8 @@ mpvc_web_defaults()
     MPVC_WEB_CGI_FILE="$MPVC_WEB_CGI_DIR/mpvc-web-browser"
 
     # if present load user config
-    if [ -r "$MPVC_CONFIG" -a -O "$MPVC_CONFIG" ]; then
+    if [ -r "$MPVC_CONFIG" ] && [ -O "$MPVC_CONFIG" ]; then
+        # shellcheck source=docs/config/mpvc.conf
         . "$MPVC_CONFIG"
     fi
 }
@@ -458,16 +459,12 @@ legend {
   }
 }
 
-/* ANIMATIONS & TRANSITIONS */
-
 @media (prefers-reduced-motion: no-preference) {
   * {
     transition-property: background, color, border, box-shadow, transform;
     transition-duration: 0.2s;
   }
 }
-
-/* ACCESSIBILITY */
 
 :focus-visible {
   outline: 2px solid var(--accent);
@@ -539,7 +536,7 @@ EOF
 mpvc_web_index_js()
 {
     cat <<EOF
-function mpvcHttpGet(url) {
+function request(url) {
     return fetch(url)
         .then(response => response.text())
         .catch(error => {
@@ -618,10 +615,10 @@ mpvc_web_index()
         <span style="float:right">
             <a class=btn href="." title="Reload" aria-label="Reload">🔄</a>
 
-            <button type=button class=btn onclick="mpvcHttpGet('?cmd=mpvc next')" title="Next track">⏭️</button>
-            <button type=button class=btn onclick="mpvcHttpGet('?cmd=mpvc cnext')" title="Next chapter">⏬</button>
-            <button type=button class=btn onclick="mpvcHttpGet('?cmd=mpvc toggle')" title="Toggle playback">⏯️</button>
-            <button type=button class=btn onclick="mpvcHttpGet('?cmd=mpvc cycle-volume')" title="Cycle Volume">🔊</button>
+            <a class='btn' onclick="request('/cgi-bin/$PROGNAME-browser?mpvc+next')" title="Next track">⏭️</a>
+            <a class='btn' onclick="request('/cgi-bin/$PROGNAME-browser?mpvc+cnext')" title="Next chapter">⏬</a>
+            <a class='btn' onclick="request('/cgi-bin/$PROGNAME-browser?mpvc+toggle')" title="Toggle playback (ProTip: accesskey=t)" accesskey=t>⏯️</a>
+            <a class='btn' onclick="request('/cgi-bin/$PROGNAME-browser?mpvc+cycle-volume')" title="Cycle Volume">🔊</a>
             <span class="theme-toggle-container">
                 <label for="scheme-auto" class="theme-lbl lbl-auto" title="System Theme">🌓</label>
                 <label for="scheme-light" class="theme-lbl lbl-light" title="Light Theme">☀️</label>
@@ -631,7 +628,6 @@ mpvc_web_index()
 
         </summary>
         <hr>
-        <ul>
 
         <fieldset class="control-group">
           <legend>[ Playback ]</legend>
@@ -694,13 +690,12 @@ mpvc_web_index()
             <a class=btn href="?cmd=mpvc togglef" title="togglef">fs</a>
         </fieldset>
 -->
-
         </details>
 
         <details>
         <summary>
             <a href="#mpvc-web-tools" name="mpvc-web-browse">📁 Browser</a>
-            <a href="$MPVC_WEB_CGI_CMD?browser">#new</a>
+            <a href="$MPVC_WEB_CGI_CMD?browser">#n</a>
             $(for x in $MPVC_WEB_EXTRAS_URL; do n=$((${n:-0} + 1)); echo "<a href=$x title=#url-$n>#$n</a>"; done)
             <span style="float:right">
                 <a class=btn href="$MPVC_WEB_CGI_CMD?now-short" title="Now Playing (share)" aria-label="Now Playing">💿</a>
@@ -713,7 +708,7 @@ mpvc_web_index()
         <details open>
         <summary>
             <a href="#mpvc-web-status" name="mpvc-web-status">Status</a>
-            <a href="$MPVC_WEB_CGI_CMD?metadata">#me</a>
+            <a href="$MPVC_WEB_CGI_CMD?mpvc+metadata">#me</a>
             <a href="$MPVC_WEB_CGI_CMD?lyrics">#lyric</a>
             <a href="$MPVC_WEB_CGI_CMD?filename">#url</a>
         </summary>
@@ -721,43 +716,12 @@ mpvc_web_index()
         <iframe name="mpvc-status" title="mpvc-status" width="100%" height="80" frameborder="0" allowtransparency="true" src="$MPVC_WEB_CGI_CMD?mpvc+status" defer ></iframe>
         </details>
 
-        <details>
-        <summary ${MPVC_WEB_SHORTCUT_PLAYLIST}>
-            <a href="#mpvc-web-playlist" name="mpvc-web-playlist">Playlist</a>
-            <a href="#mpvc-web-fullplaylist" name="mpvc-web-fullplaylist">#full</a>
-            <a href="#mpvc-web-rawplaylist" name="mpvc-web-fullplaylist">#raw</a>
-        </summary>
-        <hr>
-
-        <div style="display:flex">
-        <iframe name="mpvc-playlist" title="mpvc-playlist" width="100%" frameborder="0" allowtransparency="true" style="margin:auto; float:auto" src="$MPVC_WEB_CGI_CMD?mpvc+playlist" defer ></iframe>
-        <script type="text/javascript">
-        var pl = document.getElementsByName('mpvc-playlist')[0];
-        switch (window.location.hash) {
-        case '#mpvc-web-playlist':           { pl.src='$MPVC_WEB_CGI_CMD?mpvc+playlist'; break; }
-        case '#mpvc-web-fullplaylist':       { pl.src='$MPVC_WEB_CGI_CMD?mpvc+fullplaylist'; break; }
-        case '#mpvc-web-rawplaylist':        { pl.src='$MPVC_WEB_CGI_CMD?mpvc+saven'; break; }
-        }
-        </script>
-        </div>
-        </details>
-
-        <details>
-        <summary>
-            <a href="#mpvc-web-chapter-list" name="mpvc-web-chapterlist">Chapterlist</a>
-            <a href="#mpvc-web-chapter-list-full" name="mpvc-web-chapter-list-full">#full</a>
-            <a href="#mpvc-web-chapter-list-raw" name="mpvc-web-chapter-list-raw">#raw</a>
-        </summary>
-        <hr>
-        <iframe name="mpvc-chapter-list" title="mpvc-chapter-list" width="100%" frameborder="0" allowtransparency="true" src="$MPVC_WEB_CGI_CMD?mpvc+chapter-list" defer ></iframe>
-        </details>
-
         <details $(if [ -n "$MPVC_WEB_THUMBNAIL_ENABLE" ]; then echo open; fi)>
         <summary>
             <a href="#mpvc-web-thumbnail" name="mpvc-web-thumbnail">Thumbnail</a>
-            <a href="$MPVC_WEB_CGI_CMD?thumbnail">#url</a>
+            <a href="$MPVC_WEB_CGI_CMD?mpvc-fzf+thumbnail">#url</a>
             <a href="$MPVC_WEB_CGI_CMD?thumbnail64">#img</a>
-            <a href="$MPVC_WEB_CGI_CMD?related">#rel</a>
+            <a href="$MPVC_WEB_CGI_CMD?mpvc-fzf+related">#rel</a>
         </summary>
         <hr>
             <iframe src="$MPVC_WEB_CGI_CMD?thumbnail64" alt="thumbnail" title="thumbnail" style="$MPVC_WEB_THUMBNAIL_STYLE" defer ></iframe>
@@ -767,11 +731,14 @@ mpvc_web_index()
 
         <footer>
         <hr>
+        <small>
         🎧
-        <a href="$PROGURL">$PROGNAME</a>
-        <a href="$PROGURL">$PROGVERSION</a>
-        <a href="${PROGURL%/*}">$PROGAUTHOR</a> $(date +%Y) ©
+        • <a href="$PROGURL">${PROGNAME%-*} $PROGVERSION</a>
+        • <a href="$PROGURL/releases/">changelog</a>
+        • <a href="$PROGURL/issues">issues</a>
+        $(date +%Y) ©
         <a href="javascript:Help()" title="help" ${MPVC_WEB_SHORTCUT_HELP}>/h</a>
+        </small>
         </footer>
     </body>
     <script type="text/javascript">
@@ -802,7 +769,7 @@ mpvc_web_qrcode()
     host=$MPVC_WEB_HOST
     if ! command -v qrencode >/dev/null; then return; fi
 
-    if [ "$host" -eq "0" ]; then
+    if [ "$host" = "0" ]; then
         host=$(ip -j route get 1.1.1.1 | jq -r '.[0].prefsrc')
     fi
 
@@ -869,12 +836,6 @@ mpvc_web_setup()
             echo "# $PROGNAME Setup extras/url features (MPVC_WEB_EXTRAS_URL=$MPVC_WEB_EXTRAS_URL is set)"
         fi
 
-        if [ -n "${MPVC_WEB_DEV:-}" ]; then
-            echo "# $PROGNAME Setup development/cli features (MPVC_WEB_DEV=$MPVC_WEB_DEV is set)"
-        else
-            echo "# $PROGNAME Setup development/cli features (MPVC_WEB_DEV=${MPVC_WEB_DEV:-} is not set)"
-        fi
-
         # setup http requested
         echo "# $PROGNAME Setup http://$MPVC_WEB_HOST:$MPVC_WEB_PORT"
 
@@ -884,7 +845,8 @@ mpvc_web_setup()
 
 mpvc_web_envclean()
 {
-    env -i PATH=/usr/local/bin:/usr/bin:/bin HOME="$HOME" TERM="$TERM" MPVC=$(command -v mpvc) "$@"
+    MPVC=$(command -v mpvc)
+    env -i PATH=/usr/local/bin:/usr/bin:/bin HOME="$HOME" TERM="$TERM" MPVC="$MPVC" "$@"
 }
 
 mpvc_web()
@@ -900,22 +862,6 @@ mpvc_web()
         '
         function mpvcsys(cmd) { system(mpvcbin" "cmd); }
         function mpvc(cmd)    { mpvcsys("mpvc -q "cmd); }
-        function httpreq(r)
-        {
-            sub("HTTP.*$", "", r);
-            sub("^.*GET \\/\\?cli=(mpvc-)", "mpvc-", r);
-            sub("^.*GET \\/\\?cli=(mpvc)\\+", "mpvc ", r);
-            gsub("^("mpvcbin") [^a-zA-Z0-9 ]*", "", r);
-            gsub("\\+", " ", r);
-            gsub("%22", "\"", r);
-            gsub("%2B", "+", r);
-            gsub("%23", "#", r);
-            gsub("%2F", "/", r);
-            gsub("%3A", ":", r);
-            gsub("%3D", "=", r);
-            gsub("%3F", "?", r);
-            return r
-        }
 
         BEGIN {
             system("env")
@@ -930,22 +876,16 @@ mpvc_web()
 
         /GET \/\?cmd=mpvc%20.* / {
             cmd="";
-            if (match($0, /GET \/\?cmd=mpvc%20[-a-z]+/)) {
+
+            if (match($0, /GET \/\?cmd=mpvc%20[-a-z]+/))
+            {
                 n=length("GET /?cmd=mpvc%20")
                 cmd=substr($0, RSTART+n, RLENGTH-n)
             }
+
             if (cmd in allowCmdList)
             {
                 mpvc(cmd)
-            }
-        }
-
-        /GET \/\?cli=mpvc/    {
-            r=httpreq($0)
-            if (ENVIRON["MPVC_WEB_DEV"] && match(r, "^mpvc"))
-            {
-                #print(r)
-                mpvcsys(r) # XXX
             }
         }
 
@@ -983,7 +923,6 @@ main()
         h) usage ;;
         c) MPVC_WEB_CMD="$OPTARG"; ;;
         x) MPVC_WEB_EXTRAS_URL="${MPVC_WEB_EXTRAS_URL} $OPTARG"; ;;
-        d) MPVC_WEB_DEV="$OPTARG"; ;;
         b) MPVC_WEB_HOST="$OPTARG" ;;
         p) MPVC_WEB_PORT="$OPTARG" ;;
         P) MPVC_WEB_SSL_PORT="$OPTARG" ;;

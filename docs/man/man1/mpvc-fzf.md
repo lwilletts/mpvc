@@ -1,7 +1,10 @@
 ---
 title: mpvc-fzf(1)
 section: 1
+version: v1.9
 date: April, 2026
+manual: User Commands
+layout: default
 ---
 
 NAME
@@ -12,7 +15,49 @@ mpvc-fzf - fuzzy search interface for discovering and playing media with mpvc
 SYNOPSIS
 ========
 
-mpvc-fzf [option]
+    usage: mpvc-fzf opts # @version v1.9 (c) gmt4 https://github.com/gmt4/mpvc
+      -a|stash      : Start fzf to manage mpvc stashes
+      -b|browse     : Start fzf to manage the provided ytdl-archive URL
+      -c|chapters   : Start fzf to manage the current mpv chapterlist
+      -C|cache      : Search cache by URL for remote media and return local file
+     -CC|cmds       : Search and run commands from stdin
+      -d|dir        : Set the WD to the media directory given as argument
+      -e|eqz        : Start fzf to manage the equalizer settings
+      -f|playlist   : Start fzf to manage the current mpv playist
+      -g|fetch      : Fetch the given YT URL, and store locally
+      -G|Fetch      : Search on Invidious, fetch, and store locally
+      -i|lyrics     : Search given media lyrics on Invidious
+      -I|Lyrics     : Search given media lyrics on DDG
+      -k|dplay      : Search n play DuckDuckGo videos
+      -K|dsearch    : Search DuckDuckGo videos
+      -l|local      : Search n play local media at $1 (handy to pipe to m load)
+      -q|quality    : Select and change yt-dlp video quality (ytdl-format)
+      -r|explorer   : Shortcut to search n play local media at ytdl-archive/
+      -R|Explorer   : Shortcut to search local media at ytdl-archive/
+      -s|search     : Search on Invidious
+      -S|socket     : Set mpv socket [default: ].
+     -SS|socklist   : Select and set the current mpv socket to operate
+      -t|thumbnail  : Retrieve thumbnail_url from metadata of the current YT-URL
+      -T|Thumbnail  : Display thumbnail_url from metadata of the provided YT-URL
+      -p|splay      : Search n play media found using Invidious
+      -u|url        : Search the given YT URL (supports vids,channels,playlist feeds)
+      -U|Url        : Search n play the given YT URL
+      -x|launch     : Starts mpvc-fzf in a new xterm (config $MPVC_TERM) [combine -x with other opts]
+      -y|related    : Search related media on Invidious
+      -Y|Related    : Search n play related media using Invidious
+      -z|relatedo   : Search current media-title on Invidious and return related media
+      -v|version    : Return the mpvc-fzf version.
+
+        (--)now     : Return a shareable URL to the "now listening" playlist
+        (--)lofi    : Search n play Lo-Fi channels
+        (--)somafm  : Search n play SomaFM channels
+        (--)rapi    : Search n play Radio-Browser API channels
+        (--)ntsr    : Search n play NTS-Radio API channels
+        (--)custom  : Search n play your custom feeds (channels, playlists, ...)
+        custom-gen  : Generate a template for your custom feeds (channels, playlists, ...)
+        invid-list  : List available Invidious instances (set MPVC_FZF_INVID_URL)
+
+    *tips: If unsure about where to begin, start: mpvc-fzf -p 'kupla mirage'
 
 DESCRIPTION
 ===========
@@ -111,25 +156,25 @@ Metadata and Information
 Radio and Streaming Services
 ----------------------------
 
-`--now`
+`--now`, `now`,
 : Return shareable "now listening" playlist with current media information.
 
-`--lofi`
+`--lofi`, `lofi`
 : Search and play Lo-Fi music channels.
 
-`--somafm`
+`--somafm`, `somafm`
 : Search and play SomaFM streaming channels.
 
-`--rapi`
+`--rapi`, `rapi`
 : Search and play stations from Radio Browser API.
 
-`--ntsr`
+`--ntsr`, `ntsr`
 : Search and play stations from NTS Radio API.
 
-`--custom`
+`--custom`, `custom`
 : Search and play custom media feeds.
 
-`custom-gen`
+`custom-gen`, `custom-gen`
 : Generate a custom feeds template for configuration.
 
 `invid-list`
@@ -239,16 +284,23 @@ FILES
 SEE ALSO
 ========
 
-mpvc-fzf(1), mpvc-web(1), mpvc-tui(1), mpvc-equalizer(1)
-mpv(1), fzf(1), yt-dlp(1), mpv(1)
+mpv(1),
+fzf(1),
+yt-dlp(1),
+[mpvc(1)](mpvc.html),
+[mpvc-fzf(1)](mpvc-fzf.html),
+[mpvc-tui(1)](mpvc-tui.html),
+[mpvc-web(1)](mpvc-web.html),
+[mpvc-equalizer(1)](mpvc-equalizer.html)
+[mpvc-index](.),
 
 AUTHOR
 ======
 
-Manual written by gmt4. See https://github.com/gmt4/mpvc for more information.
+Manual written by gmt4. See <https://github.com/gmt4/mpvc> for more information.
 
 REPORTING BUGS
 ==============
 
-Report bugs at: https://github.com/gmt4/mpvc/issues
+Report bugs at: <https://github.com/gmt4/mpvc/issues>
 

@@ -1,131 +1,319 @@
+
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<html lang="en-US">
 <head>
-  <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>mpvc(1)</title>
-  <style>
-    code{white-space: pre-wrap;}
-    span.smallcaps{font-variant: small-caps;}
-    span.underline{text-decoration: underline;}
-    div.column{display: inline-block; vertical-align: top; width: 50%;}
-    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-    ul.task-list{list-style: none;}
-  </style>
-</head>
+ <meta charset="UTF-8">
+ <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+<link rel="stylesheet" href="/mpvc/assets/css/just-the-docs-default.css">
+<link rel="stylesheet" href="/mpvc/assets/css/just-the-docs-head-nav.css" id="jtd-head-nav-stylesheet">
+ <style id="jtd-nav-activation">
+    .site-nav > ul.nav-list:first-child > li:not(:nth-child(4)) > a,
+    .site-nav > ul.nav-list:first-child > li > ul > li a {
+      background-image: none;
+    }
+    .site-nav > ul.nav-list:not(:first-child) a,
+    .site-nav li.external a {
+      background-image: none;
+    }
+    .site-nav > ul.nav-list:first-child > li:nth-child(4) > a {
+      font-weight: 600;
+      text-decoration: none;
+    }.site-nav > ul.nav-list:first-child > li:nth-child(4) > button svg {
+      transform: rotate(-90deg);
+    }.site-nav > ul.nav-list:first-child > li.nav-list-item:nth-child(4) > ul.nav-list {
+      display: block;
+    }
+ </style>
+    <script src="/mpvc/assets/js/vendor/lunr.min.js"></script>
+  <script src="/mpvc/assets/js/just-the-docs.js"></script>
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+<title>mpvc(1) | mpvc</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="mpvc(1)" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="description" />
+<meta name="twitter:description" property="og:description" content="description" />
+<link rel="canonical" href="https://gmt4.github.io/mpvc/man/man1/mpvc.html" />
+<meta property="og:url" content="https://gmt4.github.io/mpvc/man/man1/mpvc.html" />
+<meta property="og:site_name" content="mpvc" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-04-01T00:00:00+00:00" />
+<meta property="article:modified_time" content="2026-04-01T00:00:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="mpvc(1)" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2026-04-01T00:00:00+00:00","datePublished":"2026-04-01T00:00:00+00:00","description":"description","headline":"mpvc(1)","mainEntityOfPage":{"@type":"WebPage","@id":"https://gmt4.github.io/mpvc/man/man1/mpvc.html"},"url":"https://gmt4.github.io/mpvc/man/man1/mpvc.html"}</script>
 <body>
-<header id="title-block-header">
-<h1 class="title">mpvc(1)</h1>
-<p class="date">April, 2026</p>
+  <a class="skip-to-main" href="#main-content">Skip to main content</a>
+  <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
+  <symbol id="svg-link" viewBox="0 0 24 24">
+ <title>Link</title>
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-link">
+   <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+  </svg>
+</symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+ <title>Menu</title>
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu">
+   <line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line>
+  </svg>
+</symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+ <title>Expand</title>
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+   <polyline points="9 18 15 12 9 6"></polyline>
+  </svg>
+</symbol>
+<symbol id="svg-external-link" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-external-link">
+ <title id="svg-external-link-title">(external link)</title>
+ <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line>
+</symbol>
+    <symbol id="svg-doc" viewBox="0 0 24 24">
+ <title>Document</title>
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file">
+   <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline>
+  </svg>
+</symbol>
+    <symbol id="svg-search" viewBox="0 0 24 24">
+ <title>Search</title>
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search">
+    <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+  </svg>
+</symbol>
+<symbol id="svg-copy" viewBox="0 0 16 16">
+ <title>Copy</title>
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard" viewBox="0 0 16 16">
+   <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+   <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+  </svg>
+</symbol>
+<symbol id="svg-copied" viewBox="0 0 16 16">
+ <title>Copied</title>
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard-check-fill" viewBox="0 0 16 16">
+   <path d="M6.5 0A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3Zm3 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3Z"/>
+   <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1A2.5 2.5 0 0 1 9.5 5h-3A2.5 2.5 0 0 1 4 2.5v-1Zm6.854 7.354-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708L7.5 10.793l2.646-2.647a.5.5 0 0 1 .708.708Z"/>
+  </svg>
+</symbol>
+</svg>
+  <header class="side-bar">
+ <div class="site-header">
+    <a href="/mpvc/" class="site-title lh-tight">
+  mpvc
+</a>
+    <button id="menu-button" class="site-button btn-reset" aria-label="Menu" aria-expanded="false">
+      <svg viewBox="0 0 24 24" class="icon" aria-hidden="true"><use xlink:href="#svg-menu"></use></svg>
+    </button>
+ </div>
+ <nav aria-label="Main" id="site-nav" class="site-nav">
+   <ul class="nav-list"><li class="nav-list-item"><a href="/mpvc/get-started.html" class="nav-list-link">Get Started</a><li class="nav-list-item"><a href="/mpvc/logbook.html" class="nav-list-link">Log Book</a><li class="nav-list-item"><a href="/mpvc/man/man1/" class="nav-list-link">Man Pages</a><li class="nav-list-item"><a href="/mpvc/man/man1/mpvc.html" class="nav-list-link">mpvc(1)</a><li class="nav-list-item"><a href="/mpvc/man/man1/mpvc-autopilot.html" class="nav-list-link">mpvc-autopilot(1)</a><li class="nav-list-item"><a href="/mpvc/man/man1/mpvc-chapter.html" class="nav-list-link">mpvc-chapter(1)</a><li class="nav-list-item"><a href="/mpvc/man/man1/mpvc-equalizer.html" class="nav-list-link">mpvc-equalizer(1)</a><li class="nav-list-item"><a href="/mpvc/man/man1/mpvc-fzf.html" class="nav-list-link">mpvc-fzf(1)</a><li class="nav-list-item"><a href="/mpvc/man/man1/mpvc-installer.html" class="nav-list-link">mpvc-installer(1)</a><li class="nav-list-item"><a href="/mpvc/man/man1/mpvc-tui.html" class="nav-list-link">mpvc-tui(1)</a><li class="nav-list-item"><a href="/mpvc/man/man1/mpvc-web.html" class="nav-list-link">mpvc-web(1)</a><li class="nav-list-item"><a href="/mpvc/man/man1/mpvc.conf.html" class="nav-list-link">mpvc.conf</a></ul>
+</nav>
+<div class="d-md-block d-none site-footer">
+    This site uses <a href="https://github.com/just-the-docs/just-the-docs">Just the Docs</a>, a documentation theme for Jekyll.
+ </div>
 </header>
-<h1 id="name">NAME</h1>
+ <div class="main" id="top">
+   <div id="main-header" class="main-header">
+<div class="search" role="search">
+ <div class="search-input-wrap">
+    <input type="text" id="search-input" class="search-input" tabindex="0" placeholder="Search mpvc" autocomplete="off">
+    <label for="search-input" class="search-label">
+      <span class="sr-only">Search mpvc</span>
+      <svg viewBox="0 0 24 24" class="search-icon" aria-hidden="true"><use xlink:href="#svg-search"></use></svg>
+    </label>
+ </div>
+ <div id="search-results" class="search-results"></div>
+</div>
+   <nav aria-label="Auxiliary" class="aux-nav">
+ <ul class="aux-nav-list">
+     <li class="aux-nav-list-item">
+        <a href="https://gmt4.github.io/mpvc/" class="site-button"
+          target="_blank" rel="noopener noreferrer"
+        >
+          site
+        </a>
+     <li class="aux-nav-list-item">
+        <a href="https://github.com/gmt4/mpvc/" class="site-button"
+          target="_blank" rel="noopener noreferrer"
+        >
+          #mpvc
+        </a>
+     <li class="aux-nav-list-item">
+        <a href="https://github.com/gmt4" class="site-button"
+          target="_blank" rel="noopener noreferrer"
+        >
+          @gmt4
+        </a>
+ </ul>
+</nav>
+</div>
+   <div class="main-content-wrap">
+     <div id="main-content" class="main-content">
+       <main>
+           <h1 id="name">
+    <a href="#name" class="anchor-heading" aria-labelledby="name"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> NAME
+</h1>
 <p>mpvc - mpc-like command-line control interface for mpv</p>
-<h1 id="synopsis">SYNOPSIS</h1>
-<p>mpvc <a href="#options">options</a> [file|url|playlist|-]</p>
-<h1 id="description">DESCRIPTION</h1>
-<p>mpvc is a command-line utility that provides mpc-like control over the mpv media player. It allows users to manage playback, control volume, add and remove media from the playlist, and display playlist information through a simple command-line interface.</p>
-<p>The tool communicates with mpv via a Unix socket, enabling remote control of playback without direct interaction with the mpv window.</p>
-<h1 id="options">OPTIONS</h1>
-<h2 id="playback-control">Playback Control</h2>
+<h1 id="synopsis">
+    <a href="#synopsis" class="anchor-heading" aria-labelledby="synopsis"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> SYNOPSIS
+</h1>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>usage: mpvc opts # @version v1.9 (c) gmt4 https://github.com/gmt4/mpvc
+ -a | --add | add         : Add media to playlist (see --load for stdin).
+ -r | --remove | rm       : Remove media by id from playlist (see searchrm for rm by title)
+ -s | --stop | stop       : Always stop playback.
+ -P | --play | play       : Always start playback.
+ -p | --toggle            : Toggle playback.
+      --repeat | repeat   : Loop the playlist.
+      --single | single   : Loop a single file.
+    | --next | next       : Jump to next entry in the playlist
+    | --prev | prev       : Jump to previous entry in the playlist
+ -i | --playlist          : Print filenames of tracks to fit within terminal.
+ -I | --fullplaylist      : Print all filenames of tracks in current playlist.
+ -v | --vol | vol         : Increase/decrease volume relative to current volume.
+ -h | --help              : Prints the short help.
+ -H | --help-long         : Prints the long help (tip: mpvc -H 2&gt;&amp;1 | less).
+
+*tips: If unsure about where to begin, have a look at https://gmt4.github.io/mpvc
+</code></pre></div></div>
+<h1 id="description">
+    <a href="#description" class="anchor-heading" aria-labelledby="description"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> DESCRIPTION
+</h1>
+<p>mpvc is a command-line utility that provides mpc-like control over the
+mpv media player. It allows users to manage playback, control volume,
+add and remove media from the playlist, and display playlist information
+through a simple command-line interface.</p>
+<p>The tool communicates with mpv via a Unix socket, enabling remote
+control of playback without direct interaction with the mpv window.</p>
+<h1 id="options">
+    <a href="#options" class="anchor-heading" aria-labelledby="options"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> OPTIONS
+</h1>
+<h2 id="playback-control">
+    <a href="#playback-control" class="anchor-heading" aria-labelledby="playback-control"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Playback Control
+</h2>
 <dl>
-<dt><code>-P</code>, <code>--play</code></dt>
-<dd>Start playback of the current media.
-</dd>
-<dt><code>-p</code>, <code>--toggle</code></dt>
-<dd>Toggle between play and pause states.
-</dd>
-<dt><code>-s</code>, <code>--stop</code></dt>
-<dd>Stop playback completely.
-</dd>
-<dt><code>--next</code></dt>
-<dd>Jump to the next entry in the playlist.
-</dd>
-<dt><code>--prev</code></dt>
-<dd>Jump to the previous entry in the playlist.
-</dd>
+ <dt><code class="language-plaintext highlighter-rouge">-P</code>, <code class="language-plaintext highlighter-rouge">--play</code>, <code class="language-plaintext highlighter-rouge">play</code>
+ <dd>Start playback of the current media.
+ <dt><code class="language-plaintext highlighter-rouge">-p</code>, <code class="language-plaintext highlighter-rouge">--toggle</code>, <code class="language-plaintext highlighter-rouge">toggle</code>
+ <dd>Toggle between play and pause states.
+ <dt><code class="language-plaintext highlighter-rouge">-s</code>, <code class="language-plaintext highlighter-rouge">--stop</code>, <code class="language-plaintext highlighter-rouge">stop</code>
+ <dd>Stop playback completely.
+ <dt><code class="language-plaintext highlighter-rouge">--next</code>, <code class="language-plaintext highlighter-rouge">next</code>
+ <dd>Jump to the next entry in the playlist.
+ <dt><code class="language-plaintext highlighter-rouge">--prev</code>, <code class="language-plaintext highlighter-rouge">prev</code>
+ <dd>Jump to the previous entry in the playlist.
 </dl>
-<h2 id="playlist-management">Playlist Management</h2>
+<h2 id="playlist-management">
+    <a href="#playlist-management" class="anchor-heading" aria-labelledby="playlist-management"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Playlist Management
+</h2>
 <dl>
-<dt><code>-a</code>, <code>--add FILE</code></dt>
-<dd>Add a file or URL to the playlist. Supports local files, YouTube URLs, and other media sources.
-</dd>
-<dt><code>-r</code>, <code>--remove ID</code></dt>
-<dd>Remove a playlist entry by its numeric ID.
-</dd>
-<dt><code>-i</code>, <code>--playlist</code></dt>
-<dd>Display the current playlist with filenames truncated to fit terminal width.
-</dd>
-<dt><code>-I</code>, <code>--fullplaylist</code></dt>
-<dd>Display the complete current playlist with full filenames.
-</dd>
+ <dt><code class="language-plaintext highlighter-rouge">-a</code>, <code class="language-plaintext highlighter-rouge">--add FILE</code>, <code class="language-plaintext highlighter-rouge">add FILE</code>
+ <dd>Add a file or URL to the playlist. Supports local files, YouTube URLs, and other media sources.
+ <dt><code class="language-plaintext highlighter-rouge">-r</code>, <code class="language-plaintext highlighter-rouge">--rm ID</code>, <code class="language-plaintext highlighter-rouge">rm ID</code>
+ <dd>Remove a playlist entry by its numeric ID.
+ <dt><code class="language-plaintext highlighter-rouge">-i</code>, <code class="language-plaintext highlighter-rouge">--playlist</code>, <code class="language-plaintext highlighter-rouge">playlist</code>
+ <dd>Display the current playlist with filenames truncated to fit terminal width.
+ <dt><code class="language-plaintext highlighter-rouge">-I</code>, <code class="language-plaintext highlighter-rouge">--fullplaylist</code>
+ <dd>Display the complete current playlist with full filenames.
 </dl>
-<h2 id="loop-and-repeat-modes">Loop and Repeat Modes</h2>
+<h2 id="loop-and-repeat-modes">
+    <a href="#loop-and-repeat-modes" class="anchor-heading" aria-labelledby="loop-and-repeat-modes"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Loop and Repeat Modes
+</h2>
 <dl>
-<dt><code>--repeat</code></dt>
-<dd>Enable loop mode for the entire playlist. Playback will restart from the beginning after reaching the end.
-</dd>
-<dt><code>--single</code></dt>
-<dd>Enable single-file loop mode. The current file will repeat indefinitely.
-</dd>
+ <dt><code class="language-plaintext highlighter-rouge">--repeat</code>, <code class="language-plaintext highlighter-rouge">repeat</code>
+ <dd>Enable loop mode for the entire playlist. Playback will restart from the beginning after reaching the end.
+ <dt><code class="language-plaintext highlighter-rouge">--single</code>, <code class="language-plaintext highlighter-rouge">single</code>
+ <dd>Enable single-file loop mode. The current file will repeat indefinitely.
 </dl>
-<h2 id="volume-control">Volume Control</h2>
+<h2 id="volume-control">
+    <a href="#volume-control" class="anchor-heading" aria-labelledby="volume-control"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Volume Control
+</h2>
 <dl>
-<dt><code>-v</code>, <code>--vol [+-]N</code></dt>
-<dd>Adjust volume by the specified amount. Use +N to increase or -N to decrease volume. Without an argument, displays current volume.
-</dd>
+ <dt><code class="language-plaintext highlighter-rouge">-v</code>, <code class="language-plaintext highlighter-rouge">--vol [+-]N</code>
+ <dd>Adjust volume by the specified amount. Use +N to increase or -N to decrease volume. Without an argument, displays current volume.
 </dl>
-<h2 id="information-and-help">Information and Help</h2>
+<h2 id="information-and-help">
+    <a href="#information-and-help" class="anchor-heading" aria-labelledby="information-and-help"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Information and Help
+</h2>
 <dl>
-<dt><code>-h</code>, <code>--help</code></dt>
-<dd>Display short help message with basic usage information.
-</dd>
-<dt><code>-H</code>, <code>--help-long</code></dt>
-<dd>Display detailed help message with all available options and examples.
-</dd>
+ <dt><code class="language-plaintext highlighter-rouge">-h</code>, <code class="language-plaintext highlighter-rouge">--help</code>
+ <dd>Display short help message with basic usage information.
+ <dt><code class="language-plaintext highlighter-rouge">-H</code>, <code class="language-plaintext highlighter-rouge">--help-long</code>
+ <dd>Display detailed help message with all available options and examples.
 </dl>
-<h1 id="examples">EXAMPLES</h1>
+<h1 id="examples">
+    <a href="#examples" class="anchor-heading" aria-labelledby="examples"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> EXAMPLES
+</h1>
 <p>Add a file to the playlist:</p>
-<pre><code>mpvc -a /path/to/song.mp3</code></pre>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mpvc -a /path/to/song.mp3
+</code></pre></div></div>
 <p>Toggle playback:</p>
-<pre><code>mpvc -p</code></pre>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mpvc -p
+</code></pre></div></div>
 <p>Increase volume by 5:</p>
-<pre><code>mpvc -v +5</code></pre>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mpvc -v +5
+</code></pre></div></div>
 <p>Decrease volume by 10:</p>
-<pre><code>mpvc -v -10</code></pre>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mpvc -v -10
+</code></pre></div></div>
 <p>Display current playlist:</p>
-<pre><code>mpvc -i</code></pre>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mpvc -i
+</code></pre></div></div>
 <p>Jump to next track:</p>
-<pre><code>mpvc --next</code></pre>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mpvc --next
+</code></pre></div></div>
 <p>Stop playback:</p>
-<pre><code>mpvc -s</code></pre>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mpvc -s
+</code></pre></div></div>
 <p>Enable repeat mode:</p>
-<pre><code>mpvc --repeat</code></pre>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mpvc --repeat
+</code></pre></div></div>
 <p>Remove track with ID 3:</p>
-<pre><code>mpvc -r 3</code></pre>
-<h1 id="environment">ENVIRONMENT</h1>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mpvc -r 3
+</code></pre></div></div>
+<h1 id="environment">
+    <a href="#environment" class="anchor-heading" aria-labelledby="environment"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> ENVIRONMENT
+</h1>
 <dl>
-<dt>MPV_SOCKET</dt>
-<dd>Path to the mpv Unix socket. If not set, mpvc will attempt to locate the default socket automatically.
-</dd>
+ <dt>MPV_SOCKET
+ <dd>Path to the mpv Unix socket. If not set, mpvc will attempt
+to locate the default socket automatically.
 </dl>
-<h1 id="files">FILES</h1>
+<h1 id="files">
+    <a href="#files" class="anchor-heading" aria-labelledby="files"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> FILES
+</h1>
 <dl>
-<dt>~/.config/mpv/mpv.conf</dt>
-<dd>Main mpv configuration file.
-</dd>
-<dt>~/.config/mpvc/mpvc.conf</dt>
-<dd>mpvc-specific configuration file.
-</dd>
-<dt>~/.config/mpvc/yt-dlp.conf</dt>
-<dd>Configuration for yt-dlp integration.
-</dd>
+ <dt>~/.config/mpv/mpv.conf
+ <dd>Main mpv configuration file.
+ <dt>~/.config/mpvc/mpvc.conf
+ <dd>mpvc-specific configuration file.
+ <dt>~/.config/mpvc/yt-dlp.conf
+ <dd>Configuration for yt-dlp integration.
 </dl>
-<h1 id="see-also">SEE ALSO</h1>
-<p>mpv(1), mpc(1), mpvc-fzf(1), mpvc-web(1), mpvc-tui(1), mpvc-equalizer(1)</p>
-<h1 id="author">AUTHOR</h1>
-<p>Manual written by gmt4. See https://github.com/gmt4/mpvc for more information.</p>
-<h1 id="reporting-bugs">REPORTING BUGS</h1>
-<p>Report bugs at: https://github.com/gmt4/mpvc/issues</p>
-</body>
-</html>
+<h1 id="see-also">
+    <a href="#see-also" class="anchor-heading" aria-labelledby="see-also"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> SEE ALSO
+</h1>
+<p>mpv(1),
+<a href="mpvc-fzf.html">mpvc-fzf(1)</a>,
+<a href="mpvc-tui.html">mpvc-tui(1)</a>,
+<a href="mpvc-web.html">mpvc-web(1)</a>,
+<a href="mpvc-equalizer.html">mpvc-equalizer(1)</a>
+<a href=".">mpvc-index</a>,</p>
+<h1 id="author">
+    <a href="#author" class="anchor-heading" aria-labelledby="author"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> AUTHOR
+</h1>
+<p>Manual written by gmt4. See <a href="https://github.com/gmt4/mpvc">https://github.com/gmt4/mpvc</a> for more information.</p>
+<h1 id="reporting-bugs">
+    <a href="#reporting-bugs" class="anchor-heading" aria-labelledby="reporting-bugs"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> REPORTING BUGS
+</h1>
+<p>Report bugs at: <a href="https://github.com/gmt4/mpvc/issues">https://github.com/gmt4/mpvc/issues</a></p>
+       </main>
+<hr>
+<footer>
+ <div class="d-md-none mt-4 fs-2">
+      This site uses <a href="https://github.com/just-the-docs/just-the-docs">Just the Docs</a>, a documentation theme for Jekyll.
+ </div>
+</footer>
+     </div>
+   </div>
+<div class="search-overlay"></div>
+ </div>
+  

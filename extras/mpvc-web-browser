@@ -12,7 +12,7 @@
 
 PROGNAME=${0##*/}
 PROGDIR=${0%/*}
-PROGVERSION="v1.8"
+PROGVERSION="v1.9"
 PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
 
@@ -26,17 +26,17 @@ html_body_open()
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> 🎧$(hostname) mpvc MediaBrowser</title>
+    <title> 🎧$(hostname) mpvc browser</title>
     <style>
         body { font-family: monospace, sans-serif; font-size: 0.8rem; background: #121212; color: #e0e0e0; margin: 0; padding: 15px 4px; }
         .browser { max-width: 99%; margin: 0 auto; }
         .dir-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 8px; margin-bottom: 10px; }
         .dir-header div { display: flex; flex-wrap: wrap; }
-        .btn-action { display: flex; background: #36b4d1; color: #fff; padding: 8px 8px; margin: 2px 2px; border-radius: 4px; font-weight: bold; font-size: 0.6rem; white-space: nowrap; text-decoration: none; min-height: 10px; min-width: 10px; align-items: center; flex-shrink: 0; }
+        .btn-action { display: flex; background: #333; color: #fff; padding: 4px 4px; margin: 2px 2px; border-radius: 4px; font-weight: bold; font-size: 0.8rem; white-space: nowrap; text-decoration: none; min-height: 10px; min-width: 10px; align-items: center; flex-shrink: 0; }
         .btn-action:active { background: #2471a3; }
         .search-container { margin: 10px 0 15px 0; width: 100%; }
         .flex { display: flex; }
-        .flex-fixed { width: 4rem; flex-shrink: 0; margin: 4px; }
+        .flex-fixed { width: 5rem; flex-shrink: 0; margin: 4px; }
         .flex-grow { flex-grow: 1; margin: 4px; }
         #libMode { box-sizing: border-box; background: #222; border: 1px solid #444; border-radius: 6px; color: #fff; min-height: 30px; }
         #libSearch { box-sizing: border-box; background: #222; border: 1px solid #444; border-radius: 6px; color: #fff; min-height: 40px; }
@@ -78,7 +78,10 @@ html_body_open()
     </strong>
     </div>
     <div>
-        <a class='btn-action' href='/?cmd=mpvc toggle' title="Toggle playback (ProTip: accesskey=t)" accesskey=t>⏯️</a>
+        <a class='btn-action' onclick="request('$PROGNAME?mpvc+next')" title="Next track">⏭️</a>
+        <a class='btn-action' onclick="request('$PROGNAME?mpvc+cnext')" title="Next chapter">⏬</a>
+        <a class='btn-action' onclick="request('$PROGNAME?mpvc+toggle')" title="Toggle playback (ProTip: accesskey=t)" accesskey=t>⏯️</a>
+        <a class='btn-action' onclick="request('$PROGNAME?mpvc+cycle-volume')" title="Cycle Volume">🔊</a>
     </div>
 </div>
 
@@ -88,17 +91,19 @@ html_body_open()
     <input type='hidden' name='browser'>
 
     <select id='libMode' name=mode class='flex-fixed' onchange=this.form.submit() title='Mode (ProTip: accesskey=m)' accesskey=m>
-    <option value=>          Mode
-    <option value=media>     Media
-    <option value=stash>     Stash
-
     <option value=playlist>  Playlist
     <option value=chapters>  Chapters
     <option value=equalizer> Equalizer
 
-    <option value=video>     Video
-    <option value=feeds>     Feed
-    <option value=remote>    Remote
+    <option value=media>        Media
+    <option value=yewtube>      YewtuBe
+    <option value=stash>        Stash
+    <option value=feeds>        Feeds
+
+    <option value=somafm>       SomaFM
+    <option value=radioparadise>    RadioParadise
+    <option value=video>        Video
+    <option value=volume>       Volume
     </select>
 
     <input type='text' id='libSearch' name='filter' class='flex-grow' oninput='filterFiles()' onkeydown='filterKeyDown(event)' placeholder='🔍 Type to filter items ...' autocomplete='off' title='Search (ProTip: accesskey=s)' accesskey=s>
@@ -118,21 +123,13 @@ function filterFiles()
     let files = document.querySelectorAll('.file-row');
     files.forEach(row => {
         let fileName = row.querySelector('.file-name').innerText.toLowerCase();
-        if (fileName.includes(query)) {
-            row.style.display = 'flex';
-        } else {
-            row.style.display = 'none';
-        }
+        row.style.display = fileName.includes(query) ? 'flex' : 'none' ;
     });
 
     let dirs = document.querySelectorAll('.dir-row');
     dirs.forEach(row => {
         let fileName = row.querySelector('.dir-name').innerText.toLowerCase();
-        if (fileName.includes(query)) {
-            row.style.display = 'flex';
-        } else {
-            row.style.display = 'none';
-        }
+        row.style.display = fileName.includes(query) ? 'flex' : 'none' ;
     });
 }
 
@@ -145,6 +142,26 @@ function filterKeyDown()
         // submit to let mpvc-fzf search action populate results
         form.submit()
     }
+}
+
+async function request(url, method = "GET", body = null) {
+    const options = { method, headers: {} };
+    if (body !== null && body !== undefined) {
+        options.headers["Content-Type"] = "application/json";
+        options.body = JSON.stringify(body);
+    }
+
+    const response = await fetch(url, options);
+    if (!response.ok) {
+        throw new Error("HTTP error: "+response.status);
+    }
+
+    const contentType = response.headers.get("content-type");
+    if (contentType?.includes("application/json")) {
+        return response.json();
+    }
+
+    return response.text();
 }
 
 function initModule()
@@ -178,11 +195,12 @@ gup()
 write_request()
 {
     data="$1"
+    mime="$2"
     byte_count=$(printf '%s' "$data" | wc -c)
 
-    printf "HTTP/1.0 200 OK\r\n"
+    #printf "HTTP/1.0 200 OK\r\n"
     printf "Status: 200 OK\r\n"
-    printf "Content-Type: text/html; charset=utf-8\r\n"
+    printf "Content-Type: $mime; charset=utf-8\r\n"
     printf "Content-Length: %d\r\n" "$byte_count"
     printf "Connection: close\r\n\r\n"
 
@@ -231,23 +249,27 @@ handle_action()
         postdata=$(dd bs=1 count="$CONTENT_LENGTH" 2>/dev/null)
     fi
 
-    mpvc_warn "$(gup 'item=[^&]*' "$postdata")"
+    item=$(gup 'item=[^&]*' "$postdata")
+    if [ -z "${item}" ]; then
+        return
+    fi
+
+    item1=$(echo "$item" | awk '{print $1}')
+    itemn=$(echo "$item" | awk '{print $NF}')
 
     case "$action" in
-    stash-apply)    $MPVC -q stash apply "$(gup 'item=[^&]*' "$postdata" | awk '{print $NF}')" ;;
-    stash-append)   $MPVC -q stash append "$(gup 'item=[^&]*' "$postdata" | awk '{print $NF}')" ;;
-    equalizer-load) $MPVC-equalizer load "$(gup 'item=[^&]*' "$postdata")" ;;
-    playlist-play)  $MPVC -q play "$(gup 'item=[^&]*' "$postdata" | awk '{print $1}')" ;;
-    playlist-add)   $MPVC -q add "$(gup 'item=[^&]*' "$postdata" | awk '{print $1}')" ;;
-    chapter-play)   $MPVC -q chapter-play "$(gup 'item=[^&]*' "$postdata" | awk '{print $1}')" ;;
+    stash-apply)    "$MPVC" -q stash apply "$itemn" ;;
+    stash-append)   "$MPVC" -q stash append "$itemn" ;;
+    equalizer-load) "$MPVC-equalizer" load "$item" ;;
+    playlist-play)  "$MPVC" -q play "$item1" ;;
+    playlist-add)   "$MPVC" -q add "$item1" ;;
+    playlist-rm)    "$MPVC" -q rm "$item1" ;;
+    chapter-play)   "$MPVC" -q chapter-play "$item1" ;;
     esac
 
     # Fast-path exit for asynchronous background JavaScript requests
     if [ "${HTTP_X_REQUESTED_WITH:-}" = "XMLHttpRequest" ]; then
-        printf "Status: 200 OK\r\n"
-        printf "Content-Type: text/plain\r\n"
-        printf "Connection: close\r\n"
-        printf "Content-Length: 2\r\n\r\nOK"
+        write_request "OK" "text/plain"
         exit 0
     fi
 }
@@ -257,13 +279,13 @@ handle_listing()
 {
     ENC_CURRENT_DIR=$(printf '%s' "$REQ_DIR" | sed 's/ /%20/g')
 
-    dir_list=$(set +f; for d in "$RESOLVED_PATH"/*/; do [ -d "$d" ] && printf '%s\n' "$d" || true; done)
-    fil_list=$(set +f; for d in "$RESOLVED_PATH"/*;  do [ -f "$d" ] && printf '%s\n' "$d" || true; done)
+    dir_list=$(set +f; for d in "$RESOLVED_PATH"/*/; do if [ -d "$d" ]; then printf '%s\n' "$d"; fi; done)
+    fil_list=$(set +f; for d in "$RESOLVED_PATH"/*;  do if [ -f "$d" ]; then printf '%s\n' "$d"; fi; done)
 
     item_list=$(
     for item in "." ".." $dir_list $fil_list;
     do
-        name=$(basename "$item")
+        name=$(basename "${item}")
         case "$name" in .);; ..);; .*) continue ;; esac
         enc_dir=$(printf '%s/%s' "$REQ_DIR" "$name" | tr -s '/' | sed 's/ /%20/g')
 
@@ -309,7 +331,7 @@ handle_listing()
     HTML_BODY="${HTML_BODY}$(html_body_close)"
 
     # Handle the request
-    write_request "$HTML_BODY"
+    write_request "$HTML_BODY" "text/html"
 }
 
 handle_stash()
@@ -332,11 +354,31 @@ handle_equalizer()
     handle_generic "$MPVC-equalizer preset-list" "$PROGNAME?browser&action=equalizer-load"
 }
 
+handle_feeds()
+{
+    handle_generic "$MPVC-fzf feed" "$PROGNAME?browser&action=playlist-add"
+}
+
+handle_yewtube()
+{
+    filter=$(gup 'filter=[^&]*' "$QUERY_STRING")
+    handle_generic "$MPVC-fzf search $filter" "$PROGNAME?browser&action=playlist-add"
+}
+
 handle_remote()
 {
     filter=$(gup 'filter=[^&]*' "$QUERY_STRING")
-    # remote is special, as the user has to enter the query to pass to mpvc-fzf search before
     handle_generic "$MPVC-fzf search $filter" "$PROGNAME?browser&action=playlist-add"
+}
+
+handle_somafm()
+{
+    handle_generic "mpvc_csv $MPVC-fzf somafm-raw" "$PROGNAME?browser&action=playlist-add"
+}
+
+handle_radioparadise()
+{
+    handle_generic "mpvc_csv $MPVC-fzf rp-raw" "$PROGNAME?browser&action=playlist-add"
 }
 
 handle_generic()
@@ -363,40 +405,39 @@ handle_generic()
     HTML_BODY="${HTML_BODY}$(html_body_close)"
 
     # Handle the request
-    write_request "$HTML_BODY"
+    write_request "$HTML_BODY" "text/html"
 }
 
 mpvc_browser()
 {
     mode=$(gup 'mode=[^&]*' "$QUERY_STRING" )
-    mode=${mode:-media}
+    mode=${mode:-playlist}
     action=$(gup 'action=[^&]*' "$QUERY_STRING")
 
     handle_config
     handle_action
 
     case "$mode" in
-    media)      handle_listing ;;
-    stash)      handle_stash ;;
-    playlist)   handle_playlist ;;
-    chapters)   handle_chapters ;;
-    equalizer)  handle_equalizer ;;
-    remote)     handle_remote ;;
+    playlist)       handle_playlist ;;
+    chapters)       handle_chapters ;;
+    media)          handle_listing ;;
+    yewtube)        handle_yewtube ;;
+    stash)          handle_stash ;;
+    equalizer)      handle_equalizer ;;
+
+    feeds)          handle_feeds ;;
+    somafm)         handle_somafm ;;
+    radioparadise)  handle_radioparadise ;;
+    remote)         handle_remote ;;
     esac
 }
 
 mpvc_warn()  { echo "$@" >&2; }
-mpvc_strip() { sed '/\x1b\[7m/ { s|\x1b\[7m||; s| |+|; }; s|\x1b\[0m||;'; }
-mpvc_cmd()   { echo "Content-Type: text/plain"; echo "Connection: close"; echo; $MPVC "$@"; }
-mpvc_cmdl()  {
-               body=$($MPVC "$@"); bytes=$(printf '%s' "$body" | wc -c);
-               echo "Content-Type: text/plain"; echo "Connection: close"; echo "Content-Length: $bytes"
-               echo
-               echo "$body"
-}
-mpvc_plain() { echo "Content-Type: text/plain"; echo "Connection: close"; echo; echo "$@"; }
+mpvc_csv()   { "$@" | sed 's/;/ /g'; }
+
 mpvc_html()  { echo "Content-Type: text/html";  echo "Connection: close"; echo; echo "$@"; }
-mpvc_redir() { if [ -n "$1" -a "$1" != "null" ]; then mpvc_html '<meta http-equiv=refresh content="0.1;url='$1'" />'; fi; }
+mpvc_strip() { sed '/\x1b\[7m/ { s|\x1b\[7m||; s| |+|; }; s|\x1b\[0m||;'; }
+mpvc_redir() { if [ -n "$1" ] && [ "$1" != "null" ]; then mpvc_html '<meta http-equiv=refresh content="0.1;url='$1'" />'; fi; }
 mpvc_split() { for i in $@; do echo "$i"; done; }
 
 usage()
@@ -404,9 +445,10 @@ usage()
     cat <<EOF
 usage: $PROGNAME  args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
  -h|help    : Show this help
+   |browser : Run the browser CGI
 *tips: If unsure about where to begin, start with: $PROGNAME browser
 EOF
-    exit "${1:-0}"
+    exit 0
 }
 
 main()
@@ -419,22 +461,19 @@ main()
 
         browser*)               mpvc_browser ;;
 
-        volmute)                mpvc_redir "$($MPVC-mpris volmute)" ;;
         now-short)              mpvc_redir "$($MPVC-fzf now short)" ;;
         lyrics)                 mpvc_redir "$($MPVC-fzf Lyrics '')" ;;
-        thumbnail)              mpvc_redir "$($MPVC-fzf thumbnail)" ;;
         thumbnail64)            mpvc_redir "$($MPVC-fzf thumbnail64)" ;;
         filename)               mpvc_redir "$($MPVC filename current full)" ;;
-        metadata)               mpvc_plain "$($MPVC metadata)" ;;
-        #related)               mpvc_plain "$($MPVC-fzf \"$($MPVC get media-title)\")" ;;
+        #related)               write_request "$($MPVC-fzf \"$($MPVC get media-title)\")" "text/plain" ;;
 
-        mpvc+status)            mpvc_cmdl status | mpvc_strip ;;
-        mpvc+playlist)          mpvc_cmdl playlist | mpvc_strip ;;
-        mpvc+chapter-list)      mpvc_cmdl chapter-list-nr | mpvc_strip ;;
+        mpvc+status)            write_request "$($MPVC status | mpvc_strip)" "text/plain" ;;
+        mpvc+playlist)          write_request "$($MPVC playlist | mpvc_strip)" "text/plain" ;;
+        mpvc+chapter-list)      write_request "$($MPVC chapter-list-nr | mpvc_strip)" "text/plain" ;;
 
-        mpvc-fzf[+\ ]*)         mpvc_plain "$(${MPVC%/*}/$(mpvc_split "$@"))" ;;
-        mpvc-equalizer[+\ ]*)   mpvc_plain "$(${MPVC%/*}/$(mpvc_split "$@"))" ;;
-        mpvc[+\ ]*)             mpvc_plain "$(${MPVC%/*}/$(mpvc_split "$@"))" ;;
+        mpvc-fzf[+\ ]*)         write_request "$(${MPVC%/*}/$(mpvc_split "$@"))" "text/plain" ;;
+        mpvc-equalizer[+\ ]*)   write_request "$(${MPVC%/*}/$(mpvc_split "$@"))" "text/plain" ;;
+        mpvc[+\ ]*)             write_request "$(${MPVC%/*}/$(mpvc_split "$@"))" "text/plain" ;;
     esac
 }
 

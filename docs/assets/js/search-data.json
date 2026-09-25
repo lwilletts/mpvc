@@ -1,0 +1,1129 @@
+{"0": {
+    "doc": "Get Started",
+    "title": "@gmt4 mpvc 🎧",
+    "content": ". | about Music player in POSIX-sh using mpv from the shell/fzf + extras/goodies 📡🛸🚀 | goodies Support TUI, FZF, WEB, CLI, playing youtube &amp; streaming services (See #20221219) | tags music-player terminal minimal mpv tui media-player mplayer posix-sh mpv-player mpvc mpvc-tui | github https://github.com/gmt4/mpvc/ | promote Star, share, and promote our work through the buttons below if you find it useful. Thanks! | . ___ ⠀⠀⠀⠀⠀⠀⢀⣤⠖⠂⠉⠉⠉⠀⠒⠤⣀⠀⠀⠀⠀⠀ ____ _/ (_)___ ______⠀⠀⠀⠀⠀ ⠀⠀⠀⠀⢀⠀⣶⡟⢀⣴⣶⣿⣾⣶⣶⣄⡀⠈⠑⢤⡀⠀⠀ / __ `/ / / __ `/ ___/⠀⠀⠀⠀⠀ ⠀⠀⠀⡴⣫⣼⡿⣴⡟⠛⠉⠉⠛⠛⠿⣿⣿⣷⣦⡀⠙⢄⠀ / /_/ / / / /_/ (__ ) ⠀⠀⠀⠀⠀ ⠀⠀⣼⢁⣟⡟⣷⠁⠀⠀⠀⠀⠀⠀⠀⠀⠙⢿⣿⣷⣆⠈⢣ \\__,_/_/_/\\__,_/____/ ⡀⠀⠀⠀⠀ ⠀⢰⣿⢼⣿⣷⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠹⣿⣿⡆⠀⢱⠀⠀ ⠀⢸⡵⣾⣇⣸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⣿⣧⠀⠀⢧⠀⠀⠀ ____ ___ ____ _ __ _____ ⠀⠘⣴⣿⢯⡏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠹⡿⠛⠉⠹⡆⠀⠀ / __ `__ \\/ __ \\ | / / / ___/ ⢀⣼⣿⣧⠟⠁⢀⢀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢯⣴⣶⣴⡇⠀⠀⠀ / / / / / / /_/ / |/ / / /__ ⢸⣿⣼⣿⣋⣉⠀⠀⠀⠈⠙⠦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠈⣿⣿⣷⣷⡀⠀⠀ /_/ /_/ /_/ .___/|___/ \\___/ ⢸⠁⠊⣿⠛⢛⢟⣦⡀⠀⠀⠀⠈⢆⠀⠀⠀⠀⢀⠔⣨⣶⡜⠂⠈⠽⣧⡀⠀ /_/ ⠀ ⠸⣶⣾⡯⠤⢄⡀⠵⢿⣦⡀⠀⠀⠀⡷⡄⠀⡰⢁⣾⣿⣿⣿⠀⠀⠀⣿⡹⡄ ____ ___ ____ _ __ __ _____/ /_ ⠀ ⠀⣿⣡⠦⢄⡀⠈⠳⣬⣹⣿⣆⠀⠀⢉⠻⣴⠇⣾⣿⡟⢻⠁⠀⠀⠀⣿⠁⡇ / __ `__ \\/ __ \\ | / / __/ /_ / ___/ __ \\⠀ ⠀⣿⡭⡀⠀⠈⠲⣦⣸⣿⣿⣿⣧⣀⠈⡔⣜⣴⣿⡟⢀⡎⡈⠀⠀⢰⡿⢠⣷ ⠀ / / / / / / /_/ / |/ / /_ __/ (__ ) / / /⠀ ⠀⢸⣿⣄⣒⡀⡀⣿⣷⡿⣿⢿⣿⣷⡰⡸⣯⣏⣿⡷⢋⣼⣁⡢⢠⠟⠀⣼⣿ /_/ /_/ /_/ .___/|___/ /_/ /____/_/ /_/ ⠀⠀⠻⣷⣈⣁⣮⢻⢸⡇⢨⣿⣿⣿⣷⢶⣿⣏⣩⣶⣿⣿⣿⣿⡯⣤⣴⣿⠃ /_/ ⠀⠀⠀⠘⠿⣿⣿⣽⣽⣷⣿⣿⣿⣿⣿⡶⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠁⠀ (mpvc, where mpv meets the shell) ⠀⠀⠀⠀⠀⠀⠉⠙⠿⢿⣿⣿⣿⣿⠟⠁⠀⠘⠿⣿⣿⣿⠿⠟⠉⠀⠀⠀⠀ . ",
+    "url": "/mpvc/get-started.html#gmt4-mpvc-",
+    
+    "relUrl": "/get-started.html#gmt4-mpvc-"
+  },"1": {
+    "doc": "Get Started",
+    "title": "Overview",
+    "content": "mpvc is a collection of POSIX shell scripts: . | mpvc: provides the core CLI commands to control mpv | extras/mpvc-tui: provides a console TUI, using mpvc underneath | extras/mpvc-fzf: provides fzf integration to mpvc. | extras/mpvc-web: web player to remotely control mpvc (*a hack) | extras/mpvc-web-browser: mpvc-web companion to browse media library (*a hack) | extras/mpvc-mpris: speaks MPRIS to control mplayer through key-bindings. | extras/mpvc-equalizer: provides a basic mpv equalizer for the CLI. | extras/mpvc-autopilot: automatic mpv start/stop based on presence | extras/mpvc-installer: provides an installer to install/update mpvc. | . For more details on how to use the above tools have a look at the logbook.html. In addition, the casts/ directory to shows some screencasts of mpvc in action. ",
+    "url": "/mpvc/get-started.html#overview",
+    
+    "relUrl": "/get-started.html#overview"
+  },"2": {
+    "doc": "Get Started",
+    "title": "▶️  Installation",
+    "content": "curl -fsSLO https://github.com/gmt4/mpvc/raw/master/extras/mpvc-installer; # take your time to review the mpvc-installer for peace-of-mind BINDIR=$HOME/bin SHELL=/bin/sh $SHELL ./mpvc-installer quickstart . ",
+    "url": "/mpvc/get-started.html#%EF%B8%8F--installation",
+    
+    "relUrl": "/get-started.html#️--installation"
+  },"3": {
+    "doc": "Get Started",
+    "title": "QuickStart",
+    "content": "Below is a Quick Start guide showcasing mpvc commands usage. # fetch a local copy of the github repo git clone https://github.com/gmt4/mpvc/ # use extras/mpvc-installer: just copy/link to your $HOME/bin (cd mpvc; extras/mpvc-installer link-user) (cd mpvc; extras/mpvc-installer config-user) (cd mpvc; extras/mpvc-installer check-reqs) # adjust .config/mpvc/mpvc.conf to suit your needs, mpvc-installer config-user just installs the defaults # use mpvc-fzf to search and play youtube media mpvc-fzf -p 'kupla mirage' # use mpvc-fzf to manage the playlist mpvc-fzf -f # use mpvc to enqueue local media / online YT media mpvc add /path/to/your/*.mp3 # or your URLs # use mpvc-tui to start the tui + desktop notifications mpvc-tui -T . For more check the #Logbook (remeber your best chance is to try, play, and have fun). ",
+    "url": "/mpvc/get-started.html#quickstart",
+    
+    "relUrl": "/get-started.html#quickstart"
+  },"4": {
+    "doc": "Get Started",
+    "title": "Screenshots",
+    "content": "mpvc-fzf running on mac OS (screenshot click to view) . mpvc-tui -T: running the mpvc TUI (screenshot click to view) . mpvc-tui -f: running with fzf (screenshot click to view) . mpvc-tui: running with fzf and desktop notifications on the upper-right corner (screenshot click to view) . ",
+    "url": "/mpvc/get-started.html#screenshots",
+    
+    "relUrl": "/get-started.html#screenshots"
+  },"5": {
+    "doc": "Get Started",
+    "title": "Documentation",
+    "content": "Usage . Check the mpvc reference manual pages at index . Logbook . The logbook got big enought to deserve a page on its own, see here: logbook.html . 📅 Mon, 15 Jun 2026 by gmt4 ⚡ PoweredBy #HTML . ",
+    "url": "/mpvc/get-started.html#documentation",
+    
+    "relUrl": "/get-started.html#documentation"
+  },"6": {
+    "doc": "Get Started",
+    "title": "Get Started",
+    "content": " ",
+    "url": "/mpvc/get-started.html",
+    
+    "relUrl": "/get-started.html"
+  },"7": {
+    "doc": "Man Pages",
+    "title": "INDEX",
+    "content": "mpvc-related manual pages are listed below: . Section 1 - User Commands (man1) . | mpvc(1) - Base command-line interface, local player queues, and core playback socket loops. | mpvc-fzf(1) - Interactive fuzzy-finder workflows, live streams, and online audio track parsing. | mpvc-installer(1) - Environment checker deployments, system upgrades, and configuration template generators. | mpvc-tui(1) - Terminal dashboard matrix, album art injection hooks, and live tracker overlays. | mpvc-web(1) - Minimalist HTTP server control panel and zero-config browser interaction portal. | mpvc-chapter(1) - Manage and merge ffmetadata chapter files for mpvc | mpvc-equalizer(1) - Manage and adjust audio filter equalizer settings for mpvc | mpvc-autopilot(1) - Autopilot mode with auto start/stop, and random playlist playback daemon | . Section 5 - File Formats &amp; Configurations (man5) . | mpvc.conf(5) - Global configuration syntax, variable rules, and shell binary override flags. | . ",
+    "url": "/mpvc/man/man1/#index",
+    
+    "relUrl": "/man/man1/#index"
+  },"8": {
+    "doc": "Man Pages",
+    "title": "AUTHOR",
+    "content": "Manual written by gmt4. See https://github.com/gmt4/mpvc for more information. ",
+    "url": "/mpvc/man/man1/#author",
+    
+    "relUrl": "/man/man1/#author"
+  },"9": {
+    "doc": "Man Pages",
+    "title": "REPORTING BUGS",
+    "content": "Report bugs at: https://github.com/gmt4/mpvc/issues . ",
+    "url": "/mpvc/man/man1/#reporting-bugs",
+    
+    "relUrl": "/man/man1/#reporting-bugs"
+  },"10": {
+    "doc": "Man Pages",
+    "title": "Man Pages",
+    "content": " ",
+    "url": "/mpvc/man/man1/",
+    
+    "relUrl": "/man/man1/"
+  },"11": {
+    "doc": "Log Book",
+    "title": "@gmt4 mpvc logbook 🎧",
+    "content": ". | about A minimal mpc-like interface for controlling mpv from the shell. | goodies Support TUI, FZF, WEB, CLI, playing youtube &amp; streaming services (See #20221219) | tags music-player terminal minimal mpv tui media-player mplayer posix-sh mpv-player mpvc mpvc-tui | github https://github.com/gmt4/mpvc/ | promote Star, share, and promote our work through the buttons below if you find it useful. Thanks! | . ",
+    "url": "/mpvc/logbook.html#gmt4-mpvc-logbook-",
+    
+    "relUrl": "/logbook.html#gmt4-mpvc-logbook-"
+  },"12": {
+    "doc": "Log Book",
+    "title": "Logbook",
+    "content": "The logbook below is just that, a log of notes as I use and work on mpvc. Entries are chronologically ordered with oldest first, and, attempt to be self-contained focused on a certain functionality/topic, to the extent that it is possible. ",
+    "url": "/mpvc/logbook.html#logbook",
+    
+    "relUrl": "/logbook.html#logbook"
+  },"13": {
+    "doc": "Log Book",
+    "title": "On playing URLs, 30 Mar 2022",
+    "content": "What got me started on using mpvc is being able to play URLs. This is the cause to start writing what you are reading now (this repo at https://github.com/gmt4/mpvc/). As in . | mpvc add https://kuplasound.bandcamp.com/album/mirage/ | . ",
+    "url": "/mpvc/logbook.html#on-playing-urls-30-mar-2022",
+    
+    "relUrl": "/logbook.html#on-playing-urls-30-mar-2022"
+  },"14": {
+    "doc": "Log Book",
+    "title": "On securing mpv socket location, 14 Nov 2022",
+    "content": "One thing that bothers me when using mpvc, is that most programs performing ipc on mpv socket, just leave the socket at /tmp/mpvsocket. A better default location for the mpv socket is $HOME/.config/mpvc/mpvsocket. ",
+    "url": "/mpvc/logbook.html#on-securing-mpv-socket-location-14-nov-2022",
+    
+    "relUrl": "/logbook.html#on-securing-mpv-socket-location-14-nov-2022"
+  },"15": {
+    "doc": "Log Book",
+    "title": "On load/save functionality, 18 Nov 2022",
+    "content": "A thing that I’d like to be able to do is to perform mpvc load/save of the playlist, and, be able of manipulating the playlist using standard Unix commands eg. grep. The easiest way that comes to mind, is something a la: mpvc save | grep -v artist | mpvc load, this enables to filter out an artist, and drop all the songs by this artist. ",
+    "url": "/mpvc/logbook.html#on-loadsave-functionality-18-nov-2022",
+    
+    "relUrl": "/logbook.html#on-loadsave-functionality-18-nov-2022"
+  },"16": {
+    "doc": "Log Book",
+    "title": "On persistent mpv startup, 20 Nov 2022",
+    "content": "One particular feature where improvement could be done is mpvc -a audio.opus, when mpv finishes playing audio.opus, mpv terminates, and, the current playlist is lost. This happens as mpv is started with –idle=once. A solution for this is to start mpv separately with –idle=yes. A shortcut for this is to run mpvc --mpv that does exactly this, after this the mpv instance can be manipulated with mpvc, and does not terminate once mpv finishes playing. ",
+    "url": "/mpvc/logbook.html#on-persistent-mpv-startup-20-nov-2022",
+    
+    "relUrl": "/logbook.html#on-persistent-mpv-startup-20-nov-2022"
+  },"17": {
+    "doc": "Log Book",
+    "title": "On a minimal mpvc-tui, 03 Dec 2022",
+    "content": "One thing I keep doing a lot, is typing mpvc status and mpvc -i, to check the mpv playlist and status. To this end I’ve quickly hacked a minimal TUI named mpvc-tui, that continuously shows the mpvc playlist and status. In addition, while in mpvc-tui you can Control+C, to get a mpvc prompt to run quick mpvc commands, like: prev, next, pause, toggle, seek, volume, etc. ",
+    "url": "/mpvc/logbook.html#on-a-minimal-mpvc-tui-03-dec-2022",
+    
+    "relUrl": "/logbook.html#on-a-minimal-mpvc-tui-03-dec-2022"
+  },"18": {
+    "doc": "Log Book",
+    "title": "On using the mpvc-tui prompt, 13 Dec 2022",
+    "content": "As explained above, mpvc-tui does three things: 1) display status, 2) display playlist, 3) prompt the user for interaction. Once we hit Control+C, and land on the user prompt, the following can be done: . | run mpvc commands starting with “mpvc”. This allows for manipulating the mpv/mpvc status. The commands run with “mpvc” have QUIETFLAG=true set, to not clutter the mpvc-tui. | run shell commands internally starting with “!”. This allows for commands that manipulate mpvc-tui program, such as changing the working directory, with cd/pwd. This also allows for starting your favorite editor to configure the mpvc-tui look and feel with: “!$EDITOR $MPVC_CONFIG”. | run shell commands externally starting with “!!”. This allows for running commands on a separate shell. This gives room for more complex commands, like starting alsamixer to manipulate audio levels, change outputs with `pactl(1)`, etc. | quit the mpvc-tui, by typing quit, exit, or “q”. | . When using the mpvc-tui prompt for some time, one notices that there’s a lot of repetition of commands. To address repetition, one solution is to use a history file of past commands, and completion of commands and filenames. This can be achieved using `rlwrap(1)` in one shot mode that becomes a life-saver. Now, you get a more comfortable prompt, where TAB completion works on commands and filenames, as well as Control+R to repeat previous commands in the history file. ",
+    "url": "/mpvc/logbook.html#on-using-the-mpvc-tui-prompt-13-dec-2022",
+    
+    "relUrl": "/logbook.html#on-using-the-mpvc-tui-prompt-13-dec-2022"
+  },"19": {
+    "doc": "Log Book",
+    "title": "On using the mpvc-tui -x launcher, 14 Dec 2022",
+    "content": "Another nifty detail of mpvc-tui, is that it can be quickly spawn from the WM launcher by using mpvc-tui -x, then type a few mpvc commands to setup music, and close it. Or it can be started on the current terminal with `mpvc-tui` and left running as a long running program, and get back to it when needed. ",
+    "url": "/mpvc/logbook.html#on-using-the-mpvc-tui--x-launcher-14-dec-2022",
+    
+    "relUrl": "/logbook.html#on-using-the-mpvc-tui--x-launcher-14-dec-2022"
+  },"20": {
+    "doc": "Log Book",
+    "title": "On managing playlists with mpvc autoload/autosave, 15 Dec 2022",
+    "content": "When using mpc(1), playlists can be managed using the mpc load/save/lsplaylists commands. In addition to load/save, mpvc adds the autoload/autosave commands: . | mpvc autosave: save the current playlist to $XDG_CONFIG_HOME/mpvc/playlist/. If no arguments are provided the current playlist is named “$(date -Imin)”. Otherwise, if a name is given “mpvc autosave ambient.m3u”, then the file is saved as “ambient.m3u” | mpvc autoload: loads the named playlist from $XDG_CONFIG_HOME/mpvc/playlist/. | mpvc lsplaylists: list the playlists under $XDG_CONFIG_HOME/mpvc/playlist/. | . The above enables to arrange a playlist, and once we are happy with it, save it with `mpvc autosave playlist.m3u`, later, we can replay it again with: `mpvc autoload playlist.m3u`. ",
+    "url": "/mpvc/logbook.html#on-managing-playlists-with-mpvc-autoloadautosave-15-dec-2022",
+    
+    "relUrl": "/logbook.html#on-managing-playlists-with-mpvc-autoloadautosave-15-dec-2022"
+  },"21": {
+    "doc": "Log Book",
+    "title": "On customizing mpvc-tui look and feel, 18 Dec 2022",
+    "content": "While using mpvc-tui, one ends up wanting to configure the minimal look and feel that mpvc-tui provides. To this end the file mpvc.conf under $XDG_CONFIG_HOME/mpvc/ provides a place to overwrite the default settings of mpvc-tui. ",
+    "url": "/mpvc/logbook.html#on-customizing-mpvc-tui-look-and-feel-18-dec-2022",
+    
+    "relUrl": "/logbook.html#on-customizing-mpvc-tui-look-and-feel-18-dec-2022"
+  },"22": {
+    "doc": "Log Book",
+    "title": "Show HN: mpvc-tui – A minimal mpc-like CLI and TUI for controlling mpv, 16 Dec 2022",
+    "content": "We are on “Show HN”! https://news.ycombinator.com/item?id=34013149 . ",
+    "url": "/mpvc/logbook.html#show-hn-mpvc-tui--a-minimal-mpc-like-cli-and-tui-for-controlling-mpv-16-dec-2022",
+    
+    "relUrl": "/logbook.html#show-hn-mpvc-tui--a-minimal-mpc-like-cli-and-tui-for-controlling-mpv-16-dec-2022"
+  },"23": {
+    "doc": "Log Book",
+    "title": "On issuing direct JSON IPC commands to mpv, 17 Dec 2022",
+    "content": "That one is easy, for that purpose mpvc cmd args sends the { \"command\": args } to the JSON IPC, use mpvc cmdr args to send the command, and retrieve the JSON IPC response. Some usage examples to test are: . | mpvc cmd show-text \"hello-world\" 2000 | mpvc cmd af toggle lavfi=[loudnorm=I=-16:TP=-3:LRA=4] | mpvc cmd af toggle lavfi=[dynaudnorm] | mpvc cmd af toggle lavfi=[dynaudnorm=g=5:f=250:r=0.9:p=0.5] | . Note, audio filter commands above are lifted from https://github.com/mpv-player/mpv/issues/6210. ",
+    "url": "/mpvc/logbook.html#on-issuing-direct-json-ipc-commands-to-mpv-17-dec-2022",
+    
+    "relUrl": "/logbook.html#on-issuing-direct-json-ipc-commands-to-mpv-17-dec-2022"
+  },"24": {
+    "doc": "Log Book",
+    "title": "On playing music from streaming services as youtube and co., 19 Dec 2022",
+    "content": "Mpv already plays URLs (both video and audio) from streaming platforms as youtube. So the one thing missing is to be able to search, select, and enqueue music from these services. This is provided by mpvc-fzf -s/-p, that does: . | Query the Invidious API and return a list of URLs | Use fzf -m to select from the search results. | Use mpvc load to enqueue the selected songs into the mpv playlist. | . Some usage examples of the above are: . | mpvc-fzf -s 'rolling stones': Search and return the list of URLs found. | mpvc-fzf -s 'rolling stones' | fzf -m: Search, Select and return the list of URLs selected. | mpvc-fzf -s 'rolling stones' | fzf -m | awk '{print $1}' | mpvc load: Search, Select, Enqueue and play the list of URLs selected. | mpvc-fzf -p 'rolling stones': Is a shortcut of the last command that does the whole thing. | . Note, that you can use this command from inside mpvc-tui too, by hitting Control+C and then typing “!mpvc-fzf -p rolling stones” . ",
+    "url": "/mpvc/logbook.html#on-playing-music-from-streaming-services-as-youtube-and-co-19-dec-2022",
+    
+    "relUrl": "/logbook.html#on-playing-music-from-streaming-services-as-youtube-and-co-19-dec-2022"
+  },"25": {
+    "doc": "Log Book",
+    "title": "On subscribing and receiving mpv events, 21 Dec 2022",
+    "content": "Mpv IPC JSON socket allows receiving the media events generated by the running mpv instance. Subscribing to the mpv events can be done using the command: mpvc idleloop, by default events appear on standard output for a separate program to consume and react them. Some usage examples of the above are: . | mpvc idleloop: send the mpv events to stdout. | mpvc idleloop | awk '/playback-restart/ {print}': select only the “playback-restart” mpv events. | mpvc idleloop | awk '/playback-restart/ {system(\"notify-send -u normal -i dialog-warning \\\"$(mpvc)\\\"\");print}': Send a notification when the track changes. | mpvc idleloop | awk '/end-file/{ if(i++%2==0)system(\"mpvc playrand\") }': select a random track when the current ends. | . The mpvc-tui -n uses mpvc idleloop to raise desktop notifications, as shown above. ",
+    "url": "/mpvc/logbook.html#on-subscribing-and-receiving-mpv-events-21-dec-2022",
+    
+    "relUrl": "/logbook.html#on-subscribing-and-receiving-mpv-events-21-dec-2022"
+  },"26": {
+    "doc": "Log Book",
+    "title": "On using mpv together with the fzf fuzzy finder, 27 Dec 2022",
+    "content": "I discovered fzf while adding support for selecting and playing YT videos #logbook-20221219, so I’m quite a newbie on fzf. Still I’ve been playing with fzf+mpvc to get them working together. So far I’ve focused on 4 points: . | mpvc-fzf -p: For searching/playing Internet media from YouTube. | mpvc-fzf -l: For searching/playing Local media from your file-system. | mpvc-fzf -f: For managing the mpv status and playlist: say mpvc play, pause, seek etc. | mpvc-fzf -F: For searching/playing through mpvc data: gets data from stdin, and outputs the selection on stdout. One example where this comes handy is to search chapters like: mpvc chapter-list | mpvc-fzf -F | mpvc-fzf -1 | xargs mpvc set chapter (shortcut mpvc-fzf -c). | . This is still on a very preliminary state, but it’s amazing what fzf can do, and so far, seems to fit very well with mpvc. ",
+    "url": "/mpvc/logbook.html#on-using-mpv-together-with-the-fzf-fuzzy-finder-27-dec-2022",
+    
+    "relUrl": "/logbook.html#on-using-mpv-together-with-the-fzf-fuzzy-finder-27-dec-2022"
+  },"27": {
+    "doc": "Log Book",
+    "title": "On using mpv together with the fzf fuzzy finder, 12 Jan 2023",
+    "content": "Continuing on the topic of using fzf with mpv, I’ve decided to split the code into three scripts: . | mpvc: that provides the mpvc functionality. | extras/mpvc-tui: that provides the mpvc TUI functionality. | extras/mpvc-fzf: that provides the mpvc FZF functionality. | . I think it’s clear/simpler this way, as the mpvc-tui was getting more and more fzf functionality, that was unrelated to the TUI. This breaks some things, as for example, uses of mpvc-tui -[lfFspP] that now have become mpvc-fzf -[lfFspP]. ",
+    "url": "/mpvc/logbook.html#on-using-mpv-together-with-the-fzf-fuzzy-finder-12-jan-2023",
+    
+    "relUrl": "/logbook.html#on-using-mpv-together-with-the-fzf-fuzzy-finder-12-jan-2023"
+  },"28": {
+    "doc": "Log Book",
+    "title": "On controlling multiple remotely running mpv instances, 19 Jan 2023",
+    "content": "A work in progress update, in no particular order, but, mostly focused on using mpvc to control a remote box (Raspberry Pi) acting as an audio/media center: . | mpvc -S ~/.config/mpvc/mpvsocket-new --mpv add /path/to/media: Starts a new mpv instance listening on mpvsocket-new and adds media. | mpvc socklist: Lists all mpv sockets, including those that are inactive: without a mpv instance running. | mpvc sockclean: Clean inactive mpv sockets: without a mpv instance running. | If the mpv socket resides on a separate computer, then, ssh forwarding can bring the socket home: ssh -NL $HOME/.config/mpvc/mpvsocket0:$HOME/.config/mpvc/mpvsocket0 mediacenter Note, the above command just “works”, but probably has some rough edges, and can be improved. | After issuing the previous command, the mpvsocket0 is locally accessible and can be directly managed by mpvc, mpvc-fzf, mpvc-tui. For example, running mpvc to start a randomly chosen track from the playlist: mpvc -q play $(( $RANDOM % $(mpvc get playlist-count) )) | . This goes together with other related command as: mpvc cmd/sockcmd/repl/get/set/cycle. ",
+    "url": "/mpvc/logbook.html#on-controlling-multiple-remotely-running-mpv-instances-19-jan-2023",
+    
+    "relUrl": "/logbook.html#on-controlling-multiple-remotely-running-mpv-instances-19-jan-2023"
+  },"29": {
+    "doc": "Log Book",
+    "title": "On stashing mpv media player state to restore later, 19 Feb 2023",
+    "content": "Something experimental I’ve been testing lately is using: mpvc stash command to save the currently playing state, to be restored later. The commands implemented by mpvc stash [list|show|push|drop|apply] are inspired by git-stash(1): . | mpvc stash list: Lists the currently mpvc stashes. | mpvc stash show [name]: Shows the contents of the mpvc stash named [name]. | mpvc stash push [name]: Stashes the current mpvc state to [name]. | mpvc stash drop [name]: Removes the mpvc stash named [name]. | mpvc stash apply [name]: Applies the mpvc stash named [name]. | . This is different from mpvc load/save that only loads/saves the playlist, as mpvc stash saves the current playing settings including: playlist-pos, playback-time, volume, mute, pause, etc. together with the playlist. ",
+    "url": "/mpvc/logbook.html#on-stashing-mpv-media-player-state-to-restore-later-19-feb-2023",
+    
+    "relUrl": "/logbook.html#on-stashing-mpv-media-player-state-to-restore-later-19-feb-2023"
+  },"30": {
+    "doc": "Log Book",
+    "title": "CSS, RSS &amp; casts updates on the gmt4.github.io/mpvc site, 31 Mar 2023",
+    "content": "A few things have been going on since last entry, some effort focused on getting a “decent” site (this HTML thing you’re reading right now @ gmt4.github.io/mpvc ) where its easy keep track of whats going on. This effort has : . | First, a minimal CSS to get a nice look and feel. | Second, structure content, and, setup atom.xml RSS feed now to keep track. | Third, a casts/ page provides now some mpvc asciinerama screencasts. | . Keep posted. ",
+    "url": "/mpvc/logbook.html#css-rss--casts-updates-on-the-gmt4githubiompvc-site-31-mar-2023",
+    
+    "relUrl": "/logbook.html#css-rss--casts-updates-on-the-gmt4githubiompvc-site-31-mar-2023"
+  },"31": {
+    "doc": "Log Book",
+    "title": "Introducing mpvc-equalizer: a basic mpv equalizer for the CLI, 25 Apr 2023",
+    "content": "This entry introduces mpvc-equalizer a Linear Phase 15-Bands Equalizer for the CLI/shell based on the firequalizer15.lua mpv-script. The basic operations that are available in mpvc-equalizer are: . | mpvc-equalizer preset: Provides a set of basic equalizer presets ready to be loaded | mpvc-equalizer reset/load/save: To reset/load/save mpvc equalizer settings | mpvc-equalizer json/bars: To query the equalizer settings as JSON or as CLI bars | . An example of the `mpvc-equalizer` to set equalizer values for classical music: . mpvc-equalizer preset mpvc-equalizer preset classical | mpvc-equalizer load mpvc-equalizer bars mpvc-equalizer reset . ",
+    "url": "/mpvc/logbook.html#introducing-mpvc-equalizer-a-basic-mpv-equalizer-for-the-cli-25-apr-2023",
+    
+    "relUrl": "/logbook.html#introducing-mpvc-equalizer-a-basic-mpv-equalizer-for-the-cli-25-apr-2023"
+  },"32": {
+    "doc": "Log Book",
+    "title": "On applying ffmpeg AV filters using the MPV JSON IPC, 2 June 2023",
+    "content": "Continuing with the topic of the previous post about mpvc-equalizer, one reason for starting mpvc, was to ease was to managing audio from the CLI. In that sense mpv integrates well with ffmpeg to apply AV filters (##https://ffmpeg.org/ffmpeg-filters.html”). However you’ve to, either start mpv specifying the ffmpeg cli flags for the AV-filters, or add keyboard shortcuts into the input.conf to be triggedred during runtime. Instead of that, for quickly testing combinations of filters, I was looking for something more CLI oriented: apply the filters using the MPV JSON IPC. That’s what happens under the hood when a command mpvc-cmdr af ... is run, for example: . # start adding a rubberband filter mpvc cmdr af toggle '@rubberband:lavfi=[rubberband=pitch=1:tempo=1]' # Change the AV filter is easy, rerun the command with the changes mpvc cmdr af toggle '@rubberband:lavfi=[rubberband=pitch=0.98:tempo=1]' # Removing the filter is as expected mpvc cmdr af remove '@rubberband:lavfi=[rubberband=pitch=0.98:tempo=1]' # Another option is toggling the AV filters on and off with mpvc cmdr af toggle '@rubberband:lavfi=[rubberband=pitch=0.98:tempo=1]' # The same goes for what filters are currently applied mpvc getr af | jq # Clearing all the current af filters mpvc setr af '' # Useful debuging af filters errors: lower/raise verbosity mpvc setr msg-level all=error mpvc setr msg-level all=warn mpvc setr msg-level all=info # Some af filters (see mpv --af=help) mpvc cmdr af toggle '@dynaudnorm:lavfi=[dynaudnorm]' mpvc cmdr af toggle '@afade:lavfi=[afade=t=in:ss=0:d=15]' mpvc cmdr af toggle '@flanger:lavfi=[flanger=delay=1]' mpvc cmdr af toggle '@tremolo:lavfi=[tremolo]' mpvc cmdr af toggle '@vibrato:lavfi=[vibrato]' mpvc cmdr af toggle '@apulsator:lavfi=[apulsator]' mpvc cmdr af toggle '@aphaser:lavfi=[aphaser]' mpvc cmdr af toggle '@aphasemeter:lavfi=[aphasemeter]' mpvc cmdr af toggle '@aecho:lavfi=[aecho=in_gain=0.9:out_gain=0.9:delays=1:decays=0.9]' mpvc cmdr af toggle '@lofi:lavfi=[ladspa=cmt:lofi:controls=c0=80|c1=20|c2=9000]' # Some vf filters (see mpv --vf=help) mpvc cmdr vf toggle '@life:lavfi=[life]' mpvc cmdr vf toggle '@showvolume:lavfi=[showvolume]' mpvc cmdr vf toggle '@showwaves:lavfi=[showwaves]' mpvc cmdr vf toggle '@showspectrum:lavfi=[showspectrum]' mpvc cmdr vf toggle '@avectorscope:lavfi=[avectorscope]' mpvc cmdr vf toggle '@oscilloscope:lavfi=[oscilloscope]' mpvc cmdr vf toggle '@mirrorbottom:lavfi=[[vid1]split[main][tmp];[tmp]crop=iw:ih/2:0:ih/2,vflip[flip];[main][flip]overlay[vo]]' mpvc cmdr vf toggle '@mirrorleft:lavfi=[[vid1]split[main][tmp];[tmp]crop=iw/2:ih:0:0,hflip[flip];[main][flip]overlay=W/2[vo]]' mpvc cmdr vf toggle '@mirrorright:lavfi=[[vid1]split[main][tmp];[tmp]crop=iw/2:ih:iw/2:0,hflip[flip];[main][flip]overlay[vo]]' mpvc cmdr vf toggle '@hstack:lavfi=[[vid1]split[v1][v2];[v1][v2]hstack[t]]' mpvc cmdr vf toggle '@vstack:lavfi=[[vid1]split[v1][v2];[v1][v2]vstack[t]]' . For more on this, the above filters can be piped to mpvc-fzf to applied using (c-o apply): . grep '^mpvc cmdr' docs/logbook.html | mpvc-fzf cmds . ",
+    "url": "/mpvc/logbook.html#on-applying-ffmpeg-av-filters-using-the-mpv-json-ipc-2-june-2023",
+    
+    "relUrl": "/logbook.html#on-applying-ffmpeg-av-filters-using-the-mpv-json-ipc-2-june-2023"
+  },"33": {
+    "doc": "Log Book",
+    "title": "Introducing mpvc-web: a mpvc-tui like hack for the web/browser, 21 July 2023",
+    "content": "A few things have been going on lately, among them, the most recent has been adding mpvc-web that is just a quick hack to control a running mpv instance from when no mpvc cli is available, a typical example is when you just have a phone or tablet with no cli. To this I resorted to mimic mpvc-tui interface but making it available through HTTP using python3 -m http.server. This seems to work fine for simple things like toggling music on and off, moving to next/prev entry in the playlist, and raising/lowering volume. Check extras/mpvc-web for more, and you are warned: this is a ugly hack. As a minor thing I’ve started aliasing mpvc commands that I use frequently to their “m” counterparts in sh(1), not perfect, but handy enough, and saves some typing: see the bash_aliases fulllist at bash_aliases.mpvc (bash_aliases (github)). Some handy examples are: . alias m=\"mpvc\" alias mx=\"mpvc-fzf\" alias mff=\"mpvc-fzf\" alias mtt=\"mpvc-tui\" alias me=\"mpvc-equalizer\" alias mw=\"mpvc-web\" ... And some handy symlinks too: . ln -s $(which mpvc) ~/bin/m ln -s $(which mpvc-fzf) ~/bin/mx . Check the Now Playing @ now/ that builds upon mpvc-tui scrobbling code to generate a simple list of the most played media. The Anti EP by Autechre has raised to the top position. ",
+    "url": "/mpvc/logbook.html#introducing-mpvc-web-a-mpvc-tui-like-hack-for-the-webbrowser-21-july-2023",
+    
+    "relUrl": "/logbook.html#introducing-mpvc-web-a-mpvc-tui-like-hack-for-the-webbrowser-21-july-2023"
+  },"34": {
+    "doc": "Log Book",
+    "title": "Introducing mpvc-autopilot: automatic start/stop based on presence, 15 Sep 2023",
+    "content": "A simple need to have some background music automatically playing while I’m near the device where mpvc is running, lets say, in media center mode, and, pausing the audio when I’m away. A solution for this was to write a small script in extras/mpvc-autopilot that periodically pings an IP (for example the LAN IP of your phone , or alternatively detecting the presence of a Bluetooth device you carry with yourself), then, if the presence of the device is detected, the audio is resumed, otherwise, the audio is paused. For an example of its usage, just run PERIOD=300 NCHECK=3 mpvc-autopilot -i 192.168.0.2 where 192.168.0.2 must be replaced by the LAN IP of your phone. The listing below show the output mpvc-autopilot doing periodic pings at 300 sec (5 minutes) intervals. When NCHECK=3 consecutive ping checks fail to detect the device, the audio is paused (pause=true). As soon as one ping check succeeds, the audio is resumed (pause=false). This means that each 300 * 3 seconds (15 minutes) the audio can be paused, and in 5 minutes resumed. Personally I prefer to raise NCHECKS=6, to have about 30 minutes of audio without pauses, anyway, the parameters are there for catter for your needs, just play with them. user@box mpvc $ mpvc-autopilot -p 300 -n 3 -i 192.168.0.2 # mpvc-autopilot mpvc pingscan PERIOD=300 NCHECK=3 192.168.0.2 # 2023-09-15T19:26+00:00 mpvc-autopilot PERIOD=300 NCHECK=6 pause=false c=0 n=0 # 2023-09-15T19:31+00:00 mpvc-autopilot PERIOD=300 NCHECK=6 pause=false c=0 n=-1 # 2023-09-15T19:36+00:00 mpvc-autopilot PERIOD=300 NCHECK=6 pause=false c=0 n=-2 # 2023-09-15T19:42+00:00 mpvc-autopilot PERIOD=300 NCHECK=6 pause=false c=0 n=-3 # 2023-09-15T19:47+00:00 mpvc-autopilot PERIOD=300 NCHECK=6 pause=true c=0 n=0 # 2023-09-15T19:52+00:00 mpvc-autopilot PERIOD=300 NCHECK=6 pause=false c=59 n=0 64 bytes from 192.168.0.2: icmp_seq=1 ttl=64 time=104 ms . This approach has some limitations, lets say, sometimes you want to fully disable mpvc-autopilot for a time, because: . | Disable mpvc-autopilot from resuming audio, because you want to concentrate and don’t want music messing around. Solution: just use the phone to access mpvc-web and set mpvc vol 0 for a time. | Disable mpvc-autopilot from pausing audio, because your phone disables wifi, so the audio gets paused when you don’t want. Solution: as explained above playing with PERIOD and NCHECK parameters, increase the time without pauses, for example NCHECK=6 or NCHECK=12 will pause audio when the device is not seen for 30 or 60 minutes, respectively. | . ",
+    "url": "/mpvc/logbook.html#introducing-mpvc-autopilot-automatic-startstop-based-on-presence-15-sep-2023",
+    
+    "relUrl": "/logbook.html#introducing-mpvc-autopilot-automatic-startstop-based-on-presence-15-sep-2023"
+  },"35": {
+    "doc": "Log Book",
+    "title": "On mpvc usage patterns for playing music/videos, 16 Sep 2023",
+    "content": "This entry aims to provide a comprehensive view of the usage patterns of mpvc. Several of the usage patterns have been already covered in the previous entries of the logbook, like: searching online media, manipulating the playlist or playing state, or, using mpvc-stash(1) for storing/replaying the mpv playing state. This entry focuses on combining the previous individual usages into an overall usage pattern for using mpvc for listening music, viewing videos,podcasts, etc. for this mpvc has to carry the following tasks: . | Search music/videos, for that using Invidious search from mpvc-fzf closed the gap, for example using mpvc-fzf -p 'rolling stones' and choosing the songs to add to the playlist from the results. | Playing searched URLs, this is where the combo mpv + yt-dlp shines | Managing URLs, for managing a playlist of URLs mpvc stash is used . | First, add the media using any mean, such as mpvc add, mpvc-fzf -p query, or directly | Second, order the playlist using mpvc mv or mpvc rm or its counterparts mpvc searchmv and mpvc searchrm modify the playlist of the running mpv. | Third, set the mpvc parameters like repeat, single, volume, idle, video, aspect, full screen, etc. | Fourth, once this is done review the current mpvc-stash with: mpvc stash current and store it with mpvc stash push | Last, when the mpvc stash has to be replayed use mpvc stash apply, or mpvc stash edit to modify it | . | Storing URLs media locally, some URLs are played frequently that makes sense to cache them. At this point, yt-dlp has --download-archive functionality that is useful (this can be enabled in docs/config/mpv.conf). This works as follows: . | First, mpvc-fzf -g URL, with get the URL and download it where mpv.conf defines. | Then, a mean for mpvc to resolve a downloaded URL to the corresponding local file was needed. For this when MPVC_LOCAL_CACHE=1 is enabled, mpvc provides functionality to do that local cache search. | . | Parallel to the above, grew the need to manage mpvc from other devices that lack a comfortable terminal, this motivated hacking on mpvc-web that mimics mpvc-tui but allows to manage mpvc from a mobile phone, tablet or Windows machine. | . Some of the above usage patterns are shown in the asciinerama cast at mpvc casts and captures a video of a live session using mpvc commands to search and play online media and manage the playlist, so probably is worth watching to show the workings. Note that, as always, this is only a personal take on mpvc usage patterns at a point in time, that will probably evolve, and is limited to a personal take on this topic, since others can have completely different usage patterns. ",
+    "url": "/mpvc/logbook.html#on-mpvc-usage-patterns-for-playing-musicvideos-16-sep-2023",
+    
+    "relUrl": "/logbook.html#on-mpvc-usage-patterns-for-playing-musicvideos-16-sep-2023"
+  },"36": {
+    "doc": "Log Book",
+    "title": "On observing mpv property changes, 26 Oct 2023",
+    "content": "Recently basic support for mpvc observe landed on mpvc, to observe mpv property changes. This can be used as show below to watch for volume changes: . $ mpvc observe volume | awk '/property-change/' {\"event\":\"property-change\",\"id\":1,\"name\":\"volume\",\"data\":\"20.000000\"} {\"event\":\"property-change\",\"id\":1,\"name\":\"volume\",\"data\":\"21.000000\"} . ",
+    "url": "/mpvc/logbook.html#on-observing-mpv-property-changes-26-oct-2023",
+    
+    "relUrl": "/logbook.html#on-observing-mpv-property-changes-26-oct-2023"
+  },"37": {
+    "doc": "Log Book",
+    "title": "On the security of mpvc-web, 17 Nov 2023",
+    "content": "Besides the standard fixes, new functionality, and, performance improvements to the core functionality of mpvc, a few tools under extras/ have also received additional attention. One of the tools is extras/mpvc-web, that as said before, is just “mpvc-tui for the web”, that is, a web interface for managing mpvc from a browser, when no terminal is available, this fits a common usage, for example when you are at home, away from the computer, with the phone or tablet at hand and want to manage music playing through mpvc, this is where mpvc-web shines. However, mpvc-web was and continues being a hack, which is good for development purposes and my current usage, but that also means that security-wise some decisions are questionable in a home LAN, since uses plain HTTP, without authentication nor HTTPS security, and allows running mpvc shell commands as your user!!, that are controlled by making HTTP requests coming the home LAN. So this has been irking me for a time, to a point I was using it less, and, last I’ve come to a compromise solution that think easily addresses the limitations in authentication and HTTPS security. The solution has been to change the defaults: so now mpvc-web runs by default on localhost, and, a new option: `MPVC_WEB_SSL_ENABLE=1 mpvc-web` setups a `socat(1)` HTTPS connection, this allows to address the HTTPS security part. Next, to address the authentication part, `socat(1)` provides peer certificate verification, so using the new option `MPVC_WEB_SSL_ENABLE=1 MPVC_WEB_SSL_VERIFY=2 mpvc-web` only clients that provide a valid peer certificate can connect to mpvc-web. So, now the following alternatives are available, ordered from less to more secure: . | For local purposes, just run mpvc-web that defaults to `localhost` with: `mpvc-web`. | If its safe running plain HTTP on the home LAN, then use: `MPVC_WEB_HOST=0 mpvc-web`. | Otherwise, if its not safe for running plain HTTP on the LAN, then use: `MPVC_WEB_HOST=0 MPVC_WEB_SSL_ENABLE=1 mpvc-web` to require HTTPS. | If additionally, the environment can get attacks from malicious users, then require the use of peer certificates, therefore, limiting access only to those clients/peers that have present valid `socat(1)` certificate with: `MPVC_WEB_HOST=0 MPVC_WEB_SSL_ENABLE=1 MPVC_WEB_SSL_VERIFY=2 mpvc-web` | . The latter means that the `mpvc-web.p12` peer certificates have to be installed in the client phones/browsers to access mpvc-web from the network, however, is easily accomplished in modern browsers that allow easy import of P12 certs. So with this security issue addressed, I can keep on using and improving mpvc-web. ",
+    "url": "/mpvc/logbook.html#on-the-security-of-mpvc-web-17-nov-2023",
+    
+    "relUrl": "/logbook.html#on-the-security-of-mpvc-web-17-nov-2023"
+  },"38": {
+    "doc": "Log Book",
+    "title": "On http-streaming media using mpvc-web, 16 Jan 2024",
+    "content": "A few changes have been going on extras/mpvc-web , latest changes add the option MPVC_WEB_ARCHIVE_ENABLE to serve the mpvc ytdl-archive/ dir over HTTP/S . Yeah, that’s hacky and a kludge, but its also quite handy. As it means that the full archive can be reachable from the LAN over HTTP/S, so if mpvc is running on an central audio/media center, then besides controlling with mpvc-web, you can also easily fetch the archive media files over HTTP/S to share/store them to mobile devices like laptop/tablet/phone. This also means that you can play that media from a separate device running mpvc, like a laptop, by adding files from the ytdl-archive URL, to browse the ytdl-archive using fzf use mpvc-fzf -b \"\", this by default queries https://localhost:8443/ytdl-archive/, use mpvc-fzf -b https://your-mediacenter:8443/ytdl-archive/ or any other URL to query other archives. Stay tuned . ",
+    "url": "/mpvc/logbook.html#on-http-streaming-media-using-mpvc-web-16-jan-2024",
+    
+    "relUrl": "/logbook.html#on-http-streaming-media-using-mpvc-web-16-jan-2024"
+  },"39": {
+    "doc": "Log Book",
+    "title": "On MPRIS support, 14 Feb 2024",
+    "content": "MPRIS stands for Media Player Remote Interfacing Specification and its a handy thing to have, as WM have builtin support this to programmatically control media players, meaning that keyboard Media keys work directly for controlling Media players. Check mpv-mpris for docs/setup, below is a quick setup: ` mkdir -p ~/.config/mpv/scripts; curl -fsSL -o ~/.config/mpv/scripts/mpris.so https://github.com/hoyon/mpv-mpris/releases/download/1.0/mpris.so ` Then, start a new instance of mpv player that loads `mpris.so` Check that mpv speaks MPRIS by running `mpvc-mpris status`, or get playerctl . ",
+    "url": "/mpvc/logbook.html#on-mpris-support-14-feb-2024",
+    
+    "relUrl": "/logbook.html#on-mpris-support-14-feb-2024"
+  },"40": {
+    "doc": "Log Book",
+    "title": "On support UNIXes besides GNU/Linux: BSD and MacOS, 1 Mar 2024",
+    "content": "Well, been “moving fast &amp; breaking things” lately (there’ll be more breakage to come), yet the goal is achieved, and, now this thing (mpvc) runs on FreeBSD and MacOS. I consider them to be working, and, usable but rought, since are not UNIXes that I do not run regularly. ",
+    "url": "/mpvc/logbook.html#on-support-unixes-besides-gnulinux-bsd-and-macos-1-mar-2024",
+    
+    "relUrl": "/logbook.html#on-support-unixes-besides-gnulinux-bsd-and-macos-1-mar-2024"
+  },"41": {
+    "doc": "Log Book",
+    "title": "Introducing mpvc-chapter: helper for managing chapters, 5 Apr 2024",
+    "content": "Mpv does a great job on handling chapters stored as metadata in media files, however, sometimes you end up wanting to modify chapters to existing media, or media that lacks chapters. This is the purpose of mpvc-chapter: managing chapter-files. Long story short, basically this boils down to managing ffmetadata chapter-file under $HOME/.config/mpvc/chapters/. mpvc-chapter -h shows the available cmds: . | mpvc-chapter load, checks if a chapter-file exists for the current media, if the chapter-file exists then basically loads it with: mpvc set chapters-file $(mpvc-chapter file). | mpvc-chapter add: Adds a new chapter each time it is invoked | mpvc-chapter gen gets an input file with one line per chapter with each line format being “timepos chapter-title” where timepos are incremental timestamps in MM:SS, and generates a chapter-file | mpvc-chapter merge: Last, once the chapter-file is ready, the “merge” command merges the chapter-file into the media file metadata. | . PS: Although the title says “Introducing mpvc-chapter”, it has been present for a long time, it was just an small auxiliar command, missing documentation, the above lines addresses this. ",
+    "url": "/mpvc/logbook.html#introducing-mpvc-chapter-helper-for-managing-chapters-5-apr-2024",
+    
+    "relUrl": "/logbook.html#introducing-mpvc-chapter-helper-for-managing-chapters-5-apr-2024"
+  },"42": {
+    "doc": "Log Book",
+    "title": "Introducing mpvc-osd: interfacing mpvc with a 4x20 USB LCD, 5 May 2024",
+    "content": "While mpvc was playing `The Number 4` from Khruangbin’s EP `The Infamous Bill` decided it would be fun to interface mpvc with a USB LCD on the Raspberry PI that acts as a jukebox, so each time a track starts output what’s playing now for some seconds, and then poweroff the LCD. Turned out nice and easy by using mpvc-tui -S scrobbling code, and masaging the output to pipe it to the USB LCD for presentation. For the record the output from mpvc-tui is: ` mpvc-tui -S ‘echo $(date +”T%H:%M”) $(mpvc -f “[%status%] #%position%/%playlistlength% %time% %artist% - %title% - %path%”)’ ‘false’ `. And this is how it looks: . ",
+    "url": "/mpvc/logbook.html#introducing-mpvc-osd-interfacing-mpvc-with-a-4x20-usb-lcd-5-may-2024",
+    
+    "relUrl": "/logbook.html#introducing-mpvc-osd-interfacing-mpvc-with-a-4x20-usb-lcd-5-may-2024"
+  },"43": {
+    "doc": "Log Book",
+    "title": "Some notes on my current mpvc setup, 4 July 2024",
+    "content": "Some notes on my current mpvc setup, I’ve setled on having the following commands continuosly running on background: mpvc-tui, mpvc-web, mpvc-autopilot, and mpvc-osd: . | mpvc-tui: to manage from the CLI, with the -T option to get desktop notifications. | mpvc-web: to manage from the WEB, to access from any browser in the LAN. | mpvc-autopilot: to automatically start/stop mpvc when a personal device is detected (LAN). | mpvc-osd: to have mpvc playing status updated on a USB LCD (see above entry) | . For the record, this is the list of commands currently running: . mpvc-tui -T mpvc-web -b 0 -s 1 -a 1 -R 60 -t dark -c start mpvc-autopilot -p 600 -n 6 -i [local_ip] # mpvc-osd mpvcosd . Using mpvc-web, on a device with a HDMI display, opens news possibilities of displaying video media, that is beyond just acting as a jukebox for playing music. For setups where the mediacenter has a video display with X11 x2x(1) might come handy to send X11 input events from a ssh-client to control the remote mpv running on X11, an example invocation is: . ssh -X $USER@$HOST x2x -west -to :0 # be sure to read x2x(1) . ",
+    "url": "/mpvc/logbook.html#some-notes-on-my-current-mpvc-setup-4-july-2024",
+    
+    "relUrl": "/logbook.html#some-notes-on-my-current-mpvc-setup-4-july-2024"
+  },"44": {
+    "doc": "Log Book",
+    "title": "On mpvc lowfi and mpvc-fzf URL browser, 26 October 2024",
+    "content": "Recently landed the commands mpvc lowfi/hifi, lowfi features a minimal mpvc status that leverages emojis to represent a one-line compressed playing status. This is done by defining a custom MPVC_FMTSTR at mpvc.conf, and the end result looks like: . [play] ▷ Polaris 🎶 02:35/04:50 #3/33 🔊60% 🔂 🔄 🎧 . The one-line compressed format has some benefits, such as becoming easily integrable with terminal, multiplexers and window managers, configurable, and clutter-free among others. This goes hand in hand with the hability to browse HTTP/s server listings and add music as in: . % mpvc-fzf -b https://archive.org/download/lofigirl-youtube/mp3/ Adding https://archive.org/download/lofigirl-youtube/mp3/6.Downtown-Binary-_-The-Present-Sound-Polaris.mp3 [play] ▷ Polaris 🎶 02:35/04:50 #3/33 🔊60% 🔂 🔄 🎧 . The mpvc-fzf -b [URL] browser works as follows: . | 1) gets all hrefs and outputs all the links that point to the current host, | 2) if the link is a media file (say opus/mp3 file) then it can be added with ctrl+t), | 3) if the link points to another directory/page, then it can be browsed with ctrl+[yu] | . The above ctrl+[tyu] shortcuts for mpvc-fzf work as well for local, remote, and other media URLs. ",
+    "url": "/mpvc/logbook.html#on-mpvc-lowfi-and-mpvc-fzf-url-browser-26-october-2024",
+    
+    "relUrl": "/logbook.html#on-mpvc-lowfi-and-mpvc-fzf-url-browser-26-october-2024"
+  },"45": {
+    "doc": "Log Book",
+    "title": "On customizing mpvc-fzf key-bindings, 16 June 2025",
+    "content": "Until now the mpvc-fzf keybidings have been hard-coded, now these live where they belong in the mpvc.conf config file. This way anyone can add/edit/delete mpvc-fzf keybindings. I think this is relevant, since sometimes keybinding conflict, and, also support add new keybindings. Below is an excerpt of the current keybindings in mpvc.conf: . $ cat mpvc.conf MPVC_FZF_CUSTOM_KEYBINDINGS=--bind=\"\\ shift-left:execute-silent(mpvc -q seek -1 &amp;),\\ shift-right:execute-silent(mpvc -q seek +1 &amp;),\\ shift-down:execute-silent(mpvc -q vol -1 &amp;),\\ shift-up:execute-silent(mpvc -q vol +1 &amp;),\\ ctrl-space:execute-silent(mpvc toggle &amp;)\\ \" . ",
+    "url": "/mpvc/logbook.html#on-customizing-mpvc-fzf-key-bindings-16-june-2025",
+    
+    "relUrl": "/logbook.html#on-customizing-mpvc-fzf-key-bindings-16-june-2025"
+  },"46": {
+    "doc": "Log Book",
+    "title": "On companion tools that go well with mpvc, 08 November 2025",
+    "content": "The docs/FAQ has been updated to keep a list of companion tools that go well with mpvc, among these is copyparty, that combined with `mpvc-fzf -b [browser-url]` to browse HTTP directory listings, is quite handy, to that end `mpvc-fzf custom-gen` generates a example `custom-channel.json` feed with a copyparty entry, that can be browsed with `mpvc-fzf custom`. Anyway any webserver providing HTML directory listings should do, but copyparty really makes things easy. Combine that with Tailscale or a cheap VPS and to have: . your music, your way, everywhere, without much hassle &amp; complicated setups. ",
+    "url": "/mpvc/logbook.html#on-companion-tools-that-go-well-with-mpvc-08-november-2025",
+    
+    "relUrl": "/logbook.html#on-companion-tools-that-go-well-with-mpvc-08-november-2025"
+  },"47": {
+    "doc": "Log Book",
+    "title": "On a sample setup using crontab(5) for mpvc, 28 December 2025",
+    "content": "The commands below have been on my user crontab(5) for a long time, these take care of starting and stopping music on a daily basis, also taking care of controlling volume level, and un/muting audio output at night. The @reboot, @daily and @weekly crontab entries, take care of starting mpvc with wathever I have currently saved to the mpvc current stash. # crontab: enable audio/mpv in the morning, disable at night @reboot $HOME/bin/mpvc -q quit stash apply current #@daily $HOME/bin/mpvc -q quit stash apply current #@weekly $HOME/bin/mpvc -q quit stash apply current #m h d m w cmd 0 21 * * * $HOME/bin/mpvc -q volume 20 0 22 * * * $HOME/bin/mpvc -q pause volume 15 0 23 * * * $HOME/bin/mpvc-mpris voloff 0 7 * * * $HOME/bin/mpvc-mpris volon 0 7 * * * $HOME/bin/mpvc -q resume \"\" volume 20 30 7 * * * $HOME/bin/mpvc -q volume 30 . ",
+    "url": "/mpvc/logbook.html#on-a-sample-setup-using-crontab5-for-mpvc-28-december-2025",
+    
+    "relUrl": "/logbook.html#on-a-sample-setup-using-crontab5-for-mpvc-28-december-2025"
+  },"48": {
+    "doc": "Log Book",
+    "title": "Introducing mpvc-web-browser: a mpvc-web companion browser, 07 September 2026",
+    "content": "This entry introduces mpvc-web-browser. The mpvc-web-browser allows to browse/manage the mpvc Media Library like (akin mpvc-fzf but for web). The mpvc-web-browser is basically the mpvc-web CGI endpoint that carries the following actions: . - Local: Search local files in your disk - Stash: Search stash files - Playlist: Search current playlist - Chapterlist: Search current chapterlist - Equalizer: Search equalizer presets - Video: Search online music/video - Feeds: Search your current feeds - CLI: Executes the mpvc cli commands . Along with mpvc-web-browser, there have been several changes landing recently, mainly focused on improving the mpvc-web, . | Complete UI web interface rework | Dark/Light theme support | Performance improvements | . ",
+    "url": "/mpvc/logbook.html#introducing-mpvc-web-browser-a-mpvc-web-companion-browser-07-september-2026",
+    
+    "relUrl": "/logbook.html#introducing-mpvc-web-browser-a-mpvc-web-companion-browser-07-september-2026"
+  },"49": {
+    "doc": "Log Book",
+    "title": "The End",
+    "content": "Return to the Start . 📅 Sat, 08 Nov 2025 by gmt4 ⚡ PoweredBy #HTML . ",
+    "url": "/mpvc/logbook.html#the-end",
+    
+    "relUrl": "/logbook.html#the-end"
+  },"50": {
+    "doc": "Log Book",
+    "title": "Log Book",
+    "content": " ",
+    "url": "/mpvc/logbook.html",
+    
+    "relUrl": "/logbook.html"
+  },"51": {
+    "doc": "mpvc-autopilot(1)",
+    "title": "NAME",
+    "content": "mpvc-autopilot - Autopilot mode with auto start/stop, and random playlist playback daemon . ",
+    "url": "/mpvc/man/man1/mpvc-autopilot.html#name",
+    
+    "relUrl": "/man/man1/mpvc-autopilot.html#name"
+  },"52": {
+    "doc": "mpvc-autopilot(1)",
+    "title": "SYNOPSIS",
+    "content": "usage: mpvc-autopilot -[c:hi:n:p:m:M:] args # @version v1.9 (c) gmt4 https://github.com/gmt4/mpvc -i : The IP of the device to detect ping presence for mpvc-autopilot (*required) -c : The operation cmd to run mpvc-autopilot (default: mpvcap_autostart [mpvcap_autostart,mpvcap_autopilot]) -C : The presence check to run mpvc-autopilot (default: mpvcap_pingcheck) -p : The number of seconds between ping presence checks (default: 300) -n : The number of failed ping presence checks after which to pause mpvc (default: 3) -m : The minimum hour when to start ping presence (default: 6h AM) -M : The maximum hour when to stop ping presence (default: 20h PM) *tips: If unsure where to begin, run: mpvc-autopilot -i 192.168.0.2 # your tablet/phone LAN IP . ",
+    "url": "/mpvc/man/man1/mpvc-autopilot.html#synopsis",
+    
+    "relUrl": "/man/man1/mpvc-autopilot.html#synopsis"
+  },"53": {
+    "doc": "mpvc-autopilot(1)",
+    "title": "DESCRIPTION",
+    "content": "mpvc-autopilot puts mpvc on autopilot mode. It operates in two primary modes: managing absolute playback states based on local network presence, or continuously cycling randomized background tracks during set hours. ",
+    "url": "/mpvc/man/man1/mpvc-autopilot.html#description",
+    
+    "relUrl": "/man/man1/mpvc-autopilot.html#description"
+  },"54": {
+    "doc": "mpvc-autopilot(1)",
+    "title": "OPTIONS",
+    "content": "-c MODE Set the loop operation mode. Available modes: . | mpvcap_autostart: (Default) Toggles play/pause when a device IP enters or leaves the local network. | mpvcap_autopilot: Continuously injects and plays random background tracks from your media directory. | . -C CMD Set the low-level execution command used for checking target presence (defaults to mpvcap_pingcheck). -h, –help Display the utility usage help message and exit. -i IP Specify the local LAN IP address of the device (such as a smartphone or tablet) to track for network presence. Required when using presence-based tracking modes. -m HOUR Set the minimum hour constraint (24-hour integer format) when automated tracking or playback routines are allowed to start (defaults to 6 AM). -M HOUR Set the maximum hour constraint (24-hour integer format) when automated routines must pause or stop (defaults to 20 PM). -n COUNT The maximum number of sequential failed presence checks allowed before forcing mpvc to pause playback (defaults to 3). -p PERIOD Set the countdown sleep delay in seconds between tracking checks or background track rotations (defaults to 300). ",
+    "url": "/mpvc/man/man1/mpvc-autopilot.html#options",
+    
+    "relUrl": "/man/man1/mpvc-autopilot.html#options"
+  },"55": {
+    "doc": "mpvc-autopilot(1)",
+    "title": "EXAMPLES",
+    "content": "Start tracking network presence using a phone’s IP address with a 5-minute interval: . mpvc-autopilot -i 192.168.0.2 -p 300 -n 2 . Run a continuous random background music loop during office hours: . mpvc-autopilot -c mpvcap_autopilot -p 180 -m 9 -M 17 -i 1 . ",
+    "url": "/mpvc/man/man1/mpvc-autopilot.html#examples",
+    
+    "relUrl": "/man/man1/mpvc-autopilot.html#examples"
+  },"56": {
+    "doc": "mpvc-autopilot(1)",
+    "title": "ENVIRONMENT",
+    "content": "XDG_CONFIG_HOME Directory where mpvc configuration is stored. Defaults to ~/.config/ if not set. ",
+    "url": "/mpvc/man/man1/mpvc-autopilot.html#environment",
+    
+    "relUrl": "/man/man1/mpvc-autopilot.html#environment"
+  },"57": {
+    "doc": "mpvc-autopilot(1)",
+    "title": "FILES",
+    "content": "~/.config/mpvc/mpvc.conf mpvc-specific configuration file. ",
+    "url": "/mpvc/man/man1/mpvc-autopilot.html#files",
+    
+    "relUrl": "/man/man1/mpvc-autopilot.html#files"
+  },"58": {
+    "doc": "mpvc-autopilot(1)",
+    "title": "SEE ALSO",
+    "content": "mpvc(1), mpvc(5), mpvc-fzf(1), mpvc-tui(1), mpvc-web(1), mpvc-equalizer(1) mpvc-index, . ",
+    "url": "/mpvc/man/man1/mpvc-autopilot.html#see-also",
+    
+    "relUrl": "/man/man1/mpvc-autopilot.html#see-also"
+  },"59": {
+    "doc": "mpvc-autopilot(1)",
+    "title": "AUTHOR",
+    "content": "Manual written by gmt4. See https://github.com/gmt4/mpvc for more information. ",
+    "url": "/mpvc/man/man1/mpvc-autopilot.html#author",
+    
+    "relUrl": "/man/man1/mpvc-autopilot.html#author"
+  },"60": {
+    "doc": "mpvc-autopilot(1)",
+    "title": "REPORTING BUGS",
+    "content": "Report bugs at: https://github.com/gmt4/mpvc/issues . ",
+    "url": "/mpvc/man/man1/mpvc-autopilot.html#reporting-bugs",
+    
+    "relUrl": "/man/man1/mpvc-autopilot.html#reporting-bugs"
+  },"61": {
+    "doc": "mpvc-autopilot(1)",
+    "title": "mpvc-autopilot(1)",
+    "content": " ",
+    "url": "/mpvc/man/man1/mpvc-autopilot.html",
+    
+    "relUrl": "/man/man1/mpvc-autopilot.html"
+  },"62": {
+    "doc": "mpvc-chapter(1)",
+    "title": "NAME",
+    "content": "mpvc-chapter - manage and merge ffmetadata chapter files for mpvc . ",
+    "url": "/mpvc/man/man1/mpvc-chapter.html#name",
+    
+    "relUrl": "/man/man1/mpvc-chapter.html#name"
+  },"63": {
+    "doc": "mpvc-chapter(1)",
+    "title": "SYNOPSIS",
+    "content": "usage: mpvc-chapter args # @version v1.9 (c) gmt4 https://github.com/gmt4/mpvc (--)list : List ffmetadata chapter-files (--)file : Show current ffmetadata chapter-file (--)info : Info current ffmetadata chapter-file (--)reset: Reset current ffmetadata chapter-file (--)load : Load current ffmetadata chapter-file (--)gen : Gen a ffmetadata chapter-file from a &lt; chapterlist.txt (--)merge: Merge ffmetadata chapter-file to audio file (args: in ffmeta out) . ",
+    "url": "/mpvc/man/man1/mpvc-chapter.html#synopsis",
+    
+    "relUrl": "/man/man1/mpvc-chapter.html#synopsis"
+  },"64": {
+    "doc": "mpvc-chapter(1)",
+    "title": "DESCRIPTION",
+    "content": "mpvc-chapter is a utility helper script bundled with mpvc that automates the tracking, creation, parsing, and merging of chapter structures within media files using FFmpeg’s ffmetadata format container layout maps. ",
+    "url": "/mpvc/man/man1/mpvc-chapter.html#description",
+    
+    "relUrl": "/man/man1/mpvc-chapter.html#description"
+  },"65": {
+    "doc": "mpvc-chapter(1)",
+    "title": "OPTIONS",
+    "content": "--list List all compiled or cached ffmetadata chapter files currently tracking active streaming or media profiles. --file Print the absolute path of the currently active ffmetadata chapter asset configuration. --info Display metadata headers, timestamp tracks, layout intervals, and internal structure properties contained within the active chapter file. --reset Wipe, clear, and re-initialize the target chapter configuration metadata layout map back to pristine system defaults. --load Explicitly register and hot-load the active chapter markers map directly into the running instance workspace. --gen Generate a syntactically correct ffmetadata map stream file parsed from standard input. This reads sequential text layouts containing raw timestamp intervals and titles. --merge Merge a standalone ffmetadata layout directly back into a targeted physical media container. This command strictly requires three continuous sequential file parameters passed as trailing arguments: the input audio file, the source ffmetadata map file, and the output destination container path. ",
+    "url": "/mpvc/man/man1/mpvc-chapter.html#options",
+    
+    "relUrl": "/man/man1/mpvc-chapter.html#options"
+  },"66": {
+    "doc": "mpvc-chapter(1)",
+    "title": "EXAMPLES",
+    "content": "Generate an ffmetadata chapter map file from a text listing input stream . mpvc-chapter --gen &lt; chapterlist.txt . Bake an extracted or parsed metadata layout map directly into an audio track file . mpvc-chapter --merge input.mp3 track_layout.ffmeta processed_album.mp3 . List all tracked workspace chapter files . mpvc-chapter --list . Check properties and internal metadata of the active tracking file . mpvc-chapter --info . ",
+    "url": "/mpvc/man/man1/mpvc-chapter.html#examples",
+    
+    "relUrl": "/man/man1/mpvc-chapter.html#examples"
+  },"67": {
+    "doc": "mpvc-chapter(1)",
+    "title": "ENVIRONMENT",
+    "content": "MPV_SOCKET Override the default MPV socket path. Used by internal companion script wrappers to identify which instance target context boundaries apply. XDG_CONFIG_HOME Directory where mpvc configurations are systematically discovered. Defaults to ~/.config/ if not specified by your shell environment variables. ",
+    "url": "/mpvc/man/man1/mpvc-chapter.html#environment",
+    
+    "relUrl": "/man/man1/mpvc-chapter.html#environment"
+  },"68": {
+    "doc": "mpvc-chapter(1)",
+    "title": "FILES",
+    "content": "~/.config/mpvc/mpvc.conf Core mpvc-specific runtime configurations, variable flags, and system mapping settings. ",
+    "url": "/mpvc/man/man1/mpvc-chapter.html#files",
+    
+    "relUrl": "/man/man1/mpvc-chapter.html#files"
+  },"69": {
+    "doc": "mpvc-chapter(1)",
+    "title": "SEE ALSO",
+    "content": "mpvc(1), mpvc(5), mpvc-fzf(1), mpvc-tui(1), mpvc-web(1), mpvc-index, . ",
+    "url": "/mpvc/man/man1/mpvc-chapter.html#see-also",
+    
+    "relUrl": "/man/man1/mpvc-chapter.html#see-also"
+  },"70": {
+    "doc": "mpvc-chapter(1)",
+    "title": "AUTHOR",
+    "content": "Manual written by gmt4. See https://github.com/gmt4/mpvc for more information. ",
+    "url": "/mpvc/man/man1/mpvc-chapter.html#author",
+    
+    "relUrl": "/man/man1/mpvc-chapter.html#author"
+  },"71": {
+    "doc": "mpvc-chapter(1)",
+    "title": "REPORTING BUGS",
+    "content": "Report bugs at: https://github.com/gmt4/mpvc/issues . ",
+    "url": "/mpvc/man/man1/mpvc-chapter.html#reporting-bugs",
+    
+    "relUrl": "/man/man1/mpvc-chapter.html#reporting-bugs"
+  },"72": {
+    "doc": "mpvc-chapter(1)",
+    "title": "mpvc-chapter(1)",
+    "content": " ",
+    "url": "/mpvc/man/man1/mpvc-chapter.html",
+    
+    "relUrl": "/man/man1/mpvc-chapter.html"
+  },"73": {
+    "doc": "mpvc-equalizer(1)",
+    "title": "NAME",
+    "content": "mpvc-equalizer - manage and adjust audio filter equalizer settings for mpvc . ",
+    "url": "/mpvc/man/man1/mpvc-equalizer.html#name",
+    
+    "relUrl": "/man/man1/mpvc-equalizer.html#name"
+  },"74": {
+    "doc": "mpvc-equalizer(1)",
+    "title": "SYNOPSIS",
+    "content": "usage: mpvc-equalizer opts # @version v1.9 (c) gmt4 https://github.com/gmt4/mpvc save : Saves equalizer settings load : Loads equalizer settings reset : Resets equalizer settings (set af gains to 0) clear : Clears equalizer settings (clear af) toggle : toggle equalizer settings (toggle af) preset : Show/Set equalizer settings preset values : Show equalizer settings as float values bars : Show equalizer settings as graph bars json : Show equalizer settings as JSON *tips: If unsure about where to begin, start with: mpvc-equalizer preset . ",
+    "url": "/mpvc/man/man1/mpvc-equalizer.html#synopsis",
+    
+    "relUrl": "/man/man1/mpvc-equalizer.html#synopsis"
+  },"75": {
+    "doc": "mpvc-equalizer(1)",
+    "title": "DESCRIPTION",
+    "content": "mpvc-equalizer is a utility helper script bundled with mpvc that configures, toggles, and displays the audio filter (af) equalizer settings of a running mpv instance via local Unix socket connections. ",
+    "url": "/mpvc/man/man1/mpvc-equalizer.html#description",
+    
+    "relUrl": "/man/man1/mpvc-equalizer.html#description"
+  },"76": {
+    "doc": "mpvc-equalizer(1)",
+    "title": "OPTIONS",
+    "content": "save Save the current audio filter equalizer adjustments and gain parameters to the configuration storage. load Load previously saved audio filter equalizer configuration profiles directly into the active playback engine workspace. reset Reset all equalizer configuration adjustments back to a flat level by setting all audio filter gains to 0. clear Clear and completely remove the active audio filter configuration settings from the running instance context. toggle Toggle the audio filter equalizer settings on or off to quickly contrast modified frequencies with baseline flat audio output. preset Show the active audio filter configuration profile or set the equalizer matrix to a predefined listening preset. values Output the current audio filter equalizer gain parameters formatted as a list of raw float values. bars Render a visual representation of the active frequency band gain configurations using terminal text graph bars. json Export the complete active equalizer audio filter settings profile structured into a standard JSON payload format string. ",
+    "url": "/mpvc/man/man1/mpvc-equalizer.html#options",
+    
+    "relUrl": "/man/man1/mpvc-equalizer.html#options"
+  },"77": {
+    "doc": "mpvc-equalizer(1)",
+    "title": "EXAMPLES",
+    "content": "Interact with or assign predefined audio equalizing balance templates . mpvc-equalizer preset . Visually audit configured frequency band gains using terminal graphs . mpvc-equalizer bars . Toggle active equalizer constraints to evaluate listening profiles . mpvc-equalizer toggle . Reset all frequency gains back to 0 to balance structural playback . mpvc-equalizer reset . ",
+    "url": "/mpvc/man/man1/mpvc-equalizer.html#examples",
+    
+    "relUrl": "/man/man1/mpvc-equalizer.html#examples"
+  },"78": {
+    "doc": "mpvc-equalizer(1)",
+    "title": "ENVIRONMENT",
+    "content": "MPV_SOCKET Override the default MPV socket path. Used by internal companion script wrappers to identify which instance target context boundaries apply. XDG_CONFIG_HOME Directory where mpvc configurations are systematically discovered. Defaults to ~/.config/ if not specified by your shell environment variables. ",
+    "url": "/mpvc/man/man1/mpvc-equalizer.html#environment",
+    
+    "relUrl": "/man/man1/mpvc-equalizer.html#environment"
+  },"79": {
+    "doc": "mpvc-equalizer(1)",
+    "title": "FILES",
+    "content": "~/.config/mpvc/mpvc.conf Core mpvc-specific runtime configurations, variable flags, and system mapping settings. ",
+    "url": "/mpvc/man/man1/mpvc-equalizer.html#files",
+    
+    "relUrl": "/man/man1/mpvc-equalizer.html#files"
+  },"80": {
+    "doc": "mpvc-equalizer(1)",
+    "title": "SEE ALSO",
+    "content": "mpvc(1), mpvc(5), mpvc-chapter(1), mpvc-fzf(1), mpvc-tui(1), mpvc-web(1), mpvc-index, . ",
+    "url": "/mpvc/man/man1/mpvc-equalizer.html#see-also",
+    
+    "relUrl": "/man/man1/mpvc-equalizer.html#see-also"
+  },"81": {
+    "doc": "mpvc-equalizer(1)",
+    "title": "AUTHOR",
+    "content": "Manual written by gmt4. See https://github.com/gmt4/mpvc for more information. ",
+    "url": "/mpvc/man/man1/mpvc-equalizer.html#author",
+    
+    "relUrl": "/man/man1/mpvc-equalizer.html#author"
+  },"82": {
+    "doc": "mpvc-equalizer(1)",
+    "title": "REPORTING BUGS",
+    "content": "Report bugs at: https://github.com . ",
+    "url": "/mpvc/man/man1/mpvc-equalizer.html#reporting-bugs",
+    
+    "relUrl": "/man/man1/mpvc-equalizer.html#reporting-bugs"
+  },"83": {
+    "doc": "mpvc-equalizer(1)",
+    "title": "mpvc-equalizer(1)",
+    "content": " ",
+    "url": "/mpvc/man/man1/mpvc-equalizer.html",
+    
+    "relUrl": "/man/man1/mpvc-equalizer.html"
+  },"84": {
+    "doc": "mpvc-fzf(1)",
+    "title": "NAME",
+    "content": "mpvc-fzf - fuzzy search interface for discovering and playing media with mpvc . ",
+    "url": "/mpvc/man/man1/mpvc-fzf.html#name",
+    
+    "relUrl": "/man/man1/mpvc-fzf.html#name"
+  },"85": {
+    "doc": "mpvc-fzf(1)",
+    "title": "SYNOPSIS",
+    "content": "usage: mpvc-fzf opts # @version v1.9 (c) gmt4 https://github.com/gmt4/mpvc -a|stash : Start fzf to manage mpvc stashes -b|browse : Start fzf to manage the provided ytdl-archive URL -c|chapters : Start fzf to manage the current mpv chapterlist -C|cache : Search cache by URL for remote media and return local file -CC|cmds : Search and run commands from stdin -d|dir : Set the WD to the media directory given as argument -e|eqz : Start fzf to manage the equalizer settings -f|playlist : Start fzf to manage the current mpv playist -g|fetch : Fetch the given YT URL, and store locally -G|Fetch : Search on Invidious, fetch, and store locally -i|lyrics : Search given media lyrics on Invidious -I|Lyrics : Search given media lyrics on DDG -k|dplay : Search n play DuckDuckGo videos -K|dsearch : Search DuckDuckGo videos -l|local : Search n play local media at $1 (handy to pipe to m load) -q|quality : Select and change yt-dlp video quality (ytdl-format) -r|explorer : Shortcut to search n play local media at ytdl-archive/ -R|Explorer : Shortcut to search local media at ytdl-archive/ -s|search : Search on Invidious -S|socket : Set mpv socket [default: ]. -SS|socklist : Select and set the current mpv socket to operate -t|thumbnail : Retrieve thumbnail_url from metadata of the current YT-URL -T|Thumbnail : Display thumbnail_url from metadata of the provided YT-URL -p|splay : Search n play media found using Invidious -u|url : Search the given YT URL (supports vids,channels,playlist feeds) -U|Url : Search n play the given YT URL -x|launch : Starts mpvc-fzf in a new xterm (config $MPVC_TERM) [combine -x with other opts] -y|related : Search related media on Invidious -Y|Related : Search n play related media using Invidious -z|relatedo : Search current media-title on Invidious and return related media -v|version : Return the mpvc-fzf version. (--)now : Return a shareable URL to the \"now listening\" playlist (--)lofi : Search n play Lo-Fi channels (--)somafm : Search n play SomaFM channels (--)rapi : Search n play Radio-Browser API channels (--)ntsr : Search n play NTS-Radio API channels (--)custom : Search n play your custom feeds (channels, playlists, ...) custom-gen : Generate a template for your custom feeds (channels, playlists, ...) invid-list : List available Invidious instances (set MPVC_FZF_INVID_URL) *tips: If unsure about where to begin, start: mpvc-fzf -p 'kupla mirage' . ",
+    "url": "/mpvc/man/man1/mpvc-fzf.html#synopsis",
+    
+    "relUrl": "/man/man1/mpvc-fzf.html#synopsis"
+  },"86": {
+    "doc": "mpvc-fzf(1)",
+    "title": "DESCRIPTION",
+    "content": "mpvc-fzf is a fuzzy search interface that integrates fzf with mpvc to enable interactive discovery, searching, and playback of media from multiple sources. It supports local files, YouTube, Invidious, streaming services, and custom feeds. The tool provides an interactive terminal interface for selecting and managing media, with support for advanced features like video quality selection, equalizer management, and playlist manipulation. ",
+    "url": "/mpvc/man/man1/mpvc-fzf.html#description",
+    
+    "relUrl": "/man/man1/mpvc-fzf.html#description"
+  },"87": {
+    "doc": "mpvc-fzf(1)",
+    "title": "OPTIONS",
+    "content": " ",
+    "url": "/mpvc/man/man1/mpvc-fzf.html#options",
+    
+    "relUrl": "/man/man1/mpvc-fzf.html#options"
+  },"88": {
+    "doc": "mpvc-fzf(1)",
+    "title": "Search and Playback",
+    "content": "-p, --splay Search and play media on Invidious. -s, --search Search for media on Invidious without auto-playing. -U, --Url Search and play from a given YouTube URL. -u, --url Search a given YouTube URL (videos, channels, playlists). -l, --local PATH Search and play local media at the specified path. -k, --dplay Search and play videos from DuckDuckGo. -K, --dsearch Search DuckDuckGo videos without auto-playing. -y, --related Search for related media on Invidious based on current selection. -Y, --Related Search and play related media on Invidious. -z, --relatedo Search currently playing media on Invidious for related videos. ",
+    "url": "/mpvc/man/man1/mpvc-fzf.html#search-and-playback",
+    
+    "relUrl": "/man/man1/mpvc-fzf.html#search-and-playback"
+  },"89": {
+    "doc": "mpvc-fzf(1)",
+    "title": "Download and Fetch",
+    "content": "-g, --fetch Fetch a YouTube URL and store locally. -G, --Fetch Search Invidious, fetch the media, and store locally. -C, --cache Search cache by URL for remote media. -r, --explorer Shortcut to search ytdl-archive directory. -b, --browse Manage ytdl-archive URL collections. ",
+    "url": "/mpvc/man/man1/mpvc-fzf.html#download-and-fetch",
+    
+    "relUrl": "/man/man1/mpvc-fzf.html#download-and-fetch"
+  },"90": {
+    "doc": "mpvc-fzf(1)",
+    "title": "Playlist and Media Management",
+    "content": "-f, --playlist Manage the current mpv playlist interactively with fzf. -a, --stash Manage mpvc stashes (saved playlists or media collections). -c, --chapters Manage mpv chapter list interactively. -e, --eqz Manage equalizer settings with preset selection. -q, --quality Select and change video quality for playback. ",
+    "url": "/mpvc/man/man1/mpvc-fzf.html#playlist-and-media-management",
+    
+    "relUrl": "/man/man1/mpvc-fzf.html#playlist-and-media-management"
+  },"91": {
+    "doc": "mpvc-fzf(1)",
+    "title": "Metadata and Information",
+    "content": "-i, --lyrics Search media lyrics on Invidious. -I, --Lyrics Search media lyrics on DuckDuckGo. -t, --thumbnail Retrieve thumbnail URL from media metadata. -T, --Thumbnail Display thumbnail image from metadata. ",
+    "url": "/mpvc/man/man1/mpvc-fzf.html#metadata-and-information",
+    
+    "relUrl": "/man/man1/mpvc-fzf.html#metadata-and-information"
+  },"92": {
+    "doc": "mpvc-fzf(1)",
+    "title": "Radio and Streaming Services",
+    "content": "--now, now, Return shareable “now listening” playlist with current media information. --lofi, lofi Search and play Lo-Fi music channels. --somafm, somafm Search and play SomaFM streaming channels. --rapi, rapi Search and play stations from Radio Browser API. --ntsr, ntsr Search and play stations from NTS Radio API. --custom, custom Search and play custom media feeds. custom-gen, custom-gen Generate a custom feeds template for configuration. invid-list List available Invidious instances. ",
+    "url": "/mpvc/man/man1/mpvc-fzf.html#radio-and-streaming-services",
+    
+    "relUrl": "/man/man1/mpvc-fzf.html#radio-and-streaming-services"
+  },"93": {
+    "doc": "mpvc-fzf(1)",
+    "title": "Socket and Display Options",
+    "content": "-S, --socket SOCKET Set the path to the mpv Unix socket for communication. ` -SS, –socklist` Select and set mpv socket from available sockets. -x, --launch Start mpvc-fzf in a new xterm window. Information -v, --version Display mpvc-fzf version information. -h, --help Display help message with usage information. ",
+    "url": "/mpvc/man/man1/mpvc-fzf.html#socket-and-display-options",
+    
+    "relUrl": "/man/man1/mpvc-fzf.html#socket-and-display-options"
+  },"94": {
+    "doc": "mpvc-fzf(1)",
+    "title": "EXAMPLES",
+    "content": "Search and play a song on Invidious: . mpvc-fzf -p 'kupla mirage' . Search YouTube and interactively select results: . mpvc-fzf -U . Browse and manage current mpv playlist: . mpvc-fzf -f . Search for media lyrics on Invidious: . mpvc-fzf -i 'artist name' . Play Lo-Fi music streams: . mpvc-fzf lofi . Manage equalizer settings: . mpvc-fzf -e . Search local music directory: . mpvc-fzf -l ~/Music . Fetch and download YouTube video locally: . mpvc-fzf -G 'video title' . Search DuckDuckGo videos and play: . mpvc-fzf -k 'search query' . Play SomaFM streams: . mpvc-fzf somafm . Select video quality: . mpvc-fzf -q . Display media thumbnail: . mpvc-fzf -T . Search for related videos: . mpvc-fzf -Y 'video title' . ",
+    "url": "/mpvc/man/man1/mpvc-fzf.html#examples",
+    
+    "relUrl": "/man/man1/mpvc-fzf.html#examples"
+  },"95": {
+    "doc": "mpvc-fzf(1)",
+    "title": "ENVIRONMENT",
+    "content": "MPV_SOCKET Path to the mpv Unix socket. If not set, mpvc-fzf will attempt to locate the default socket automatically. FZF_DEFAULT_OPTS Default options for fzf fuzzy finder behavior and appearance. XDG_CONFIG_HOME Base directory for user configuration files. Defaults to ~/.config. ",
+    "url": "/mpvc/man/man1/mpvc-fzf.html#environment",
+    
+    "relUrl": "/man/man1/mpvc-fzf.html#environment"
+  },"96": {
+    "doc": "mpvc-fzf(1)",
+    "title": "FILES",
+    "content": "~/.config/mpvc/mpvc.conf mpvc configuration file. ~/.config/mpvc/yt-dlp.conf yt-dlp configuration for YouTube downloads. ~/.config/mpvc/custom-feeds.json Custom media feed definitions for streaming. ~/.cache/mpvc/ Cache directory for downloaded media and metadata. ",
+    "url": "/mpvc/man/man1/mpvc-fzf.html#files",
+    
+    "relUrl": "/man/man1/mpvc-fzf.html#files"
+  },"97": {
+    "doc": "mpvc-fzf(1)",
+    "title": "SEE ALSO",
+    "content": "mpv(1), fzf(1), yt-dlp(1), mpvc(1), mpvc-fzf(1), mpvc-tui(1), mpvc-web(1), mpvc-equalizer(1) mpvc-index, . ",
+    "url": "/mpvc/man/man1/mpvc-fzf.html#see-also",
+    
+    "relUrl": "/man/man1/mpvc-fzf.html#see-also"
+  },"98": {
+    "doc": "mpvc-fzf(1)",
+    "title": "AUTHOR",
+    "content": "Manual written by gmt4. See https://github.com/gmt4/mpvc for more information. ",
+    "url": "/mpvc/man/man1/mpvc-fzf.html#author",
+    
+    "relUrl": "/man/man1/mpvc-fzf.html#author"
+  },"99": {
+    "doc": "mpvc-fzf(1)",
+    "title": "REPORTING BUGS",
+    "content": "Report bugs at: https://github.com/gmt4/mpvc/issues . ",
+    "url": "/mpvc/man/man1/mpvc-fzf.html#reporting-bugs",
+    
+    "relUrl": "/man/man1/mpvc-fzf.html#reporting-bugs"
+  },"100": {
+    "doc": "mpvc-fzf(1)",
+    "title": "mpvc-fzf(1)",
+    "content": " ",
+    "url": "/mpvc/man/man1/mpvc-fzf.html",
+    
+    "relUrl": "/man/man1/mpvc-fzf.html"
+  },"101": {
+    "doc": "mpvc-installer(1)",
+    "title": "NAME",
+    "content": "mpvc-installer - Automated deployment, updates, and configuration manager for mpvc . ",
+    "url": "/mpvc/man/man1/mpvc-installer.html#name",
+    
+    "relUrl": "/man/man1/mpvc-installer.html#name"
+  },"102": {
+    "doc": "mpvc-installer(1)",
+    "title": "SYNOPSIS",
+    "content": "usage: mpvc-installer args # @version v1.9 (c) gmt4 https://github.com/gmt4/mpvc check-update : Check for updates check-reqs : Check for required packages config : Fetch mpv config config-user : Fetch mpv config to BINDIR=/home/user/bin config-sys : Fetch mpv config to BINDIR=/usr/local/bin fetch-user : Fetch to BINDIR=/home/user/bin link-user : Symlink to BINDIR=/home/user/bin install : Install to BINDIR=/usr/local/bin uninstall : Uninstall from BINDIR=/usr/local/bin install-user : Install to BINDIR=/home/user/bin install-sys : Install to BINDIR=/usr/local/bin (sets PREFIX=/usr/local) uninstall-user : Uninstall from BINDIR=/home/user/bin uninstall-sys : Uninstall from BINDIR=/usr/local/bin (sets PREFIX=/usr/local) *tips: If unsure where to start, start with: mpvc-installer fetch-user . ",
+    "url": "/mpvc/man/man1/mpvc-installer.html#synopsis",
+    
+    "relUrl": "/man/man1/mpvc-installer.html#synopsis"
+  },"103": {
+    "doc": "mpvc-installer(1)",
+    "title": "DESCRIPTION",
+    "content": "mpvc-installer is a dedicated deployment and configuration manager for the mpvc ecosystem. Written in POSIX-compliant shell scripting, it automates script downloading, system-wide or user-level symlinking, dependency checks, and default configuration setups. ",
+    "url": "/mpvc/man/man1/mpvc-installer.html#description",
+    
+    "relUrl": "/man/man1/mpvc-installer.html#description"
+  },"104": {
+    "doc": "mpvc-installer(1)",
+    "title": "COMMANDS",
+    "content": "quickstart Execute an automated initial setup routine designed for first-time users, fetching and configuring assets locally. quickstart-rm Cleanly remove all temporary configurations and installations initialized by the quickstart routine. check-update Query the remote upstream Git repository to discover available software updates. check-reqs Audit the local system $PATH environment to ensure that core required tools (mpv, socat, gawk) and extras are installed. config Fetch the standard global baseline mpv communication parameters and configuration targets. config-user Populate local user configuration directories under BINDIR=~/bin/ with default profiles. config-sys Deploy default profiles globally for system-wide access under /usr/local/bin. fetch-user Fetch and download the standalone script collection directly into the user’s execution directory (~/bin/). link-user Create localized symlinks within ~/bin/ pointing to a manually cloned repository tree. install Move and register the application binaries systematically to the universal /usr/local/bin folder block. uninstall Completely remove systemic application components from /usr/local/bin. install-user Compile, move, and configure the standalone suite targets for a single local user profile (~/bin/). install-sys Execute a full administrative installation routing binaries to /usr/local/bin (implicitly sets PREFIX=/usr/local). uninstall-user Discard user-level script mappings and configurations from the local path context. uninstall-sys Erase all administrative global binary elements and dependencies from system folders. ",
+    "url": "/mpvc/man/man1/mpvc-installer.html#commands",
+    
+    "relUrl": "/man/man1/mpvc-installer.html#commands"
+  },"105": {
+    "doc": "mpvc-installer(1)",
+    "title": "ENVIRONMENT",
+    "content": "BINDIR Explicitly overrides the destination binary folder path during localized setups. Defaults to $HOME/bin. PREFIX Declares the baseline administrative root pathway prefix for global installations. Defaults to /usr/local. ",
+    "url": "/mpvc/man/man1/mpvc-installer.html#environment",
+    
+    "relUrl": "/man/man1/mpvc-installer.html#environment"
+  },"106": {
+    "doc": "mpvc-installer(1)",
+    "title": "FILES",
+    "content": "~/.config/mpvc/ Destination directory where config-user populates the default mpvc.conf, mpv.conf, and yt-dlp.conf blueprints. ",
+    "url": "/mpvc/man/man1/mpvc-installer.html#files",
+    
+    "relUrl": "/man/man1/mpvc-installer.html#files"
+  },"107": {
+    "doc": "mpvc-installer(1)",
+    "title": "EXAMPLES",
+    "content": "Perform a fully automated, standalone setup tracking standard user folder limits: . mpvc-installer quickstart . Completely purge and clean up environment trails introduced via the quickstart interface: . mpvc-installer quickstart-rm . Audit your current install for required tools/versions (such as socat or gawk): . mpvc-installer check-reqs . Extract and mirror the default configuration profile layout assets inside your user profile directory path: . mpvc-installer config-user . ",
+    "url": "/mpvc/man/man1/mpvc-installer.html#examples",
+    
+    "relUrl": "/man/man1/mpvc-installer.html#examples"
+  },"108": {
+    "doc": "mpvc-installer(1)",
+    "title": "SEE ALSO",
+    "content": "mpv(1), fzf(1), yt-dlp(1), mpvc(1), mpvc-fzf(1), mpvc-tui(1), mpvc-web(1), mpvc-index, . ",
+    "url": "/mpvc/man/man1/mpvc-installer.html#see-also",
+    
+    "relUrl": "/man/man1/mpvc-installer.html#see-also"
+  },"109": {
+    "doc": "mpvc-installer(1)",
+    "title": "AUTHOR",
+    "content": "Manual written by gmt4. See https://github.com/gmt4/mpvc for more information. ",
+    "url": "/mpvc/man/man1/mpvc-installer.html#author",
+    
+    "relUrl": "/man/man1/mpvc-installer.html#author"
+  },"110": {
+    "doc": "mpvc-installer(1)",
+    "title": "REPORTING BUGS",
+    "content": "Report bugs at: https://github.com/gmt4/mpvc/issues . ",
+    "url": "/mpvc/man/man1/mpvc-installer.html#reporting-bugs",
+    
+    "relUrl": "/man/man1/mpvc-installer.html#reporting-bugs"
+  },"111": {
+    "doc": "mpvc-installer(1)",
+    "title": "mpvc-installer(1)",
+    "content": " ",
+    "url": "/mpvc/man/man1/mpvc-installer.html",
+    
+    "relUrl": "/man/man1/mpvc-installer.html"
+  },"112": {
+    "doc": "mpvc-tui(1)",
+    "title": "NAME",
+    "content": "mpvc-tui - Terminal User Interface for displaying the MPV playlist and playback . ",
+    "url": "/mpvc/man/man1/mpvc-tui.html#name",
+    
+    "relUrl": "/man/man1/mpvc-tui.html#name"
+  },"113": {
+    "doc": "mpvc-tui(1)",
+    "title": "SYNOPSIS",
+    "content": "usage: mpvc-tui opts # @version v1.9 (c) gmt4 https://github.com/gmt4/mpvc -d|dir : Set the WD to the media directory given as argument -h|help : This help you are reading -H|history : Starts the mpvc-tui history -k|kill : Stop the running mpvc-tui -n|notify : Desktop notification using notify on mpvc events (notify-send*) |socket : Set mpv socket [default: ]. -s|suggest : Suggest a random media to play based on previous media played -S|scrobler : Starts the mpvc-tui scrobbler -t|tui : Starts the mpvc-tui TUI -tt|tinytui : Starts the mpvc-tui TUI (tiny mode) -ttt|ttinytui : Starts the mpvc-tui TUI (ttiny mode) -T|Tui : Combo that starts mpvc-tui -t -n, and adds media given as args -x|launch : Starts mpvc-tui in a new xterm ($MPVC_TUI_TERM) # combine with -v|version : Prints the mpvc-tui version. *tips: If unsure about where to begin, start with: mpvc-tui -d /path/to/media/ -T . ",
+    "url": "/mpvc/man/man1/mpvc-tui.html#synopsis",
+    
+    "relUrl": "/man/man1/mpvc-tui.html#synopsis"
+  },"114": {
+    "doc": "mpvc-tui(1)",
+    "title": "DESCRIPTION",
+    "content": "mpvc-tui is a terminal-based user interface that displays status/playlist info of the currently mpv instance. ",
+    "url": "/mpvc/man/man1/mpvc-tui.html#description",
+    
+    "relUrl": "/man/man1/mpvc-tui.html#description"
+  },"115": {
+    "doc": "mpvc-tui(1)",
+    "title": "OPTIONS",
+    "content": "-d, --dir PATH Set the working directory to the specified media directory. All media operations will be relative to this directory. -h, --help Display the help message and exit. -H, --history Start the mpvc-tui history interface. This allows you to browse and replay previously played media. -k, --kill Stop the currently running mpvc-tui instance. -n, --notify Enable desktop notifications for mpvc events using notify-send. Notifications will appear for playback state changes and media transitions. --socket PATH Set the MPV socket path. Overrides the default socket connection (defaults to MPV’s standard socket if not specified). -s, --suggest Suggest a random media item to play based on previously played media. Useful for discovering content from your history. -S, --scrobbler Start the mpvc-tui scrobbler interface. This feature tracks and logs media that you play. -t, --tui Start the main TUI for managing the MPV playlist (uses rlwrap for enhanced readline functionality). -T, --Tui Combo option that starts mpvc-tui with both TUI (-t) and desktop notifications (-n) enabled. This is the recommended starting option. Additional files provided as arguments will be added to the playlist. -x, --launch Start mpvc-tui in a new xterm window. This respects the $MPVC_TUI_TERM environment variable for terminal selection. Can be combined with other options. -v, --version Display the mpvc-tui version and exit. ",
+    "url": "/mpvc/man/man1/mpvc-tui.html#options",
+    
+    "relUrl": "/man/man1/mpvc-tui.html#options"
+  },"116": {
+    "doc": "mpvc-tui(1)",
+    "title": "EXAMPLES",
+    "content": "Start TUI with notifications for a media directory . mpvc-tui -d ~/Music -T mpvc-tui -t . Enable desktop notifications separately . mpvc-tui -n . Launch in a new terminal window . mpvc-tui -x -t -d ~/Music . Access playback history . mpvc-tui -H . Enable media scrobbling . mpvc-tui -S . ",
+    "url": "/mpvc/man/man1/mpvc-tui.html#examples",
+    
+    "relUrl": "/man/man1/mpvc-tui.html#examples"
+  },"117": {
+    "doc": "mpvc-tui(1)",
+    "title": "ENVIRONMENT",
+    "content": "MPVC_TUI_TERM Specifies the terminal emulator to use when launching mpvc-tui with the -x option. If not set, xterm is used as the default. MPV_SOCKET Override the default MPV socket path. Can also be set directly using the –socket option. XDG_CONFIG_HOME Directory where mpvc configuration is stored. Defaults to ~/.config/ if not set. ",
+    "url": "/mpvc/man/man1/mpvc-tui.html#environment",
+    
+    "relUrl": "/man/man1/mpvc-tui.html#environment"
+  },"118": {
+    "doc": "mpvc-tui(1)",
+    "title": "FILES",
+    "content": "~/.config/mpvc/mpvc.conf mpvc-specific configuration file. ",
+    "url": "/mpvc/man/man1/mpvc-tui.html#files",
+    
+    "relUrl": "/man/man1/mpvc-tui.html#files"
+  },"119": {
+    "doc": "mpvc-tui(1)",
+    "title": "SEE ALSO",
+    "content": "mpvc(1), mpvc(5), mpvc-fzf(1), mpvc-tui(1), mpvc-web(1), mpvc-equalizer(1) mpvc-index, . ",
+    "url": "/mpvc/man/man1/mpvc-tui.html#see-also",
+    
+    "relUrl": "/man/man1/mpvc-tui.html#see-also"
+  },"120": {
+    "doc": "mpvc-tui(1)",
+    "title": "AUTHOR",
+    "content": "Manual written by gmt4. See https://github.com/gmt4/mpvc for more information. ",
+    "url": "/mpvc/man/man1/mpvc-tui.html#author",
+    
+    "relUrl": "/man/man1/mpvc-tui.html#author"
+  },"121": {
+    "doc": "mpvc-tui(1)",
+    "title": "REPORTING BUGS",
+    "content": "Report bugs at: https://github.com/gmt4/mpvc/issues . ",
+    "url": "/mpvc/man/man1/mpvc-tui.html#reporting-bugs",
+    
+    "relUrl": "/man/man1/mpvc-tui.html#reporting-bugs"
+  },"122": {
+    "doc": "mpvc-tui(1)",
+    "title": "mpvc-tui(1)",
+    "content": " ",
+    "url": "/mpvc/man/man1/mpvc-tui.html",
+    
+    "relUrl": "/man/man1/mpvc-tui.html"
+  },"123": {
+    "doc": "mpvc-web(1)",
+    "title": "NAME",
+    "content": "mpvc-web – Web and HTTP API interface for mpvc control . ",
+    "url": "/mpvc/man/man1/mpvc-web.html#name",
+    
+    "relUrl": "/man/man1/mpvc-web.html#name"
+  },"124": {
+    "doc": "mpvc-web(1)",
+    "title": "SYNOPSIS",
+    "content": "usage: mpvc-web -[ha:b:c:d:p:P:r:R:s:S:t:T:x:] args # @version v1.9 (c) gmt4 https://github.com/gmt4/mpvc -c : Set mpvc-web HTTP server command: [start,stop] (*required) -b : Set mpvc-web HTTP server bind address (default localhost) -p : Set mpvc-web HTTP server port (default 8888) -r : Set mpvc-web HTTP server root dir (default /tmp/mpvc-web/root) -R : Set mpvc-web HTTP server HTML refresh (default 240) -s : Set mpvc-web HTTP server SSL/TLS (default ) -a : Set mpvc-web HTTP server to include ytdl-archive/ (default ) *tips: If unsure where to begin, run: mpvc-web -p 8888 -c start # serves @ http://localhost:8888 . ",
+    "url": "/mpvc/man/man1/mpvc-web.html#synopsis",
+    
+    "relUrl": "/man/man1/mpvc-web.html#synopsis"
+  },"125": {
+    "doc": "mpvc-web(1)",
+    "title": "DESCRIPTION",
+    "content": "mpvc-web is a lightweight web interface and HTTP API wrapper for mpvc. It allows users to control an active local mpv media player instance remotely over a network interface using standard HTTP methods or a mobile-friendly browser interface. ",
+    "url": "/mpvc/man/man1/mpvc-web.html#description",
+    
+    "relUrl": "/man/man1/mpvc-web.html#description"
+  },"126": {
+    "doc": "mpvc-web(1)",
+    "title": "OPTIONS",
+    "content": "-c start|stop|status Set the mpvc-web HTTP server command. This option is required. Accepted values are start to daemonize the server, stop to terminate it, status to check is running. -b bind-address Set the mpvc-web HTTP server bind address. Defaults to localhost. -p port Set the mpvc-web HTTP server port. Defaults to 8888. -r directory Set the mpvc-web HTTP server root directory path. Defaults to /tmp/mpvc-web/root. -R seconds Set the mpvc-web HTTP server HTML auto-refresh interval in seconds. Defaults to 240. -s https Set the mpvc-web HTTP server SSL/TLS configurations or certificate paths. Defaults to empty. -a archive Set the mpvc-web HTTP server to include a ytdl-archive/ repository or path tracking download history. Defaults to empty. -h, --help Display the help synopsis and exit. ",
+    "url": "/mpvc/man/man1/mpvc-web.html#options",
+    
+    "relUrl": "/man/man1/mpvc-web.html#options"
+  },"127": {
+    "doc": "mpvc-web(1)",
+    "title": "EXAMPLES",
+    "content": "Start the HTTP server listening on localhost at port 8888: . $ mpvc-web -c start -b 127.0.0.1 . Start the HTTP server with SSL/TLS listening on all interfaces at port 8443: . $ mpvc-web -c start -b 0.0.0.0 -s 1 . ",
+    "url": "/mpvc/man/man1/mpvc-web.html#examples",
+    
+    "relUrl": "/man/man1/mpvc-web.html#examples"
+  },"128": {
+    "doc": "mpvc-web(1)",
+    "title": "ENVIRONMENT",
+    "content": ". | MPV_SOCKET The default path to the mpv IPC socket if the --socket flag is omitted. | MPVC_WEB_PORT Defines a default network port fallback if -p port is not explicitly set. | . ",
+    "url": "/mpvc/man/man1/mpvc-web.html#environment",
+    
+    "relUrl": "/man/man1/mpvc-web.html#environment"
+  },"129": {
+    "doc": "mpvc-web(1)",
+    "title": "FILES",
+    "content": "~/.config/mpvc/mpvc.conf mpvc configuration file. ",
+    "url": "/mpvc/man/man1/mpvc-web.html#files",
+    
+    "relUrl": "/man/man1/mpvc-web.html#files"
+  },"130": {
+    "doc": "mpvc-web(1)",
+    "title": "SEE ALSO",
+    "content": "mpv(1), mpvc(1), mpvc-fzf(1), mpvc-tui(1), mpvc-index, . ",
+    "url": "/mpvc/man/man1/mpvc-web.html#see-also",
+    
+    "relUrl": "/man/man1/mpvc-web.html#see-also"
+  },"131": {
+    "doc": "mpvc-web(1)",
+    "title": "AUTHOR",
+    "content": "Manual written by gmt4. See https://github.com/gmt4/mpvc for more information. ",
+    "url": "/mpvc/man/man1/mpvc-web.html#author",
+    
+    "relUrl": "/man/man1/mpvc-web.html#author"
+  },"132": {
+    "doc": "mpvc-web(1)",
+    "title": "REPORTING BUGS",
+    "content": "Report bugs at: https://github.com/gmt4/mpvc/issues . ",
+    "url": "/mpvc/man/man1/mpvc-web.html#reporting-bugs",
+    
+    "relUrl": "/man/man1/mpvc-web.html#reporting-bugs"
+  },"133": {
+    "doc": "mpvc-web(1)",
+    "title": "mpvc-web(1)",
+    "content": " ",
+    "url": "/mpvc/man/man1/mpvc-web.html",
+    
+    "relUrl": "/man/man1/mpvc-web.html"
+  },"134": {
+    "doc": "mpvc.conf",
+    "title": "NAME",
+    "content": "mpvc.conf - Configuration file for mpvc . ",
+    "url": "/mpvc/man/man1/mpvc.conf.html#name",
+    
+    "relUrl": "/man/man1/mpvc.conf.html#name"
+  },"135": {
+    "doc": "mpvc.conf",
+    "title": "DESCRIPTION",
+    "content": "The mpvc.conf file serves as the unified configuration profile and text layout interface for the mpvc(1). Because the ecosystem is written entirely in POSIX shell scripting, the configuration file is parsed by directly sourcing it into the environment during execution. The file is divided into clear configuration sections using comment block headers to group each tool configuration on its own section. ",
+    "url": "/mpvc/man/man1/mpvc.conf.html#description",
+    
+    "relUrl": "/man/man1/mpvc.conf.html#description"
+  },"136": {
+    "doc": "mpvc.conf",
+    "title": "CONFIGURATION SECTIONS",
+    "content": " ",
+    "url": "/mpvc/man/man1/mpvc.conf.html#configuration-sections",
+    
+    "relUrl": "/man/man1/mpvc.conf.html#configuration-sections"
+  },"137": {
+    "doc": "mpvc.conf",
+    "title": "MPVC",
+    "content": "This section defines the mpvc(1) configuration variables. MPVC_MPV Defines the executable binary name or path for the core player engine. Defaults to mpv. MPVC_SOCAT Defines the executable binary name or path used to stream JSON data over unix sockets. Defaults to socat. MPVC_LOCAL_CACHE Boolean flag switch (true or false) controlling whether regional caching routines are activated during playback sequences. MPVC_FMTSTR, MPVC_FMTSTR_LOFI Customizes the output of the mpvc [status] command to display a summary of the mpv playing state, shown by the rest of tools. Formatting String Tokens . The status strings (MPVC_FMTSTR and MPVC_FMTSTR_LOFI) parse the following tokens dynamically at runtime to generate the mpvc [status] terminal layout view: . | %status% : Active player state icon or text (e.g., Playing, Paused). | %statuslofi% : Stream-specific processing states. | %title% : Metadata title track string of the current media file. | %percentage%% : Numerical percentage tracking playback progress. | %length% : Total temporal duration length of the active track asset. | %position% : Index tracking the numerical item number of the track. | %playlistlength% : Cumulative count tracking total track objects in queue. | %=chapter% : Numeric label naming the current playing chapter layer. | /%chapters% : Total embedded chapter segments discovered in media container. | %mutelofi% : Toggle status indicator flagging audio muting behaviors. | %volume%% : Current audio speaker sound level gain percentage metrics. | %shufflelofi% : Tracks if random shuffling behaviors are enabled. | %ablooplofi% : Displays segment loop hooks. | %singlelofi% : Tracks if a single file loop freeze constraint is active. | %repeatlofi% : Tracks if playlist wrapper re-looping sequences are active. | %idlelofi% : Displays if player engines are idling without an active container. | %videolofi% : Video layer processing status symbols. | . ",
+    "url": "/mpvc/man/man1/mpvc.conf.html#mpvc",
+    
+    "relUrl": "/man/man1/mpvc.conf.html#mpvc"
+  },"138": {
+    "doc": "mpvc.conf",
+    "title": "MPVC-TUI",
+    "content": "This section configures terminal environment variables and scaling preferences for the terminal visual frontend interface mpvc-tui(1). MPVC_TUI_TERM Declares the explicit target shell terminal application spawned specifically when launching graphical console configurations in detached windows. ",
+    "url": "/mpvc/man/man1/mpvc.conf.html#mpvc-tui",
+    
+    "relUrl": "/man/man1/mpvc.conf.html#mpvc-tui"
+  },"139": {
+    "doc": "mpvc.conf",
+    "title": "MPVC-FZF",
+    "content": "This section contains option flags, remote scraping node overrides, and execution properties for the interactive search interface mpvc-fzf(1). MPVC_TERM Defines the system terminal emulator tool launched to spawn detached windows when passing the selection flag -x or launch. Defaults to xterm. MPVC_FZF_INVID_URL Stores your preferred URL address link pointing to a public or self-hosted Invidious API instance mirror node to handle global text lookups. ",
+    "url": "/mpvc/man/man1/mpvc.conf.html#mpvc-fzf",
+    
+    "relUrl": "/man/man1/mpvc.conf.html#mpvc-fzf"
+  },"140": {
+    "doc": "mpvc.conf",
+    "title": "MPVC-WEB",
+    "content": "This section handles server port rules, encryption endpoints, UI refresh behaviors, and thumbnail parsing switches for the local HTTP daemon interface controller mpvc-web(1). MPVC_WEB_PORT Specifies the default plaintext HTTP listening network port assigned to the web gateway server daemon. Defaults to 8888. MPVC_WEB_SSL_PORT Declares the network port assigned to handle secure, encrypted HTTPS client browser connections. Defaults to 8443. MPVC_WEB_THUMBNAIL_ENABLE Boolean flag switch (true or false) controlling whether the web frontend interface actively pulls, parses, and shows media artwork thumbnail images over the network dashboard. MPVC_WEB_HTML_REFRESH Establishes a time interval integer (measured in seconds) instructing client web browsers how frequently to automatically reload the page interface state to stay synchronized with track changes. Defaults to 240. ",
+    "url": "/mpvc/man/man1/mpvc.conf.html#mpvc-web",
+    
+    "relUrl": "/man/man1/mpvc.conf.html#mpvc-web"
+  },"141": {
+    "doc": "mpvc.conf",
+    "title": "SEE ALSO",
+    "content": "mpv(1), mpvc(1), mpvc-fzf(1), mpvc-tui(1), mpvc-web(1), mpvc-index, . ",
+    "url": "/mpvc/man/man1/mpvc.conf.html#see-also",
+    
+    "relUrl": "/man/man1/mpvc.conf.html#see-also"
+  },"142": {
+    "doc": "mpvc.conf",
+    "title": "AUTHOR",
+    "content": "Manual written by gmt4. See https://github.com/gmt4/mpvc for more information. ",
+    "url": "/mpvc/man/man1/mpvc.conf.html#author",
+    
+    "relUrl": "/man/man1/mpvc.conf.html#author"
+  },"143": {
+    "doc": "mpvc.conf",
+    "title": "REPORTING BUGS",
+    "content": "Report bugs at: https://github.com/gmt4/mpvc/issues . ",
+    "url": "/mpvc/man/man1/mpvc.conf.html#reporting-bugs",
+    
+    "relUrl": "/man/man1/mpvc.conf.html#reporting-bugs"
+  },"144": {
+    "doc": "mpvc.conf",
+    "title": "mpvc.conf",
+    "content": " ",
+    "url": "/mpvc/man/man1/mpvc.conf.html",
+    
+    "relUrl": "/man/man1/mpvc.conf.html"
+  },"145": {
+    "doc": "mpvc(1)",
+    "title": "NAME",
+    "content": "mpvc - mpc-like command-line control interface for mpv . ",
+    "url": "/mpvc/man/man1/mpvc.html#name",
+    
+    "relUrl": "/man/man1/mpvc.html#name"
+  },"146": {
+    "doc": "mpvc(1)",
+    "title": "SYNOPSIS",
+    "content": "usage: mpvc opts # @version v1.9 (c) gmt4 https://github.com/gmt4/mpvc -a | --add | add : Add media to playlist (see --load for stdin). -r | --remove | rm : Remove media by id from playlist (see searchrm for rm by title) -s | --stop | stop : Always stop playback. -P | --play | play : Always start playback. -p | --toggle : Toggle playback. --repeat | repeat : Loop the playlist. --single | single : Loop a single file. | --next | next : Jump to next entry in the playlist | --prev | prev : Jump to previous entry in the playlist -i | --playlist : Print filenames of tracks to fit within terminal. -I | --fullplaylist : Print all filenames of tracks in current playlist. -v | --vol | vol : Increase/decrease volume relative to current volume. -h | --help : Prints the short help. -H | --help-long : Prints the long help (tip: mpvc -H 2&gt;&amp;1 | less). *tips: If unsure about where to begin, have a look at https://gmt4.github.io/mpvc . ",
+    "url": "/mpvc/man/man1/mpvc.html#synopsis",
+    
+    "relUrl": "/man/man1/mpvc.html#synopsis"
+  },"147": {
+    "doc": "mpvc(1)",
+    "title": "DESCRIPTION",
+    "content": "mpvc is a command-line utility that provides mpc-like control over the mpv media player. It allows users to manage playback, control volume, add and remove media from the playlist, and display playlist information through a simple command-line interface. The tool communicates with mpv via a Unix socket, enabling remote control of playback without direct interaction with the mpv window. ",
+    "url": "/mpvc/man/man1/mpvc.html#description",
+    
+    "relUrl": "/man/man1/mpvc.html#description"
+  },"148": {
+    "doc": "mpvc(1)",
+    "title": "OPTIONS",
+    "content": " ",
+    "url": "/mpvc/man/man1/mpvc.html#options",
+    
+    "relUrl": "/man/man1/mpvc.html#options"
+  },"149": {
+    "doc": "mpvc(1)",
+    "title": "Playback Control",
+    "content": "-P, --play, play Start playback of the current media. -p, --toggle, toggle Toggle between play and pause states. -s, --stop, stop Stop playback completely. --next, next Jump to the next entry in the playlist. --prev, prev Jump to the previous entry in the playlist. ",
+    "url": "/mpvc/man/man1/mpvc.html#playback-control",
+    
+    "relUrl": "/man/man1/mpvc.html#playback-control"
+  },"150": {
+    "doc": "mpvc(1)",
+    "title": "Playlist Management",
+    "content": "-a, --add FILE, add FILE Add a file or URL to the playlist. Supports local files, YouTube URLs, and other media sources. -r, --rm ID, rm ID Remove a playlist entry by its numeric ID. -i, --playlist, playlist Display the current playlist with filenames truncated to fit terminal width. -I, --fullplaylist Display the complete current playlist with full filenames. ",
+    "url": "/mpvc/man/man1/mpvc.html#playlist-management",
+    
+    "relUrl": "/man/man1/mpvc.html#playlist-management"
+  },"151": {
+    "doc": "mpvc(1)",
+    "title": "Loop and Repeat Modes",
+    "content": "--repeat, repeat Enable loop mode for the entire playlist. Playback will restart from the beginning after reaching the end. --single, single Enable single-file loop mode. The current file will repeat indefinitely. ",
+    "url": "/mpvc/man/man1/mpvc.html#loop-and-repeat-modes",
+    
+    "relUrl": "/man/man1/mpvc.html#loop-and-repeat-modes"
+  },"152": {
+    "doc": "mpvc(1)",
+    "title": "Volume Control",
+    "content": "-v, --vol [+-]N Adjust volume by the specified amount. Use +N to increase or -N to decrease volume. Without an argument, displays current volume. ",
+    "url": "/mpvc/man/man1/mpvc.html#volume-control",
+    
+    "relUrl": "/man/man1/mpvc.html#volume-control"
+  },"153": {
+    "doc": "mpvc(1)",
+    "title": "Information and Help",
+    "content": "-h, --help Display short help message with basic usage information. -H, --help-long Display detailed help message with all available options and examples. ",
+    "url": "/mpvc/man/man1/mpvc.html#information-and-help",
+    
+    "relUrl": "/man/man1/mpvc.html#information-and-help"
+  },"154": {
+    "doc": "mpvc(1)",
+    "title": "EXAMPLES",
+    "content": "Add a file to the playlist: . mpvc -a /path/to/song.mp3 . Toggle playback: . mpvc -p . Increase volume by 5: . mpvc -v +5 . Decrease volume by 10: . mpvc -v -10 . Display current playlist: . mpvc -i . Jump to next track: . mpvc --next . Stop playback: . mpvc -s . Enable repeat mode: . mpvc --repeat . Remove track with ID 3: . mpvc -r 3 . ",
+    "url": "/mpvc/man/man1/mpvc.html#examples",
+    
+    "relUrl": "/man/man1/mpvc.html#examples"
+  },"155": {
+    "doc": "mpvc(1)",
+    "title": "ENVIRONMENT",
+    "content": "MPV_SOCKET Path to the mpv Unix socket. If not set, mpvc will attempt to locate the default socket automatically. ",
+    "url": "/mpvc/man/man1/mpvc.html#environment",
+    
+    "relUrl": "/man/man1/mpvc.html#environment"
+  },"156": {
+    "doc": "mpvc(1)",
+    "title": "FILES",
+    "content": "~/.config/mpv/mpv.conf Main mpv configuration file. ~/.config/mpvc/mpvc.conf mpvc-specific configuration file. ~/.config/mpvc/yt-dlp.conf Configuration for yt-dlp integration. ",
+    "url": "/mpvc/man/man1/mpvc.html#files",
+    
+    "relUrl": "/man/man1/mpvc.html#files"
+  },"157": {
+    "doc": "mpvc(1)",
+    "title": "SEE ALSO",
+    "content": "mpv(1), mpvc-fzf(1), mpvc-tui(1), mpvc-web(1), mpvc-equalizer(1) mpvc-index, . ",
+    "url": "/mpvc/man/man1/mpvc.html#see-also",
+    
+    "relUrl": "/man/man1/mpvc.html#see-also"
+  },"158": {
+    "doc": "mpvc(1)",
+    "title": "AUTHOR",
+    "content": "Manual written by gmt4. See https://github.com/gmt4/mpvc for more information. ",
+    "url": "/mpvc/man/man1/mpvc.html#author",
+    
+    "relUrl": "/man/man1/mpvc.html#author"
+  },"159": {
+    "doc": "mpvc(1)",
+    "title": "REPORTING BUGS",
+    "content": "Report bugs at: https://github.com/gmt4/mpvc/issues . ",
+    "url": "/mpvc/man/man1/mpvc.html#reporting-bugs",
+    
+    "relUrl": "/man/man1/mpvc.html#reporting-bugs"
+  },"160": {
+    "doc": "mpvc(1)",
+    "title": "mpvc(1)",
+    "content": " ",
+    "url": "/mpvc/man/man1/mpvc.html",
+    
+    "relUrl": "/man/man1/mpvc.html"
+  }
+}

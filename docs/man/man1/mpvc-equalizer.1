@@ -1,0 +1,126 @@
+.\"
+.TH "mpvc-equalizer" "1" "April, 2026" "" ""
+.hy
+.SH NAME
+.PP
+mpvc-equalizer - manage and adjust audio filter equalizer settings for
+mpvc
+.SH SYNOPSIS
+.IP
+.nf
+\f[C]
+usage: mpvc-equalizer opts # \[at]version v1.9 (c) gmt4 https://github.com/gmt4/mpvc
+ save   : Saves equalizer settings
+ load   : Loads equalizer settings
+ reset  : Resets equalizer settings (set af gains to 0)
+ clear  : Clears equalizer settings (clear af)
+ toggle : toggle equalizer settings (toggle af)
+ preset : Show/Set equalizer settings preset
+ values : Show equalizer settings as float values
+ bars   : Show equalizer settings as graph bars
+ json   : Show equalizer settings as JSON
+*tips: If unsure about where to begin, start with: mpvc-equalizer preset
+\f[R]
+.fi
+.SH DESCRIPTION
+.PP
+mpvc-equalizer is a utility helper script bundled with mpvc that
+configures, toggles, and displays the audio filter (af) equalizer
+settings of a running mpv instance via local Unix socket connections.
+.SH OPTIONS
+.TP
+\f[B]\f[CB]save\f[B]\f[R]
+Save the current audio filter equalizer adjustments and gain parameters
+to the configuration storage.
+.TP
+\f[B]\f[CB]load\f[B]\f[R]
+Load previously saved audio filter equalizer configuration profiles
+directly into the active playback engine workspace.
+.TP
+\f[B]\f[CB]reset\f[B]\f[R]
+Reset all equalizer configuration adjustments back to a flat level by
+setting all audio filter gains to 0.
+.TP
+\f[B]\f[CB]clear\f[B]\f[R]
+Clear and completely remove the active audio filter configuration
+settings from the running instance context.
+.TP
+\f[B]\f[CB]toggle\f[B]\f[R]
+Toggle the audio filter equalizer settings on or off to quickly contrast
+modified frequencies with baseline flat audio output.
+.TP
+\f[B]\f[CB]preset\f[B]\f[R]
+Show the active audio filter configuration profile or set the equalizer
+matrix to a predefined listening preset.
+.TP
+\f[B]\f[CB]values\f[B]\f[R]
+Output the current audio filter equalizer gain parameters formatted as a
+list of raw float values.
+.TP
+\f[B]\f[CB]bars\f[B]\f[R]
+Render a visual representation of the active frequency band gain
+configurations using terminal text graph bars.
+.TP
+\f[B]\f[CB]json\f[B]\f[R]
+Export the complete active equalizer audio filter settings profile
+structured into a standard JSON payload format string.
+.SH EXAMPLES
+.PP
+Interact with or assign predefined audio equalizing balance templates
+.IP
+.nf
+\f[C]
+    mpvc-equalizer preset
+\f[R]
+.fi
+.PP
+Visually audit configured frequency band gains using terminal graphs
+.IP
+.nf
+\f[C]
+    mpvc-equalizer bars
+\f[R]
+.fi
+.PP
+Toggle active equalizer constraints to evaluate listening profiles
+.IP
+.nf
+\f[C]
+    mpvc-equalizer toggle
+\f[R]
+.fi
+.PP
+Reset all frequency gains back to 0 to balance structural playback
+.IP
+.nf
+\f[C]
+    mpvc-equalizer reset
+\f[R]
+.fi
+.SH ENVIRONMENT
+.TP
+MPV_SOCKET
+Override the default MPV socket path.
+Used by internal companion script wrappers to identify which instance
+target context boundaries apply.
+.TP
+XDG_CONFIG_HOME
+Directory where mpvc configurations are systematically discovered.
+Defaults to \[ti]/.config/ if not specified by your shell environment
+variables.
+.SH FILES
+.TP
+\[ti]/.config/mpvc/mpvc.conf
+Core mpvc-specific runtime configurations, variable flags, and system
+mapping settings.
+.SH SEE ALSO
+.PP
+mpvc(1), mpvc(5), mpvc-chapter(1), mpvc-fzf(1), mpvc-tui(1),
+mpvc-web(1), mpvc-index,
+.SH AUTHOR
+.PP
+Manual written by gmt4.
+See <https://github.com/gmt4/mpvc> for more information.
+.SH REPORTING BUGS
+.PP
+Report bugs at: <https://github.com>

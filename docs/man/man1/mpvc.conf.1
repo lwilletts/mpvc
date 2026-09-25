@@ -1,0 +1,154 @@
+.\"
+.TH "mpvc.conf" "5" "September 2026" "" ""
+.hy
+.SH NAME
+.PP
+mpvc.conf - Configuration file for mpvc
+.SH DESCRIPTION
+.PP
+The \f[B]mpvc.conf\f[R] file serves as the unified configuration profile
+and text layout interface for the \f[C]mpvc(1)\f[R].
+.PP
+Because the ecosystem is written entirely in POSIX shell scripting, the
+configuration file is parsed by directly sourcing it into the
+environment during execution.
+.PP
+The file is divided into clear configuration sections using comment
+block headers to group each tool configuration on its own section.
+.SH CONFIGURATION SECTIONS
+.SS MPVC
+.PP
+This section defines the mpvc(1) configuration variables.
+.TP
+\f[B]\f[CB]MPVC_MPV\f[B]\f[R]
+Defines the executable binary name or path for the core player engine.
+Defaults to \f[C]mpv\f[R].
+.TP
+\f[B]\f[CB]MPVC_SOCAT\f[B]\f[R]
+Defines the executable binary name or path used to stream JSON data over
+unix sockets.
+Defaults to \f[C]socat\f[R].
+.TP
+\f[B]\f[CB]MPVC_LOCAL_CACHE\f[B]\f[R]
+Boolean flag switch (\f[C]true\f[R] or \f[C]false\f[R]) controlling
+whether regional caching routines are activated during playback
+sequences.
+.TP
+\f[B]\f[CB]MPVC_FMTSTR\f[B]\f[R], \f[B]\f[CB]MPVC_FMTSTR_LOFI\f[B]\f[R]
+Customizes the output of the \f[C]mpvc [status]\f[R] command to display
+a summary of the mpv playing state, shown by the rest of tools.
+.SS Formatting String Tokens
+.PP
+The status strings (\f[C]MPVC_FMTSTR\f[R] and
+\f[C]MPVC_FMTSTR_LOFI\f[R]) parse the following tokens dynamically at
+runtime to generate the \f[C]mpvc [status]\f[R] terminal layout view:
+.IP \[bu] 2
+\f[C]%status%\f[R] : Active player state icon or text (e.g., Playing,
+Paused).
+.IP \[bu] 2
+\f[C]%statuslofi%\f[R] : Stream-specific processing states.
+.IP \[bu] 2
+\f[C]%title%\f[R] : Metadata title track string of the current media
+file.
+.IP \[bu] 2
+\f[C]%percentage%%\f[R] : Numerical percentage tracking playback
+progress.
+.IP \[bu] 2
+\f[C]%length%\f[R] : Total temporal duration length of the active track
+asset.
+.IP \[bu] 2
+\f[C]%position%\f[R] : Index tracking the numerical item number of the
+track.
+.IP \[bu] 2
+\f[C]%playlistlength%\f[R] : Cumulative count tracking total track
+objects in queue.
+.IP \[bu] 2
+\f[C]%=chapter%\f[R] : Numeric label naming the current playing chapter
+layer.
+.IP \[bu] 2
+\f[C]/%chapters%\f[R] : Total embedded chapter segments discovered in
+media container.
+.IP \[bu] 2
+\f[C]%mutelofi%\f[R] : Toggle status indicator flagging audio muting
+behaviors.
+.IP \[bu] 2
+\f[C]%volume%%\f[R] : Current audio speaker sound level gain percentage
+metrics.
+.IP \[bu] 2
+\f[C]%shufflelofi%\f[R] : Tracks if random shuffling behaviors are
+enabled.
+.IP \[bu] 2
+\f[C]%ablooplofi%\f[R] : Displays segment loop hooks.
+.IP \[bu] 2
+\f[C]%singlelofi%\f[R] : Tracks if a single file loop freeze constraint
+is active.
+.IP \[bu] 2
+\f[C]%repeatlofi%\f[R] : Tracks if playlist wrapper re-looping sequences
+are active.
+.IP \[bu] 2
+\f[C]%idlelofi%\f[R] : Displays if player engines are idling without an
+active container.
+.IP \[bu] 2
+\f[C]%videolofi%\f[R] : Video layer processing status symbols.
+.SS MPVC-TUI
+.PP
+This section configures terminal environment variables and scaling
+preferences for the terminal visual frontend interface
+\f[B]mpvc-tui\f[R](1).
+.TP
+\f[B]\f[CB]MPVC_TUI_TERM\f[B]\f[R]
+Declares the explicit target shell terminal application spawned
+specifically when launching graphical console configurations in detached
+windows.
+.SS MPVC-FZF
+.PP
+This section contains option flags, remote scraping node overrides, and
+execution properties for the interactive search interface
+\f[B]mpvc-fzf\f[R](1).
+.TP
+\f[B]\f[CB]MPVC_TERM\f[B]\f[R]
+Defines the system terminal emulator tool launched to spawn detached
+windows when passing the selection flag \f[C]-x\f[R] or
+\f[C]launch\f[R].
+Defaults to \f[C]xterm\f[R].
+.TP
+\f[B]\f[CB]MPVC_FZF_INVID_URL\f[B]\f[R]
+Stores your preferred URL address link pointing to a public or
+self-hosted \f[B]Invidious\f[R] API instance mirror node to handle
+global text lookups.
+.SS MPVC-WEB
+.PP
+This section handles server port rules, encryption endpoints, UI refresh
+behaviors, and thumbnail parsing switches for the local HTTP daemon
+interface controller \f[B]mpvc-web\f[R](1).
+.TP
+\f[B]\f[CB]MPVC_WEB_PORT\f[B]\f[R]
+Specifies the default plaintext HTTP listening network port assigned to
+the web gateway server daemon.
+Defaults to \f[C]8888\f[R].
+.TP
+\f[B]\f[CB]MPVC_WEB_SSL_PORT\f[B]\f[R]
+Declares the network port assigned to handle secure, encrypted HTTPS
+client browser connections.
+Defaults to \f[C]8443\f[R].
+.TP
+\f[B]\f[CB]MPVC_WEB_THUMBNAIL_ENABLE\f[B]\f[R]
+Boolean flag switch (\f[C]true\f[R] or \f[C]false\f[R]) controlling
+whether the web frontend interface actively pulls, parses, and shows
+media artwork thumbnail images over the network dashboard.
+.TP
+\f[B]\f[CB]MPVC_WEB_HTML_REFRESH\f[B]\f[R]
+Establishes a time interval integer (measured in seconds) instructing
+client web browsers how frequently to automatically reload the page
+interface state to stay synchronized with track changes.
+Defaults to \f[C]240\f[R].
+.SH SEE ALSO
+.PP
+mpv(1), mpvc(1), mpvc-fzf(1), mpvc-tui(1), mpvc-web(1), mpvc-index,
+.SH AUTHOR
+.PP
+Manual written by gmt4.
+See <https://github.com/gmt4/mpvc> for more information.
+.SH REPORTING BUGS
+.PP
+Report bugs at: <https://github.com/gmt4/mpvc/issues>

@@ -1,0 +1,8 @@
+# .shellcheckrc
+# Force analysis to treat targeted files as standard POSIX shell scripts
+shell=sh
+
+# Disable specific warnings globally across your project files:
+# SC3043: In POSIX sh, local is undefined (Useful if targeting systems that allow 'local')
+# SC2034: Variable appears unused (Useful for shared environment files)
+disable=SC3043,SC2034

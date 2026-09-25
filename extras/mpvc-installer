@@ -8,7 +8,7 @@
 #
 
 PROGNAME=${0##*/}
-PROGVERSION="v1.8"
+PROGVERSION="v1.9"
 PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
 
@@ -21,10 +21,13 @@ DOCDIR="${DOCDIR:-$PREFIX/docs}"
 MANDIR="${MANDIR:-$PREFIX/man/man1}"
 LICDIR="${LICDIR:-$PREFIX/licenses}"
 
+XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
+
 MPV_CONFIG_DIR="${MPV_CONFIG_DIR:-$HOME/.config/mpv}"
 MPVC_CONFIG_DIR="${MPVC_CONFIG_DIR:-$HOME/.config/mpvc}"
 
-MANS="docs/man/man1/mpvc.1 docs/man/man1/mpvc-fzf.1 docs/man/man1/mpvc-tui.1"
+MANS="docs/man/man1/mpvc.1 docs/man/man1/mpvc-fzf.1 docs/man/man1/mpvc-tui.1 docs/man/man1/mpvc-web.1 docs/man/man1/mpvc-chapter.1 docs/man/man1/mpvc-equalizer.1 docs/man/man1/mpvc-autopilot.1 docs/man/man1/mpvc-installer.1"
+
 DOCS="README.md docs/config/mpv.conf docs/logbook.html"
 LICENSES="LICENSE.md"
 SCRIPT="mpvc extras/mpvc-tui extras/mpvc-fzf extras/mpvc-cut extras/mpvc-chapter extras/mpvc-mpris extras/mpvc-equalizer extras/mpvc-web extras/mpvc-web-browser extras/mpvc-autopilot extras/mpvc-installer"
@@ -67,29 +70,25 @@ mpvc_config()
         chmod 644 "$file"
     done
 
-    for bin in "yt-dlp"
+    for bin in "yt-dlp" "deno"
     do
         file="$BINDIR/$bin"
         echo "Fetch $file"
         if [ -f "$file" ]; then
             echo "$PROGNAME: $file exists. Not overwriting."
         else
-            if curl -fsSL -o "$file" "https://github.com/$bin/$bin/releases/latest/download/$bin"; then
-                chmod a+rx "$file"
-            fi
-        fi
-    done
-
-    for bin in "deno"
-    do
-        file="$BINDIR/$bin"
-        echo "Fetch $file"
-        if [ -f "$file" ]; then
-            echo "$PROGNAME: $file exists. Not overwriting."
-        else
-            if curl -m 20 -fsSL -o - "https://github.com/denoland/$bin/releases/latest/download/$bin-$(uname -m)-unknown-linux-gnu.zip" | gunzip > "$file"; then
-                chmod a+rx "$file"
-            fi
+            case "$bin" in
+            yt-dlp)
+                if curl -fsSL -o "$file" "https://github.com/$bin/$bin/releases/latest/download/$bin"; then
+                    chmod a+rx "$file"
+                fi
+                ;;
+            deno)
+                if curl -m 20 -fsSL -o - "https://github.com/denoland/$bin/releases/latest/download/$bin-$(uname -m)-unknown-linux-gnu.zip" | gunzip > "$file"; then
+                    chmod a+rx "$file"
+                fi
+                ;;
+            esac
         fi
     done
 }
@@ -103,11 +102,13 @@ mpvc_fetch()
         file="$BINDIR/${script##*/}"
         url="$PROGURL/raw/master/$script"
         echo "Fetch $file"
-        #if [ -f "$file" ]; then echo "$PROGNAME: $file exists, overwriting."; fi
         if curl -fsSL -o "$file" "$url"; then
             chmod u+x "$file"
         fi
     done
+
+    ln -sfv "$BINDIR/mpvc" "$BINDIR/m"
+    ln -sfv "$BINDIR/mpvc-fzf" "$BINDIR/mx"
 }
 
 mpvc_man()
@@ -115,7 +116,10 @@ mpvc_man()
     mkdir -p "$MANDIR"
     for man in ${MANS};
     do
-        install -Dvm644 "$(pwd)/$man" "$MANDIR";
+        file="$MANDIR/${man##*/}"
+        url="$PROGURL/raw/master/$man"
+        echo "Fetch $file"
+        curl -fsSL -o "$file" "$url"
     done
 }
 
@@ -145,6 +149,9 @@ mpvc_link()
     do
         ln "$lnops" "$(pwd)/$f" "$BINDIR";
     done
+
+    ln "$lnops" "$BINDIR/mpvc" "$BINDIR/m"
+    ln "$lnops" "$BINDIR/mpvc-fzf" "$BINDIR/mx"
 }
 
 mpvc_install()
@@ -155,6 +162,9 @@ mpvc_install()
     do
         install -Dvm755 "$(pwd)/$script" "$BINDIR";
     done
+
+    ln -sfv "$BINDIR/mpvc" "$BINDIR/m"
+    ln -sfv "$BINDIR/mpvc-fzf" "$BINDIR/mx"
 }
 
 mpvc_uninstall()
@@ -169,6 +179,8 @@ mpvc_uninstall()
         rm -v  "$BINDIR/${external##*/}";
     done
 
+    rm -v "$BINDIR/m"
+    rm -v "$BINDIR/mx"
 }
 
 mpvc_check_requirements()
@@ -203,6 +215,66 @@ mpvc_check_update()
     fi
 }
 
+mpvc_completions()
+{
+    BASH_COMP_DIR="$XDG_DATA_HOME/bash-completion/completions"
+    ZSH_COMP_DIR="$XDG_DATA_HOME/zsh/site-functions"
+    MANDIR="$XDG_DATA_HOME/man/man1"
+
+    # Ensure target directories exist before attempting writes
+    mkdir -p "$BASH_COMP_DIR" "$ZSH_COMP_DIR"
+
+    for man in $MANS; do
+        CMDS=""
+        CLEAN_TEXT=""
+
+        manfile="$MANDIR/$(basename "$man")"
+        [ -e "$manfile" ] || continue
+
+        cmd_name=$(basename "$manfile" .1)
+        safe_name=$(echo "$cmd_name" | tr '-' '_')
+
+        # Try local parsing syntax (Linux/BSD man -l), fallback to direct mandoc engine (macOS)
+        CLEAN_TEXT=$(MANPAGER="cat" man -l "$manfile" 2>/dev/null || mandoc -Tascii "$manfile" 2>/dev/null)
+        if [ -n "$CLEAN_TEXT" ]; then
+            CMDS=$(echo "$CLEAN_TEXT" |
+                awk -v re="-[A-Za-z]|--[A-Za-z-]+" ' /^ *-/ { l=$0; n=split(l,o,","); for (i in o){ if (match(o[i],re,a)) print a[0] } }' | sort -u | tr '\n' ' '
+            )
+        fi
+
+        if [ -z "$CMDS" ]; then
+            CMDS="-h --help -v --version"
+        fi
+
+        cat <<EOF > "$BASH_COMP_DIR/$cmd_name"
+# Automatically generated by mpvc-installer completion routine. Do not edit.
+_${safe_name}_completions() {
+    local cur
+    COMPREPLY=()
+    cur="\${COMP_WORDS[COMP_CWORD]}"
+    if [[ \${COMP_CWORD} -eq 1 ]] ; then
+        COMPREPLY=( \$(compgen -W "$CMDS" -- "\${cur}") )
+        return 0
+    fi
+}
+complete -F _${safe_name}_completions $cmd_name
+EOF
+        chmod 644 "$BASH_COMP_DIR/$cmd_name"
+
+        cat <<EOF > "$ZSH_COMP_DIR/_$cmd_name"
+#compdef $cmd_name
+# Automatically generated by mpvc-installer completion routine. Do not edit.
+_arguments '1: :($CMDS)'
+EOF
+    chmod 644 "$ZSH_COMP_DIR/_$cmd_name"
+done
+
+    echo "Installed mpvc shell completions for bash/zsh/fish, to enable execute:"
+    echo "  [Bash]: source ~/.bashrc   (Ensure ~/.bashrc completion sources XDG layouts)"
+    echo "  [Zsh]:  source ~/.zshrc    (Ensure $ZSH_COMP_DIR is included in your \$fpath)"
+    echo "  [Fish]: Run fish -c fish_update_completions"
+}
+
 mpvc_quickstart()
 {
     export BINDIR="${BINDIR:-$HOME/bin}"
@@ -226,6 +298,18 @@ mpvc_quickstart()
         return 1
     fi
 
+    echo "# Quickstart: Fetching/installing manpages..."
+    if ! "$0" man-user; then
+        echo "❌ Quickstart failed: 'man-user' step encountered an error."
+        return 1
+    fi
+
+    echo "# Quickstart: Fetching/installing shell completion ..."
+    if ! "$0" comp-user; then
+        echo "❌ Quickstart failed: 'comp-user' step encountered an error."
+        return 1
+    fi
+
     echo "# Quickstart: Configuring user directories..."
     if ! "$0" config-user; then
         echo "❌ Quickstart failed: 'config-user' step encountered an error."
@@ -239,15 +323,17 @@ mpvc_quickstart()
     fi
 
     # 4. Path validation check
+    echo "# Quickstart: Final checks..."
     case ":$PATH:" in
-        *:"$BINDIR":*) ;;
+        *:"$BINDIR":*)
+            ;;
         *)
-            echo ""
             echo "⚠️  Note: '$BINDIR' not found in \$PATH. To fix this, update your shell config with:"
-            echo "  export PATH=\"\$HOME/bin:\$PATH\""
+            echo "  export PATH=\"$BINDIR:\$PATH\""
             ;;
     esac
 
+    echo ""
     echo "# QuickStart setup completed successfully!"
 }
 
@@ -285,9 +371,18 @@ usage: $PROGNAME args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
 
   check-update   : Check for updates
   check-reqs     : Check for required packages
-  config         : Fetch mpv config
-  config-user    : Fetch mpv config to BINDIR=$HOME/bin
-  config-sys     : Fetch mpv config to BINDIR=$PREFIX/bin
+
+  config         : Fetch mpvc config
+  config-user    : Fetch mpvc config to BINDIR=$HOME/bin
+  config-sys     : Fetch mpvc config to BINDIR=$PREFIX/bin
+
+  man            : Fetch mpvc manpages
+  man-user       : Fetch mpvc manpages to MANDIR=$XDG_DATA_HOME
+  man-sys        : Fetch mpvc manpages to MANDIR=$MANDIR
+
+  comp-user       : Install shell completions from MANDIR=$XDG_DATA_HOME
+  comp-sys        : Install shell completions from MANDIR=$XDG_DATA_HOME
+
   fetch-user     : Fetch to BINDIR=$HOME/bin
   link-user      : Symlink to BINDIR=$HOME/bin
   install        : Install to BINDIR=$PREFIX/bin
@@ -318,6 +413,7 @@ main()
     check-reqs)      shift; mpvc_check_requirements;;
     check-update)    shift; mpvc_check_update;;
     man)             shift; mpvc_man "$@";;
+    comp)            shift; mpvc_completions "$@";;
     docs)            shift; mpvc_docs "$@";;
     licenses)        shift; mpvc_licenses "$@";;
     fetch)           shift; mpvc_fetch "$@";;
@@ -325,6 +421,12 @@ main()
     install)         shift; mpvc_install "$@";;
     uninstall)       shift; mpvc_uninstall "$@";;
     config)          shift; mpvc_config "$@";;
+
+    comp-user)        shift; MANDIR="$XDG_DATA_HOME/man/man1" $SHELL "$0" comp;;
+    comp-sys)         shift; MANDIR="$XDG_DATA_HOME/man/man1" $SHELL "$0" man;;
+
+    man-user)        shift; MANDIR="$XDG_DATA_HOME/man/man1" $SHELL "$0" man;;
+    man-sys)         shift; MANDIR=${MANDIR} $SHELL "$0" man;;
 
     config-user)     shift; PREFIX=$HOME $SHELL "$0" config;;
     config-sys)      shift; PREFIX=/usr/local $SHELL "$0" config;;
