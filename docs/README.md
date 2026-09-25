@@ -128,6 +128,7 @@ Clone the git repo to receive quick development updates via `git pull`, then, us
 
  # use extras/mpvc-installer: just copy/link to BINDIR=$HOME/bin (by default)
  (cd mpvc; extras/mpvc-installer link-user)
+ (cd mpvc; extras/mpvc-installer man-user)
  (cd mpvc; extras/mpvc-installer check-reqs)
  (cd mpvc; extras/mpvc-installer config-user)
 ```
