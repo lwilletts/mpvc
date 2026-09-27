@@ -288,37 +288,37 @@ mpvc_quickstart()
     fi
 
     echo "# Quickstart: Checking for updates..."
-    if ! "$0" check-update; then
+    if ! $SHELL "$0" check-update; then
         echo "❌ Quickstart failed: 'check-update' step encountered an error."
         return 1
     fi
 
     echo "# Quickstart: Fetching/installing files..."
-    if ! "$0" fetch-user; then
+    if ! $SHELL "$0" fetch-user; then
         echo "❌ Quickstart failed: 'fetch-user' step encountered an error."
         return 1
     fi
 
     echo "# Quickstart: Fetching/installing manpages..."
-    if ! "$0" man-user; then
+    if ! $SHELL "$0" man-user; then
         echo "❌ Quickstart failed: 'man-user' step encountered an error."
         return 1
     fi
 
     echo "# Quickstart: Fetching/installing shell completion ..."
-    if ! "$0" comp-user; then
+    if ! $SHELL "$0" comp-user; then
         echo "❌ Quickstart failed: 'comp-user' step encountered an error."
         return 1
     fi
 
     echo "# Quickstart: Configuring user directories..."
-    if ! "$0" config-user; then
+    if ! $SHELL "$0" config-user; then
         echo "❌ Quickstart failed: 'config-user' step encountered an error."
         return 1
     fi
 
     echo "# Quickstart: Checking system requirements..."
-    if ! "$0" check-reqs; then
+    if ! $SHELL "$0" check-reqs; then
         echo "❌ Quickstart failed: 'check-reqs' dependency check failed."
         return 1
     fi
