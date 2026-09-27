@@ -13,6 +13,8 @@ Get Ready. mpvc-demo-v0 loading ...
 
 <img id="cast-mpvc-v0" class="demo"  src="casts/cast-mpvc-v0.svg" loading="lazy" width="100%" alt="Terminal Screencast ..." >
 
+(If you prefer, you can view the demo with <a href="casts/">asciinerama-player</a> which is less buggy)
+
 <!--
 demo-mpvc-fzf-v0
 ----------------
