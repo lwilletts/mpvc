@@ -17,6 +17,7 @@ description: "A fast, lightweight mpc-like control interface for the mpv media p
   </p>
   <div style="display: flex; gap: 1rem; justify-content: center;">
     <a href="get-started.html" class="md-button md-button--primary" style="padding: 0.6rem 2rem; font-weight: 600;">Get Started</a>
+    <a href="screen-cast.html" class="md-button" style="padding: 0.6rem 2rem;">View Demo Video</a>
     <a href="https://github.com/gmt4/mpvc/" class="md-button" style="padding: 0.6rem 2rem;">View on GitHub</a>
   </div>
 </div>

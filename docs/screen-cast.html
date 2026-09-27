@@ -7,27 +7,40 @@
 <link rel="stylesheet" href="assets/css/just-the-docs-default.css">
 <link rel="stylesheet" href="assets/css/just-the-docs-head-nav.css" id="jtd-head-nav-stylesheet">
  <style id="jtd-nav-activation">
-    .site-nav ul li a {
+    .site-nav > ul.nav-list:first-child > li:not(:nth-child(4)) > a,
+    .site-nav > ul.nav-list:first-child > li > ul > li a {
       background-image: none;
+    }
+    .site-nav > ul.nav-list:not(:first-child) a,
+    .site-nav li.external a {
+      background-image: none;
+    }
+    .site-nav > ul.nav-list:first-child > li:nth-child(4) > a {
+      font-weight: 600;
+      text-decoration: none;
+    }.site-nav > ul.nav-list:first-child > li:nth-child(4) > button svg {
+      transform: rotate(-90deg);
+    }.site-nav > ul.nav-list:first-child > li.nav-list-item:nth-child(4) > ul.nav-list {
+      display: block;
     }
  </style>
     <script src="assets/js/vendor/lunr.min.js"></script>
   <script src="assets/js/just-the-docs.js"></script>
  <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>mpvc | description</title>
+<title>Screen Cast | mpvc</title>
 <meta name="generator" content="Jekyll v4.4.1" />
-<meta property="og:title" content="mpvc" />
+<meta property="og:title" content="Screen Cast" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="description" />
 <meta name="twitter:description" property="og:description" content="description" />
-<link rel="canonical" href="https://gmt4.github.io/mpvc/" />
-<meta property="og:url" content="https://gmt4.github.io/mpvc/" />
+<link rel="canonical" href="http://gmt4.github.io/mpvc/screen-cast.html" />
+<meta property="og:url" content="http://gmt4.github.io/mpvc/screen-cast.html" />
 <meta property="og:site_name" content="mpvc" />
 <meta property="og:type" content="website" />
 <meta name="twitter:card" content="summary" />
-<meta name="twitter:title" content="mpvc" />
+<meta name="twitter:title" content="Screen Cast" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebSite","description":"description","headline":"mpvc","name":"mpvc","url":"https://gmt4.github.io/mpvc/"}</script>
+{"@context":"https://schema.org","@type":"WebPage","description":"description","headline":"Screen Cast","url":"http://gmt4.github.io/mpvc/screen-cast.html"}</script>
 <body>
   <a class="skip-to-main" href="#main-content">Skip to main content</a>
   <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
@@ -134,45 +147,20 @@
    <div class="main-content-wrap">
      <div id="main-content" class="main-content">
        <main>
-<div class="md-typeset text-center" style="margin-top: 4rem; margin-bottom: 4rem; text-align: center;">
- <div style="font-size: 5rem; margin-bottom: 1rem;">🎧</div>
-<h1 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem; border-bottom: none;">
-    mpvc
+           <h1 id="screen-cast">
+    <a href="#screen-cast" class="anchor-heading" aria-labelledby="screen-cast"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Screen Cast
 </h1>
- <p style="font-size: 1.25rem; color: var(--md-typeset-color); max-width: 600px; margin: 0 auto 2rem auto; line-height: 1.6;">
-    An mpc-like control interface for the mpv media player. A fast, cross-platform tool built for the terminal and modern shell workflows.
- </p>
- <div style="display: flex; gap: 1rem; justify-content: center;">
-    <a href="get-started.html" class="md-button md-button--primary" style="padding: 0.6rem 2rem; font-weight: 600;">Get Started</a>
-    <a href="screen-cast.html" class="md-button" style="padding: 0.6rem 2rem;">View Demo Video</a>
-    <a href="https://github.com/gmt4/mpvc/" class="md-button" style="padding: 0.6rem 2rem;">View on GitHub</a>
- </div>
-</div><hr />
-<h2 id="why-mpvc">
-    <a href="#why-mpvc" class="anchor-heading" aria-labelledby="why-mpvc"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Why mpvc?
+<h2 id="demo-mpvc-v0">
+    <a href="#demo-mpvc-v0" class="anchor-heading" aria-labelledby="demo-mpvc-v0"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Demo mpvc (v0)
 </h2>
-<div class="grid cards">
- <ul>
-   <li>
-     <p>📖 <strong>Readable by Design</strong></p>
-     <p>Manage playlists, streaming links, and volume vectors natively using clean POSIX shell pipelines that anyone can script.</p>
-   <li>
-     <p>🖥️ <strong>One Workflow Everywhere</strong></p>
-     <p>Control instances fluidly across Linux, macOS, and BSD variants over clean local UNIX socket boundaries.</p>
-   <li>
-     <p>🎯 <strong>Only Run What Changed</strong></p>
-     <p>Lightning-fast command execution layer powered entirely by zero-overhead standard coreutils utilities like <code class="language-plaintext highlighter-rouge">socat</code> and <code class="language-plaintext highlighter-rouge">gawk</code>.</p>
-   <li>
-     <p>🔗 <strong>One Terminal, Every Tool</strong></p>
-     <p>Comes with out-of-the-box integration extensions for <code class="language-plaintext highlighter-rouge">fzf</code>, standard terminal TUIs, headless media boxes, and localized MPRIS controllers.</p>
- </ul>
-</div>
+<p>Get Ready. mpvc-demo-v0 loading …</p>
+<p><img id="cast-mpvc-v0" class="demo" src="casts/cast-mpvc-v0.svg" loading="lazy" width="100%" alt="Terminal Screencast ..." /></p>
        </main>
 <hr>
 <footer>
    <div class="d-flex mt-2">
        <p class="text-small mb-0 mr-2">
-          Page last modified: <span class="d-inline-block">Sep 26 2026 at 12:00 AM</span>.
+          Page last modified: <span class="d-inline-block">Feb 19 2024 at 12:00 AM</span>.
        </p>
    </div>
  <div class="d-md-none mt-4 fs-2">
