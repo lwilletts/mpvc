@@ -53,6 +53,11 @@ compress_html:
   blanklines: true
   profile: false
 
+kramdown:
+  smart_quotes: ["lsquo", "rsquo", "ldquo", "rdquo"]
+  typographic_symbols:
+    ndash: --
+
 collections:
   man:
     output: true

@@ -231,139 +231,139 @@ control of playback without direct interaction with the mpv window.</p>
     <a href="#core-playback-commands" class="anchor-heading" aria-labelledby="core-playback-commands"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Core Playback Commands
 </h2>
 <dl>
- <dt>-P, –play, play
+ <dt>-P, --play, play
  <dd>Always start playback.
- <dt>-p, –toggle
+ <dt>-p, --toggle
  <dd>Toggle playback.
- <dt>-s, –stop, stop
+ <dt>-s, --stop, stop
  <dd>Always stop playback.
- <dt>–next, next
+ <dt>--next, next
  <dd>Jump to next entry in the playlist.
- <dt>–prev, prev
+ <dt>--prev, prev
  <dd>Jump to previous entry in the playlist.
- <dt>-j, –track
+ <dt>-j, --track
  <dd>Go forwards/backwards through the playlist queue.
- <dt>-J, –tracknum
+ <dt>-J, --tracknum
  <dd>Jump to playlist item number.
 </dl>
 <h2 id="playlist-management">
     <a href="#playlist-management" class="anchor-heading" aria-labelledby="playlist-management"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Playlist Management
 </h2>
 <dl>
- <dt>-a, –add, add
- <dd>Add media to playlist (see –load for stdin).
- <dt>-A, –playnext
+ <dt>-a, --add, add
+ <dd>Add media to playlist (see --load for stdin).
+ <dt>-A, --playnext
  <dd>Add media to playlist after the current track.
- <dt>-n, –playnow
+ <dt>-n, --playnow
  <dd>Add media to playlist after the current track, and play it.
- <dt>–playrand
+ <dt>--playrand
  <dd>Select a random track from the playlist, and play it.
- <dt>-r, –remove, rm
+ <dt>-r, --remove, rm
  <dd>Remove media by id from playlist (see searchrm for rm by title).
- <dt>-c, –crop
+ <dt>-c, --crop
  <dd>Clear the playlist except for the media currently playing.
- <dt>–save
+ <dt>--save
  <dd>Save current playlist to given path.
- <dt>–load
+ <dt>--load
  <dd>Load playlist from given path (stdin if none is specified).
- <dt>–playlist-shuffle
+ <dt>--playlist-shuffle
  <dd>Shuffle the current playlist.
- <dt>–playlist-unshuffle
+ <dt>--playlist-unshuffle
  <dd>Unshuffle the current playlist.
- <dt>-i, –playlist
+ <dt>-i, --playlist
  <dd>Print filenames of tracks to fit within terminal.
- <dt>-I, –fullplaylist
+ <dt>-I, --fullplaylist
  <dd>Print all filenames of tracks in current playlist.
 </dl>
 <h2 id="advanced-search--manipulation">
     <a href="#advanced-search--manipulation" class="anchor-heading" aria-labelledby="advanced-search--manipulation"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Advanced Search &amp; Manipulation
 </h2>
 <dl>
- <dt>–search
+ <dt>--search
  <dd>Search the playlist by filename/url.
- <dt>–searchplay, splay
+ <dt>--searchplay, splay
  <dd>Search the playlist by filename and play the first match.
- <dt>–searchPlay, sPlay
+ <dt>--searchPlay, sPlay
  <dd>Search the playlist by title and play the first match.
- <dt>-R, –searchrm, srm
+ <dt>-R, --searchrm, srm
  <dd>Search the playlist and remove matching entries.
- <dt>-M, –searchmv, smv
+ <dt>-M, --searchmv, smv
  <dd>Search the playlist and move matching entries.
 </dl>
 <h2 id="audio-speed--time-controls">
     <a href="#audio-speed--time-controls" class="anchor-heading" aria-labelledby="audio-speed--time-controls"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Audio, Speed &amp; Time Controls
 </h2>
 <dl>
- <dt>-v, –vol, vol
+ <dt>-v, --vol, vol
  <dd>Increase/decrease volume relative to current volume.
- <dt>-V, –volume
+ <dt>-V, --volume
  <dd>Set absolute volume.
- <dt>-m, –mute
+ <dt>-m, --mute
  <dd>Toggle sound.
- <dt>-t, –seek
+ <dt>-t, --seek
  <dd>Increase/decrease playback time relatively, accepts % values.
- <dt>–seekrand
+ <dt>--seekrand
  <dd>Set a random playback time.
- <dt>-T, –time
+ <dt>-T, --time
  <dd>Set absolute playback time.
- <dt>-x, –speed
+ <dt>-x, --speed
  <dd>Increase/decrease speed relative to the current speed.
- <dt>-X, –speedval
+ <dt>-X, --speedval
  <dd>Set absolute speed.
 </dl>
 <h2 id="properties--daemon-configuration">
     <a href="#properties--daemon-configuration" class="anchor-heading" aria-labelledby="properties--daemon-configuration"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Properties &amp; Daemon Configuration
 </h2>
 <dl>
- <dt>–repeat, repeat
+ <dt>--repeat, repeat
  <dd>Loop the playlist.
- <dt>–single, single
+ <dt>--single, single
  <dd>Loop a single file.
- <dt>-l, –loop
+ <dt>-l, --loop
  <dd>Loop currently playing playlist.
- <dt>-L, –loopfile
+ <dt>-L, --loopfile
  <dd>Loop currently playing file.
- <dt>-z, –shuffle
+ <dt>-z, --shuffle
  <dd>Toggle the shuffle property.
- <dt>-I, –images
+ <dt>-I, --images
  <dd>Enable adding of images to the queue.
- <dt>–color
+ <dt>--color
  <dd>Enable color (NO_COLOR=).
- <dt>–nocolor
+ <dt>--nocolor
  <dd>Disable color (NO_COLOR=true).
- <dt>-q, –quiet
+ <dt>-q, --quiet
  <dd>Suppress all text output.
- <dt>-Q, –vid=no
+ <dt>-Q, --vid=no
  <dd>Start mpv with video output disabled.
 </dl>
 <h2 id="events--process-management">
     <a href="#events--process-management" class="anchor-heading" aria-labelledby="events--process-management"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Events &amp; Process Management
 </h2>
 <dl>
- <dt>–idleloop
+ <dt>--idleloop
  <dd>Listen to MPV events on $PROGNAME socket.
- <dt>–observe
+ <dt>--observe
  <dd>Observe property in MPV events on $PROGNAME socket.
- <dt>-k, –kill
+ <dt>-k, --kill
  <dd>Kill the mpv process controlling the given socket.
- <dt>-K, –killall
+ <dt>-K, --killall
  <dd>Kill all mpv processes indiscriminately.
- <dt>-S, –socket
+ <dt>-S, --socket
  <dd>Set mpv socket [default: $MPVC_SOCKET].
 </dl>
 <h2 id="help--version-information">
     <a href="#help--version-information" class="anchor-heading" aria-labelledby="help--version-information"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Help &amp; Version Information
 </h2>
 <dl>
- <dt>-f, –format
+ <dt>-f, --format
  <dd>Enter a formatting string.
- <dt>-h, –help
+ <dt>-h, --help
  <dd>Prints the short help.
- <dt>-H, –help-long
+ <dt>-H, --help-long
  <dd>Prints the long help (tip: mpvc -H 2&gt;&amp;1, less).
- <dt>–version
+ <dt>--version
  <dd>Prints the short version.
- <dt>–version-long
+ <dt>--version-long
  <dd>Prints the long version.
 </dl>
 <h1 id="examples">
