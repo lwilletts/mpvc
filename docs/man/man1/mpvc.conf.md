@@ -1,10 +1,11 @@
 ---
 title: mpvc.conf
 section: 5
-date: September 2026
+date: April 2026
 version: v1.9
 manual: File Formats and Configurations
 layout: default
+last_modified_date: 2026-09-26
 ---
 
 NAME
@@ -41,7 +42,8 @@ This section defines the mpvc(1) configuration variables.
 `MPVC_FMTSTR`, `MPVC_FMTSTR_LOFI`
 : Customizes the output of the `mpvc [status]` command to display a summary of the mpv playing state, shown by the rest of tools.
 
-### Formatting String Tokens
+Formatting String Tokens
+------------------------
 
 The status strings (`MPVC_FMTSTR` and `MPVC_FMTSTR_LOFI`) parse the following tokens dynamically at runtime to generate the `mpvc [status]` terminal layout view:
 

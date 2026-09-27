@@ -5,6 +5,7 @@ version: v1.9
 date: April, 2026
 manual: User Commands
 layout: default
+last_modified_date: 2026-09-26
 ---
 
 NAME

@@ -5,13 +5,16 @@ version: v1.9
 date: September, 2026
 manual: User Commands
 layout: default
+last_modified_date: 2026-09-26
 ---
 
-# NAME
+NAME
+====
 
 mpvc-installer - Automated deployment, updates, and configuration manager for mpvc
 
-# SYNOPSIS
+SYNOPSIS
+========
 
     usage: mpvc-installer args # @version v1.9 (c) gmt4 https://github.com/gmt4/mpvc
       check-update   : Check for updates
@@ -29,11 +32,13 @@ mpvc-installer - Automated deployment, updates, and configuration manager for mp
       uninstall-sys  : Uninstall from BINDIR=/usr/local/bin (sets PREFIX=/usr/local)
     *tips: If unsure where to start, start with: mpvc-installer fetch-user
 
-# DESCRIPTION
+DESCRIPTION
+===========
 
 **mpvc-installer** is a dedicated deployment and configuration manager for the **mpvc** ecosystem. Written in POSIX-compliant shell scripting, it automates script downloading, system-wide or user-level symlinking, dependency checks, and default configuration setups.
 
-# COMMANDS
+COMMANDS
+========
 
 `quickstart`
 : Execute an automated initial setup routine designed for first-time users, fetching and configuring assets locally.
@@ -80,7 +85,8 @@ mpvc-installer - Automated deployment, updates, and configuration manager for mp
 `uninstall-sys`
 : Erase all administrative global binary elements and dependencies from system folders.
 
-# ENVIRONMENT
+ENVIRONMENT
+===========
 
 `BINDIR`
 : Explicitly overrides the destination binary folder path during localized setups. Defaults to `$HOME/bin`.
@@ -88,12 +94,14 @@ mpvc-installer - Automated deployment, updates, and configuration manager for mp
 `PREFIX`
 : Declares the baseline administrative root pathway prefix for global installations. Defaults to `/usr/local`.
 
-# FILES
+FILES
+=====
 
 `~/.config/mpvc/`
 : Destination directory where `config-user` populates the default `mpvc.conf`, `mpv.conf`, and `yt-dlp.conf` blueprints.
 
-# EXAMPLES
+EXAMPLES
+========
 
 Perform a fully automated, standalone setup tracking standard user folder limits:
 
@@ -111,7 +119,8 @@ Extract and mirror the default configuration profile layout assets inside your u
 
     mpvc-installer config-user
 
-# SEE ALSO
+SEE ALSO
+========
 
 mpv(1),
 fzf(1),
