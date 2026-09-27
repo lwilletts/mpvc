@@ -19,6 +19,7 @@ PROGDIR=${0%/*}
 PROGVERSION="v1.9"
 PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
+SITEURL="https://gmt4.github.io/mpvc"
 #PROGINFO="A hack to remotely control mpvc from web # DISCLAIMER * Use at Your Own Risk *"
 
 set -euf
@@ -736,7 +737,7 @@ mpvc_web_index()
         • <a href="$PROGURL">${PROGNAME%-*}</a>
         • <a href="$PROGURL/releases/"> $PROGVERSION</a>
         • <a href="$PROGURL/issues">issues</a>
-        • <a href="https://gmt4.github.io/mpvc/">docs</a>
+        • <a href="$SITEURL">docs</a>
         $(date +%Y) ©
         <a href="javascript:Help()" title="help" ${MPVC_WEB_SHORTCUT_HELP}>/h</a>
         </small>
