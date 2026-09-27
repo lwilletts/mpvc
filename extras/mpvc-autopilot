@@ -33,7 +33,7 @@ mpvcap_btcheck()   { hcitool scan | awk "/$*/ {print}"; }
 # autopilot play tracks at random from musicdir each PERIOD secs
 mpvcap_autopilot()
 {
-    echo "# $(mpvcap_date) $PROGNAME $* $MPVC_AP_CMD $MPVC_AP_CHECK PERIOD=$MPVC_AP_PERIOD"
+    echo "# $PROGNAME $* $MPVC_AP_CMD $MPVC_AP_CHECK PERIOD=$MPVC_AP_PERIOD NCHECK=$MPVC_AP_NCHECK [$MPVC_AP_HOURMIN,$MPVC_AP_HOURMAX]"
 
     music_dir=$(mpvc-fzf -OO 2>/dev/null || echo "$HOME/Music")
     history_file="/tmp/mpvc_history"
@@ -42,7 +42,13 @@ mpvcap_autopilot()
     current_album=""
     tracks_played_in_album=0
 
-    while sleep "${MPVC_AP_PERIOD}"
+    if ! mpvc status; then
+        mpvc mpv
+        mpvc togglei
+        mpvc repeat
+    fi
+
+    while sleep $(( "${MPVC_AP_PERIOD}" / 2 ))
     do
         hour=$(date +%_H)
         if [ "$hour" -ge "${MPVC_AP_HOURMIN}" ] && [ "$hour" -lt "${MPVC_AP_HOURMAX}" ]
@@ -56,15 +62,11 @@ mpvcap_autopilot()
 
                 next=$(find "$current_album" -maxdepth 1 -type f | shuf -n1)
                 if [ -z "$next" ]; then current_album=""; continue; fi
-                if grep -qxF "$next" "$history_file"; then
-                    continue
-                fi
+                if grep -qxF "$next" "$history_file"; then continue; fi
+		history=$(tail -n 30 "$history_file"; echo "$next") && echo "$history" > "$history_file"
 
-                echo "$next" >> "$history_file"
-                tail -n 30 "$history_file" > "${history_file}.tmp" && mv "${history_file}.tmp" "$history_file"
-
-                echo "# $(mpvcap_date) $PROGNAME next $next (Album: $(basename "$current_album"))"
-                mpvc -n "$next" || true
+                echo "# $(mpvcap_date) $PROGNAME album: $(basename "$current_album") next: ${next##"$music_dir"}"
+                mpvc -q --playnext  "$next"
                 tracks_played_in_album=$((tracks_played_in_album + 1))
             fi
         fi
@@ -86,7 +88,7 @@ mpvcap_autostart()
 
         # Device present/absent
         if [ -n "$check" ]; then
-            if [ $ncheck -lt 0 ]; then ncheck=0; fi
+            if [ "$ncheck" -lt 0 ]; then ncheck=0; fi
             ncheck=$(( ncheck + 1 ))
             if [ "$ncheck" -gt "$MPVC_AP_NCHECK" ]; then ncheck=$MPVC_AP_NCHECK; fi
         else
