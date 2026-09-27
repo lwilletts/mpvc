@@ -103,8 +103,7 @@ Below is a Quick Start guide showcasing mpvc commands usage.
      # use mpvc-tui to start the tui + desktop notifications
      mpvc-tui -T
 
-For more check the [\#Logbook](#gmt4-mpvc-docs-logbook) (remeber your
-best chance is to try, play, and have fun).
+For more check the [Log Book](logbook.html) (remember your best chance is to try, play, and have fun).
 
 ------------------------------------------------------------------------
 
