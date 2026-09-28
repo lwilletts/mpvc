@@ -346,7 +346,7 @@ handle_playlist()
 
 handle_chapters()
 {
-    handle_generic "$MPVC chapter-list-full" "$PROGNAME?browser&action=chapter-play"
+    handle_generic "$MPVC chapter-list-nr" "$PROGNAME?browser&action=chapter-play"
 }
 
 handle_equalizer()
