@@ -53,7 +53,7 @@ mpvcap_autopilot()
         hour=$(date +%_H)
         if [ "$hour" -ge "${MPVC_AP_HOURMIN}" ] && [ "$hour" -lt "${MPVC_AP_HOURMAX}" ]
         then
-            pause=$(mpvc -q get pause || true)
+            pause=$(mpvc -q get pause)
             if [ "$pause" != "yes" ]; then
                 if [ -z "$current_album" ] || [ "$tracks_played_in_album" -ge 3 ]; then
                     current_album=$(find "$music_dir" -type f | sed 's|/[^/]*$||' | shuf -n1)
