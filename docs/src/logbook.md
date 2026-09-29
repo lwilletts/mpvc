@@ -18,6 +18,12 @@ last_modified_date: 2026-09-26
 
 ------------------------------------------------------------------------
 
+# ToC
+{: .no_toc .text-delta }
+
+1. ToC
+{:toc}
+
 # Logbook
 
 The logbook below is just that, a log of notes as I use and work on

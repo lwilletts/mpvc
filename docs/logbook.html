@@ -40,7 +40,7 @@
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="Log Book" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebPage","description":"description","headline":"Log Book","url":"https://gmt4.github.io/mpvc/logbook.html"}</script>
+{"@context":"https://schema.org","@type":"WebPage","description":"description","headline":"Log Book","url":"http://0.0.0.0:4000/mpvc/logbook.html"}</script>
 <body>
   <a class="skip-to-main" href="#main-content">Skip to main content</a>
   <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
@@ -147,9 +147,8 @@
    <div class="main-content-wrap">
      <div id="main-content" class="main-content">
        <main>
-           <h1 id="gmt4-mpvc-logbook-">
-    <a href="#gmt4-mpvc-logbook-" class="anchor-heading" aria-labelledby="gmt4-mpvc-logbook-"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a>
-    🎧 mpvc logbook
+           <h1 id="-mpvc-logbook">
+    <a href="#-mpvc-logbook" class="anchor-heading" aria-labelledby="-mpvc-logbook"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> 🎧 mpvc logbook
 </h1>
 <ul>
  <li><strong>about</strong> A minimal mpc-like interface for controlling
@@ -162,6 +161,51 @@ posix-sh mpv-player mpvc mpvc-tui
  <li><strong>promote</strong> Star, share, and promote our work through the buttons
 below if you find it useful. Thanks!
 </ul><hr />
+<h1 class="no_toc text-delta" id="toc">
+    <a href="#toc" class="anchor-heading" aria-labelledby="toc"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> ToC
+</h1>
+<ol id="markdown-toc">
+ <li><a href="#-mpvc-logbook" id="markdown-toc--mpvc-logbook">🎧 mpvc logbook</a>
+ <li><a href="#logbook" id="markdown-toc-logbook">Logbook</a>   <ol>
+     <li><a href="#on-playing-urls-30-mar-2022" id="markdown-toc-on-playing-urls-30-mar-2022">On playing URLs, 30 Mar 2022</a>
+     <li><a href="#on-securing-mpv-socket-location-14-nov-2022" id="markdown-toc-on-securing-mpv-socket-location-14-nov-2022">On securing mpv socket location, 14 Nov 2022</a>
+     <li><a href="#on-loadsave-functionality-18-nov-2022" id="markdown-toc-on-loadsave-functionality-18-nov-2022">On load/save functionality, 18 Nov 2022</a>
+     <li><a href="#on-persistent-mpv-startup-20-nov-2022" id="markdown-toc-on-persistent-mpv-startup-20-nov-2022">On persistent mpv startup, 20 Nov 2022</a>
+     <li><a href="#on-a-minimal-mpvc-tui-03-dec-2022" id="markdown-toc-on-a-minimal-mpvc-tui-03-dec-2022">On a minimal mpvc-tui, 03 Dec 2022</a>
+     <li><a href="#on-using-the-mpvc-tui-prompt-13-dec-2022" id="markdown-toc-on-using-the-mpvc-tui-prompt-13-dec-2022">On using the mpvc-tui prompt, 13 Dec 2022</a>
+     <li><a href="#on-using-the-mpvc-tui--x-launcher-14-dec-2022" id="markdown-toc-on-using-the-mpvc-tui--x-launcher-14-dec-2022">On using the mpvc-tui -x launcher, 14 Dec 2022</a>
+     <li><a href="#on-managing-playlists-with-mpvc-autoloadautosave-15-dec-2022" id="markdown-toc-on-managing-playlists-with-mpvc-autoloadautosave-15-dec-2022">On managing playlists with mpvc autoload/autosave, 15 Dec 2022</a>
+     <li><a href="#on-customizing-mpvc-tui-look-and-feel-18-dec-2022" id="markdown-toc-on-customizing-mpvc-tui-look-and-feel-18-dec-2022">On customizing mpvc-tui look and feel, 18 Dec 2022</a>
+     <li><a href="#show-hn-mpvc-tui--a-minimal-mpc-like-cli-and-tui-for-controlling-mpv-16-dec-2022" id="markdown-toc-show-hn-mpvc-tui--a-minimal-mpc-like-cli-and-tui-for-controlling-mpv-16-dec-2022">Show HN: mpvc-tui – A minimal mpc-like CLI and TUI for controlling mpv, 16 Dec 2022</a>
+     <li><a href="#on-issuing-direct-json-ipc-commands-to-mpv-17-dec-2022" id="markdown-toc-on-issuing-direct-json-ipc-commands-to-mpv-17-dec-2022">On issuing direct JSON IPC commands to mpv, 17 Dec 2022</a>
+     <li><a href="#on-playing-music-from-streaming-services-as-youtube-and-co-19-dec-2022" id="markdown-toc-on-playing-music-from-streaming-services-as-youtube-and-co-19-dec-2022">On playing music from streaming services as youtube and co., 19 Dec 2022</a>
+     <li><a href="#on-subscribing-and-receiving-mpv-events-21-dec-2022" id="markdown-toc-on-subscribing-and-receiving-mpv-events-21-dec-2022">On subscribing and receiving mpv events, 21 Dec 2022</a>
+     <li><a href="#on-using-mpv-together-with-the-fzf-fuzzy-finder-27-dec-2022" id="markdown-toc-on-using-mpv-together-with-the-fzf-fuzzy-finder-27-dec-2022">On using mpv together with the fzf fuzzy finder, 27 Dec 2022</a>
+     <li><a href="#on-using-mpv-together-with-the-fzf-fuzzy-finder-12-jan-2023" id="markdown-toc-on-using-mpv-together-with-the-fzf-fuzzy-finder-12-jan-2023">On using mpv together with the fzf fuzzy finder, 12 Jan 2023</a>
+     <li><a href="#on-controlling-multiple-remotely-running-mpv-instances-19-jan-2023" id="markdown-toc-on-controlling-multiple-remotely-running-mpv-instances-19-jan-2023">On controlling multiple remotely running mpv instances, 19 Jan 2023</a>
+     <li><a href="#on-stashing-mpv-media-player-state-to-restore-later-19-feb-2023" id="markdown-toc-on-stashing-mpv-media-player-state-to-restore-later-19-feb-2023">On stashing mpv media player state to restore later, 19 Feb 2023</a>
+     <li><a href="#css-rss--casts-updates-on-the-gmt4githubiompvc-site-31-mar-2023" id="markdown-toc-css-rss--casts-updates-on-the-gmt4githubiompvc-site-31-mar-2023">CSS, RSS &amp; casts updates on the gmt4.github.io/mpvc site, 31 Mar 2023</a>
+     <li><a href="#introducing-mpvc-equalizer-a-basic-mpv-equalizer-for-the-cli-25-apr-2023" id="markdown-toc-introducing-mpvc-equalizer-a-basic-mpv-equalizer-for-the-cli-25-apr-2023">Introducing mpvc-equalizer: a basic mpv equalizer for the CLI, 25 Apr 2023</a>
+     <li><a href="#on-applying-ffmpeg-av-filters-using-the-mpv-json-ipc-2-june-2023" id="markdown-toc-on-applying-ffmpeg-av-filters-using-the-mpv-json-ipc-2-june-2023">On applying ffmpeg AV filters using the MPV JSON IPC, 2 June 2023</a>
+     <li><a href="#introducing-mpvc-web-a-mpvc-tui-like-hack-for-the-webbrowser-21-july-2023" id="markdown-toc-introducing-mpvc-web-a-mpvc-tui-like-hack-for-the-webbrowser-21-july-2023">Introducing mpvc-web: a mpvc-tui like hack for the web/browser, 21 July 2023</a>
+     <li><a href="#introducing-mpvc-autopilot-automatic-startstop-based-on-presence-15-sep-2023" id="markdown-toc-introducing-mpvc-autopilot-automatic-startstop-based-on-presence-15-sep-2023">Introducing mpvc-autopilot: automatic start/stop based on presence, 15 Sep 2023</a>
+     <li><a href="#on-mpvc-usage-patterns-for-playing-musicvideos-16-sep-2023" id="markdown-toc-on-mpvc-usage-patterns-for-playing-musicvideos-16-sep-2023">On mpvc usage patterns for playing music/videos, 16 Sep 2023</a>
+     <li><a href="#on-observing-mpv-property-changes-26-oct-2023" id="markdown-toc-on-observing-mpv-property-changes-26-oct-2023">On observing mpv property changes, 26 Oct 2023</a>
+     <li><a href="#on-the-security-of-mpvc-web-17-nov-2023" id="markdown-toc-on-the-security-of-mpvc-web-17-nov-2023">On the security of mpvc-web, 17 Nov 2023</a>
+     <li><a href="#on-http-streaming-media-using-mpvc-web-16-jan-2024" id="markdown-toc-on-http-streaming-media-using-mpvc-web-16-jan-2024">On http-streaming media using mpvc-web, 16 Jan 2024</a>
+     <li><a href="#on-mpris-support-14-feb-2024" id="markdown-toc-on-mpris-support-14-feb-2024">On MPRIS support, 14 Feb 2024</a>
+     <li><a href="#on-support-unixes-besides-gnulinux-bsd-and-macos-1-mar-2024" id="markdown-toc-on-support-unixes-besides-gnulinux-bsd-and-macos-1-mar-2024">On support UNIXes besides GNU/Linux: BSD and MacOS, 1 Mar 2024</a>
+     <li><a href="#introducing-mpvc-chapter-helper-for-managing-chapters-5-apr-2024" id="markdown-toc-introducing-mpvc-chapter-helper-for-managing-chapters-5-apr-2024">Introducing mpvc-chapter: helper for managing chapters, 5 Apr 2024</a>
+     <li><a href="#introducing-mpvc-osd-interfacing-mpvc-with-a-4x20-usb-lcd-5-may-2024" id="markdown-toc-introducing-mpvc-osd-interfacing-mpvc-with-a-4x20-usb-lcd-5-may-2024">Introducing mpvc-osd: interfacing mpvc with a 4x20 USB LCD, 5 May 2024</a>
+     <li><a href="#some-notes-on-my-current-mpvc-setup-4-july-2024" id="markdown-toc-some-notes-on-my-current-mpvc-setup-4-july-2024">Some notes on my current mpvc setup, 4 July 2024</a>
+     <li><a href="#on-mpvc-lowfi-and-mpvc-fzf-url-browser-26-october-2024" id="markdown-toc-on-mpvc-lowfi-and-mpvc-fzf-url-browser-26-october-2024">On mpvc lowfi and mpvc-fzf URL browser, 26 October 2024</a>
+     <li><a href="#on-customizing-mpvc-fzf-key-bindings-16-june-2025" id="markdown-toc-on-customizing-mpvc-fzf-key-bindings-16-june-2025">On customizing mpvc-fzf key-bindings, 16 June 2025</a>
+     <li><a href="#on-companion-tools-that-go-well-with-mpvc-08-november-2025" id="markdown-toc-on-companion-tools-that-go-well-with-mpvc-08-november-2025">On companion tools that go well with mpvc, 08 November 2025</a>
+     <li><a href="#on-a-sample-setup-using-crontab5-for-mpvc-28-december-2025" id="markdown-toc-on-a-sample-setup-using-crontab5-for-mpvc-28-december-2025">On a sample setup using crontab(5) for mpvc, 28 December 2025</a>
+     <li><a href="#introducing-mpvc-web-browser-a-mpvc-web-companion-browser-07-september-2026" id="markdown-toc-introducing-mpvc-web-browser-a-mpvc-web-companion-browser-07-september-2026">Introducing mpvc-web-browser: a mpvc-web companion browser, 07 September 2026</a>
+   </ol>
+ <li><a href="#the-end" id="markdown-toc-the-end">The End</a>
+</ol>
 <h1 id="logbook">
     <a href="#logbook" class="anchor-heading" aria-labelledby="logbook"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Logbook
 </h1>
@@ -935,7 +979,7 @@ recently, mainly focused on improving the mpvc-web,</p>
 <h1 id="the-end">
     <a href="#the-end" class="anchor-heading" aria-labelledby="the-end"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> The End
 </h1>
-<p>Return to the <a href="#logbook">Start</a></p><hr />
+<p>Return to the <a href="#logbook">Start</a></p>
        </main>
 <hr>
 <footer>
