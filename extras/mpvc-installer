@@ -372,15 +372,12 @@ usage: $PROGNAME args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
 
   check-update   : Check for updates
   check-reqs     : Check for required packages
-
   config         : Fetch mpvc config
   config-user    : Fetch mpvc config to BINDIR=$HOME/bin
   config-sys     : Fetch mpvc config to BINDIR=$PREFIX/bin
-
   man            : Fetch mpvc manpages
   man-user       : Fetch mpvc manpages to MANDIR=$XDG_DATA_HOME
   man-sys        : Fetch mpvc manpages to MANDIR=$MANDIR
-
   comp-user       : Install shell completions from MANDIR=$XDG_DATA_HOME
   comp-sys        : Install shell completions from MANDIR=$XDG_DATA_HOME
 
