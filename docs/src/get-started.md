@@ -71,7 +71,7 @@ directory to shows some screencasts of mpvc in action.
 
 ------------------------------------------------------------------------
 
-## ▶️  Installation
+## Installation
 
 ```bash
 curl -fsSLO https://github.com/gmt4/mpvc/raw/master/extras/mpvc-installer;
@@ -81,7 +81,7 @@ BINDIR=$HOME/bin SHELL=/bin/sh $SHELL ./mpvc-installer quickstart
 
 ------------------------------------------------------------------------
 
-## 🚀 Quickstart Guide
+## Quickstart Guide
 
 Note you can use `m/mx` instead of `mpvc/mpvc-fzf` when typing on the CLI, these are setup by `mpvc-installer`.
 
