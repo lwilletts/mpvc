@@ -13,7 +13,7 @@ An elegant, lightweight, mpc-like command-line and web controller for the mpv me
 
 ## ⚡ Installation
 
-The `mpvc-installer quickstart` automated install runs strictly in user-space (no sudo/root access). If you ever want to remove it, it leaves no messy traces, just do `mpvc-intaller quickstart-rm`.
+The `mpvc-installer quickstart` automated install runs strictly in user-space (no sudo/root access). If you ever want to remove it, it leaves no messy traces, just do `mpvc-installer quickstart-rm`.
 
 
 ```bash
