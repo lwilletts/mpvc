@@ -11,7 +11,20 @@ Demo mpvc (v0)
 
 Get Ready. mpvc-demo-v0 loading ...
 
-<img id="cast-mpvc-v0" class="demo"  src="casts/cast-mpvc-v0.svg" loading="lazy" width="100%" alt="Terminal Screencast ..." >
+<div class="terminal-video-container">
+  <video
+    src="casts/cast-mpvc-v0.mp4"
+    autoplay
+    loop
+    muted
+    controls
+    playsinline
+    preload="auto"
+    aria-label="Terminal Screencast ..."
+    class="terminal-video">
+    Your browser does not support the video tag.
+  </video>
+</div>
 
 (If you prefer, you can view the demo with <a href="casts/">asciinerama-player</a> which is less buggy)
 
