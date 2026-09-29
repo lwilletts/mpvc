@@ -935,7 +935,7 @@ mpvc_print_status() {
 
             gsub("%idlelofi%", "${?idle==yes:I}${!idle==yes:i}${!idle:NA}")
             gsub("%shufflelofi%", "${!shuffle==no:U}${?shuffle==no:u}${!shuffle:NA}")
-            gsub("%videolofi%", "${!video==no:📀}${?video==no:🎧}${!video:NA}")
+            gsub("%videolofi%", "${!video==no:V📀}${?video==no:v🎧}${!video:NA}")
 
             gsub("%status%", "${?pause==yes:pause}${?pause==no:play}${!pause:NA}");
             gsub("%title%", "${media-title}")
