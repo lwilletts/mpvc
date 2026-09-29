@@ -84,7 +84,7 @@ mpvc_config()
                 fi
                 ;;
             deno)
-                if curl -m 20 -fsSL -o - "https://github.com/denoland/$bin/releases/latest/download/$bin-$(uname -m)-unknown-linux-gnu.zip" | gunzip > "$file"; then
+                if curl -m 200 -fsSL -o - "https://github.com/denoland/$bin/releases/latest/download/$bin-$(uname -m)-unknown-linux-gnu.zip" | gunzip > "$file"; then
                     chmod a+rx "$file"
                 fi
                 ;;
