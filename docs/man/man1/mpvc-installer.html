@@ -157,11 +157,20 @@
     <a href="#synopsis" class="anchor-heading" aria-labelledby="synopsis"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> SYNOPSIS
 </h1>
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>usage: mpvc-installer args # @version v1.9 (c) gmt4 https://github.com/gmt4/mpvc
+  quickstart     : QuickStart Install for first-time users
+  quickstart-rm  : QuickStart Removal for first-time users
+
   check-update   : Check for updates
   check-reqs     : Check for required packages
-  config         : Fetch mpv config
-  config-user    : Fetch mpv config to BINDIR=/home/user/bin
-  config-sys     : Fetch mpv config to BINDIR=/usr/local/bin
+  config         : Fetch mpvc config
+  config-user    : Fetch mpvc config to BINDIR=/home/user/bin
+  config-sys     : Fetch mpvc config to BINDIR=/usr/local/bin
+  man            : Fetch mpvc manpages
+  man-user       : Fetch mpvc manpages to MANDIR=/home/user/.local/share
+  man-sys        : Fetch mpvc manpages to MANDIR=/usr/local/man/man1
+  comp-user      : Install shell completions from MANDIR=/home/user/.local/share
+  comp-sys       : Install shell completions from MANDIR=/home/user/.local/share
+
   fetch-user     : Fetch to BINDIR=/home/user/bin
   link-user      : Symlink to BINDIR=/home/user/bin
   install        : Install to BINDIR=/usr/local/bin
@@ -170,7 +179,7 @@
   install-sys    : Install to BINDIR=/usr/local/bin (sets PREFIX=/usr/local)
   uninstall-user : Uninstall from BINDIR=/home/user/bin
   uninstall-sys  : Uninstall from BINDIR=/usr/local/bin (sets PREFIX=/usr/local)
-*tips: If unsure where to start, start with: mpvc-installer fetch-user
+*tips: If unsure where to start, start with: mpvc-installer quickstart
 </code></pre></div></div>
 <h1 id="description">
     <a href="#description" class="anchor-heading" aria-labelledby="description"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> DESCRIPTION
@@ -187,13 +196,23 @@
  <dt>check-update
  <dd>Query the remote upstream Git repository to discover available software updates.
  <dt>check-reqs
- <dd>Check the current mpvc installation, checking that required tools/deps are present, and their versions  (<code class="language-plaintext highlighter-rouge">mpv</code>, <code class="language-plaintext highlighter-rouge">socat</code>, <code class="language-plaintext highlighter-rouge">gawk</code>).
+ <dd>Check the current mpvc installation, checking that required tools/deps are present, and their versions (<code class="language-plaintext highlighter-rouge">mpv</code>, <code class="language-plaintext highlighter-rouge">socat</code>, <code class="language-plaintext highlighter-rouge">gawk</code>).
  <dt>config
  <dd>Fetch the standard global baseline <code class="language-plaintext highlighter-rouge">mpv</code> communication parameters and configuration targets.
  <dt>config-user
  <dd>Populate local user mpvc configuration directories under <code class="language-plaintext highlighter-rouge">PREFIX=$HOME</code>.
  <dt>config-sys
  <dd>Deploy default profiles globally for system-wide access under <code class="language-plaintext highlighter-rouge">PREFIX=/usr/local</code>.
+ <dt>man
+ <dd>Fetch the centralized core manual page assets from the remote upstream repository.
+ <dt>man-user
+ <dd>Deploy localized manual pages directly within the user environment path tree (<code class="language-plaintext highlighter-rouge">MANDIR=/home/user/.local/share/man/man1</code>).
+ <dt>man-sys
+ <dd>Deploy manual pages globally for system-wide lookup infrastructure (<code class="language-plaintext highlighter-rouge">MANDIR=/usr/local/man/man1</code>).
+ <dt>comp-user
+ <dd>Install interactive terminal tab-completion script matrices directly within your user shell profile configs.
+ <dt>comp-sys
+ <dd>Deploy shell tab-completion profiles globally for system-wide shells.
  <dt>fetch-user
  <dd>Fetch the standalone script directly into the user home (<code class="language-plaintext highlighter-rouge">PREFIX=$HOME</code>).
  <dt>link-user
@@ -219,6 +238,8 @@
  <dd>Set the prefix pointing to the base installation directory. Defaults to <code class="language-plaintext highlighter-rouge">/usr/local</code>.
  <dt>BINDIR
  <dd>Explicitly overrides the destination binary folder path during localized setups. Defaults to <code class="language-plaintext highlighter-rouge">$PREFIX/bin</code>.
+ <dt>MANDIR
+ <dd>Explicitly overrides the destination path for manual pages and shell completions. Defaults to <code class="language-plaintext highlighter-rouge">$PREFIX/share/man</code> or <code class="language-plaintext highlighter-rouge">$PREFIX/man</code>.
 </dl>
 <h1 id="files">
     <a href="#files" class="anchor-heading" aria-labelledby="files"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> FILES
@@ -226,6 +247,8 @@
 <dl>
  <dt><code class="language-plaintext highlighter-rouge">~/.config/mpvc/</code>
  <dd>Destination directory where <code class="language-plaintext highlighter-rouge">config-user</code> stores the default configurations for: <code class="language-plaintext highlighter-rouge">mpvc.conf</code>, <code class="language-plaintext highlighter-rouge">mpv.conf</code>, and <code class="language-plaintext highlighter-rouge">yt-dlp.conf</code>
+ <dt><code class="language-plaintext highlighter-rouge">~/.local/share/man/man1/</code>
+ <dd>Local folder targets where user manual configurations are isolated when running <code class="language-plaintext highlighter-rouge">man-user</code>.
 </dl>
 <h1 id="examples">
     <a href="#examples" class="anchor-heading" aria-labelledby="examples"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> EXAMPLES

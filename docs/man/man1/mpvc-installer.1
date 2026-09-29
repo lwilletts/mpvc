@@ -10,11 +10,20 @@ manager for mpvc
 .nf
 \f[C]
 usage: mpvc-installer args # \[at]version v1.9 (c) gmt4 https://github.com/gmt4/mpvc
+  quickstart     : QuickStart Install for first-time users
+  quickstart-rm  : QuickStart Removal for first-time users
+
   check-update   : Check for updates
   check-reqs     : Check for required packages
-  config         : Fetch mpv config
-  config-user    : Fetch mpv config to BINDIR=/home/user/bin
-  config-sys     : Fetch mpv config to BINDIR=/usr/local/bin
+  config         : Fetch mpvc config
+  config-user    : Fetch mpvc config to BINDIR=/home/user/bin
+  config-sys     : Fetch mpvc config to BINDIR=/usr/local/bin
+  man            : Fetch mpvc manpages
+  man-user       : Fetch mpvc manpages to MANDIR=/home/user/.local/share
+  man-sys        : Fetch mpvc manpages to MANDIR=/usr/local/man/man1
+  comp-user       : Install shell completions from MANDIR=/home/user/.local/share
+  comp-sys        : Install shell completions from MANDIR=/home/user/.local/share
+
   fetch-user     : Fetch to BINDIR=/home/user/bin
   link-user      : Symlink to BINDIR=/home/user/bin
   install        : Install to BINDIR=/usr/local/bin
@@ -23,7 +32,7 @@ usage: mpvc-installer args # \[at]version v1.9 (c) gmt4 https://github.com/gmt4/
   install-sys    : Install to BINDIR=/usr/local/bin (sets PREFIX=/usr/local)
   uninstall-user : Uninstall from BINDIR=/home/user/bin
   uninstall-sys  : Uninstall from BINDIR=/usr/local/bin (sets PREFIX=/usr/local)
-*tips: If unsure where to start, start with: mpvc-installer fetch-user
+*tips: If unsure where to start, start with: mpvc-installer quickstart
 \f[R]
 .fi
 .SH DESCRIPTION

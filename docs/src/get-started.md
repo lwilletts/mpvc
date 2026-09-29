@@ -73,6 +73,8 @@ directory to shows some screencasts of mpvc in action.
 
 ## Installation
 
+The `mpvc-installer quickstart` automated install runs strictly in user-space (no sudo/root access). If you ever want to remove it, it leaves no messy traces, just do `mpvc-installer quickstart-rm`.
+
 ```bash
 curl -fsSLO https://github.com/gmt4/mpvc/raw/master/extras/mpvc-installer;
 # take your time to review the mpvc-installer for peace-of-mind
