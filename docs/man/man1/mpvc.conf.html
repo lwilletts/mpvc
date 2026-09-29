@@ -167,13 +167,13 @@
 </h2>
 <p>This section defines the mpvc(1) configuration variables.</p>
 <dl>
- <dt><code class="language-plaintext highlighter-rouge">MPVC_MPV</code>
+ <dt>MPVC_MPV
  <dd>Defines the executable binary name or path for the core player engine. Defaults to <code class="language-plaintext highlighter-rouge">mpv</code>.
- <dt><code class="language-plaintext highlighter-rouge">MPVC_SOCAT</code>
+ <dt>MPVC_SOCAT
  <dd>Defines the executable binary name or path used to stream JSON data over unix sockets. Defaults to <code class="language-plaintext highlighter-rouge">socat</code>.
- <dt><code class="language-plaintext highlighter-rouge">MPVC_LOCAL_CACHE</code>
+ <dt>MPVC_LOCAL_CACHE
  <dd>Boolean flag switch (<code class="language-plaintext highlighter-rouge">true</code> or <code class="language-plaintext highlighter-rouge">false</code>) controlling whether regional caching routines are activated during playback sequences.
- <dt><code class="language-plaintext highlighter-rouge">MPVC_FMTSTR</code>, <code class="language-plaintext highlighter-rouge">MPVC_FMTSTR_LOFI</code>
+ <dt>MPVC_FMTSTR, MPVC_FMTSTR_LOFI
  <dd>Customizes the output of the <code class="language-plaintext highlighter-rouge">mpvc [status]</code> command to display a summary of the mpv playing state, shown by the rest of tools.
 </dl>
 <h2 id="formatting-string-tokens">
@@ -204,7 +204,7 @@
 </h2>
 <p>This section configures terminal environment variables and scaling preferences for the terminal visual frontend interface <strong>mpvc-tui</strong>(1).</p>
 <dl>
- <dt><code class="language-plaintext highlighter-rouge">MPVC_TUI_TERM</code>
+ <dt>MPVC_TUI_TERM
  <dd>Declares the explicit target shell terminal application spawned specifically when launching graphical console configurations in detached windows.
 </dl>
 <h2 id="mpvc-fzf">
@@ -212,9 +212,9 @@
 </h2>
 <p>This section contains option flags, remote scraping node overrides, and execution properties for the interactive search interface <strong>mpvc-fzf</strong>(1).</p>
 <dl>
- <dt><code class="language-plaintext highlighter-rouge">MPVC_TERM</code>
+ <dt>MPVC_TERM
  <dd>Defines the system terminal emulator tool launched to spawn detached windows when passing the selection flag <code class="language-plaintext highlighter-rouge">-x</code> or <code class="language-plaintext highlighter-rouge">launch</code>. Defaults to <code class="language-plaintext highlighter-rouge">xterm</code>.
- <dt><code class="language-plaintext highlighter-rouge">MPVC_FZF_INVID_URL</code>
+ <dt>MPVC_FZF_INVID_URL
  <dd>Stores your preferred URL address link pointing to a public or self-hosted <strong>Invidious</strong> API instance mirror node to handle global text lookups.
 </dl>
 <h2 id="mpvc-web">
@@ -222,13 +222,13 @@
 </h2>
 <p>This section handles server port rules, encryption endpoints, UI refresh behaviors, and thumbnail parsing switches for the local HTTP daemon interface controller <strong>mpvc-web</strong>(1).</p>
 <dl>
- <dt><code class="language-plaintext highlighter-rouge">MPVC_WEB_PORT</code>
+ <dt>MPVC_WEB_PORT
  <dd>Specifies the default plaintext HTTP listening network port assigned to the web gateway server daemon. Defaults to <code class="language-plaintext highlighter-rouge">8888</code>.
- <dt><code class="language-plaintext highlighter-rouge">MPVC_WEB_SSL_PORT</code>
+ <dt>MPVC_WEB_SSL_PORT
  <dd>Declares the network port assigned to handle secure, encrypted HTTPS client browser connections. Defaults to <code class="language-plaintext highlighter-rouge">8443</code>.
- <dt><code class="language-plaintext highlighter-rouge">MPVC_WEB_THUMBNAIL_ENABLE</code>
+ <dt>MPVC_WEB_THUMBNAIL_ENABLE
  <dd>Boolean flag switch (<code class="language-plaintext highlighter-rouge">true</code> or <code class="language-plaintext highlighter-rouge">false</code>) controlling whether the web frontend interface actively pulls, parses, and shows media artwork thumbnail images over the network dashboard.
- <dt><code class="language-plaintext highlighter-rouge">MPVC_WEB_HTML_REFRESH</code>
+ <dt>MPVC_WEB_HTML_REFRESH
  <dd>Establishes a time interval integer (measured in seconds) instructing client web browsers how frequently to automatically reload the page interface state to stay synchronized with track changes. Defaults to <code class="language-plaintext highlighter-rouge">240</code>.
 </dl>
 <h1 id="see-also">

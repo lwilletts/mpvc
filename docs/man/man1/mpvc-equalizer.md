@@ -36,31 +36,31 @@ mpvc-equalizer is a utility helper script bundled with mpvc that configures, tog
 OPTIONS
 =======
 
-`save`
+save
 : Save the current audio filter equalizer adjustments and gain parameters to the configuration storage.
 
-`load`
+load
 : Load previously saved audio filter equalizer configuration profiles directly into the active playback engine workspace.
 
-`reset`
+reset
 : Reset all equalizer configuration adjustments back to a flat level by setting all audio filter gains to 0.
 
-`clear`
+clear
 : Clear and completely remove the active audio filter configuration settings from the running instance context.
 
-`toggle`
+toggle
 : Toggle the audio filter equalizer settings on or off to quickly contrast modified frequencies with baseline flat audio output.
 
-`preset`
+preset
 : Show the active audio filter configuration profile or set the equalizer matrix to a predefined listening preset.
 
-`values`
+values
 : Output the current audio filter equalizer gain parameters formatted as a list of raw float values.
 
-`bars`
+bars
 : Render a visual representation of the active frequency band gain configurations using terminal text graph bars.
 
-`json`
+json
 : Export the complete active equalizer audio filter settings profile structured into a standard JSON payload format string.
 
 EXAMPLES

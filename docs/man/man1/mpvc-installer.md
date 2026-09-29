@@ -40,65 +40,65 @@ DESCRIPTION
 COMMANDS
 ========
 
-`quickstart`
-: Execute an automated initial setup routine designed for first-time users, fetching and configuring assets locally.
+quickstart
+: Automated download, install, config, and setup. Designed for first-time users under user home (`PREFIX=$HOME`).
 
-`quickstart-rm`
-: Cleanly remove all temporary configurations and installations initialized by the quickstart routine.
+quickstart-rm
+: Cleanup the installation performed by the quickstart routine.
 
-`check-update`
+check-update
 : Query the remote upstream Git repository to discover available software updates.
 
-`check-reqs`
-: Audit the local system `$PATH` environment to ensure that core required tools (`mpv`, `socat`, `gawk`) and extras are installed.
+check-reqs
+: Check the current mpvc installation, checking that required tools/deps are present, and their versions  (`mpv`, `socat`, `gawk`).
 
-`config`
+config
 : Fetch the standard global baseline `mpv` communication parameters and configuration targets.
 
-`config-user`
-: Populate local user configuration directories under `BINDIR=~/bin/` with default profiles.
+config-user
+: Populate local user mpvc configuration directories under `PREFIX=$HOME`.
 
-`config-sys`
-: Deploy default profiles globally for system-wide access under `/usr/local/bin`.
+config-sys
+: Deploy default profiles globally for system-wide access under `PREFIX=/usr/local`.
 
-`fetch-user`
-: Fetch and download the standalone script collection directly into the user's execution directory (`~/bin/`).
+fetch-user
+: Fetch the standalone script directly into the user home (`PREFIX=$HOME`).
 
-`link-user`
+link-user
 : Create localized symlinks within `~/bin/` pointing to a manually cloned repository tree.
 
-`install`
-: Move and register the application binaries systematically to the universal `/usr/local/bin` folder block.
+install
+: Install the application binaries systematically to the system `PREFIX=/usr/local/`.
 
-`uninstall`
-: Completely remove systemic application components from `/usr/local/bin`.
+uninstall
+: Completely remove systemic application components from `PREFIX=/usr/local/`.
 
-`install-user`
-: Compile, move, and configure the standalone suite targets for a single local user profile (`~/bin/`).
+install-user
+: Install the application binaries systematically to the user home `PREFIX=$HOME`.
 
-`install-sys`
-: Execute a full administrative installation routing binaries to `/usr/local/bin` (implicitly sets `PREFIX=/usr/local`).
+install-sys
+: Install the application binaries systematically to the system `PREFIX=/usr/local/`.
 
-`uninstall-user`
-: Discard user-level script mappings and configurations from the local path context.
+uninstall-user
+: Uninstall the application binaries systematically from user home `PREFIX=$HOME`.
 
-`uninstall-sys`
-: Erase all administrative global binary elements and dependencies from system folders.
+uninstall-sys
+: Uninstall the application binaries systematically from the system `PREFIX=/usr/local/`.
 
 ENVIRONMENT
 ===========
 
-`BINDIR`
-: Explicitly overrides the destination binary folder path during localized setups. Defaults to `$HOME/bin`.
+PREFIX
+: Set the prefix pointing to the base installation directory. Defaults to `/usr/local`.
 
-`PREFIX`
-: Declares the baseline administrative root pathway prefix for global installations. Defaults to `/usr/local`.
+BINDIR
+: Explicitly overrides the destination binary folder path during localized setups. Defaults to `$PREFIX/bin`.
 
 FILES
 =====
 
 `~/.config/mpvc/`
-: Destination directory where `config-user` populates the default `mpvc.conf`, `mpv.conf`, and `yt-dlp.conf` blueprints.
+: Destination directory where `config-user` stores the default configurations for: `mpvc.conf`, `mpv.conf`, and `yt-dlp.conf`
 
 EXAMPLES
 ========

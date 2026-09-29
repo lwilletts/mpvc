@@ -36,28 +36,28 @@ over a network interface using standard HTTP methods or a mobile-friendly browse
 OPTIONS
 =======
 
-`-c` start|stop|status
+-c start|stop|status
 : Set the mpvc-web HTTP server command. This option is **required**. Accepted values are `start` to daemonize the server, `stop` to terminate it, `status` to check is running.
 
-`-b` bind-address
+-b bind-address
 : Set the mpvc-web HTTP server bind address. Defaults to `localhost`.
 
-`-p` port
+-p port
 : Set the mpvc-web HTTP server port. Defaults to `8888`.
 
-`-r` directory
+-r directory
 : Set the mpvc-web HTTP server root directory path. Defaults to `/tmp/mpvc-web/root`.
 
-`-R` seconds
+-R seconds
 : Set the mpvc-web HTTP server HTML auto-refresh interval in seconds. Defaults to `240`.
 
-`-s` https
+-s https
 : Set the mpvc-web HTTP server SSL/TLS configurations or certificate paths. Defaults to empty.
 
-`-a` archive
+-a archive
 : Set the mpvc-web HTTP server to include a `ytdl-archive/` repository or path tracking download history. Defaults to empty.
 
-`-h`, `--help`
+-h, --help
 : Display the help synopsis and exit.
 
 EXAMPLES

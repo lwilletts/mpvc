@@ -20,21 +20,21 @@ block headers to group each tool configuration on its own section.
 .PP
 This section defines the mpvc(1) configuration variables.
 .TP
-\f[B]\f[CB]MPVC_MPV\f[B]\f[R]
+MPVC_MPV
 Defines the executable binary name or path for the core player engine.
 Defaults to \f[C]mpv\f[R].
 .TP
-\f[B]\f[CB]MPVC_SOCAT\f[B]\f[R]
+MPVC_SOCAT
 Defines the executable binary name or path used to stream JSON data over
 unix sockets.
 Defaults to \f[C]socat\f[R].
 .TP
-\f[B]\f[CB]MPVC_LOCAL_CACHE\f[B]\f[R]
+MPVC_LOCAL_CACHE
 Boolean flag switch (\f[C]true\f[R] or \f[C]false\f[R]) controlling
 whether regional caching routines are activated during playback
 sequences.
 .TP
-\f[B]\f[CB]MPVC_FMTSTR\f[B]\f[R], \f[B]\f[CB]MPVC_FMTSTR_LOFI\f[B]\f[R]
+MPVC_FMTSTR, MPVC_FMTSTR_LOFI
 Customizes the output of the \f[C]mpvc [status]\f[R] command to display
 a summary of the mpv playing state, shown by the rest of tools.
 .SS Formatting String Tokens
@@ -96,7 +96,7 @@ This section configures terminal environment variables and scaling
 preferences for the terminal visual frontend interface
 \f[B]mpvc-tui\f[R](1).
 .TP
-\f[B]\f[CB]MPVC_TUI_TERM\f[B]\f[R]
+MPVC_TUI_TERM
 Declares the explicit target shell terminal application spawned
 specifically when launching graphical console configurations in detached
 windows.
@@ -106,13 +106,13 @@ This section contains option flags, remote scraping node overrides, and
 execution properties for the interactive search interface
 \f[B]mpvc-fzf\f[R](1).
 .TP
-\f[B]\f[CB]MPVC_TERM\f[B]\f[R]
+MPVC_TERM
 Defines the system terminal emulator tool launched to spawn detached
 windows when passing the selection flag \f[C]-x\f[R] or
 \f[C]launch\f[R].
 Defaults to \f[C]xterm\f[R].
 .TP
-\f[B]\f[CB]MPVC_FZF_INVID_URL\f[B]\f[R]
+MPVC_FZF_INVID_URL
 Stores your preferred URL address link pointing to a public or
 self-hosted \f[B]Invidious\f[R] API instance mirror node to handle
 global text lookups.
@@ -122,22 +122,22 @@ This section handles server port rules, encryption endpoints, UI refresh
 behaviors, and thumbnail parsing switches for the local HTTP daemon
 interface controller \f[B]mpvc-web\f[R](1).
 .TP
-\f[B]\f[CB]MPVC_WEB_PORT\f[B]\f[R]
+MPVC_WEB_PORT
 Specifies the default plaintext HTTP listening network port assigned to
 the web gateway server daemon.
 Defaults to \f[C]8888\f[R].
 .TP
-\f[B]\f[CB]MPVC_WEB_SSL_PORT\f[B]\f[R]
+MPVC_WEB_SSL_PORT
 Declares the network port assigned to handle secure, encrypted HTTPS
 client browser connections.
 Defaults to \f[C]8443\f[R].
 .TP
-\f[B]\f[CB]MPVC_WEB_THUMBNAIL_ENABLE\f[B]\f[R]
+MPVC_WEB_THUMBNAIL_ENABLE
 Boolean flag switch (\f[C]true\f[R] or \f[C]false\f[R]) controlling
 whether the web frontend interface actively pulls, parses, and shows
 media artwork thumbnail images over the network dashboard.
 .TP
-\f[B]\f[CB]MPVC_WEB_HTML_REFRESH\f[B]\f[R]
+MPVC_WEB_HTML_REFRESH
 Establishes a time interval integer (measured in seconds) instructing
 client web browsers how frequently to automatically reload the page
 interface state to stay synchronized with track changes.

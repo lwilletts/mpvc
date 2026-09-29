@@ -29,39 +29,39 @@ configures, toggles, and displays the audio filter (af) equalizer
 settings of a running mpv instance via local Unix socket connections.
 .SH OPTIONS
 .TP
-\f[B]\f[CB]save\f[B]\f[R]
+save
 Save the current audio filter equalizer adjustments and gain parameters
 to the configuration storage.
 .TP
-\f[B]\f[CB]load\f[B]\f[R]
+load
 Load previously saved audio filter equalizer configuration profiles
 directly into the active playback engine workspace.
 .TP
-\f[B]\f[CB]reset\f[B]\f[R]
+reset
 Reset all equalizer configuration adjustments back to a flat level by
 setting all audio filter gains to 0.
 .TP
-\f[B]\f[CB]clear\f[B]\f[R]
+clear
 Clear and completely remove the active audio filter configuration
 settings from the running instance context.
 .TP
-\f[B]\f[CB]toggle\f[B]\f[R]
+toggle
 Toggle the audio filter equalizer settings on or off to quickly contrast
 modified frequencies with baseline flat audio output.
 .TP
-\f[B]\f[CB]preset\f[B]\f[R]
+preset
 Show the active audio filter configuration profile or set the equalizer
 matrix to a predefined listening preset.
 .TP
-\f[B]\f[CB]values\f[B]\f[R]
+values
 Output the current audio filter equalizer gain parameters formatted as a
 list of raw float values.
 .TP
-\f[B]\f[CB]bars\f[B]\f[R]
+bars
 Render a visual representation of the active frequency band gain
 configurations using terminal text graph bars.
 .TP
-\f[B]\f[CB]json\f[B]\f[R]
+json
 Export the complete active equalizer audio filter settings profile
 structured into a standard JSON payload format string.
 .SH EXAMPLES

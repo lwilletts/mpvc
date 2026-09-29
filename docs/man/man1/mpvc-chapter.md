@@ -33,25 +33,25 @@ mpvc-chapter is a utility helper script bundled with mpvc that automates the tra
 OPTIONS
 =======
 
-`--list`
+--list
 : List all compiled or cached ffmetadata chapter files currently tracking active streaming or media profiles.
 
-`--file`
+--file
 : Print the absolute path of the currently active ffmetadata chapter asset configuration.
 
-`--info`
+--info
 : Display metadata headers, timestamp tracks, layout intervals, and internal structure properties contained within the active chapter file.
 
-`--reset`
+--reset
 : Wipe, clear, and re-initialize the target chapter configuration metadata layout map back to pristine system defaults.
 
-`--load`
+--load
 : Explicitly register and hot-load the active chapter markers map directly into the running instance workspace.
 
-`--gen`
+--gen
 : Generate a syntactically correct ffmetadata map stream file parsed from standard input. This reads sequential text layouts containing raw timestamp intervals and titles.
 
-`--merge`
+--merge
 : Merge a standalone ffmetadata layout directly back into a targeted physical media container. This command strictly requires three continuous sequential file parameters passed as trailing arguments: the input audio file, the source ffmetadata map file, and the output destination container path.
 
 EXAMPLES

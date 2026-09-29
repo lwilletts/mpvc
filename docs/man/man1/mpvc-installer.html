@@ -180,52 +180,52 @@
     <a href="#commands" class="anchor-heading" aria-labelledby="commands"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> COMMANDS
 </h1>
 <dl>
- <dt><code class="language-plaintext highlighter-rouge">quickstart</code>
- <dd>Execute an automated initial setup routine designed for first-time users, fetching and configuring assets locally.
- <dt><code class="language-plaintext highlighter-rouge">quickstart-rm</code>
- <dd>Cleanly remove all temporary configurations and installations initialized by the quickstart routine.
- <dt><code class="language-plaintext highlighter-rouge">check-update</code>
+ <dt>quickstart
+ <dd>Automated download, install, config, and setup. Designed for first-time users under user home (<code class="language-plaintext highlighter-rouge">PREFIX=$HOME</code>).
+ <dt>quickstart-rm
+ <dd>Cleanup the installation performed by the quickstart routine.
+ <dt>check-update
  <dd>Query the remote upstream Git repository to discover available software updates.
- <dt><code class="language-plaintext highlighter-rouge">check-reqs</code>
- <dd>Audit the local system <code class="language-plaintext highlighter-rouge">$PATH</code> environment to ensure that core required tools (<code class="language-plaintext highlighter-rouge">mpv</code>, <code class="language-plaintext highlighter-rouge">socat</code>, <code class="language-plaintext highlighter-rouge">gawk</code>) and extras are installed.
- <dt><code class="language-plaintext highlighter-rouge">config</code>
+ <dt>check-reqs
+ <dd>Check the current mpvc installation, checking that required tools/deps are present, and their versions  (<code class="language-plaintext highlighter-rouge">mpv</code>, <code class="language-plaintext highlighter-rouge">socat</code>, <code class="language-plaintext highlighter-rouge">gawk</code>).
+ <dt>config
  <dd>Fetch the standard global baseline <code class="language-plaintext highlighter-rouge">mpv</code> communication parameters and configuration targets.
- <dt><code class="language-plaintext highlighter-rouge">config-user</code>
- <dd>Populate local user configuration directories under <code class="language-plaintext highlighter-rouge">BINDIR=~/bin/</code> with default profiles.
- <dt><code class="language-plaintext highlighter-rouge">config-sys</code>
- <dd>Deploy default profiles globally for system-wide access under <code class="language-plaintext highlighter-rouge">/usr/local/bin</code>.
- <dt><code class="language-plaintext highlighter-rouge">fetch-user</code>
- <dd>Fetch and download the standalone script collection directly into the user’s execution directory (<code class="language-plaintext highlighter-rouge">~/bin/</code>).
- <dt><code class="language-plaintext highlighter-rouge">link-user</code>
+ <dt>config-user
+ <dd>Populate local user mpvc configuration directories under <code class="language-plaintext highlighter-rouge">PREFIX=$HOME</code>.
+ <dt>config-sys
+ <dd>Deploy default profiles globally for system-wide access under <code class="language-plaintext highlighter-rouge">PREFIX=/usr/local</code>.
+ <dt>fetch-user
+ <dd>Fetch the standalone script directly into the user home (<code class="language-plaintext highlighter-rouge">PREFIX=$HOME</code>).
+ <dt>link-user
  <dd>Create localized symlinks within <code class="language-plaintext highlighter-rouge">~/bin/</code> pointing to a manually cloned repository tree.
- <dt><code class="language-plaintext highlighter-rouge">install</code>
- <dd>Move and register the application binaries systematically to the universal <code class="language-plaintext highlighter-rouge">/usr/local/bin</code> folder block.
- <dt><code class="language-plaintext highlighter-rouge">uninstall</code>
- <dd>Completely remove systemic application components from <code class="language-plaintext highlighter-rouge">/usr/local/bin</code>.
- <dt><code class="language-plaintext highlighter-rouge">install-user</code>
- <dd>Compile, move, and configure the standalone suite targets for a single local user profile (<code class="language-plaintext highlighter-rouge">~/bin/</code>).
- <dt><code class="language-plaintext highlighter-rouge">install-sys</code>
- <dd>Execute a full administrative installation routing binaries to <code class="language-plaintext highlighter-rouge">/usr/local/bin</code> (implicitly sets <code class="language-plaintext highlighter-rouge">PREFIX=/usr/local</code>).
- <dt><code class="language-plaintext highlighter-rouge">uninstall-user</code>
- <dd>Discard user-level script mappings and configurations from the local path context.
- <dt><code class="language-plaintext highlighter-rouge">uninstall-sys</code>
- <dd>Erase all administrative global binary elements and dependencies from system folders.
+ <dt>install
+ <dd>Install the application binaries systematically to the system <code class="language-plaintext highlighter-rouge">PREFIX=/usr/local/</code>.
+ <dt>uninstall
+ <dd>Completely remove systemic application components from <code class="language-plaintext highlighter-rouge">PREFIX=/usr/local/</code>.
+ <dt>install-user
+ <dd>Install the application binaries systematically to the user home <code class="language-plaintext highlighter-rouge">PREFIX=$HOME</code>.
+ <dt>install-sys
+ <dd>Install the application binaries systematically to the system <code class="language-plaintext highlighter-rouge">PREFIX=/usr/local/</code>.
+ <dt>uninstall-user
+ <dd>Uninstall the application binaries systematically from user home <code class="language-plaintext highlighter-rouge">PREFIX=$HOME</code>.
+ <dt>uninstall-sys
+ <dd>Uninstall the application binaries systematically from the system <code class="language-plaintext highlighter-rouge">PREFIX=/usr/local/</code>.
 </dl>
 <h1 id="environment">
     <a href="#environment" class="anchor-heading" aria-labelledby="environment"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> ENVIRONMENT
 </h1>
 <dl>
- <dt><code class="language-plaintext highlighter-rouge">BINDIR</code>
- <dd>Explicitly overrides the destination binary folder path during localized setups. Defaults to <code class="language-plaintext highlighter-rouge">$HOME/bin</code>.
- <dt><code class="language-plaintext highlighter-rouge">PREFIX</code>
- <dd>Declares the baseline administrative root pathway prefix for global installations. Defaults to <code class="language-plaintext highlighter-rouge">/usr/local</code>.
+ <dt>PREFIX
+ <dd>Set the prefix pointing to the base installation directory. Defaults to <code class="language-plaintext highlighter-rouge">/usr/local</code>.
+ <dt>BINDIR
+ <dd>Explicitly overrides the destination binary folder path during localized setups. Defaults to <code class="language-plaintext highlighter-rouge">$PREFIX/bin</code>.
 </dl>
 <h1 id="files">
     <a href="#files" class="anchor-heading" aria-labelledby="files"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> FILES
 </h1>
 <dl>
  <dt><code class="language-plaintext highlighter-rouge">~/.config/mpvc/</code>
- <dd>Destination directory where <code class="language-plaintext highlighter-rouge">config-user</code> populates the default <code class="language-plaintext highlighter-rouge">mpvc.conf</code>, <code class="language-plaintext highlighter-rouge">mpv.conf</code>, and <code class="language-plaintext highlighter-rouge">yt-dlp.conf</code> blueprints.
+ <dd>Destination directory where <code class="language-plaintext highlighter-rouge">config-user</code> stores the default configurations for: <code class="language-plaintext highlighter-rouge">mpvc.conf</code>, <code class="language-plaintext highlighter-rouge">mpv.conf</code>, and <code class="language-plaintext highlighter-rouge">yt-dlp.conf</code>
 </dl>
 <h1 id="examples">
     <a href="#examples" class="anchor-heading" aria-labelledby="examples"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> EXAMPLES
