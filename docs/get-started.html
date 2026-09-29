@@ -218,26 +218,35 @@ directory to shows some screencasts of mpvc in action.</p><hr />
 <span class="c"># take your time to review the mpvc-installer for peace-of-mind</span>
 <span class="nv">BINDIR</span><span class="o">=</span><span class="nv">$HOME</span>/bin <span class="nv">SHELL</span><span class="o">=</span>/bin/sh <span class="nv">$SHELL</span> ./mpvc-installer quickstart
 </code></pre></div></div><hr />
-<h2 id="quickstart">
-    <a href="#quickstart" class="anchor-heading" aria-labelledby="quickstart"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> QuickStart
+<h2 id="-quickstart-guide">
+    <a href="#-quickstart-guide" class="anchor-heading" aria-labelledby="-quickstart-guide"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> 🚀 Quickstart Guide
 </h2>
-<p>Below is a Quick Start guide showcasing mpvc commands usage.</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> # fetch a local copy of the github repo
- git clone https://github.com/gmt4/mpvc/
- # use extras/mpvc-installer: just copy/link to your $HOME/bin
- (cd mpvc; extras/mpvc-installer link-user)
- (cd mpvc; extras/mpvc-installer config-user)
- (cd mpvc; extras/mpvc-installer check-reqs)
- # adjust .config/mpvc/mpvc.conf to suit your needs, mpvc-installer config-user just installs the defaults
+<p>Note you can use <code class="language-plaintext highlighter-rouge">m/mx</code> instead of <code class="language-plaintext highlighter-rouge">mpvc/mpvc-fzf</code> when typing on the CLI, these are setup by <code class="language-plaintext highlighter-rouge">mpvc-installer</code>.</p>
+<h3 id="1-base-player-controls-mpvc">
+    <a href="#1-base-player-controls-mpvc" class="anchor-heading" aria-labelledby="1-base-player-controls-mpvc"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> 1. Base Player Controls (mpvc)
+</h3>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mpvc add https://somafm.com/lush130.pls <span class="c"># Start playing SomaFM lush</span>
+mpvc toggle                             <span class="c"># Toggle playback state (play/pause)</span>
+mpvc togglev                            <span class="c"># Toggle video playback state (on/off)</span>
+mpvc togglei                            <span class="c"># Toggle idle playback state (once/always/off)</span>
+mpvc next                               <span class="c"># Skip to the next track in the playlist</span>
 
- # use mpvc-fzf to search and play youtube media
- mpvc-fzf -p 'kupla mirage'
- # use mpvc-fzf to manage the playlist
- mpvc-fzf -f
- # use mpvc to enqueue local media / online YT media
- mpvc add /path/to/your/*.mp3 # or your URLs
- # use mpvc-tui to start the tui + desktop notifications
- mpvc-tui -T
+find ~/Music <span class="nt">-name</span> <span class="s2">"*.mp3"</span> | mpvc load  <span class="c"># Pipe local directories into the active queue</span>
+</code></pre></div></div>
+<h3 id="2-interactive-search-controls-mpvc-fzf">
+    <a href="#2-interactive-search-controls-mpvc-fzf" class="anchor-heading" aria-labelledby="2-interactive-search-controls-mpvc-fzf"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> 2. Interactive Search Controls (mpvc-fzf)
+</h3>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mpvc-fzf <span class="nt">-f</span>         <span class="c"># Launch fzf to visually manage your current playlist queue</span>
+mpvc-fzf <span class="nt">-p</span> <span class="s1">'query'</span> <span class="c"># Search on Invidious/YouTube and stream matching audio</span>
+mpvc-fzf <span class="nt">--rp</span>       <span class="c"># Instantly search and play live RadioParadise audio feeds</span>
+mpvc-fzf <span class="nt">--lofi</span>     <span class="c"># Instantly search and play live Lo-Fi audio feeds</span>
+mpvc-fzf <span class="nt">--somafm</span>   <span class="c"># Browse and stream live background channels from SomaFM</span>
+</code></pre></div></div>
+<h3 id="3-web-browser-control-mpvc-web">
+    <a href="#3-web-browser-control-mpvc-web" class="anchor-heading" aria-labelledby="3-web-browser-control-mpvc-web"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> 3. Web Browser Control (mpvc-web)
+</h3>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mpvc-web <span class="nt">-c</span> start       <span class="c"># Start, and open `http://localhost:8888` in your browser</span>
+mpvc-web <span class="nt">-c</span> start <span class="nt">-s1</span>   <span class="c"># Start, and open `https://localhost:8443` in your browser</span>
 </code></pre></div></div>
 <p>For more check the <a href="logbook.html">Log Book</a> (remember your best chance is to try, play, and have fun).</p><hr />
 <h2 id="screenshots">

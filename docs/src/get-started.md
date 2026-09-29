@@ -81,27 +81,36 @@ BINDIR=$HOME/bin SHELL=/bin/sh $SHELL ./mpvc-installer quickstart
 
 ------------------------------------------------------------------------
 
-## QuickStart
+## 🚀 Quickstart Guide
 
-Below is a Quick Start guide showcasing mpvc commands usage.
+Note you can use `m/mx` instead of `mpvc/mpvc-fzf` when typing on the CLI, these are setup by `mpvc-installer`.
 
+### 1. Base Player Controls (mpvc)
+```bash
+mpvc add https://somafm.com/lush130.pls # Start playing SomaFM lush
+mpvc toggle                             # Toggle playback state (play/pause)
+mpvc togglev                            # Toggle video playback state (on/off)
+mpvc togglei                            # Toggle idle playback state (once/always/off)
+mpvc next                               # Skip to the next track in the playlist
 
-     # fetch a local copy of the github repo
-     git clone https://github.com/gmt4/mpvc/
-     # use extras/mpvc-installer: just copy/link to your $HOME/bin
-     (cd mpvc; extras/mpvc-installer link-user)
-     (cd mpvc; extras/mpvc-installer config-user)
-     (cd mpvc; extras/mpvc-installer check-reqs)
-     # adjust .config/mpvc/mpvc.conf to suit your needs, mpvc-installer config-user just installs the defaults
+find ~/Music -name "*.mp3" | mpvc load  # Pipe local directories into the active queue
+```
 
-     # use mpvc-fzf to search and play youtube media
-     mpvc-fzf -p 'kupla mirage'
-     # use mpvc-fzf to manage the playlist
-     mpvc-fzf -f
-     # use mpvc to enqueue local media / online YT media
-     mpvc add /path/to/your/*.mp3 # or your URLs
-     # use mpvc-tui to start the tui + desktop notifications
-     mpvc-tui -T
+### 2. Interactive Search Controls (mpvc-fzf)
+```bash
+mpvc-fzf -f         # Launch fzf to visually manage your current playlist queue
+mpvc-fzf -p 'query' # Search on Invidious/YouTube and stream matching audio
+mpvc-fzf --rp       # Instantly search and play live RadioParadise audio feeds
+mpvc-fzf --lofi     # Instantly search and play live Lo-Fi audio feeds
+mpvc-fzf --somafm   # Browse and stream live background channels from SomaFM
+```
+
+### 3. Web Browser Control (mpvc-web)
+
+```bash
+mpvc-web -c start       # Start, and open `http://localhost:8888` in your browser
+mpvc-web -c start -s1   # Start, and open `https://localhost:8443` in your browser
+```
 
 For more check the [Log Book](logbook.html) (remember your best chance is to try, play, and have fun).
 
