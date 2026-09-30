@@ -22,7 +22,7 @@ curl -fsSLO https://github.com/gmt4/mpvc/raw/master/extras/mpvc-installer;
 BINDIR=$HOME/bin SHELL=/bin/sh $SHELL ./mpvc-installer quickstart
 ```
 
-*Prefer using package managers like Homebrew, Nix, Pkg, Gentoo, or the Arch AUR? See the **[Detailed Installation steps in docs/README.md](docs/README.md#installation)**.*
+*Prefer using package managers like Homebrew, Nix, Pkg, Gentoo, BSD or the Arch AUR? See the **[Detailed Installation steps in docs/README.md](https://github.com/gmt4/mpvc/docs/README.md#installation)**.*
 
 ---
 
@@ -33,11 +33,14 @@ Note you can use `m/mx` instead of `mpvc/mpvc-fzf` when typing on the CLI, these
 ### 1. Base Player Controls (mpvc)
 ```bash
 mpvc add https://somafm.com/lush130.pls # Start playing SomaFM lush
+mpvc pause                              # Pause playback
+mpvc play 0                             # Play playlist entry 0
+mpvc vol 30                             # Set volume to 30%
+mpvc next                               # Play next track in the playlist
+
 mpvc toggle                             # Toggle playback state (play/pause)
 mpvc togglev                            # Toggle video playback state (on/off)
 mpvc togglei                            # Toggle idle playback state (once/always/off)
-mpvc next                               # Skip to the next track in the playlist
-
 find ~/Music -name "*.mp3" | mpvc load  # Pipe local directories into the active queue
 ```
 
@@ -66,6 +69,7 @@ mpvc-web -c start -s1   # Start, and open `https://localhost:8443` in your brows
 *   **mpvc:** Core CLI interface for absolute playback, queue sequencing, and scripting.
 *   **mpvc-fzf:** Interactive fuzzy-finder integration to look up tracks and stream streams.
 *   **mpvc-tui:** Terminal-user-interface console to display tracks and desktop notifications.
+*   **mpvc-web:** web-based-interface to manage mpvc from any device running web-browser.
 
 *To see the full breakdown and capabilities of each tool script, read our **[Overview in docs/README.md](docs/README.md#overview)**.*
 
@@ -122,19 +126,19 @@ Config file located at `~/.config/mpvc/mpvc.conf`.
 
 ## 🗺️ Documentation
 
-Documentation can be found in the man pages, FAQ, README, and dev log:
+Documentation can be found in the repo, man pages, FAQ, README, and dev log:
 
-* [https://github.com/gmt4/mpvc](https://github.com/gmt4/mpvc)
-: The project site at github.
+Repo
+: [https://github.com/gmt4/mpvc](https://github.com/gmt4/mpvc)
 
-* [https://gmt4.github.io/mpvc/man/man1/](https://gmt4.github.io/mpvc/man/man1/)
-: For the `mpvc` command-line tools read the manual page.
+Manpages
+: [https://gmt4.github.io/mpvc/man/man1/](https://gmt4.github.io/mpvc/man/man1/)
 
-* [https://gmt4.github.io/mpvc/logbook.html](https://gmt4.github.io/mpvc/logbook.html)
-: The logbook (blog) is a companion of mpvc that covers mpvc usage & evolution:
+Logbook
+: [https://gmt4.github.io/mpvc/logbook.html](https://gmt4.github.io/mpvc/logbook.html)
 
-* [https://github.com/gmt4/mpvc/docs/FAQ.md](docs/FAQ.md)
-: Check the FAQ for any questions left after reading the above docs.
+FAQ
+: [https://github.com/gmt4/mpvc/docs/FAQ.md](docs/FAQ.md)
 
 ## Issues
 
