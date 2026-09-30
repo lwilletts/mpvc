@@ -162,6 +162,25 @@ posix-sh mpv-player mpvc mpvc-tui
  <li><strong>promote</strong> Star, share, and promote our work through the buttons
 below if you find it useful. Thanks!
 </ul><hr />
+<h1 class="no_toc text-delta" id="toc">
+    <a href="#toc" class="anchor-heading" aria-labelledby="toc"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> ToC
+</h1>
+<ol id="markdown-toc">
+ <li><a href="#-mpvc" id="markdown-toc--mpvc">🎧 mpvc</a>
+ <li><a href="#overview" id="markdown-toc-overview">Overview</a>
+ <li><a href="#installation" id="markdown-toc-installation">Installation</a>
+ <li><a href="#quickstart-guide" id="markdown-toc-quickstart-guide">Quickstart Guide</a>   <ol>
+     <li><a href="#1-base-player-controls-mpvc" id="markdown-toc-1-base-player-controls-mpvc">1. Base Player Controls (mpvc)</a>
+     <li><a href="#2-interactive-search-controls-mpvc-fzf" id="markdown-toc-2-interactive-search-controls-mpvc-fzf">2. Interactive Search Controls (mpvc-fzf)</a>
+     <li><a href="#3-web-browser-control-mpvc-web" id="markdown-toc-3-web-browser-control-mpvc-web">3. Web Browser Control (mpvc-web)</a>
+   </ol>
+ <li><a href="#screenshots" id="markdown-toc-screenshots">Screenshots</a>
+ <li><a href="#documentation" id="markdown-toc-documentation">Documentation</a>
+</ol><hr />
+<h1 id="overview">
+    <a href="#overview" class="anchor-heading" aria-labelledby="overview"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Overview
+</h1>
+<p>An elegant, lightweight, mpc-like command-line and web controller for the mpv media player, built on POSIX shell scripts and Unix sockets.</p>
 <div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight" style="line-height:initial;">
                                             ___
  ⠀⠀⠀⠀⠀⠀⢀⣤⠖⠂⠉⠉⠉⠀⠒⠤⣀⠀⠀⠀⠀⠀              ____ _/ (_)___ ______⠀⠀⠀⠀⠀
@@ -182,77 +201,52 @@ below if you find it useful. Thanks!
 ⠀⠀⠀⠘⠿⣿⣿⣽⣽⣷⣿⣿⣿⣿⣿⡶⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠁⠀      (mpvc, where mpv meets the shell)
 ⠀⠀⠀⠀⠀⠀⠉⠙⠿⢿⣿⣿⣿⣿⠟⠁⠀⠘⠿⣿⣿⣿⠿⠟⠉⠀⠀⠀⠀
 </pre></div></div>
-<h2 id="overview">
-    <a href="#overview" class="anchor-heading" aria-labelledby="overview"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Overview
-</h2>
-<p><a href="https://github.com/gmt4/mpvc/">mpvc</a> is a collection of POSIX shell
-scripts:</p>
-<ul>
- <li><a href="https://github.com/gmt4/mpvc/blob/master/mpvc">mpvc</a>: provides the
-core CLI commands to control mpv
- <li><a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-tui">extras/mpvc-tui</a>:
-provides a console TUI, using mpvc underneath
- <li><a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-fzf">extras/mpvc-fzf</a>:
-provides <a href="https://github.com/junegunn/fzf">fzf</a> integration to mpvc.
- <li><a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-web">extras/mpvc-web</a>:
-web player to remotely control mpvc (*a hack)
- <li><a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-web-browser">extras/mpvc-web-browser</a>:
-mpvc-web companion to browse media library (*a hack)
- <li><a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-mpris">extras/mpvc-mpris</a>:
-speaks <a href="https://github.com/hoyon/mpv-mpris">MPRIS</a> to control mplayer
-through key-bindings.
- <li><a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-equalizer">extras/mpvc-equalizer</a>:
-provides a basic mpv equalizer for the CLI.
- <li><a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-autopilot">extras/mpvc-autopilot</a>:
-automatic mpv start/stop based on presence
- <li><a href="https://github.com/gmt4/mpvc/blob/master/extras/mpvc-installer">extras/mpvc-installer</a>:
-provides an installer to install/update mpvc.
-</ul>
-<p>For more details on how to use the above tools have a look at the
-<a href="logbook.html">logbook.html</a>. In addition, the <a href="casts/">casts/</a>
-directory to shows some screencasts of mpvc in action.</p><hr />
-<h2 id="installation">
-    <a href="#️installation" class="anchor-heading" aria-labelledby="️installation"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Installation
-</h2>
+<h1 id="installation">
+    <a href="#installation" class="anchor-heading" aria-labelledby="installation"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Installation
+</h1>
 <p>The <code class="language-plaintext highlighter-rouge">mpvc-installer quickstart</code> automated install runs strictly in user-space (no sudo/root access). If you ever want to remove it, it leaves no messy traces, just do <code class="language-plaintext highlighter-rouge">mpvc-installer quickstart-rm</code>.</p>
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-fsSLO</span> https://github.com/gmt4/mpvc/raw/master/extras/mpvc-installer<span class="p">;</span>
 <span class="c"># take your time to review the mpvc-installer for peace-of-mind</span>
 <span class="nv">BINDIR</span><span class="o">=</span><span class="nv">$HOME</span>/bin <span class="nv">SHELL</span><span class="o">=</span>/bin/sh <span class="nv">$SHELL</span> ./mpvc-installer quickstart
-</code></pre></div></div><hr />
-<h2 id="quickstart-guide">
+</code></pre></div></div>
+<p><em>Prefer using package managers like Homebrew, Nix, Pkg, Gentoo, BSD or the Arch AUR? See the <strong><a href="https://github.com/gmt4/mpvc/blob/master/docs/README.md#installation">Detailed Installation steps in docs/README.md</a></strong>.</em></p>
+<h1 id="quickstart-guide">
     <a href="#quickstart-guide" class="anchor-heading" aria-labelledby="quickstart-guide"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Quickstart Guide
-</h2>
+</h1>
 <p>Note you can use <code class="language-plaintext highlighter-rouge">m/mx</code> instead of <code class="language-plaintext highlighter-rouge">mpvc/mpvc-fzf</code> when typing on the CLI, these are setup by <code class="language-plaintext highlighter-rouge">mpvc-installer</code>.</p>
-<h3 id="1-base-player-controls-mpvc">
+<h2 id="1-base-player-controls-mpvc">
     <a href="#1-base-player-controls-mpvc" class="anchor-heading" aria-labelledby="1-base-player-controls-mpvc"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> 1. Base Player Controls (mpvc)
-</h3>
+</h2>
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mpvc add https://somafm.com/lush130.pls <span class="c"># Start playing SomaFM lush</span>
+mpvc pause                              <span class="c"># Pause playback</span>
+mpvc play 0                             <span class="c"># Play playlist entry 0</span>
+mpvc vol 30                             <span class="c"># Set volume to 30%</span>
+mpvc next                               <span class="c"># Play next track in the playlist</span>
+
 mpvc toggle                             <span class="c"># Toggle playback state (play/pause)</span>
 mpvc togglev                            <span class="c"># Toggle video playback state (on/off)</span>
 mpvc togglei                            <span class="c"># Toggle idle playback state (once/always/off)</span>
-mpvc next                               <span class="c"># Skip to the next track in the playlist</span>
-
 find ~/Music <span class="nt">-name</span> <span class="s2">"*.mp3"</span> | mpvc load  <span class="c"># Pipe local directories into the active queue</span>
 </code></pre></div></div>
-<h3 id="2-interactive-search-controls-mpvc-fzf">
+<h2 id="2-interactive-search-controls-mpvc-fzf">
     <a href="#2-interactive-search-controls-mpvc-fzf" class="anchor-heading" aria-labelledby="2-interactive-search-controls-mpvc-fzf"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> 2. Interactive Search Controls (mpvc-fzf)
-</h3>
+</h2>
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mpvc-fzf <span class="nt">-f</span>         <span class="c"># Launch fzf to visually manage your current playlist queue</span>
 mpvc-fzf <span class="nt">-p</span> <span class="s1">'query'</span> <span class="c"># Search on Invidious/YouTube and stream matching audio</span>
 mpvc-fzf <span class="nt">--rp</span>       <span class="c"># Instantly search and play live RadioParadise audio feeds</span>
 mpvc-fzf <span class="nt">--lofi</span>     <span class="c"># Instantly search and play live Lo-Fi audio feeds</span>
 mpvc-fzf <span class="nt">--somafm</span>   <span class="c"># Browse and stream live background channels from SomaFM</span>
 </code></pre></div></div>
-<h3 id="3-web-browser-control-mpvc-web">
+<h2 id="3-web-browser-control-mpvc-web">
     <a href="#3-web-browser-control-mpvc-web" class="anchor-heading" aria-labelledby="3-web-browser-control-mpvc-web"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> 3. Web Browser Control (mpvc-web)
-</h3>
+</h2>
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mpvc-web <span class="nt">-c</span> start       <span class="c"># Start, and open `http://localhost:8888` in your browser</span>
 mpvc-web <span class="nt">-c</span> start <span class="nt">-s1</span>   <span class="c"># Start, and open `https://localhost:8443` in your browser</span>
 </code></pre></div></div>
-<p>For more check the <a href="logbook.html">Log Book</a> (remember your best chance is to try, play, and have fun).</p><hr />
-<h2 id="screenshots">
+<p>For more check the <a href="logbook.html">Log Book</a> (remember your best chance is to try, play, and have fun).</p>
+<h1 id="screenshots">
     <a href="#screenshots" class="anchor-heading" aria-labelledby="screenshots"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Screenshots
-</h2>
+</h1>
 <p>mpvc-fzf running on mac OS (screenshot click to view)</p>
 <p><img src="assets/mpvc-fzf-mac.jpg" style="width:95.0%" alt="mpvc-fzf on Mac OS screenshot" /></p>
 <p>mpvc-tui -T: running the mpvc TUI (screenshot click to view)</p>
@@ -261,18 +255,21 @@ mpvc-web <span class="nt">-c</span> start <span class="nt">-s1</span>   <span cl
 <p><img src="assets/mpvc-tui-arch.png" style="width:95.0%" alt="mpvc-tui fzf screenshot" /></p>
 <p>mpvc-tui: running with fzf and desktop notifications on the upper-right
 corner (screenshot click to view)</p>
-<p><img src="assets/mpvc-tui-fzf.png" style="width:95.0%" alt="mpvc-tui fzf+notify screenshot" /></p><hr />
-<h2 id="documentation">
+<p><img src="assets/mpvc-tui-fzf.png" style="width:95.0%" alt="mpvc-tui fzf+notify screenshot" /></p>
+<h1 id="documentation">
     <a href="#documentation" class="anchor-heading" aria-labelledby="documentation"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Documentation
-</h2>
-<h3 id="usage">
-    <a href="#usage" class="anchor-heading" aria-labelledby="usage"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Usage
-</h3>
-<p>Check the mpvc reference manual pages at <a href="man/man1/">index</a></p>
-<h3 id="logbook">
-    <a href="#logbook" class="anchor-heading" aria-labelledby="logbook"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Logbook
-</h3>
-<p>The logbook got big enough to deserve a page on its own, see here: <a href="logbook.html">logbook.html</a></p>
+</h1>
+<p>Documentation can be found in the repo, man pages, FAQ, README, and dev log:</p>
+<dl>
+ <dt>Repo
+ <dd><a href="https://github.com/gmt4/mpvc">https://github.com/gmt4/mpvc</a>
+ <dt>Manpages
+ <dd><a href="https://gmt4.github.io/mpvc/man/man1/">https://gmt4.github.io/mpvc/man/man1/</a>
+ <dt>Logbook
+ <dd><a href="https://gmt4.github.io/mpvc/logbook.html">https://gmt4.github.io/mpvc/logbook.html</a>
+ <dt>FAQ
+ <dd><a href="docs/FAQ.md">https://github.com/gmt4/mpvc/docs/FAQ.md</a>
+</dl>
        </main>
 <hr>
 <footer>
