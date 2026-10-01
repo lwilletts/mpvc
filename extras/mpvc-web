@@ -778,9 +778,11 @@ mpvc_web_index()
         <small>
         🎧
         • <a href="$PROGURL">${PROGNAME%-*}</a>
-        • <a href="$PROGURL/releases/"> $PROGVERSION</a>
-        • <a href="$PROGURL/issues">issues</a>
-        • <a href="$SITEURL">docs</a>
+        • <a href="$PROGURL/releases/">$PROGVERSION</a>
+        • <a href="$PROGURL/issues">issue</a>
+        • <a href="$SITEURL">doc</a>
+        • <a href="client.p12">p12</a>
+        • <a href="server.crt">crt</a>
         $(date +%Y) ©
         <a href="javascript:Help()" title="help" ${MPVC_WEB_SHORTCUT_HELP}>/h</a>
         </small>
@@ -795,9 +797,41 @@ EOF
 
 mpvc_web_mkcert()
 {
-    MPVC_WEB_SSL_SUBJ="/C=CN/ST=ST/O=$PROGNAME/CN=$PROGNAME-$MPVC_WEB_HOSTNAME"
-    openssl req -new -x509 -days 365 -nodes -out "$MPVC_WEB_SSL_PEM" -keyout "$MPVC_WEB_SSL_PEM" -subj "$MPVC_WEB_SSL_SUBJ"
-    openssl pkcs12 -export -passout "pass:" -in "$MPVC_WEB_SSL_PEM" -out "$MPVC_WEB_SSL_PEM.p12"
+    MPVC_WEB_BASE="$MPVC_WEB_ROOT/.."
+    MPVC_WEB_SSL_SUBJ="/C=CN/ST=ST/O=MPVC-LAN-NET/CN=mpvc-server-ca-$MPVC_WEB_HOSTNAME"
+    SAN_STR="DNS:$MPVC_WEB_HOSTNAME, IP:127.0.0.1"
+    CLEAN_IPS=$(hostname -I 2>/dev/null | tr ' ' '\n' | grep -v -E '^172\.(1[6-9]|2[0-9]|3[0-1])\.')
+    for ip in $CLEAN_IPS; do [ -z "$ip" ] && continue; SAN_STR="$SAN_STR, IP:$ip"; done
+
+    # Create temporary OpenSSL config to inject true CA attributes
+    CONF_FILE="$MPVC_WEB_BASE/openssl_ca.cnf"
+    cat <<EOF > "$CONF_FILE"
+[ req ]
+distinguished_name = req_distinguished_name
+x509_extensions     = v3_ca
+
+[ req_distinguished_name ]
+
+[ v3_ca ]
+subjectKeyIdentifier   = hash
+authorityKeyIdentifier = keyid:always,issuer
+basicConstraints       = critical, CA:true
+keyUsage               = critical, digitalSignature, cRLSign, keyCertSign
+subjectAltName         = $SAN_STR
+EOF
+
+    # Set Server CA validity to 3650 days (10 years)
+    openssl req -new -x509 -days 3650 -nodes -config "$CONF_FILE" -out "$MPVC_WEB_SSL_PEM" -keyout "$MPVC_WEB_SSL_PEM" -subj "$MPVC_WEB_SSL_SUBJ"
+    # Generate temporary Client Key and CSR
+    openssl req -nodes -newkey rsa:2048 -keyout "$MPVC_WEB_BASE/client.key" -out "$MPVC_WEB_BASE/client.csr" -subj "/CN=mpvc-lan-client"
+    # Generate Client Certificate
+    openssl x509 -req -in "$MPVC_WEB_BASE/client.csr" -CA "$MPVC_WEB_SSL_PEM" -CAkey "$MPVC_WEB_SSL_PEM" -CAcreateserial -out "$MPVC_WEB_BASE/client.crt" -days 3650
+    # Export p12 Client Bundle to Webroot (For Client Device Identity)
+    openssl pkcs12 -export -legacy -passout "pass:" -inkey "$MPVC_WEB_BASE/client.key" -in "$MPVC_WEB_BASE/client.crt" -name "mpvc-client-$MPVC_WEB_HOSTNAME" -out "$MPVC_WEB_ROOT/client.p12"
+    # Export ONLY the public Server CA certificate (For Browser Trust Store)
+    openssl x509 -in "$MPVC_WEB_SSL_PEM" -out "$MPVC_WEB_ROOT/server.crt"
+    # Purge all temporary assets safely
+    rm -f "$MPVC_WEB_BASE/client.key" "$MPVC_WEB_BASE/client.csr" "$MPVC_WEB_BASE/client.crt" "$CONF_FILE"
 }
 
 mpvc_web_https()
@@ -856,14 +890,8 @@ mpvc_web_setup()
         mpvc_web_serviceworker > "$MPVC_WEB_ROOT/sw.js"
         mpvc_web_manifest > "$MPVC_WEB_ROOT/manifest.json"
         mpvc_web_icon_svg > "$MPVC_WEB_ROOT/apple-touch-icon.svg"
-
-        # Check if ImageMagick is available on the user's host machine
-        if command -v magick >/dev/null 2>&1; then
-            # Use modern ImageMagick 7 binary to compile crisp square PNG sets
-            magick -background none -density 300 "$MPVC_WEB_ROOT/apple-touch-icon.svg" -resize 192x192 "$MPVC_WEB_ROOT/apple-touch-icon.png"
-            magick -background none -density 300 "$MPVC_WEB_ROOT/apple-touch-icon.svg" -resize 512x512 "$MPVC_WEB_ROOT/apple-touch-icon-maskable.png"
-        elif command -v convert >/dev/null 2>&1; then
-            # Fallback to older ImageMagick 6 legacy syntax structures
+        # Setup apple-touch-icon.png for manifest.json
+        if [ ! -e "$MPVC_WEB_ROOT/apple-touch-icon.png" ]; then
             convert -background none -density 300 "$MPVC_WEB_ROOT/apple-touch-icon.svg" -resize 192x192 "$MPVC_WEB_ROOT/apple-touch-icon.png"
             convert -background none -density 300 "$MPVC_WEB_ROOT/apple-touch-icon.svg" -resize 512x512 "$MPVC_WEB_ROOT/apple-touch-icon-maskable.png"
         fi
