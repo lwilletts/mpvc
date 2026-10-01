@@ -473,16 +473,16 @@ legend {
 }
 
 EOF
+
 }
 
 mpvc_web_icon_svg()
 {
     cat <<EOF
-<svg xmlns="http://w3.org" viewBox="0 0 100 100">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="512" height="512">
   <text y="0.9em" font-size="90">🎧</text>
 </svg>
 EOF
-
 }
 
 mpvc_web_manifest()
@@ -497,12 +497,54 @@ mpvc_web_manifest()
   "theme_color": "#121212",
   "icons": [
     {
-      "src": "/apple-touch-icon.svg",
+      "src": "apple-touch-icon.svg",
       "sizes": "any",
-      "type": "image/svg+xml"
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "apple-touch-icon.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "apple-touch-icon-maskable.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "apple-touch-icon-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "mpvc narrow"
+    },
+    {
+      "src": "apple-touch-icon-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "mpvc wide"
     }
   ]
 }
+EOF
+}
+
+mpvc_web_serviceworker()
+{
+    cat <<EOF
+self.addEventListener("install", (e) => {
+  self.skipWaiting();
+});
+
+self.addEventListener("fetch", (e) => {
+  e.respondWith(fetch(e.request));
+});
 EOF
 }
 
@@ -590,6 +632,7 @@ mpvc_web_index()
     <meta http-equiv=refresh content="$MPVC_WEB_HTML_REFRESH;url=." />
 
     <link rel="manifest" href="manifest.json">
+    <script> if ("serviceWorker" in navigator) { navigator.serviceWorker.register("sw.js"); } </script>
     <link rel="IconFile" href="apple-touch-icon.svg" sizes="64x64">
     <link rel="apple-touch-icon" href="apple-touch-icon.svg">
     <title> 🎧$MPVC_WEB_HOSTNAME mpvc</title>
@@ -810,8 +853,20 @@ mpvc_web_setup()
 
         mpvc_web_index > "$MPVC_WEB_ROOT/index.html"
         echo > "$MPVC_WEB_ROOT/favicon.ico"
+        mpvc_web_serviceworker > "$MPVC_WEB_ROOT/sw.js"
         mpvc_web_manifest > "$MPVC_WEB_ROOT/manifest.json"
         mpvc_web_icon_svg > "$MPVC_WEB_ROOT/apple-touch-icon.svg"
+
+        # Check if ImageMagick is available on the user's host machine
+        if command -v magick >/dev/null 2>&1; then
+            # Use modern ImageMagick 7 binary to compile crisp square PNG sets
+            magick -background none -density 300 "$MPVC_WEB_ROOT/apple-touch-icon.svg" -resize 192x192 "$MPVC_WEB_ROOT/apple-touch-icon.png"
+            magick -background none -density 300 "$MPVC_WEB_ROOT/apple-touch-icon.svg" -resize 512x512 "$MPVC_WEB_ROOT/apple-touch-icon-maskable.png"
+        elif command -v convert >/dev/null 2>&1; then
+            # Fallback to older ImageMagick 6 legacy syntax structures
+            convert -background none -density 300 "$MPVC_WEB_ROOT/apple-touch-icon.svg" -resize 192x192 "$MPVC_WEB_ROOT/apple-touch-icon.png"
+            convert -background none -density 300 "$MPVC_WEB_ROOT/apple-touch-icon.svg" -resize 512x512 "$MPVC_WEB_ROOT/apple-touch-icon-maskable.png"
+        fi
 
         if [ -n "$MPVC_WEB_CSS_STYLE" ]; then
             cat "$MPVC_WEB_CSS_STYLE" > "$MPVC_WEB_ROOT/style.css"
