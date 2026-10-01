@@ -63,6 +63,9 @@ collections:
     output: true
     permalink: /man/:path/
 
+mermaid:
+  version: "11.4.0"
+
 # Exclude from processing.
 # The following items will not be processed, by default.
 # Any item listed under the `exclude:` key here will be automatically added to
