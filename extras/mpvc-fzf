@@ -659,10 +659,13 @@ mpvcfzf_feed_ntsradio_args()
 mpvcfzf_feed_ntsradio_std() { mpvcfzf_feeds "${1:-}" $(mpvcfzf_feed_ntsradio_args); }
 mpvcfzf_feed_ntsradio_raw() { mpvcfzf_feeds_search $(mpvcfzf_feed_ntsradio_args); }
 
-mpvcfzf_feed_custom()
+mpvcfzf_feed_custom_args()
 {
-    mpvcfzf_feeds "${1:-}" "$MPVC_FZF_CUSTOM_FILE" "https://www.nts.live/api/v2/mixtapes" '.results | .[] | (.audio_stream_endpoint+";"+.title+";"+.subtitle+"\n")'
+    echo "$MPVC_FZF_CUSTOM_FILE" "https://www.nts.live/api/v2/mixtapes" '.results|.[]|(.audio_stream_endpoint+";"+.title+";"+.subtitle)'
 }
+
+mpvcfzf_feed_custom_std() { mpvcfzf_feeds "${1:-}" $(mpvcfzf_feed_custom_args); }
+mpvcfzf_feed_custom_raw() { mpvcfzf_feeds_search $(mpvcfzf_feed_custom_args); }
 
 mpvcfzf_feed_custom_gen()
 {
@@ -836,7 +839,8 @@ main()
         --rapi-raw|rapi-raw)    shift; mpvcfzf_feed_radioapi_raw "${1:-}"; return ;;
         --ntsr|ntsr)            shift; mpvcfzf_feed_ntsradio_std "${1:-}"; return ;;
         --ntsr-raw|ntsr-raw)    shift; mpvcfzf_feed_ntsradio_raw "${1:-}"; return ;;
-        --custom|custom)        shift; mpvcfzf_feed_custom "$@"; return ;;
+        --custom|custom)        shift; mpvcfzf_feed_custom_std "$@"; return ;;
+        --custom-raw|custom-raw)shift; mpvcfzf_feed_custom_raw "$@"; return ;;
         custom-gen)             shift; mpvcfzf_feed_custom_gen "$@"; return ;;
         invid-list)             shift; mpvcfzf_invid_instances "$@"; return ;;
         #*)                     shift; mpvcfzf_usage; return ;;
