@@ -19,6 +19,7 @@
 # in the templates via {{ site.myvariable }}.
 
 title: mpvc
+version: v1.9
 email: gmt4@localhost
 description: description
 baseurl: "/mpvc"              # the subpath of your site, e.g. /blog
@@ -30,8 +31,9 @@ aux_links:
   "#mpvc": "https://github.com/gmt4/mpvc/"
   "@gmt4": "https://github.com/gmt4"
 
-# Optional: Force auxiliary links to open in a new web browser tab
 aux_links_new_tab: true
+last_edit_timestamp: true
+last_edit_time_format: "%b %e %Y at %I:%M %p"
 
 # Build settings
 theme: just-the-docs
@@ -51,10 +53,22 @@ compress_html:
   blanklines: true
   profile: false
 
+kramdown:
+  smart_quotes: ["lsquo", "rsquo", "ldquo", "rdquo"]
+  typographic_symbols:
+    ndash: --
+
 collections:
   man:
     output: true
     permalink: /man/:path/
+
+feed:
+  collections:
+    - man
+
+mermaid:
+  version: "11.4.0"
 
 # Exclude from processing.
 # The following items will not be processed, by default.

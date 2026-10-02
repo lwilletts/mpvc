@@ -1,16 +1,19 @@
 ---
 title: "Man Pages"
 version: v1.9
-date: April, 2026
+date: September, 2026
 manual: User Commands
 layout: default
+last_modified_date: 2026-09-26
 ---
 
-# INDEX
+INDEX
+=====
 
-`mpvc`-related manual pages are listed below:
+mpvc-related manual pages are listed below:
 
-### Section 1 - User Commands (man1)
+Section 1 - User Commands (man1)
+--------------------------------
 
 *   [mpvc(1)](mpvc.html) - Base command-line interface, local player queues, and core playback socket loops.
 *   [mpvc-fzf(1)](mpvc-fzf.html) - Interactive fuzzy-finder workflows, live streams, and online audio track parsing.
@@ -21,7 +24,8 @@ layout: default
 *   [mpvc-equalizer(1)](mpvc-equalizer.html) - Manage and adjust audio filter equalizer settings for mpvc
 *   [mpvc-autopilot(1)](mpvc-autopilot.html) - Autopilot mode with auto start/stop, and random playlist playback daemon
 
-### Section 5 - File Formats & Configurations (man5)
+Section 5 - File Formats & Configurations (man5)
+------------------------------------------------
 
 *   [mpvc.conf(5)](mpvc.conf.html) - Global configuration syntax, variable rules, and shell binary override flags.
 

@@ -102,6 +102,7 @@ html_body_open()
 
     <option value=somafm>       SomaFM
     <option value=radioparadise>    RadioParadise
+    <option value=customfeed>       CustomFeed
     <option value=video>        Video
     <option value=volume>       Volume
     </select>
@@ -346,7 +347,7 @@ handle_playlist()
 
 handle_chapters()
 {
-    handle_generic "$MPVC chapter-list-full" "$PROGNAME?browser&action=chapter-play"
+    handle_generic "$MPVC chapter-list-nr" "$PROGNAME?browser&action=chapter-play"
 }
 
 handle_equalizer()
@@ -379,6 +380,11 @@ handle_somafm()
 handle_radioparadise()
 {
     handle_generic "mpvc_csv $MPVC-fzf rp-raw" "$PROGNAME?browser&action=playlist-add"
+}
+
+handle_customfeed()
+{
+    handle_generic "mpvc_csv $MPVC-fzf custom-raw" "$PROGNAME?browser&action=playlist-add"
 }
 
 handle_generic()
@@ -428,6 +434,7 @@ mpvc_browser()
     feeds)          handle_feeds ;;
     somafm)         handle_somafm ;;
     radioparadise)  handle_radioparadise ;;
+    customfeed)     handle_customfeed ;;
     remote)         handle_remote ;;
     esac
 }

@@ -5,6 +5,7 @@ version: v1.9
 date: April, 2026
 manual: User Commands
 layout: default
+last_modified_date: 2026-09-26
 ---
 
 NAME
@@ -291,7 +292,7 @@ yt-dlp(1),
 [mpvc-fzf(1)](mpvc-fzf.html),
 [mpvc-tui(1)](mpvc-tui.html),
 [mpvc-web(1)](mpvc-web.html),
-[mpvc-equalizer(1)](mpvc-equalizer.html)
+[mpvc-equalizer(1)](mpvc-equalizer.html),
 [mpvc-index](.),
 
 AUTHOR

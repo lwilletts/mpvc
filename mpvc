@@ -110,11 +110,11 @@ EOF
  togglew                  : Toggle MPV window property.
  cycle                    : Toggle/Cycle through MPV property values.
  cycle-values             : Toggle/Cycle through MPV property values.
- idleloop                 : Listen to MPV events on $PROGNAME socket.
- observe                  : Observe property in MPV events on $PROGNAME socket.
- playlist-shuffle         : Shuffle the current playlist
- playlist-unshuffle       : Unshuffle the current playlist
- search                   : Search the playlist by filename/url.
+ (--)idleloop             : Listen to MPV events on $PROGNAME socket.
+ (--)observe              : Observe property in MPV events on $PROGNAME socket.
+ (--)playlist-shuffle     : Shuffle the current playlist
+ (--)playlist-unshuffle   : Unshuffle the current playlist
+ (--)search               : Search the playlist by filename/url.
  (--)searchplay|splay     : Search the playlist by filename and play the first match.
  (--)searchPlay|sPlay     : Search the playlist by title and play the first match.
  -R | --searchrm | srm    : Search the playlist and remove matching entries.
@@ -127,7 +127,7 @@ EOF
  ytqj | ytqueryj          : Given a yt URL report the yt metadata
 
  (--)ascii                : Echo mpvc ascii art 🎧
- (--)config               : Edit mpvc.conf in default editor (EDITOR=${EDITOR})
+ (--)config               : Edit mpvc.conf in default editor (EDITOR=${EDITOR:-})
  (--)status               : Show current $PROGNAME status
  (--)cstatus              : Show current $PROGNAME channel status
  (--)lofi                 : Show current $PROGNAME status (one-liner)
@@ -935,7 +935,7 @@ mpvc_print_status() {
 
             gsub("%idlelofi%", "${?idle==yes:I}${!idle==yes:i}${!idle:NA}")
             gsub("%shufflelofi%", "${!shuffle==no:U}${?shuffle==no:u}${!shuffle:NA}")
-            gsub("%videolofi%", "${!video==no:📀}${?video==no:🎧}${!video:NA}")
+            gsub("%videolofi%", "${!video==no:V📀}${?video==no:v🎧}${!video:NA}")
 
             gsub("%status%", "${?pause==yes:pause}${?pause==no:play}${!pause:NA}");
             gsub("%title%", "${media-title}")

@@ -1,10 +1,11 @@
 ---
 title: mpvc.conf
 section: 5
-date: September 2026
+date: April 2026
 version: v1.9
 manual: File Formats and Configurations
 layout: default
+last_modified_date: 2026-09-26
 ---
 
 NAME
@@ -29,19 +30,20 @@ MPVC
 
 This section defines the mpvc(1) configuration variables.
 
-`MPVC_MPV`
+MPVC_MPV
 : Defines the executable binary name or path for the core player engine. Defaults to `mpv`.
 
-`MPVC_SOCAT`
+MPVC_SOCAT
 : Defines the executable binary name or path used to stream JSON data over unix sockets. Defaults to `socat`.
 
-`MPVC_LOCAL_CACHE`
+MPVC_LOCAL_CACHE
 : Boolean flag switch (`true` or `false`) controlling whether regional caching routines are activated during playback sequences.
 
-`MPVC_FMTSTR`, `MPVC_FMTSTR_LOFI`
+MPVC_FMTSTR, MPVC_FMTSTR_LOFI
 : Customizes the output of the `mpvc [status]` command to display a summary of the mpv playing state, shown by the rest of tools.
 
-### Formatting String Tokens
+Formatting String Tokens
+------------------------
 
 The status strings (`MPVC_FMTSTR` and `MPVC_FMTSTR_LOFI`) parse the following tokens dynamically at runtime to generate the `mpvc [status]` terminal layout view:
 
@@ -68,7 +70,7 @@ MPVC-TUI
 
 This section configures terminal environment variables and scaling preferences for the terminal visual frontend interface **mpvc-tui**(1).
 
-`MPVC_TUI_TERM`
+MPVC_TUI_TERM
 : Declares the explicit target shell terminal application spawned specifically when launching graphical console configurations in detached windows.
 
 MPVC-FZF
@@ -76,10 +78,10 @@ MPVC-FZF
 
 This section contains option flags, remote scraping node overrides, and execution properties for the interactive search interface **mpvc-fzf**(1).
 
-`MPVC_TERM`
+MPVC_TERM
 : Defines the system terminal emulator tool launched to spawn detached windows when passing the selection flag `-x` or `launch`. Defaults to `xterm`.
 
-`MPVC_FZF_INVID_URL`
+MPVC_FZF_INVID_URL
 : Stores your preferred URL address link pointing to a public or self-hosted **Invidious** API instance mirror node to handle global text lookups.
 
 MPVC-WEB
@@ -87,16 +89,16 @@ MPVC-WEB
 
 This section handles server port rules, encryption endpoints, UI refresh behaviors, and thumbnail parsing switches for the local HTTP daemon interface controller **mpvc-web**(1).
 
-`MPVC_WEB_PORT`
+MPVC_WEB_PORT
 : Specifies the default plaintext HTTP listening network port assigned to the web gateway server daemon. Defaults to `8888`.
 
-`MPVC_WEB_SSL_PORT`
+MPVC_WEB_SSL_PORT
 : Declares the network port assigned to handle secure, encrypted HTTPS client browser connections. Defaults to `8443`.
 
-`MPVC_WEB_THUMBNAIL_ENABLE`
+MPVC_WEB_THUMBNAIL_ENABLE
 : Boolean flag switch (`true` or `false`) controlling whether the web frontend interface actively pulls, parses, and shows media artwork thumbnail images over the network dashboard.
 
-`MPVC_WEB_HTML_REFRESH`
+MPVC_WEB_HTML_REFRESH
 : Establishes a time interval integer (measured in seconds) instructing client web browsers how frequently to automatically reload the page interface state to stay synchronized with track changes. Defaults to `240`.
 
 

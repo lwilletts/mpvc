@@ -1,9 +1,10 @@
 ---
 title: Get Started
-layout: home
+layout: default
+last_modified_date: 2026-09-26
 ---
 
-# [@gmt4](/) mpvc 🎧
+# 🎧 mpvc
 
 - **about** Music player in POSIX-sh using mpv from the shell/fzf +
   extras/goodies 📡🛸🚀
@@ -15,10 +16,21 @@ layout: home
 - **promote** Star, share, and promote our work through the buttons
   below if you find it useful. Thanks!
 
+------------------------------------------------------------------------
+
+# ToC
+{: .no_toc .text-delta }
+
+1. ToC
+{:toc}
 
 ------------------------------------------------------------------------
 
-```text
+# Overview
+
+An elegant, lightweight, mpc-like command-line and web controller for the mpv media player, built on POSIX shell scripts and Unix sockets.
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight" style="line-height:initial;">
                                             ___
  ⠀⠀⠀⠀⠀⠀⢀⣤⠖⠂⠉⠉⠉⠀⠒⠤⣀⠀⠀⠀⠀⠀              ____ _/ (_)___ ______⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⢀⠀⣶⡟⢀⣴⣶⣿⣾⣶⣶⣄⡀⠈⠑⢤⡀⠀⠀             / __ `/ / / __ `/ ___/⠀⠀⠀⠀⠀
@@ -37,40 +49,11 @@ layout: home
 ⠀⠀⠻⣷⣈⣁⣮⢻⢸⡇⢨⣿⣿⣿⣷⢶⣿⣏⣩⣶⣿⣿⣿⣿⡯⣤⣴⣿⠃               /_/
 ⠀⠀⠀⠘⠿⣿⣿⣽⣽⣷⣿⣿⣿⣿⣿⡶⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠁⠀      (mpvc, where mpv meets the shell)
 ⠀⠀⠀⠀⠀⠀⠉⠙⠿⢿⣿⣿⣿⣿⠟⠁⠀⠘⠿⣿⣿⣿⠿⠟⠉⠀⠀⠀⠀
-```
+</pre></div></div>
 
-## Overview
+# Installation
 
-[mpvc](https://github.com/gmt4/mpvc/) is a collection of POSIX shell
-scripts:
-
-- [mpvc](https://github.com/gmt4/mpvc/blob/master/mpvc): provides the
-  core CLI commands to control mpv
-- [extras/mpvc-tui](https://github.com/gmt4/mpvc/blob/master/extras/mpvc-tui):
-  provides a console TUI, using mpvc underneath
-- [extras/mpvc-fzf](https://github.com/gmt4/mpvc/blob/master/extras/mpvc-fzf):
-  provides [fzf](https://github.com/junegunn/fzf) integration to mpvc.
-- [extras/mpvc-web](https://github.com/gmt4/mpvc/blob/master/extras/mpvc-web):
-  web player to remotely control mpvc (\*a hack)
-- [extras/mpvc-web-browser](https://github.com/gmt4/mpvc/blob/master/extras/mpvc-web-browser):
-  mpvc-web companion to browse media library (\*a hack)
-- [extras/mpvc-mpris](https://github.com/gmt4/mpvc/blob/master/extras/mpvc-mpris):
-  speaks [MPRIS](https://github.com/hoyon/mpv-mpris) to control mplayer
-  through key-bindings.
-- [extras/mpvc-equalizer](https://github.com/gmt4/mpvc/blob/master/extras/mpvc-equalizer):
-  provides a basic mpv equalizer for the CLI.
-- [extras/mpvc-autopilot](https://github.com/gmt4/mpvc/blob/master/extras/mpvc-autopilot):
-  automatic mpv start/stop based on presence
-- [extras/mpvc-installer](https://github.com/gmt4/mpvc/blob/master/extras/mpvc-installer):
-  provides an installer to install/update mpvc.
-
-For more details on how to use the above tools have a look at the
-[logbook.html](logbook.html). In addition, the [casts/](casts/)
-directory to shows some screencasts of mpvc in action.
-
-------------------------------------------------------------------------
-
-## ▶️  Installation
+The `mpvc-installer quickstart` automated install runs strictly in user-space (no sudo/root access). If you ever want to remove it, it leaves no messy traces, just do `mpvc-installer quickstart-rm`.
 
 ```bash
 curl -fsSLO https://github.com/gmt4/mpvc/raw/master/extras/mpvc-installer;
@@ -78,36 +61,45 @@ curl -fsSLO https://github.com/gmt4/mpvc/raw/master/extras/mpvc-installer;
 BINDIR=$HOME/bin SHELL=/bin/sh $SHELL ./mpvc-installer quickstart
 ```
 
-------------------------------------------------------------------------
+*Prefer using package managers like Homebrew, Nix, Pkg, Gentoo, BSD or the Arch AUR? See the **[Detailed Installation steps in docs/README.md](https://github.com/gmt4/mpvc/blob/master/docs/README.md#installation)**.*
 
-## QuickStart
+# Quickstart Guide
 
-Below is a Quick Start guide showcasing mpvc commands usage.
+Note you can use `m/mx` instead of `mpvc/mpvc-fzf` when typing on the CLI, these are setup by `mpvc-installer`.
 
+## 1. Base Player Controls (mpvc)
+```bash
+mpvc add https://somafm.com/lush130.pls # Start playing SomaFM lush
+mpvc pause                              # Pause playback
+mpvc play 0                             # Play playlist entry 0
+mpvc vol 30                             # Set volume to 30%
+mpvc next                               # Play next track in the playlist
 
-     # fetch a local copy of the github repo
-     git clone https://github.com/gmt4/mpvc/
-     # use extras/mpvc-installer: just copy/link to your $HOME/bin
-     (cd mpvc; extras/mpvc-installer link-user)
-     (cd mpvc; extras/mpvc-installer config-user)
-     (cd mpvc; extras/mpvc-installer check-reqs)
-     # adjust .config/mpvc/mpvc.conf to suit your needs, mpvc-installer config-user just installs the defaults
+mpvc toggle                             # Toggle playback state (play/pause)
+mpvc togglev                            # Toggle video playback state (on/off)
+mpvc togglei                            # Toggle idle playback state (once/always/off)
+find ~/Music -name "*.mp3" | mpvc load  # Pipe local directories into the active queue
+```
 
-     # use mpvc-fzf to search and play youtube media
-     mpvc-fzf -p 'kupla mirage'
-     # use mpvc-fzf to manage the playlist
-     mpvc-fzf -f
-     # use mpvc to enqueue local media / online YT media
-     mpvc add /path/to/your/*.mp3 # or your URLs
-     # use mpvc-tui to start the tui + desktop notifications
-     mpvc-tui -T
+## 2. Interactive Search Controls (mpvc-fzf)
+```bash
+mpvc-fzf -f         # Launch fzf to visually manage your current playlist queue
+mpvc-fzf -p 'query' # Search on Invidious/YouTube and stream matching audio
+mpvc-fzf --rp       # Instantly search and play live RadioParadise audio feeds
+mpvc-fzf --lofi     # Instantly search and play live Lo-Fi audio feeds
+mpvc-fzf --somafm   # Browse and stream live background channels from SomaFM
+```
 
-For more check the [\#Logbook](#gmt4-mpvc-docs-logbook) (remeber your
-best chance is to try, play, and have fun).
+## 3. Web Browser Control (mpvc-web)
 
-------------------------------------------------------------------------
+```bash
+mpvc-web -c start       # Start, and open `http://localhost:8888` in your browser
+mpvc-web -c start -s1   # Start, and open `https://localhost:8443` in your browser
+```
 
-## Screenshots
+For more check the [Log Book](logbook.html) (remember your best chance is to try, play, and have fun).
+
+# Screenshots
 
 mpvc-fzf running on mac OS (screenshot click to view)
 
@@ -126,17 +118,23 @@ corner (screenshot click to view)
 
 <img src="assets/mpvc-tui-fzf.png" style="width:95.0%" alt="mpvc-tui fzf+notify screenshot" />
 
-------------------------------------------------------------------------
+# Documentation
 
-## Documentation
+Documentation can be found in the repo, man pages, FAQ, README, and dev log:
 
-### Usage
+Repo
+: [https://github.com/gmt4/mpvc](https://github.com/gmt4/mpvc)
 
-Check the mpvc reference manual pages at [index](man/man1/)
+Manpages
+: [https://gmt4.github.io/mpvc/man/man1/](https://gmt4.github.io/mpvc/man/man1/)
 
-### Logbook
+Logbook
+: [https://gmt4.github.io/mpvc/logbook.html](https://gmt4.github.io/mpvc/logbook.html)
 
-The logbook got big enought to deserve a page on its own, see here: logbook.html
+FAQ
+: [https://github.com/gmt4/mpvc/docs/FAQ.md](docs/FAQ.md)
 
+<!--
     📅 Mon, 15 Jun 2026 by gmt4
     ⚡ PoweredBy #HTML
+-->

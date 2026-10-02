@@ -84,7 +84,7 @@ mpvc_config()
                 fi
                 ;;
             deno)
-                if curl -m 20 -fsSL -o - "https://github.com/denoland/$bin/releases/latest/download/$bin-$(uname -m)-unknown-linux-gnu.zip" | gunzip > "$file"; then
+                if curl -m 200 -fsSL -o - "https://github.com/denoland/$bin/releases/latest/download/$bin-$(uname -m)-unknown-linux-gnu.zip" | gunzip > "$file"; then
                     chmod a+rx "$file"
                 fi
                 ;;
@@ -106,6 +106,9 @@ mpvc_fetch()
             chmod u+x "$file"
         fi
     done
+
+    # check before overwriting
+    if [ -f "$BINDIR/m" ] || [ -f "$BINDIR/mx" ]; then return; fi
 
     ln -sfv "$BINDIR/mpvc" "$BINDIR/m"
     ln -sfv "$BINDIR/mpvc-fzf" "$BINDIR/mx"
@@ -238,7 +241,8 @@ mpvc_completions()
         CLEAN_TEXT=$(MANPAGER="cat" man -l "$manfile" 2>/dev/null || mandoc -Tascii "$manfile" 2>/dev/null)
         if [ -n "$CLEAN_TEXT" ]; then
             CMDS=$(echo "$CLEAN_TEXT" |
-                awk -v re="-[A-Za-z]|--[A-Za-z-]+" ' /^ *-/ { l=$0; n=split(l,o,","); for (i in o){ if (match(o[i],re,a)) print a[0] } }' | sort -u | tr '\n' ' '
+                awk -v re="--?[^ ]+" '/^ *-/ { l=$0; n=split(l,o,","); for (i in o){ if (match(o[i],re)) print substr(o[i],RSTART,RLENGTH) } }' |
+                    sort -u | tr '\n' ' '
             )
         fi
 
@@ -287,37 +291,37 @@ mpvc_quickstart()
     fi
 
     echo "# Quickstart: Checking for updates..."
-    if ! "$0" check-update; then
+    if ! $SHELL "$0" check-update; then
         echo "❌ Quickstart failed: 'check-update' step encountered an error."
         return 1
     fi
 
     echo "# Quickstart: Fetching/installing files..."
-    if ! "$0" fetch-user; then
+    if ! $SHELL "$0" fetch-user; then
         echo "❌ Quickstart failed: 'fetch-user' step encountered an error."
         return 1
     fi
 
     echo "# Quickstart: Fetching/installing manpages..."
-    if ! "$0" man-user; then
+    if ! $SHELL "$0" man-user; then
         echo "❌ Quickstart failed: 'man-user' step encountered an error."
         return 1
     fi
 
     echo "# Quickstart: Fetching/installing shell completion ..."
-    if ! "$0" comp-user; then
+    if ! $SHELL "$0" comp-user; then
         echo "❌ Quickstart failed: 'comp-user' step encountered an error."
         return 1
     fi
 
     echo "# Quickstart: Configuring user directories..."
-    if ! "$0" config-user; then
+    if ! $SHELL "$0" config-user; then
         echo "❌ Quickstart failed: 'config-user' step encountered an error."
         return 1
     fi
 
     echo "# Quickstart: Checking system requirements..."
-    if ! "$0" check-reqs; then
+    if ! $SHELL "$0" check-reqs; then
         echo "❌ Quickstart failed: 'check-reqs' dependency check failed."
         return 1
     fi
@@ -371,15 +375,12 @@ usage: $PROGNAME args # @version $PROGVERSION (c) $PROGAUTHOR $PROGURL
 
   check-update   : Check for updates
   check-reqs     : Check for required packages
-
   config         : Fetch mpvc config
   config-user    : Fetch mpvc config to BINDIR=$HOME/bin
   config-sys     : Fetch mpvc config to BINDIR=$PREFIX/bin
-
   man            : Fetch mpvc manpages
   man-user       : Fetch mpvc manpages to MANDIR=$XDG_DATA_HOME
   man-sys        : Fetch mpvc manpages to MANDIR=$MANDIR
-
   comp-user       : Install shell completions from MANDIR=$XDG_DATA_HOME
   comp-sys        : Install shell completions from MANDIR=$XDG_DATA_HOME
 

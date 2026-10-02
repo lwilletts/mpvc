@@ -22,37 +22,37 @@ usage: mpvc-chapter args # \[at]version v1.9 (c) gmt4 https://github.com/gmt4/mp
 .PP
 mpvc-chapter is a utility helper script bundled with mpvc that automates
 the tracking, creation, parsing, and merging of chapter structures
-within media files using FFmpeg\[cq]s ffmetadata format container layout
+within media files using FFmpeg\[aq]s ffmetadata format container layout
 maps.
 .SH OPTIONS
 .TP
-\f[B]\f[CB]--list\f[B]\f[R]
+--list
 List all compiled or cached ffmetadata chapter files currently tracking
 active streaming or media profiles.
 .TP
-\f[B]\f[CB]--file\f[B]\f[R]
+--file
 Print the absolute path of the currently active ffmetadata chapter asset
 configuration.
 .TP
-\f[B]\f[CB]--info\f[B]\f[R]
+--info
 Display metadata headers, timestamp tracks, layout intervals, and
 internal structure properties contained within the active chapter file.
 .TP
-\f[B]\f[CB]--reset\f[B]\f[R]
+--reset
 Wipe, clear, and re-initialize the target chapter configuration metadata
 layout map back to pristine system defaults.
 .TP
-\f[B]\f[CB]--load\f[B]\f[R]
+--load
 Explicitly register and hot-load the active chapter markers map directly
 into the running instance workspace.
 .TP
-\f[B]\f[CB]--gen\f[B]\f[R]
+--gen
 Generate a syntactically correct ffmetadata map stream file parsed from
 standard input.
 This reads sequential text layouts containing raw timestamp intervals
 and titles.
 .TP
-\f[B]\f[CB]--merge\f[B]\f[R]
+--merge
 Merge a standalone ffmetadata layout directly back into a targeted
 physical media container.
 This command strictly requires three continuous sequential file

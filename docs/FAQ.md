@@ -9,6 +9,8 @@ Contribute answers in a `Q: A:` format to your favorite Frequently Asked Questio
 * [cava](https://github.com/karlstav/cava)
 * [easyeffects](https://github.com/wwmm/easyeffects)
 * [copyparty](https://github.com/9001/copyparty)
+* [rescrobbled](https://github.com/InputUsername/rescrobbled)
+* [Home Assistant "Assist"](https://www.home-assistant.io/voice_control/)
 
 ### Related tools
 

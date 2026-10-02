@@ -10,11 +10,20 @@ manager for mpvc
 .nf
 \f[C]
 usage: mpvc-installer args # \[at]version v1.9 (c) gmt4 https://github.com/gmt4/mpvc
+  quickstart     : QuickStart Install for first-time users
+  quickstart-rm  : QuickStart Removal for first-time users
+
   check-update   : Check for updates
   check-reqs     : Check for required packages
-  config         : Fetch mpv config
-  config-user    : Fetch mpv config to BINDIR=/home/user/bin
-  config-sys     : Fetch mpv config to BINDIR=/usr/local/bin
+  config         : Fetch mpvc config
+  config-user    : Fetch mpvc config to BINDIR=/home/user/bin
+  config-sys     : Fetch mpvc config to BINDIR=/usr/local/bin
+  man            : Fetch mpvc manpages
+  man-user       : Fetch mpvc manpages to MANDIR=/home/user/.local/share
+  man-sys        : Fetch mpvc manpages to MANDIR=/usr/local/man/man1
+  comp-user       : Install shell completions from MANDIR=/home/user/.local/share
+  comp-sys        : Install shell completions from MANDIR=/home/user/.local/share
+
   fetch-user     : Fetch to BINDIR=/home/user/bin
   link-user      : Symlink to BINDIR=/home/user/bin
   install        : Install to BINDIR=/usr/local/bin
@@ -23,7 +32,7 @@ usage: mpvc-installer args # \[at]version v1.9 (c) gmt4 https://github.com/gmt4/
   install-sys    : Install to BINDIR=/usr/local/bin (sets PREFIX=/usr/local)
   uninstall-user : Uninstall from BINDIR=/home/user/bin
   uninstall-sys  : Uninstall from BINDIR=/usr/local/bin (sets PREFIX=/usr/local)
-*tips: If unsure where to start, start with: mpvc-installer fetch-user
+*tips: If unsure where to start, start with: mpvc-installer quickstart
 \f[R]
 .fi
 .SH DESCRIPTION
@@ -35,83 +44,81 @@ downloading, system-wide or user-level symlinking, dependency checks,
 and default configuration setups.
 .SH COMMANDS
 .TP
-\f[B]\f[CB]quickstart\f[B]\f[R]
-Execute an automated initial setup routine designed for first-time
-users, fetching and configuring assets locally.
+quickstart
+Automated download, install, config, and setup.
+Designed for first-time users under user home (\f[C]PREFIX=$HOME\f[R]).
 .TP
-\f[B]\f[CB]quickstart-rm\f[B]\f[R]
-Cleanly remove all temporary configurations and installations
-initialized by the quickstart routine.
+quickstart-rm
+Cleanup the installation performed by the quickstart routine.
 .TP
-\f[B]\f[CB]check-update\f[B]\f[R]
+check-update
 Query the remote upstream Git repository to discover available software
 updates.
 .TP
-\f[B]\f[CB]check-reqs\f[B]\f[R]
-Audit the local system \f[C]$PATH\f[R] environment to ensure that core
-required tools (\f[C]mpv\f[R], \f[C]socat\f[R], \f[C]gawk\f[R]) and
-extras are installed.
+check-reqs
+Check the current mpvc installation, checking that required tools/deps
+are present, and their versions (\f[C]mpv\f[R], \f[C]socat\f[R],
+\f[C]gawk\f[R]).
 .TP
-\f[B]\f[CB]config\f[B]\f[R]
+config
 Fetch the standard global baseline \f[C]mpv\f[R] communication
 parameters and configuration targets.
 .TP
-\f[B]\f[CB]config-user\f[B]\f[R]
-Populate local user configuration directories under
-\f[C]BINDIR=\[ti]/bin/\f[R] with default profiles.
+config-user
+Populate local user mpvc configuration directories under
+\f[C]PREFIX=$HOME\f[R].
 .TP
-\f[B]\f[CB]config-sys\f[B]\f[R]
+config-sys
 Deploy default profiles globally for system-wide access under
-\f[C]/usr/local/bin\f[R].
+\f[C]PREFIX=/usr/local\f[R].
 .TP
-\f[B]\f[CB]fetch-user\f[B]\f[R]
-Fetch and download the standalone script collection directly into the
-user\[cq]s execution directory (\f[C]\[ti]/bin/\f[R]).
+fetch-user
+Fetch the standalone script directly into the user home
+(\f[C]PREFIX=$HOME\f[R]).
 .TP
-\f[B]\f[CB]link-user\f[B]\f[R]
+link-user
 Create localized symlinks within \f[C]\[ti]/bin/\f[R] pointing to a
 manually cloned repository tree.
 .TP
-\f[B]\f[CB]install\f[B]\f[R]
-Move and register the application binaries systematically to the
-universal \f[C]/usr/local/bin\f[R] folder block.
+install
+Install the application binaries systematically to the system
+\f[C]PREFIX=/usr/local/\f[R].
 .TP
-\f[B]\f[CB]uninstall\f[B]\f[R]
+uninstall
 Completely remove systemic application components from
-\f[C]/usr/local/bin\f[R].
+\f[C]PREFIX=/usr/local/\f[R].
 .TP
-\f[B]\f[CB]install-user\f[B]\f[R]
-Compile, move, and configure the standalone suite targets for a single
-local user profile (\f[C]\[ti]/bin/\f[R]).
+install-user
+Install the application binaries systematically to the user home
+\f[C]PREFIX=$HOME\f[R].
 .TP
-\f[B]\f[CB]install-sys\f[B]\f[R]
-Execute a full administrative installation routing binaries to
-\f[C]/usr/local/bin\f[R] (implicitly sets \f[C]PREFIX=/usr/local\f[R]).
+install-sys
+Install the application binaries systematically to the system
+\f[C]PREFIX=/usr/local/\f[R].
 .TP
-\f[B]\f[CB]uninstall-user\f[B]\f[R]
-Discard user-level script mappings and configurations from the local
-path context.
+uninstall-user
+Uninstall the application binaries systematically from user home
+\f[C]PREFIX=$HOME\f[R].
 .TP
-\f[B]\f[CB]uninstall-sys\f[B]\f[R]
-Erase all administrative global binary elements and dependencies from
-system folders.
+uninstall-sys
+Uninstall the application binaries systematically from the system
+\f[C]PREFIX=/usr/local/\f[R].
 .SH ENVIRONMENT
 .TP
-\f[B]\f[CB]BINDIR\f[B]\f[R]
+PREFIX
+Set the prefix pointing to the base installation directory.
+Defaults to \f[C]/usr/local\f[R].
+.TP
+BINDIR
 Explicitly overrides the destination binary folder path during localized
 setups.
-Defaults to \f[C]$HOME/bin\f[R].
-.TP
-\f[B]\f[CB]PREFIX\f[B]\f[R]
-Declares the baseline administrative root pathway prefix for global
-installations.
-Defaults to \f[C]/usr/local\f[R].
+Defaults to \f[C]$PREFIX/bin\f[R].
 .SH FILES
 .TP
 \f[B]\f[CB]\[ti]/.config/mpvc/\f[B]\f[R]
-Destination directory where \f[C]config-user\f[R] populates the default
-\f[C]mpvc.conf\f[R], \f[C]mpv.conf\f[R], and \f[C]yt-dlp.conf\f[R]
-blueprints.
+Destination directory where \f[C]config-user\f[R] stores the default
+configurations for: \f[C]mpvc.conf\f[R], \f[C]mpv.conf\f[R], and
+\f[C]yt-dlp.conf\f[R]
 .SH EXAMPLES
 .PP
 Perform a fully automated, standalone setup tracking standard user

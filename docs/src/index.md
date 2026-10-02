@@ -1,5 +1,6 @@
 ---
 layout: default
+last_modified_date: 2026-09-26
 ---
 
 <!--
@@ -14,9 +15,10 @@ description: "A fast, lightweight mpc-like control interface for the mpv media p
   <p style="font-size: 1.25rem; color: var(--md-typeset-color); max-width: 600px; margin: 0 auto 2rem auto; line-height: 1.6;">
     An mpc-like control interface for the mpv media player. A fast, cross-platform tool built for the terminal and modern shell workflows.
   </p>
-  <div style="display: flex; gap: 1rem; justify-content: center;">
-    <a href="get-started.html" class="md-button md-button--primary" style="padding: 0.6rem 2rem; font-weight: 600;">Get Started</a>
-    <a href="https://github.com/gmt4/mpvc/" class="md-button" style="padding: 0.6rem 2rem;">View on GitHub</a>
+  <div style="display: flex; gap: 1rem; justify-content: center; border">
+    <a href="get-started.html" class="md-button md-button--primary" style="font-weight: bold;">Get Started</a>
+    <a href="screen-cast.html" class="md-button" style="font-style: italic;">Show Demo</a>
+    <a href="https://github.com/gmt4/mpvc/" class="md-button" style="">View GitHub</a>
   </div>
 </div>
 

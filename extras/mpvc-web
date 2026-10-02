@@ -19,6 +19,7 @@ PROGDIR=${0%/*}
 PROGVERSION="v1.9"
 PROGAUTHOR=gmt4
 PROGURL="https://github.com/gmt4/mpvc"
+SITEURL="https://gmt4.github.io/mpvc"
 #PROGINFO="A hack to remotely control mpvc from web # DISCLAIMER * Use at Your Own Risk *"
 
 set -euf
@@ -472,16 +473,16 @@ legend {
 }
 
 EOF
+
 }
 
 mpvc_web_icon_svg()
 {
     cat <<EOF
-<svg xmlns="http://w3.org" viewBox="0 0 100 100">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="512" height="512">
   <text y="0.9em" font-size="90">🎧</text>
 </svg>
 EOF
-
 }
 
 mpvc_web_manifest()
@@ -496,12 +497,54 @@ mpvc_web_manifest()
   "theme_color": "#121212",
   "icons": [
     {
-      "src": "/apple-touch-icon.svg",
+      "src": "apple-touch-icon.svg",
       "sizes": "any",
-      "type": "image/svg+xml"
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "apple-touch-icon.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "apple-touch-icon-maskable.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "apple-touch-icon-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "mpvc narrow"
+    },
+    {
+      "src": "apple-touch-icon-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "mpvc wide"
     }
   ]
 }
+EOF
+}
+
+mpvc_web_serviceworker()
+{
+    cat <<EOF
+self.addEventListener("install", (e) => {
+  self.skipWaiting();
+});
+
+self.addEventListener("fetch", (e) => {
+  e.respondWith(fetch(e.request));
+});
 EOF
 }
 
@@ -589,6 +632,7 @@ mpvc_web_index()
     <meta http-equiv=refresh content="$MPVC_WEB_HTML_REFRESH;url=." />
 
     <link rel="manifest" href="manifest.json">
+    <script> if ("serviceWorker" in navigator) { navigator.serviceWorker.register("sw.js"); } </script>
     <link rel="IconFile" href="apple-touch-icon.svg" sizes="64x64">
     <link rel="apple-touch-icon" href="apple-touch-icon.svg">
     <title> 🎧$MPVC_WEB_HOSTNAME mpvc</title>
@@ -732,10 +776,9 @@ mpvc_web_index()
         <footer>
         <hr>
         <small>
-        🎧
-        • <a href="$PROGURL">${PROGNAME%-*} $PROGVERSION</a>
-        • <a href="$PROGURL/releases/">changelog</a>
-        • <a href="$PROGURL/issues">issues</a>
+        🎧 <a href="$PROGURL">m</a> <a href="$PROGURL/releases/">$PROGVERSION</a>
+        • <a href="$PROGURL/issues">issues</a> <a href="$SITEURL">docs</a>
+        • <a href="client.p12">p12</a> <a href="server.crt">crt</a>
         $(date +%Y) ©
         <a href="javascript:Help()" title="help" ${MPVC_WEB_SHORTCUT_HELP}>/h</a>
         </small>
@@ -750,9 +793,41 @@ EOF
 
 mpvc_web_mkcert()
 {
-    MPVC_WEB_SSL_SUBJ="/C=CN/ST=ST/O=$PROGNAME/CN=$PROGNAME-$MPVC_WEB_HOSTNAME"
-    openssl req -new -x509 -days 365 -nodes -out "$MPVC_WEB_SSL_PEM" -keyout "$MPVC_WEB_SSL_PEM" -subj "$MPVC_WEB_SSL_SUBJ"
-    openssl pkcs12 -export -passout "pass:" -in "$MPVC_WEB_SSL_PEM" -out "$MPVC_WEB_SSL_PEM.p12"
+    MPVC_WEB_BASE="$MPVC_WEB_ROOT/.."
+    MPVC_WEB_SSL_SUBJ="/C=CN/ST=ST/O=MPVC-LAN-NET/CN=mpvc-server-ca-$MPVC_WEB_HOSTNAME"
+    SAN_STR="DNS:$MPVC_WEB_HOSTNAME, IP:127.0.0.1"
+    CLEAN_IPS=$(ifconfig | awk '/inet / {print $2}' | grep -v -E '^(127\.0\.0\.1|172\.(1[6-9]|2[0-9]|3[0-1])\.)')
+    for ip in $CLEAN_IPS; do [ -z "$ip" ] && continue; SAN_STR="$SAN_STR, IP:$ip"; done
+
+    # Create temporary OpenSSL config to inject true CA attributes
+    CONF_FILE="$MPVC_WEB_BASE/openssl_ca.cnf"
+    cat <<EOF > "$CONF_FILE"
+[ req ]
+distinguished_name = req_distinguished_name
+x509_extensions     = v3_ca
+
+[ req_distinguished_name ]
+
+[ v3_ca ]
+subjectKeyIdentifier   = hash
+authorityKeyIdentifier = keyid:always,issuer
+basicConstraints       = critical, CA:true
+keyUsage               = critical, digitalSignature, cRLSign, keyCertSign
+subjectAltName         = $SAN_STR
+EOF
+
+    # Set Server CA validity to 3650 days (10 years)
+    openssl req -new -x509 -days 3650 -nodes -config "$CONF_FILE" -out "$MPVC_WEB_SSL_PEM" -keyout "$MPVC_WEB_SSL_PEM" -subj "$MPVC_WEB_SSL_SUBJ"
+    # Generate temporary Client Key and CSR
+    openssl req -nodes -newkey rsa:2048 -keyout "$MPVC_WEB_BASE/client.key" -out "$MPVC_WEB_BASE/client.csr" -subj "/CN=mpvc-lan-client"
+    # Generate Client Certificate
+    openssl x509 -req -in "$MPVC_WEB_BASE/client.csr" -CA "$MPVC_WEB_SSL_PEM" -CAkey "$MPVC_WEB_SSL_PEM" -CAcreateserial -out "$MPVC_WEB_BASE/client.crt" -days 3650
+    # Export p12 Client Bundle to Webroot (For Client Device Identity)
+    openssl pkcs12 -export -legacy -passout "pass:" -inkey "$MPVC_WEB_BASE/client.key" -in "$MPVC_WEB_BASE/client.crt" -name "mpvc-client-$MPVC_WEB_HOSTNAME" -out "$MPVC_WEB_ROOT/client.p12"
+    # Export ONLY the public Server CA certificate (For Browser Trust Store)
+    openssl x509 -in "$MPVC_WEB_SSL_PEM" -out "$MPVC_WEB_ROOT/server.crt"
+    # Purge all temporary assets safely
+    rm -f "$MPVC_WEB_BASE/client.key" "$MPVC_WEB_BASE/client.csr" "$MPVC_WEB_BASE/client.crt" "$CONF_FILE"
 }
 
 mpvc_web_https()
@@ -770,7 +845,11 @@ mpvc_web_qrcode()
     if ! command -v qrencode >/dev/null; then return; fi
 
     if [ "$host" = "0" ]; then
-        host=$(ip -j route get 1.1.1.1 | jq -r '.[0].prefsrc')
+        if command -v ip >/dev/null 2>&1; then
+            host=$(ip route get 1.1.1.1 | awk '/src/ {for(i=1;i<=NF;i++) if($i=="src") print $(i+1)}')
+        else
+            host=$(ifconfig "$(route -n get 1.1.1.1 | awk '/interface:/ {print $2}')" | awk '/inet / {print $2}')
+        fi
     fi
 
     qrurl="http://$host:$MPVC_WEB_PORT";
@@ -808,8 +887,14 @@ mpvc_web_setup()
 
         mpvc_web_index > "$MPVC_WEB_ROOT/index.html"
         echo > "$MPVC_WEB_ROOT/favicon.ico"
+        mpvc_web_serviceworker > "$MPVC_WEB_ROOT/sw.js"
         mpvc_web_manifest > "$MPVC_WEB_ROOT/manifest.json"
         mpvc_web_icon_svg > "$MPVC_WEB_ROOT/apple-touch-icon.svg"
+        # Setup apple-touch-icon.png for manifest.json
+        if [ ! -e "$MPVC_WEB_ROOT/apple-touch-icon.png" ]; then
+            convert -background none -density 300 "$MPVC_WEB_ROOT/apple-touch-icon.svg" -resize 192x192 "$MPVC_WEB_ROOT/apple-touch-icon.png"
+            convert -background none -density 300 "$MPVC_WEB_ROOT/apple-touch-icon.svg" -resize 512x512 "$MPVC_WEB_ROOT/apple-touch-icon-maskable.png"
+        fi
 
         if [ -n "$MPVC_WEB_CSS_STYLE" ]; then
             cat "$MPVC_WEB_CSS_STYLE" > "$MPVC_WEB_ROOT/style.css"
@@ -865,7 +950,6 @@ mpvc_web()
 
         BEGIN {
             system("env")
-            quiet=1
             allowCmdStr = "mpv clear kill --mute toggle play stop prev next playrand shuffle unshuffle repeat single replay togglev aspect togglew togglef togglei creplay cloop cprev cnext cplayrand cycle-volume"
             n = split(allowCmdStr, a, /[[:space:]]+/)
             for (i = 1; i <= n; i++) { allowCmdList[a[i]] = 1; }

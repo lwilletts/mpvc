@@ -24,6 +24,47 @@ usage: mpvc opts # \[at]version v1.9 (c) gmt4 https://github.com/gmt4/mpvc
  -h | --help              : Prints the short help.
  -H | --help-long         : Prints the long help (tip: mpvc -H 2>&1 | less).
 
+ -f | --format            : Enter a formatting string.
+ -j | --track             : Go forwards/backwards through the playlist queue.
+ -J | --tracknum          : Jump to playlist item number.
+ -A | --playnext          : Add media to playlist after the current track.
+ -n | --playnow           : Add media to playlist after the current track, and play it.
+    | --playrand          : Select a random track from the playlist, and play it.
+    | --save              : Save current playlist to given path.
+    | --load              : Load playlist from given path (stdin if none is specified).
+ -c | --crop              : Clear the playlist except for the media currently playing.
+ -l | --loop              : Loop currently playing playlist.
+ -L | --loopfile          : Loop currently playing file.
+ -m | --mute              : Toggle sound.
+ -t | --seek              : Increase/decrease playback time relatively, accepts % values.
+    | --seekrand          : Set a random playback time.
+ -T | --time              : Set absolute playback time.
+ -x | --speed             : Increase/decrease speed relative to the current speed.
+ -X | --speedval          : Set absolute speed.
+ -z | --shuffle           : Toggle the shuffle property
+ -I | --images            : Enable adding of images to the queue.
+    | --color             : Enable color (NO_COLOR=)
+    | --nocolor           : Disable color (NO_COLOR=true)
+ -k | --kill              : Kill the mpv process controlling the given socket.
+ -K | --killall           : Kill all mpv processes indiscriminately.
+ -S | --socket            : Set mpv socket [default: $MPVC_SOCKET].
+ -q | --quiet             : Suppress all text output.
+ -V | --volume            : Set absolute volume.
+ -Q | --vid=no            : Start mpv with video output disabled.
+ -- |                     : After adding files options after -- are passed to mpv.
+    | --version           : Prints the short version.
+    | --version-long      : Prints the long version.
+
+ (--)idleloop             : Listen to MPV events on $PROGNAME socket.
+ (--)observe              : Observe property in MPV events on $PROGNAME socket.
+ (--)playlist-shuffle     : Shuffle the current playlist
+ (--)playlist-unshuffle   : Unshuffle the current playlist
+ (--)search               : Search the playlist by filename/url.
+ (--)searchplay|splay     : Search the playlist by filename and play the first match.
+ (--)searchPlay|sPlay     : Search the playlist by title and play the first match.
+ -R | --searchrm | srm    : Search the playlist and remove matching entries.
+ -M | --searchmv | smv    : Search the playlist and move matching entries.
+
 *tips: If unsure about where to begin, have a look at https://gmt4.github.io/mpvc
 \f[R]
 .fi
@@ -38,59 +79,169 @@ command-line interface.
 The tool communicates with mpv via a Unix socket, enabling remote
 control of playback without direct interaction with the mpv window.
 .SH OPTIONS
-.SS Playback Control
+.SS Core Playback Commands
 .TP
-\f[B]\f[CB]-P\f[B]\f[R], \f[B]\f[CB]--play\f[B]\f[R], \f[B]\f[CB]play\f[B]\f[R]
-Start playback of the current media.
+-P, --play, play
+Always start playback.
 .TP
-\f[B]\f[CB]-p\f[B]\f[R], \f[B]\f[CB]--toggle\f[B]\f[R], \f[B]\f[CB]toggle\f[B]\f[R]
-Toggle between play and pause states.
+-p, --toggle
+Toggle playback.
 .TP
-\f[B]\f[CB]-s\f[B]\f[R], \f[B]\f[CB]--stop\f[B]\f[R], \f[B]\f[CB]stop\f[B]\f[R]
-Stop playback completely.
+-s, --stop, stop
+Always stop playback.
 .TP
-\f[B]\f[CB]--next\f[B]\f[R], \f[B]\f[CB]next\f[B]\f[R]
-Jump to the next entry in the playlist.
+--next, next
+Jump to next entry in the playlist.
 .TP
-\f[B]\f[CB]--prev\f[B]\f[R], \f[B]\f[CB]prev\f[B]\f[R]
-Jump to the previous entry in the playlist.
+--prev, prev
+Jump to previous entry in the playlist.
+.TP
+-j, --track
+Go forwards/backwards through the playlist queue.
+.TP
+-J, --tracknum
+Jump to playlist item number.
 .SS Playlist Management
 .TP
-\f[B]\f[CB]-a\f[B]\f[R], \f[B]\f[CB]--add FILE\f[B]\f[R], \f[B]\f[CB]add FILE\f[B]\f[R]
-Add a file or URL to the playlist.
-Supports local files, YouTube URLs, and other media sources.
+-a, --add, add
+Add media to playlist (see --load for stdin).
 .TP
-\f[B]\f[CB]-r\f[B]\f[R], \f[B]\f[CB]--rm ID\f[B]\f[R], \f[B]\f[CB]rm ID\f[B]\f[R]
-Remove a playlist entry by its numeric ID.
+-A, --playnext
+Add media to playlist after the current track.
 .TP
-\f[B]\f[CB]-i\f[B]\f[R], \f[B]\f[CB]--playlist\f[B]\f[R], \f[B]\f[CB]playlist\f[B]\f[R]
-Display the current playlist with filenames truncated to fit terminal
-width.
+-n, --playnow
+Add media to playlist after the current track, and play it.
 .TP
-\f[B]\f[CB]-I\f[B]\f[R], \f[B]\f[CB]--fullplaylist\f[B]\f[R]
-Display the complete current playlist with full filenames.
-.SS Loop and Repeat Modes
+--playrand
+Select a random track from the playlist, and play it.
 .TP
-\f[B]\f[CB]--repeat\f[B]\f[R], \f[B]\f[CB]repeat\f[B]\f[R]
-Enable loop mode for the entire playlist.
-Playback will restart from the beginning after reaching the end.
+-r, --remove, rm
+Remove media by id from playlist (see searchrm for rm by title).
 .TP
-\f[B]\f[CB]--single\f[B]\f[R], \f[B]\f[CB]single\f[B]\f[R]
-Enable single-file loop mode.
-The current file will repeat indefinitely.
-.SS Volume Control
+-c, --crop
+Clear the playlist except for the media currently playing.
 .TP
-\f[B]\f[CB]-v\f[B]\f[R], \f[B]\f[CB]--vol [+-]N\f[B]\f[R]
-Adjust volume by the specified amount.
-Use +N to increase or -N to decrease volume.
-Without an argument, displays current volume.
-.SS Information and Help
+--save
+Save current playlist to given path.
 .TP
-\f[B]\f[CB]-h\f[B]\f[R], \f[B]\f[CB]--help\f[B]\f[R]
-Display short help message with basic usage information.
+--load
+Load playlist from given path (stdin if none is specified).
 .TP
-\f[B]\f[CB]-H\f[B]\f[R], \f[B]\f[CB]--help-long\f[B]\f[R]
-Display detailed help message with all available options and examples.
+--playlist-shuffle
+Shuffle the current playlist.
+.TP
+--playlist-unshuffle
+Unshuffle the current playlist.
+.TP
+-i, --playlist
+Print filenames of tracks to fit within terminal.
+.TP
+-I, --fullplaylist
+Print all filenames of tracks in current playlist.
+.SS Advanced Search & Manipulation
+.TP
+--search
+Search the playlist by filename/url.
+.TP
+--searchplay, splay
+Search the playlist by filename and play the first match.
+.TP
+--searchPlay, sPlay
+Search the playlist by title and play the first match.
+.TP
+-R, --searchrm, srm
+Search the playlist and remove matching entries.
+.TP
+-M, --searchmv, smv
+Search the playlist and move matching entries.
+.SS Audio, Speed & Time Controls
+.TP
+-v, --vol, vol
+Increase/decrease volume relative to current volume.
+.TP
+-V, --volume
+Set absolute volume.
+.TP
+-m, --mute
+Toggle sound.
+.TP
+-t, --seek
+Increase/decrease playback time relatively, accepts % values.
+.TP
+--seekrand
+Set a random playback time.
+.TP
+-T, --time
+Set absolute playback time.
+.TP
+-x, --speed
+Increase/decrease speed relative to the current speed.
+.TP
+-X, --speedval
+Set absolute speed.
+.SS Properties & Daemon Configuration
+.TP
+--repeat, repeat
+Loop the playlist.
+.TP
+--single, single
+Loop a single file.
+.TP
+-l, --loop
+Loop currently playing playlist.
+.TP
+-L, --loopfile
+Loop currently playing file.
+.TP
+-z, --shuffle
+Toggle the shuffle property.
+.TP
+-I, --images
+Enable adding of images to the queue.
+.TP
+--color
+Enable color (NO_COLOR=).
+.TP
+--nocolor
+Disable color (NO_COLOR=true).
+.TP
+-q, --quiet
+Suppress all text output.
+.TP
+-Q, --vid=no
+Start mpv with video output disabled.
+.SS Events & Process Management
+.TP
+--idleloop
+Listen to MPV events on $PROGNAME socket.
+.TP
+--observe
+Observe property in MPV events on $PROGNAME socket.
+.TP
+-k, --kill
+Kill the mpv process controlling the given socket.
+.TP
+-K, --killall
+Kill all mpv processes indiscriminately.
+.TP
+-S, --socket
+Set mpv socket [default: $MPVC_SOCKET].
+.SS Help & Version Information
+.TP
+-f, --format
+Enter a formatting string.
+.TP
+-h, --help
+Prints the short help.
+.TP
+-H, --help-long
+Prints the long help (tip: mpvc -H 2>&1, less).
+.TP
+--version
+Prints the short version.
+.TP
+--version-long
+Prints the long version.
 .SH EXAMPLES
 .PP
 Add a file to the playlist:
@@ -182,7 +333,7 @@ mpvc-specific configuration file.
 Configuration for yt-dlp integration.
 .SH SEE ALSO
 .PP
-mpv(1), mpvc-fzf(1), mpvc-tui(1), mpvc-web(1), mpvc-equalizer(1)
+mpv(1), mpvc-fzf(1), mpvc-tui(1), mpvc-web(1), mpvc-equalizer(1),
 mpvc-index,
 .SH AUTHOR
 .PP

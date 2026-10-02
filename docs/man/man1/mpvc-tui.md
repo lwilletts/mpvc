@@ -5,6 +5,7 @@ version: v1.9
 date: April, 2026
 manual: User Commands
 layout: default
+last_modified_date: 2026-09-26
 ---
 
 NAME
@@ -40,40 +41,40 @@ mpvc-tui is a terminal-based user interface that displays status/playlist info o
 OPTIONS
 =======
 
-`-d`, `--dir PATH`
+-d, --dir PATH
 : Set the working directory to the specified media directory. All media operations will be relative to this directory.
 
-`-h`, `--help`
+-h, --help
 : Display the help message and exit.
 
-`-H`, `--history`
+-H, --history
 : Start the mpvc-tui history interface. This allows you to browse and replay previously played media.
 
-`-k`, `--kill`
+-k, --kill
 : Stop the currently running mpvc-tui instance.
 
-`-n`, `--notify`
+-n, --notify
 : Enable desktop notifications for mpvc events using notify-send. Notifications will appear for playback state changes and media transitions.
 
-`--socket PATH`
+--socket PATH
 : Set the MPV socket path. Overrides the default socket connection (defaults to MPV's standard socket if not specified).
 
-`-s`, `--suggest`
+-s, --suggest
 : Suggest a random media item to play based on previously played media. Useful for discovering content from your history.
 
-`-S`, `--scrobbler`
+-S, --scrobbler
 : Start the mpvc-tui scrobbler interface. This feature tracks and logs media that you play.
 
-`-t`, `--tui`
+-t, --tui
 : Start the main TUI for managing the MPV playlist (uses rlwrap for enhanced readline functionality).
 
-`-T`, `--Tui`
+-T, --Tui
 : Combo option that starts mpvc-tui with both TUI (-t) and desktop notifications (-n) enabled. This is the recommended starting option. Additional files provided as arguments will be added to the playlist.
 
-`-x`, `--launch`
+-x, --launch
 : Start mpvc-tui in a new xterm window. This respects the `$MPVC_TUI_TERM` environment variable for terminal selection. Can be combined with other options.
 
-`-v`, `--version`
+-v, --version
 : Display the mpvc-tui version and exit.
 
 EXAMPLES
@@ -127,7 +128,7 @@ SEE ALSO
 [mpvc-fzf(1)](mpvc-fzf.html),
 [mpvc-tui(1)](mpvc-tui.html),
 [mpvc-web(1)](mpvc-web.html),
-[mpvc-equalizer(1)](mpvc-equalizer.html)
+[mpvc-equalizer(1)](mpvc-equalizer.html),
 [mpvc-index](.),
 
 AUTHOR

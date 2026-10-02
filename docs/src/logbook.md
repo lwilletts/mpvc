@@ -1,9 +1,10 @@
 ---
 title: Log Book
-layout: home
+layout: default
+last_modified_date: 2026-09-26
 ---
 
-# [@gmt4](/) mpvc logbook 🎧
+# 🎧 mpvc logbook
 
 - **about** A minimal mpc-like interface for controlling
   [mpv](https://mpv.io) from the shell.
@@ -14,6 +15,14 @@ layout: home
 - **github** <https://github.com/gmt4/mpvc/>
 - **promote** Star, share, and promote our work through the buttons
   below if you find it useful. Thanks!
+
+------------------------------------------------------------------------
+
+# ToC
+{: .no_toc .text-delta }
+
+1. ToC
+{:toc}
 
 ------------------------------------------------------------------------
 
@@ -808,9 +817,9 @@ recently, mainly focused on improving the mpvc-web,
 
 # The End
 
-Return to the [Start](#gmt4-mpvc-fork)
+Return to the [Start](#logbook)
 
-------------------------------------------------------------------------
-
+<!--
 *📅 Sat, 08 Nov 2025 by [gmt4](https://gmt4.github.io)*
 <span style="float: right;"> *⚡ PoweredBy \#HTML* </span>
+-->

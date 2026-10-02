@@ -5,6 +5,7 @@ version: v1.9
 date: April, 2026
 manual: User Commands
 layout: default
+last_modified_date: 2026-09-26
 ---
 
 NAME
@@ -31,6 +32,47 @@ SYNOPSIS
      -h | --help              : Prints the short help.
      -H | --help-long         : Prints the long help (tip: mpvc -H 2>&1 | less).
 
+     -f | --format            : Enter a formatting string.
+     -j | --track             : Go forwards/backwards through the playlist queue.
+     -J | --tracknum          : Jump to playlist item number.
+     -A | --playnext          : Add media to playlist after the current track.
+     -n | --playnow           : Add media to playlist after the current track, and play it.
+        | --playrand          : Select a random track from the playlist, and play it.
+        | --save              : Save current playlist to given path.
+        | --load              : Load playlist from given path (stdin if none is specified).
+     -c | --crop              : Clear the playlist except for the media currently playing.
+     -l | --loop              : Loop currently playing playlist.
+     -L | --loopfile          : Loop currently playing file.
+     -m | --mute              : Toggle sound.
+     -t | --seek              : Increase/decrease playback time relatively, accepts % values.
+        | --seekrand          : Set a random playback time.
+     -T | --time              : Set absolute playback time.
+     -x | --speed             : Increase/decrease speed relative to the current speed.
+     -X | --speedval          : Set absolute speed.
+     -z | --shuffle           : Toggle the shuffle property
+     -I | --images            : Enable adding of images to the queue.
+        | --color             : Enable color (NO_COLOR=)
+        | --nocolor           : Disable color (NO_COLOR=true)
+     -k | --kill              : Kill the mpv process controlling the given socket.
+     -K | --killall           : Kill all mpv processes indiscriminately.
+     -S | --socket            : Set mpv socket [default: $MPVC_SOCKET].
+     -q | --quiet             : Suppress all text output.
+     -V | --volume            : Set absolute volume.
+     -Q | --vid=no            : Start mpv with video output disabled.
+     -- |                     : After adding files options after -- are passed to mpv.
+        | --version           : Prints the short version.
+        | --version-long      : Prints the long version.
+
+     (--)idleloop             : Listen to MPV events on $PROGNAME socket.
+     (--)observe              : Observe property in MPV events on $PROGNAME socket.
+     (--)playlist-shuffle     : Shuffle the current playlist
+     (--)playlist-unshuffle   : Unshuffle the current playlist
+     (--)search               : Search the playlist by filename/url.
+     (--)searchplay|splay     : Search the playlist by filename and play the first match.
+     (--)searchPlay|sPlay     : Search the playlist by title and play the first match.
+     -R | --searchrm | srm    : Search the playlist and remove matching entries.
+     -M | --searchmv | smv    : Search the playlist and move matching entries.
+
     *tips: If unsure about where to begin, have a look at https://gmt4.github.io/mpvc
 
 DESCRIPTION
@@ -47,62 +89,182 @@ control of playback without direct interaction with the mpv window.
 OPTIONS
 =======
 
-Playback Control
-----------------
+Core Playback Commands
+----------------------
 
-`-P`, `--play`, `play`
-: Start playback of the current media.
+-P, --play, play
+: Always start playback.
 
-`-p`, `--toggle`, `toggle`
-: Toggle between play and pause states.
+-p, --toggle
+: Toggle playback.
 
-`-s`, `--stop`, `stop`
-: Stop playback completely.
+-s, --stop, stop
+: Always stop playback.
 
-`--next`, `next`
-: Jump to the next entry in the playlist.
+--next, next
+: Jump to next entry in the playlist.
 
-`--prev`, `prev`
-: Jump to the previous entry in the playlist.
+--prev, prev
+: Jump to previous entry in the playlist.
+
+-j, --track
+: Go forwards/backwards through the playlist queue.
+
+-J, --tracknum
+: Jump to playlist item number.
 
 Playlist Management
 -------------------
 
-`-a`, `--add FILE`, `add FILE`
-: Add a file or URL to the playlist. Supports local files, YouTube URLs, and other media sources.
+-a, --add, add
+: Add media to playlist (see --load for stdin).
 
-`-r`, `--rm ID`, `rm ID`
-: Remove a playlist entry by its numeric ID.
+-A, --playnext
+: Add media to playlist after the current track.
 
-`-i`, `--playlist`, `playlist`
-: Display the current playlist with filenames truncated to fit terminal width.
+-n, --playnow
+: Add media to playlist after the current track, and play it.
 
-`-I`, `--fullplaylist`
-: Display the complete current playlist with full filenames.
+--playrand
+: Select a random track from the playlist, and play it.
 
-Loop and Repeat Modes
----------------------
+-r, --remove, rm
+: Remove media by id from playlist (see searchrm for rm by title).
 
-`--repeat`, `repeat`
-: Enable loop mode for the entire playlist. Playback will restart from the beginning after reaching the end.
+-c, --crop
+: Clear the playlist except for the media currently playing.
 
-`--single`, `single`
-: Enable single-file loop mode. The current file will repeat indefinitely.
+--save
+: Save current playlist to given path.
 
-Volume Control
---------------
+--load
+: Load playlist from given path (stdin if none is specified).
 
-`-v`, `--vol [+-]N`
-: Adjust volume by the specified amount. Use +N to increase or -N to decrease volume. Without an argument, displays current volume.
+--playlist-shuffle
+: Shuffle the current playlist.
 
-Information and Help
---------------------
+--playlist-unshuffle
+: Unshuffle the current playlist.
 
-`-h`, `--help`
-: Display short help message with basic usage information.
+-i, --playlist
+: Print filenames of tracks to fit within terminal.
 
-`-H`, `--help-long`
-: Display detailed help message with all available options and examples.
+-I, --fullplaylist
+: Print all filenames of tracks in current playlist.
+
+Advanced Search & Manipulation
+------------------------------
+
+--search
+: Search the playlist by filename/url.
+
+--searchplay, splay
+: Search the playlist by filename and play the first match.
+
+--searchPlay, sPlay
+: Search the playlist by title and play the first match.
+
+-R, --searchrm, srm
+: Search the playlist and remove matching entries.
+
+-M, --searchmv, smv
+: Search the playlist and move matching entries.
+
+Audio, Speed & Time Controls
+----------------------------
+
+-v, --vol, vol
+: Increase/decrease volume relative to current volume.
+
+-V, --volume
+: Set absolute volume.
+
+-m, --mute
+: Toggle sound.
+
+-t, --seek
+: Increase/decrease playback time relatively, accepts % values.
+
+--seekrand
+: Set a random playback time.
+
+-T, --time
+: Set absolute playback time.
+
+-x, --speed
+: Increase/decrease speed relative to the current speed.
+
+-X, --speedval
+: Set absolute speed.
+
+Properties & Daemon Configuration
+---------------------------------
+
+--repeat, repeat
+: Loop the playlist.
+
+--single, single
+: Loop a single file.
+
+-l, --loop
+: Loop currently playing playlist.
+
+-L, --loopfile
+: Loop currently playing file.
+
+-z, --shuffle
+: Toggle the shuffle property.
+
+-I, --images
+: Enable adding of images to the queue.
+
+--color
+: Enable color (NO_COLOR=).
+
+--nocolor
+: Disable color (NO_COLOR=true).
+
+-q, --quiet
+: Suppress all text output.
+
+-Q, --vid=no
+: Start mpv with video output disabled.
+
+Events & Process Management
+---------------------------
+
+--idleloop
+: Listen to MPV events on \$PROGNAME socket.
+
+--observe
+: Observe property in MPV events on \$PROGNAME socket.
+
+-k, --kill
+: Kill the mpv process controlling the given socket.
+
+-K, --killall
+: Kill all mpv processes indiscriminately.
+
+-S, --socket
+: Set mpv socket [default: \$MPVC_SOCKET].
+
+Help & Version Information
+--------------------------
+
+-f, --format
+: Enter a formatting string.
+
+-h, --help
+: Prints the short help.
+
+-H, --help-long
+: Prints the long help (tip: mpvc -H 2>&1, less).
+
+--version
+: Prints the short version.
+
+--version-long
+: Prints the long version.
 
 EXAMPLES
 ========
@@ -169,7 +331,7 @@ mpv(1),
 [mpvc-fzf(1)](mpvc-fzf.html),
 [mpvc-tui(1)](mpvc-tui.html),
 [mpvc-web(1)](mpvc-web.html),
-[mpvc-equalizer(1)](mpvc-equalizer.html)
+[mpvc-equalizer(1)](mpvc-equalizer.html),
 [mpvc-index](.),
 
 AUTHOR
