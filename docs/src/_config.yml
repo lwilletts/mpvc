@@ -63,6 +63,10 @@ collections:
     output: true
     permalink: /man/:path/
 
+feed:
+  collections:
+    - man
+
 mermaid:
   version: "11.4.0"
 
