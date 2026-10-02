@@ -204,35 +204,35 @@ graph TD
 
 The mpvc ecosystem is completely modular. You only need to spin up the specific components that match your active media setup:
 
-* **mpvc (Core CLI)**
-  The foundational POSIX engine for automation and window manager keybindings. (manual: [mpvc(1)](https://gmt4.github.io/mpvc/man/man1/mpvc.html))
+* **mpvc**
+  The core CLI POSIX engine for automation and window manager keybindings. (manual: [mpvc(1)](https://gmt4.github.io/mpvc/man/man1/mpvc.html))
   * **Quickstart:** `mpvc add <URL/Path>` or `mpvc toggle`
 
-* **mpvc-tui (Terminal Dashboard)**
+* **mpvc-tui**
   A continuous terminal console displaying status, playlists, and desktop notifications. (manual: [mpvc-tui(1)](https://gmt4.github.io/mpvc/man/man1/mpvc-tui.html))
   * **Quickstart:** `mpvc-tui -t` (or `mpvc-tui -T` for notifications)
 
-* **mpvc-fzf (Interactive Browser)**
-  A keyboard-driven fuzzy browser for local music libraries, radio APIs, and YouTube streams. (manual: [mpvc-fzf(1)](https://gmt4.github.io/mpvc/man/man1/mpvc-fzf.html))
+* **mpvc-fzf**
+  A keyboard-driven fuzzy browser for media: local music libraries, radio APIs, and YouTube streams. (manual: [mpvc-fzf(1)](https://gmt4.github.io/mpvc/man/man1/mpvc-fzf.html))
   * **Quickstart:** `mpvc-fzf -p 'query'` or `mpvc-fzf --lofi`
 
-* **mpvc-web & web-browser (Network Controller)**
+* **mpvc-web**
   A lightweight HTTP daemon and CGI asset manager to control playback from a phone or tablet browser. (manual: [mpvc-web(1)](https://gmt4.github.io/mpvc/man/man1/mpvc-web.html))
   * **Quickstart:** `mpvc-web -c start`
 
-* **mpvc-equalizer (Audio FX)**
+* **mpvc-equalizer**
   A 15-band linear phase equalizer to manipulate audio streams and load acoustic environment presets. (manual: [mpvc-equalizer(1)](https://gmt4.github.io/mpvc/man/man1/mpvc-equalizer.html))
   * **Quickstart:** `mpvc-equalizer preset classical | mpvc-equalizer load`
 
-* **mpvc-chapter (Metadata Editor)**
+* **mpvc-chapter**
   A local tool to quickly build, adjust, and merge custom timestamp markers into media files. (manual: [mpvc-chapter(1)](https://gmt4.github.io/mpvc/man/man1/mpvc-chapter.html))
   * **Quickstart:** `mpvc-chapter add` or `mpvc-chapter load`
 
-* **mpvc-autopilot (Presence Automation)**
-  A background script that pauses or resumes playback dynamically based on local network IP pings or Bluetooth proximity. (manual: [mpvc-autopilot(1)](https://gmt4.github.io/mpvc/man/man1/mpvc-autopilot.html))
+* **mpvc-autopilot**
+  A background script to autopilot mpvc: pauses or resumes playback dynamically based on local network IP pings or Bluetooth proximity. (manual: [mpvc-autopilot(1)](https://gmt4.github.io/mpvc/man/man1/mpvc-autopilot.html))
   * **Quickstart:** `mpvc-autopilot -p 300 -n 3 -i <target_ip>`
 
-* **mpvc-installer (Deployment Manager)**
-  An automated configuration and standalone shell script tool for seamless installer setups, dependency checking, and complete removals. (manual: [mpvc-installer(1)](https://gmt4.github.io/mpvc/man/man1/mpvc-installer.html))
+* **mpvc-installer**
+  An automated installer/deploy shell script tool for seamless installer setups, dependency checking, and complete removals. (manual: [mpvc-installer(1)](https://gmt4.github.io/mpvc/man/man1/mpvc-installer.html))
   * **Quickstart:** `mpvc-installer quickstart`
 
